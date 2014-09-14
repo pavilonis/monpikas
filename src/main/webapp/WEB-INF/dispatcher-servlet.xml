@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+       http://www.springframework.org/schema/mvc
+       http://www.springframework.org/schema/mvc/spring-mvc-3.2.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.2.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx.xsd
+       http://www.springframework.org/schema/data/jpa
+       http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
+
+   <context:component-scan base-package="lt.pavilonis.monpikas.server.controllers"/>
+   <mvc:resources mapping="/resources/**" location="/resources/" cache-period="5000000"/>
+
+   <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
+   <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
+      <!-- Turn off working out content type based on URL file extension, should fall back to looking at the Accept headers -->
+      <property name="favorPathExtension" value="false" />
+   </bean>
+
+   <!--<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">-->
+      <!--<property name="dataSource" ref="dataSource" />-->
+   <!--</bean>-->
+
+   <!--JPA settings start-->
+            <!--depends-on="flyway" -->
+      <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+         <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
+      </bean>
+      <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+         <property name="entityManagerFactory" ref="entityManagerFactory"/>
+      </bean>
+
+      <jpa:repositories base-package="lt.pavilonis.monpikas.server.repositories"/>
+      <tx:annotation-driven transaction-manager="transactionManager"/>
+   <!--JPA settings end-->
+
+   <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+      <property name="prefix" value="/WEB-INF/pages/"/>
+      <property name="suffix" value=".jsp"/>
+      <property name="contentType" value="text/html;charset=UTF-8" />
+   </bean>
+
+   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+      <property name="url" value="jdbc:mysql://localhost:3306/monpikasdb?useUnicode=true" />
+      <property name="username" value="monpikasAdmin" />
+      <property name="password" value="monpikaSSpaSS" />
+   </bean>
+
+   <bean id="adbDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+      <property name="driverClassName" value="com.mysql.jdbc.Driver" />
+      <property name="url" value="jdbc:mysql://localhost:3306/adb?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull" />
+      <property name="username" value="scan1_CLI" />
+      <property name="password" value="s1" />
+   </bean>
+
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+      <constructor-arg ref="adbDataSource" />
+   </bean>
+
+</beans>
