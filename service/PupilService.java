@@ -1,12 +1,15 @@
 package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.PupilDto;
+import lt.pavilonis.monpikas.server.domain.PupilInfo;
 
 import java.util.List;
 
 public interface PupilService {
 
-   List<PupilDto> getOriginPupils();
+   List<PupilDto> getOriginalList();
 
-   PupilDto getPupil(long cardId);
+   PupilDto getByCardId(long cardId);
+
+   void saveOrUpdate(PupilInfo info);
 }

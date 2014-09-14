@@ -1,36 +1,28 @@
 package lt.pavilonis.monpikas.server.domain;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Lob;
-import javax.persistence.Table;
 
 @Entity
-@Table
 public class PupilInfo {
 
    public PupilInfo() {
    }
 
-   @Id
-   private long id;
+   public PupilInfo(long cardId, boolean dinnerPermission, String comment) {
+      this.cardId = cardId;
+      this.dinnerPermission = dinnerPermission;
+      this.comment = comment;
+   }
 
-   @Column
+   @Id
    private long cardId;
 
    private boolean dinnerPermission;
 
    @Lob
    private String comment;
-
-   public long getId() {
-      return id;
-   }
-
-   public void setId(long id) {
-      this.id = id;
-   }
 
    public long getCardId() {
       return cardId;

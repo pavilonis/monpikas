@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.server;
 
+import com.vaadin.annotations.Theme;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.Notification;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @Scope("prototype")
+@Theme("valo")
 public class App extends UI {
 
    @Autowired
