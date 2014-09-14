@@ -40,13 +40,14 @@ public class JdbcAdbDao implements AdbDao {
    private static final class UserDtoMapper implements RowMapper<PupilDto> {
       @Override
       public PupilDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-         PupilDto user = new PupilDto();
-         user.setCardId(Integer.valueOf(rs.getString("card")));
-         user.setFirstName(rs.getString("fname"));
-         user.setLastName(rs.getString("lname"));
+         PupilDto pupil = new PupilDto();
+         pupil.setCardId(Integer.valueOf(rs.getString("card")));
+         pupil.setFirstName(rs.getString("fname"));
+         pupil.setLastName(rs.getString("lname"));
          Date d = (rs.getDate("gdata"));
-         user.setBirthDate(d == null ? null : d.toLocalDate());
-         return user;
+         pupil.setBirthDate(d == null ? null : d.toLocalDate());
+         pupil.setComment("");
+         return pupil;
       }
    }
 }

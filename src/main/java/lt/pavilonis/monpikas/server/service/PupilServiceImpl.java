@@ -16,11 +16,11 @@ public class PupilServiceImpl implements PupilService {
    private AdbDao dao;
 
    @Autowired
-   private PupilInfoRepository pupilInfoRepository;
+   private PupilInfoRepository pupilRepo;
 
-   public List<PupilDto> getOriginPupils() {
+   public List<PupilDto> getOriginalList() {
       long start = System.nanoTime();
-      List<PupilInfo> pupilInfos = pupilInfoRepository.findAll();
+      List<PupilInfo> pupilInfos = pupilRepo.findAll();
       long finish = System.nanoTime();
       System.out.println("got ALL PupilInfo in " + (finish - start) / 1000000 + " milis");
 
@@ -45,11 +45,16 @@ public class PupilServiceImpl implements PupilService {
       return pupils;
    }
 
-   public PupilDto getPupil(long cardId) {
+   public PupilDto getByCardId(long cardId) {
       PupilDto dto = dao.getAdbPupil(cardId);
-      PupilInfo info = pupilInfoRepository.findByCardId(cardId);  //getting information about pupil
+      PupilInfo info = pupilRepo.findByCardId(cardId);  //getting information about pupil
       dto.setDinner(info != null && info.isDinnerPermission());
       dto.setComment(info == null ? "" : info.getComment());
       return dto;
+   }
+
+   @Override
+   public void saveOrUpdate(PupilInfo info) {
+      pupilRepo.save(info);
    }
 }
