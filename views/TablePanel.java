@@ -48,6 +48,11 @@ public class TablePanel extends VerticalLayout {
       });
       addComponents(filterPanel, t);
       setExpandRatio(t, 1f);
+      filterPanel.addFilterButtonListener(filterButtonClicked -> {
+               container.removeAllContainerFilters();
+               container.addContainerFilter(filterPanel.getFilter());
+            }
+      );
    }
 
    public void setTableClickListener(ItemClickListener listener) {
@@ -61,4 +66,6 @@ public class TablePanel extends VerticalLayout {
    public FilterPanel getFilterPanel() {
       return filterPanel;
    }
+
+
 }
