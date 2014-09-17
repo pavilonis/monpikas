@@ -1,0 +1,36 @@
+<beans:beans xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns="http://www.springframework.org/schema/security"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+	http://www.springframework.org/schema/security
+	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
+
+   <!--<http >-->
+   <http auto-config="true" use-expressions="true">
+      <intercept-url pattern="/app" access="hasRole('ROLE_EMPLOYEE')"/>
+      <!--<form-login login-processing-url="/rest/j_spring_security_check"-->
+                  <!--login-page="/rest/login"-->
+                  <!--authentication-success-handler-ref="authenticationSuccessHandler"/>-->
+      <!--<http-basic/>-->
+      <!--<logout logout-url="/rest/j_spring_security_logout"/>-->
+   </http>
+
+   <authentication-manager alias="authenticationManager">
+      <!-- 'alias' is defined here for later use of default
+      authentication manager 'ProviderManager' bean in UserController
+      for automatic user login after successful registration -->
+      <authentication-provider user-service-ref="monpikasUserDetailsService"/>
+   </authentication-manager>
+
+   <!--
+       <beans:bean id="authenticationManager" class="org.springframework.security.authentication.ProviderManager" />
+   -->
+
+   <beans:bean id="authenticationSuccessHandler"
+               class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
+      <!-- After login, return to the last visited page -->
+      <beans:property name="useReferer" value="true"/>
+   </beans:bean>
+
+</beans:beans>

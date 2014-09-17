@@ -15,55 +15,64 @@
        http://www.springframework.org/schema/tx/spring-tx.xsd
        http://www.springframework.org/schema/data/jpa
        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd">
-
+   <import resource="security.xml"/>
    <context:component-scan base-package="lt.pavilonis.monpikas.server.controllers"/>
-   <mvc:resources mapping="/resources/**" location="/resources/" cache-period="5000000"/>
+   <mvc:resources mapping="/resources/*" location="/resources/" cache-period="5000000"/>
 
    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
       <!-- Turn off working out content type based on URL file extension, should fall back to looking at the Accept headers -->
-      <property name="favorPathExtension" value="false" />
+      <property name="favorPathExtension" value="false"/>
    </bean>
 
+   <context:annotation-config/>
+   <context:component-scan base-package="lt.pavilonis.monpikas.server"/>
+
+   <bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
+      <property name="basename" value="messages"/>
+   </bean>
+
+
    <!--<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">-->
-      <!--<property name="dataSource" ref="dataSource" />-->
+   <!--<property name="dataSource" ref="dataSource" />-->
    <!--</bean>-->
 
    <!--JPA settings start-->
-            <!--depends-on="flyway" -->
-      <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
-         <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
-      </bean>
-      <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
-         <property name="entityManagerFactory" ref="entityManagerFactory"/>
-      </bean>
+   <!--depends-on="flyway" -->
+   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+      <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
+   </bean>
+   <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+      <property name="entityManagerFactory" ref="entityManagerFactory"/>
+   </bean>
 
-      <jpa:repositories base-package="lt.pavilonis.monpikas.server.repositories"/>
-      <tx:annotation-driven transaction-manager="transactionManager"/>
+   <jpa:repositories base-package="lt.pavilonis.monpikas.server.repositories"/>
+   <tx:annotation-driven transaction-manager="transactionManager"/>
    <!--JPA settings end-->
 
    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
       <property name="prefix" value="/WEB-INF/pages/"/>
       <property name="suffix" value=".jsp"/>
-      <property name="contentType" value="text/html;charset=UTF-8" />
+      <property name="contentType" value="text/html;charset=UTF-8"/>
    </bean>
 
    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-      <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-      <property name="url" value="jdbc:mysql://localhost:3306/monpikasdb?useUnicode=true" />
-      <property name="username" value="monpikasAdmin" />
-      <property name="password" value="monpikaSSpaSS" />
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url" value="jdbc:mysql://localhost:3306/monpikasdb?useUnicode=true"/>
+      <property name="username" value="monpikasAdmin"/>
+      <property name="password" value="monpikaSSpaSS"/>
    </bean>
 
    <bean id="adbDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-      <property name="driverClassName" value="com.mysql.jdbc.Driver" />
-      <property name="url" value="jdbc:mysql://localhost:3306/adb?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull" />
-      <property name="username" value="scan1_CLI" />
-      <property name="password" value="s1" />
+      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
+      <property name="url"
+                value="jdbc:mysql://localhost:3306/adb?useUnicode=true&amp;zeroDateTimeBehavior=convertToNull"/>
+      <property name="username" value="scan1_CLI"/>
+      <property name="password" value="s1"/>
    </bean>
 
    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-      <constructor-arg ref="adbDataSource" />
+      <constructor-arg ref="adbDataSource"/>
    </bean>
 
 </beans>

@@ -18,7 +18,6 @@ public class DinnerEvent {
 
    private LocalDateTime time;
 
-
    public String getId() {
       return id;
    }

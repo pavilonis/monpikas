@@ -75,11 +75,11 @@
       </dependency>
 
       <!-- Logging -->
-      <!--<dependency>-->
-         <!--<groupId>org.slf4j</groupId>-->
-         <!--<artifactId>slf4j-api</artifactId>-->
-         <!--<version>1.7.7</version>-->
-      <!--</dependency>-->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-api</artifactId>
+         <version>1.7.7</version>
+      </dependency>
       <!--<dependency>-->
          <!--<groupId>org.slf4j</groupId>-->
          <!--<artifactId>jcl-over-slf4j</artifactId>-->
@@ -95,11 +95,11 @@
          <!--<artifactId>logback-classic</artifactId>-->
          <!--<version>1.1.2</version>-->
       <!--</dependency>-->
-      <!--<dependency>-->
-         <!--<groupId>org.slf4j</groupId>-->
-         <!--<artifactId>slf4j-log4j12</artifactId>-->
-         <!--<version>1.7.7</version>-->
-      <!--</dependency>-->
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>1.7.7</version>
+      </dependency>
       <!-- Web API -->
       <dependency>
          <groupId>javax.servlet</groupId>
@@ -158,10 +158,27 @@
       <!--</dependency>-->
 
       <!--Jackson JSON Mapper -->
+      <!--<dependency>-->
+         <!--<groupId>org.codehaus.jackson</groupId>-->
+         <!--<artifactId>jackson-mapper-asl</artifactId>-->
+         <!--<version>1.9.13</version>-->
+      <!--</dependency>-->
+
+
       <dependency>
-         <groupId>org.codehaus.jackson</groupId>
-         <artifactId>jackson-mapper-asl</artifactId>
-         <version>1.9.13</version>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-core</artifactId>
+         <version>2.4.2</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-databind</artifactId>
+         <version>2.4.2</version>
+      </dependency>
+      <dependency>
+         <groupId>com.fasterxml.jackson.core</groupId>
+         <artifactId>jackson-annotations</artifactId>
+         <version>2.4.2</version>
       </dependency>
 
       <!-- Spring SECURITY -->
@@ -179,15 +196,33 @@
          <groupId>org.springframework.security</groupId>
          <artifactId>spring-security-config</artifactId>
          <version>${spring.security.version}</version>
-      </dependency>
 
+      </dependency>
+      <dependency>
+         <groupId>org.springframework.security</groupId>
+         <artifactId>spring-security-taglibs</artifactId>
+         <version>${spring.security.version}</version>
+      </dependency>
       <!-- -->
       <dependency>
          <groupId>org.apache.commons</groupId>
          <artifactId>commons-lang3</artifactId>
          <version>3.3.2</version>
       </dependency>
+      <dependency>
+         <groupId>jstl</groupId>
+         <artifactId>jstl</artifactId>
+         <version>1.2</version>
+      </dependency>
+      <dependency>
+         <groupId>javax.servlet.jsp</groupId>
+         <artifactId>jsp-api</artifactId>
+         <version>2.1</version>
+         <scope>provided</scope>
+      </dependency>
    </dependencies>
+
+
 
    <build>
       <plugins>
