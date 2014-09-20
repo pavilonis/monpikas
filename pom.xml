@@ -67,7 +67,7 @@
          <version>${vaadin.version}</version>
       </dependency>
 
-      <!-- Spring Vaadin Integration -->
+       <!--Spring Vaadin Integration-->
       <dependency>
          <groupId>ru.xpoft.vaadin</groupId>
          <artifactId>spring-vaadin-integration</artifactId>
