@@ -10,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,6 +37,14 @@ public class User implements UserDetails {
 
    private Boolean enabled;
 
+   @JoinTable(name = "User_Authority",
+         joinColumns = {
+               @JoinColumn(name = "user_id", referencedColumnName = "id")
+         },
+         inverseJoinColumns = {
+               @JoinColumn(name = "authority_id", referencedColumnName = "id")
+         }
+   )
    @ManyToMany(fetch = FetchType.EAGER)
    private List<Authority> authorities = new ArrayList<>();
 

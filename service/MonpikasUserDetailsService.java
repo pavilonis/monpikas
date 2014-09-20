@@ -20,7 +20,7 @@ public class MonpikasUserDetailsService implements UserDetailsService {
 
    public UserDetails loadUserByUsername(String username) {
 
-      return entityManager.createQuery("from users where username = :username", User.class)
+      return entityManager.createQuery("from User where username = :username", User.class)
             .setParameter("username", username)
             .getSingleResult();
    }
