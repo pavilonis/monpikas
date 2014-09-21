@@ -9,7 +9,5 @@ public interface AdbDao {
 
    List<AdbPupilDto> getAllAdbPupils();
 
-   List<AdbPupilDto> getAdbPupilsByCardIds(Set<Long> cardIds);
-
    AdbPupilDto getAdbPupil(long id);
 }

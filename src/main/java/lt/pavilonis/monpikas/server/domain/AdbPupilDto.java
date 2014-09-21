@@ -11,7 +11,7 @@ public class AdbPupilDto {
    private String firstName;
    private String lastName;
    private LocalDate birthDate;
-   private boolean dinner;
+   private boolean dinnerPermitted;
    private String comment;
 
    public long getCardId() {
@@ -46,12 +46,12 @@ public class AdbPupilDto {
       this.birthDate = birthDate;
    }
 
-   public boolean isDinner() {
-      return dinner;
+   public boolean isDinnerPermitted() {
+      return dinnerPermitted;
    }
 
-   public void setDinner(boolean dinner) {
-      this.dinner = dinner;
+   public void setDinnerPermitted(boolean dinnerPermitted) {
+      this.dinnerPermitted = dinnerPermitted;
    }
 
    public String getComment() {
@@ -60,5 +60,9 @@ public class AdbPupilDto {
 
    public void setComment(String comment) {
       this.comment = comment;
+   }
+
+   public PupilInfo extractPupilInfo() {
+      return new PupilInfo(getCardId(), isDinnerPermitted(), getComment());
    }
 }

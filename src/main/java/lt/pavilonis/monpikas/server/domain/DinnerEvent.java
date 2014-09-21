@@ -3,8 +3,9 @@ package lt.pavilonis.monpikas.server.domain;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 public class DinnerEvent {
@@ -14,9 +15,18 @@ public class DinnerEvent {
    private String id;
 
    @ManyToOne
-   private PupilInfo pupil;
+   @JoinColumn(name = "pupilInfo_cardId")
+   private PupilInfo pupilInfo;
 
-   private LocalDateTime time;
+   private Date date;
+
+   public DinnerEvent() {
+   }
+
+   public DinnerEvent(PupilInfo pupilInfo, Date date) {
+      this.pupilInfo = pupilInfo;
+      this.date = date;
+   }
 
    public String getId() {
       return id;
@@ -26,19 +36,19 @@ public class DinnerEvent {
       this.id = id;
    }
 
-   public LocalDateTime getTime() {
-      return time;
+   public Date getDate() {
+      return date;
    }
 
-   public void setTime(LocalDateTime time) {
-      this.time = time;
+   public void setDate(Date time) {
+      this.date = time;
    }
 
-   public PupilInfo getPupil() {
-      return pupil;
+   public PupilInfo getPupilInfo() {
+      return pupilInfo;
    }
 
-   public void setPupil(PupilInfo pupil) {
-      this.pupil = pupil;
+   public void setPupilInfo(PupilInfo pupil) {
+      this.pupilInfo = pupil;
    }
 }

@@ -51,7 +51,7 @@ public class ViewController {
                editView.commit();
                PupilInfo info = new PupilInfo(
                      (long) event.getItemId(),
-                     (boolean) event.getItem().getItemProperty("dinner").getValue(),
+                     (boolean) event.getItem().getItemProperty("dinnerPermitted").getValue(),
                      (String) event.getItem().getItemProperty("comment").getValue()
                );
                pupilService.saveOrUpdate(info);
