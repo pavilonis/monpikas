@@ -1,10 +1,10 @@
-package lt.pavilonis.monpikas.server.dao;
+package lt.pavilonis.monpikas.server.domain;
 
 import java.time.LocalDate;
 
-public class PupilDto {
+public class AdbPupilDto {
 
-   public PupilDto() {
+   public AdbPupilDto() {
    }
 
    private long cardId;

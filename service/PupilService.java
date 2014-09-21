@@ -1,15 +1,17 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.dao.PupilDto;
+import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 
 import java.util.List;
 
 public interface PupilService {
 
-   List<PupilDto> getOriginalList();
+   List<AdbPupilDto> getOriginalList();
 
-   PupilDto getByCardId(long cardId);
+   AdbPupilDto getByCardId(long cardId);
 
    void saveOrUpdate(PupilInfo info);
+
+   boolean hasEatenToday(long cardId);
 }

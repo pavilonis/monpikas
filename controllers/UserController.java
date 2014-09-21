@@ -9,8 +9,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class UserController {
 
    @RequestMapping("/login")
-   public void showLoginScreen(
-         @RequestParam(defaultValue = "false", required = false) boolean error, Model m) {
+   public void showLoginScreen(@RequestParam(defaultValue = "false", required = false) boolean error, Model m) {
       m.addAttribute("error", error);
    }
 }

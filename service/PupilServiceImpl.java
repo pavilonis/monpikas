@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.AdbDao;
-import lt.pavilonis.monpikas.server.dao.PupilDto;
+import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,14 +18,14 @@ public class PupilServiceImpl implements PupilService {
    @Autowired
    private PupilInfoRepository pupilRepo;
 
-   public List<PupilDto> getOriginalList() {
+   public List<AdbPupilDto> getOriginalList() {
       long start = System.nanoTime();
       List<PupilInfo> pupilInfos = pupilRepo.findAll();
       long finish = System.nanoTime();
       System.out.println("got ALL PupilInfo in " + (finish - start) / 1000000 + " milis");
 
       start = System.nanoTime();
-      List<PupilDto> pupils = dao.getAllAdbPupils();
+      List<AdbPupilDto> pupils = dao.getAllAdbPupils();
       finish = System.nanoTime();
       System.out.println("got All AdbPupils in " + (finish - start) / 1000000 + " milis");
 
@@ -45,16 +45,24 @@ public class PupilServiceImpl implements PupilService {
       return pupils;
    }
 
-   public PupilDto getByCardId(long cardId) {
-      PupilDto dto = dao.getAdbPupil(cardId);
-      PupilInfo info = pupilRepo.findByCardId(cardId);  //getting information about pupil
-      dto.setDinner(info != null && info.isDinnerPermission());
-      dto.setComment(info == null ? "" : info.getComment());
+   public AdbPupilDto getByCardId(long cardId) {
+      AdbPupilDto dto = dao.getAdbPupil(cardId);
+      if (dto != null) {
+         PupilInfo info = pupilRepo.findByCardId(cardId);  //getting dinner information about pupil
+         dto.setDinner(info != null && info.isDinnerPermission());
+         dto.setComment(info == null ? "" : info.getComment());
+      }
       return dto;
    }
 
    @Override
    public void saveOrUpdate(PupilInfo info) {
       pupilRepo.save(info);
+   }
+
+   @Override
+   public boolean hasEatenToday(long cardId) {
+
+      return false;
    }
 }

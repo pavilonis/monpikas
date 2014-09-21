@@ -5,12 +5,12 @@ import com.vaadin.data.util.converter.StringToBooleanConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.dao.PupilDto;
+import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
 
 public class TablePanel extends VerticalLayout {
 
    private Table t = new Table();
-   BeanContainer<Long, PupilDto> container = new BeanContainer<>(PupilDto.class);
+   BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
    FilterPanel filterPanel = new FilterPanel();
 
    public TablePanel() {
@@ -59,7 +59,7 @@ public class TablePanel extends VerticalLayout {
       t.addItemClickListener(listener);
    }
 
-   public BeanContainer<Long, PupilDto> getContainer() {
+   public BeanContainer<Long, AdbPupilDto> getContainer() {
       return container;
    }
 
