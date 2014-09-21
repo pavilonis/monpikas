@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.AdbDao;
-import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.domain.DinnerEvent;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.repositories.DinnerEventRepository;
@@ -68,14 +68,14 @@ public class PupilServiceImpl implements PupilService {
    }
 
    @Override
-   public boolean hadDinnerToday(PupilInfo info) {
-      DinnerEvent lastEvent = dinnerRepo.findLast(info);
-      if (lastEvent == null) {
+   public boolean hadDinnerToday(long cardId) {
+      Date lastDinner = dinnerRepo.lastDinnerEventDate(cardId);
+      if (lastDinner == null) {
          return false;
       } else {
          Calendar cal1 = Calendar.getInstance();
          Calendar cal2 = Calendar.getInstance();
-         cal1.setTime(lastEvent.getDate());
+         cal1.setTime(lastDinner);
          cal2.setTime(new Date());
          return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
@@ -83,7 +83,7 @@ public class PupilServiceImpl implements PupilService {
    }
 
    @Override
-   public void saveDinnerEvent(PupilInfo info) {
-      dinnerRepo.save(new DinnerEvent(info, new Date()));
+   public void saveDinnerEvent(long cardId, String name) {
+      dinnerRepo.save(new DinnerEvent(cardId, name, new Date()));
    }
 }

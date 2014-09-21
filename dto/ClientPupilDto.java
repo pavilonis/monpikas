@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.domain;
+package lt.pavilonis.monpikas.server.dto;
 
 public class ClientPupilDto {
 

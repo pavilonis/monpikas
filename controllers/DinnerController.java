@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.server.controllers;
 
-import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
-import lt.pavilonis.monpikas.server.domain.ClientPupilDto;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.transaction.Transactional;
 
 @RestController
-public class WebServiceController {
+public class DinnerController {
 
-   private static final Logger LOG = Logger.getLogger(WebServiceController.class.getName());
+   private static final Logger LOG = Logger.getLogger(DinnerController.class.getName());
 
    @Autowired
    PupilService pupilService;
@@ -40,13 +40,13 @@ public class WebServiceController {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to dinner");
          return new ResponseEntity<>(new ClientPupilDto(fullName, false, null), HttpStatus.FORBIDDEN);
 
-      } else if (pupilService.hadDinnerToday(adbDto.extractPupilInfo())) {
+      } else if (pupilService.hadDinnerToday(adbDto.getCardId())) {
          LOG.info("Pupil with id: " + id + " ALREADY HAD a dinner today");
          return new ResponseEntity<>(new ClientPupilDto(fullName, true, true), HttpStatus.FORBIDDEN);
 
       } else {
          LOG.info("Pupil with id: " + id + " is getting a dinner");
-         pupilService.saveDinnerEvent(adbDto.extractPupilInfo());
+         pupilService.saveDinnerEvent(adbDto.getCardId(), fullName);
          return new ResponseEntity<>(new ClientPupilDto(fullName, true, false), HttpStatus.OK);
       }
    }

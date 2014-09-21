@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.server.dao;
 
-import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
+import com.google.gwt.thirdparty.guava.common.collect.Lists;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -10,7 +11,7 @@ import java.sql.Date;
 import java.util.List;
 
 @Repository
-public class JdbcAdbDao implements AdbDao {
+public class JdbcAdbDao implements AdbDao{
 
    @Autowired
    private JdbcTemplate jdbcTemplate;
@@ -30,6 +31,16 @@ public class JdbcAdbDao implements AdbDao {
             : pupilList.get(0);
    }
 
+   @Override
+   public List<AdbPupilDto> getAdbPupilsByIds(List<Long> cardIds) {
+      List<AdbPupilDto> pupilList = jdbcTemplate.query(
+            "SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card IN (?)",
+            newRowMapper(),
+            transformToStrings(cardIds)
+      );
+      return null;
+   }
+
    private RowMapper<AdbPupilDto> newRowMapper() {
       return (rs, rowNum) -> {
          AdbPupilDto pupil = new AdbPupilDto();
@@ -41,6 +52,10 @@ public class JdbcAdbDao implements AdbDao {
          pupil.setComment("");
          return pupil;
       };
+   }
+
+   private List<String> transformToStrings(List<Long> ids) {
+      return Lists.transform(ids, this::getString);
    }
 
    private String getString(Long id) {
