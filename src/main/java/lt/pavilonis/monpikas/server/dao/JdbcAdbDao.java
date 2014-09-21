@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.server.dao;
 
+import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,11 +20,11 @@ public class JdbcAdbDao implements AdbDao {
    private JdbcTemplate jdbcTemplate;
 
    @Override
-   public List<PupilDto> getAllAdbPupils() {
+   public List<AdbPupilDto> getAllAdbPupils() {
       return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users", new UserDtoMapper());
    }
 
-   public List<PupilDto> getAdbPupilsByCardIds(Set<Long> ids){ //TODO potestit eto, potom peredelat chtoby neskkolkimi partijami po 50 id zaprosy shli
+   public List<AdbPupilDto> getAdbPupilsByCardIds(Set<Long> ids){ //TODO potestit eto, potom peredelat chtoby neskkolkimi partijami po 50 id zaprosy shli
       MapSqlParameterSource parameters = new MapSqlParameterSource();
       parameters.addValue("ids", ids);
       return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card IN (:ids)",
@@ -31,16 +32,16 @@ public class JdbcAdbDao implements AdbDao {
    }
 
    @Override
-   public PupilDto getAdbPupil(long cardId) {
+   public AdbPupilDto getAdbPupil(long cardId) {
       return jdbcTemplate.queryForObject(
             "SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = ?",
             new Object[]{String.valueOf(cardId)}, new UserDtoMapper());
    }
 
-   private static final class UserDtoMapper implements RowMapper<PupilDto> {
+   private static final class UserDtoMapper implements RowMapper<AdbPupilDto> {
       @Override
-      public PupilDto mapRow(ResultSet rs, int rowNum) throws SQLException {
-         PupilDto pupil = new PupilDto();
+      public AdbPupilDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+         AdbPupilDto pupil = new AdbPupilDto();
          pupil.setCardId(Integer.valueOf(rs.getString("card")));
          pupil.setFirstName(rs.getString("fname"));
          pupil.setLastName(rs.getString("lname"));
