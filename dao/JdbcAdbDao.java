@@ -4,14 +4,10 @@ import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
 
 @Repository
 public class JdbcAdbDao implements AdbDao {
@@ -21,26 +17,21 @@ public class JdbcAdbDao implements AdbDao {
 
    @Override
    public List<AdbPupilDto> getAllAdbPupils() {
-      return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users", new UserDtoMapper());
-   }
-
-   public List<AdbPupilDto> getAdbPupilsByCardIds(Set<Long> ids){ //TODO potestit eto, potom peredelat chtoby neskkolkimi partijami po 50 id zaprosy shli
-      MapSqlParameterSource parameters = new MapSqlParameterSource();
-      parameters.addValue("ids", ids);
-      return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card IN (:ids)",
-            new UserDtoMapper(), parameters);
+      return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users", newRowMapper());
    }
 
    @Override
    public AdbPupilDto getAdbPupil(long cardId) {
-      return jdbcTemplate.queryForObject(
-            "SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = ?",
-            new Object[]{String.valueOf(cardId)}, new UserDtoMapper());
+      List<AdbPupilDto> pupilList = jdbcTemplate.query(
+            "SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = " + getString(cardId), newRowMapper()
+      );
+      return pupilList.isEmpty()
+            ? null
+            : pupilList.get(0);
    }
 
-   private static final class UserDtoMapper implements RowMapper<AdbPupilDto> {
-      @Override
-      public AdbPupilDto mapRow(ResultSet rs, int rowNum) throws SQLException {
+   private RowMapper<AdbPupilDto> newRowMapper() {
+      return (rs, rowNum) -> {
          AdbPupilDto pupil = new AdbPupilDto();
          pupil.setCardId(Integer.valueOf(rs.getString("card")));
          pupil.setFirstName(rs.getString("fname"));
@@ -49,6 +40,14 @@ public class JdbcAdbDao implements AdbDao {
          pupil.setBirthDate(d == null ? null : d.toLocalDate());
          pupil.setComment("");
          return pupil;
+      };
+   }
+
+   private String getString(Long id) {
+      String s = String.valueOf(id);
+      while (s.length() < 4) {
+         s = 0 + s;
       }
+      return s;
    }
 }

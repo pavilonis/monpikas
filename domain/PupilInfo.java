@@ -10,16 +10,16 @@ public class PupilInfo {
    public PupilInfo() {
    }
 
-   public PupilInfo(long cardId, boolean dinnerPermission, String comment) {
+   public PupilInfo(long cardId, boolean dinnerPermitted, String comment) {
       this.cardId = cardId;
-      this.dinnerPermission = dinnerPermission;
+      this.dinnerPermitted = dinnerPermitted;
       this.comment = comment;
    }
 
    @Id
    private long cardId;
 
-   private boolean dinnerPermission;
+   private boolean dinnerPermitted;
 
    @Lob
    private String comment;
@@ -32,12 +32,12 @@ public class PupilInfo {
       this.cardId = adbUserId;
    }
 
-   public boolean isDinnerPermission() {
-      return dinnerPermission;
+   public boolean isDinnerPermitted() {
+      return dinnerPermitted;
    }
 
-   public void setDinnerPermission(boolean dinnerPermission) {
-      this.dinnerPermission = dinnerPermission;
+   public void setDinnerPermitted(boolean dinnerPermission) {
+      this.dinnerPermitted = dinnerPermission;
    }
 
    public String getComment() {

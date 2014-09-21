@@ -22,7 +22,7 @@ public class PupilEditWindow extends Window {
    Button save = new Button("Saugoti");
    Button close = new Button("Uždaryti");
    FieldGroup editFields;
-   CheckBox dinnerPermission = new CheckBox("Leidimas valgyti");
+   CheckBox dinnerPermitted = new CheckBox("Leidimas valgyti");
 
    public PupilEditWindow(Item item, String caption) {
       editFields = new FieldGroup(item);
@@ -41,10 +41,10 @@ public class PupilEditWindow extends Window {
 
       vl.addComponent(new HorizontalLayout(new Label("<b>Gimimo data</b>: " +
             ((item.getItemProperty("birthDate").getValue() != null) ? item.getItemProperty("birthDate") : "nenurodyta"), ContentMode.HTML)));
-      vl.addComponent(dinnerPermission);
+      vl.addComponent(dinnerPermitted);
       comment.setRows(4);
       vl.addComponent(comment);
-      editFields.bind(dinnerPermission, "dinner");
+      editFields.bind(dinnerPermitted, "dinnerPermitted");
       editFields.bind(comment, "comment");
 
       HorizontalLayout buttons = new HorizontalLayout(save, close);
@@ -71,9 +71,5 @@ public class PupilEditWindow extends Window {
       } catch (FieldGroup.CommitException e) {
          e.printStackTrace();
       }
-   }
-
-   public PupilInfo getModel() {
-      return new PupilInfo();
    }
 }

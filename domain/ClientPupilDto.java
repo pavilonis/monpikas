@@ -1,21 +1,20 @@
 package lt.pavilonis.monpikas.server.domain;
 
-import java.time.LocalDateTime;
-
 public class ClientPupilDto {
-   private String name;
-   private boolean dinnerPermission;
-   private LocalDateTime lastDinner;
 
-   public ClientPupilDto(String name, boolean dinnerPermission, LocalDateTime lastDinner) {
+   private String name;
+   private boolean dinnerPermitted;
+   private Boolean hadDinnerToday;
+
+   public ClientPupilDto(String name, boolean dinnerPermitted, Boolean hadDinnerToday) {
       this.name = name;
-      this.dinnerPermission = dinnerPermission;
-      this.lastDinner = lastDinner;
+      this.dinnerPermitted = dinnerPermitted;
+      this.hadDinnerToday = hadDinnerToday;
    }
 
    @Override
    public String toString() {
-      return "ClientPupilDto: "+name+ ", DinnerPerm: "+dinnerPermission+", LastDinner: "+lastDinner;
+      return "ClientPupilDto: " + name + ", DinnerPerm: " + dinnerPermitted + ", Had Dinner Today: " + hadDinnerToday;
    }
 
    public String getName() {
@@ -26,19 +25,19 @@ public class ClientPupilDto {
       this.name = name;
    }
 
-   public boolean isDinnerPermission() {
-      return dinnerPermission;
+   public boolean isDinnerPermitted() {
+      return dinnerPermitted;
    }
 
-   public void setDinnerPermission(boolean dinnerPermission) {
-      this.dinnerPermission = dinnerPermission;
+   public void setDinnerPermitted(boolean dinnerPermitted) {
+      this.dinnerPermitted = dinnerPermitted;
    }
 
-   public LocalDateTime getLastDinner() {
-      return lastDinner;
+   public boolean isHadDinnerToday() {
+      return hadDinnerToday;
    }
 
-   public void setLastDinner(LocalDateTime lastDinner) {
-      this.lastDinner = lastDinner;
+   public void setHadDinnerToday(boolean hadDinnerToday) {
+      this.hadDinnerToday = hadDinnerToday;
    }
 }

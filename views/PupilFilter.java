@@ -6,22 +6,22 @@ import com.vaadin.data.Item;
 public class PupilFilter implements Filter {
    //private String propertyId;
    private String text;
-   private boolean dinner;
-   private boolean dinnerToday;
+   private boolean dinnerPermitted;
+   private boolean hadDinnerToday;
 
-   public PupilFilter(String text, boolean dinner, boolean dinnerToday) {
+   public PupilFilter(String text, boolean dinnerPermitted, boolean hadDinnerToday) {
       //this.propertyId = propertyId;
       this.text = text.toLowerCase();
-      this.dinner = dinner;
-      this.dinnerToday = dinnerToday;
+      this.dinnerPermitted = dinnerPermitted;
+      this.hadDinnerToday = hadDinnerToday;
    }
 
    public String getText() {
       return text;
    }
 
-   public boolean isDinner() {
-      return dinner;
+   public boolean isDinnerPermitted() {
+      return dinnerPermitted;
    }
 
    @Override
@@ -29,8 +29,8 @@ public class PupilFilter implements Filter {
       String stack = item.getItemProperty("firstName").getValue().toString().toLowerCase() +
             item.getItemProperty("lastName").getValue().toString().toLowerCase() +
             (item.getItemProperty("birthDate").getValue()==null ? "" : item.getItemProperty("birthDate").getValue().toString());
-      boolean itemDinnerPermission = (boolean) item.getItemProperty("dinner").getValue();
-      return stack.contains(text) && (!dinner || itemDinnerPermission);
+      boolean itemDinnerPermission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
+      return stack.contains(text) && (!dinnerPermitted || itemDinnerPermission);
    }
 
    @Override

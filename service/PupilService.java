@@ -13,5 +13,7 @@ public interface PupilService {
 
    void saveOrUpdate(PupilInfo info);
 
-   boolean hasEatenToday(long cardId);
+   boolean hadDinnerToday(PupilInfo info);
+
+   void saveDinnerEvent(PupilInfo info);
 }
