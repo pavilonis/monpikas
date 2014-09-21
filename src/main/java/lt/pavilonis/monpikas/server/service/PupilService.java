@@ -1,6 +1,6 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface PupilService {
 
    void saveOrUpdate(PupilInfo info);
 
-   boolean hadDinnerToday(PupilInfo info);
+   boolean hadDinnerToday(long cardId);
 
-   void saveDinnerEvent(PupilInfo info);
+   void saveDinnerEvent(long cardId, String name);
 }

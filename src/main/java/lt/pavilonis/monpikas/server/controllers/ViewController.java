@@ -5,9 +5,11 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
+import lt.pavilonis.monpikas.server.service.DinnerService;
 import lt.pavilonis.monpikas.server.service.PupilService;
+import lt.pavilonis.monpikas.server.views.DinnerEventListView;
 import lt.pavilonis.monpikas.server.views.PupilEditWindow;
-import lt.pavilonis.monpikas.server.views.TablePanel;
+import lt.pavilonis.monpikas.server.views.PupilsListView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -25,17 +27,25 @@ public class ViewController {
    @Autowired
    private MessageSource messageSource;
 
+   @Autowired
+   private DinnerService dinnerService;
+
    public TabSheet createAdbPulilListView() {
+      PupilsListView pupilsView = new PupilsListView();
+      pupilsView.getContainer().addAll(pupilService.getOriginalList());
+      pupilsView.setTableClickListener(newPulilListTableClickListener());
+
+      DinnerEventListView dinnersView = new DinnerEventListView();
+      dinnersView.getContainer().addAll(dinnerService.getDinnerEventList());
+
       TabSheet tabs = new TabSheet();
       tabs.setSizeFull();
-      TablePanel tablePanel = new TablePanel();
-      tablePanel.getContainer().addAll(pupilService.getOriginalList());
-      tablePanel.setTableClickListener(newClickListener());
-      tabs.addTab(tablePanel, "Bendras sarašas");
+      tabs.addTab(pupilsView, "Bendras sąrašas");
+      tabs.addTab(dinnersView, "Pietų žurnalas");
       return tabs;
    }
 
-   private ItemClickEvent.ItemClickListener newClickListener() {
+   private ItemClickEvent.ItemClickListener newPulilListTableClickListener() {
       return event -> {
          if (event.isDoubleClick()) {
             PupilEditWindow editView = new PupilEditWindow(

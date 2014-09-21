@@ -5,15 +5,15 @@ import com.vaadin.data.util.converter.StringToBooleanConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 
-public class TablePanel extends VerticalLayout {
+public class PupilsListView extends VerticalLayout {
 
    private Table t = new Table();
    BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
-   FilterPanel filterPanel = new FilterPanel();
+   PupilListFilterPanel pupilListFilterPanel = new PupilListFilterPanel();
 
-   public TablePanel() {
+   public PupilsListView() {
       setSizeFull();
       setSpacing(true);
       container.setBeanIdProperty("cardId");
@@ -46,11 +46,11 @@ public class TablePanel extends VerticalLayout {
             return "";
          }
       });
-      addComponents(filterPanel, t);
+      addComponents(pupilListFilterPanel, t);
       setExpandRatio(t, 1f);
-      filterPanel.addFilterButtonListener(filterButtonClicked -> {
+      pupilListFilterPanel.addFilterButtonListener(filterButtonClicked -> {
                container.removeAllContainerFilters();
-               container.addContainerFilter(filterPanel.getFilter());
+               container.addContainerFilter(pupilListFilterPanel.getFilter());
             }
       );
    }
@@ -63,8 +63,8 @@ public class TablePanel extends VerticalLayout {
       return container;
    }
 
-   public FilterPanel getFilterPanel() {
-      return filterPanel;
+   public PupilListFilterPanel getPupilListFilterPanel() {
+      return pupilListFilterPanel;
    }
 
 

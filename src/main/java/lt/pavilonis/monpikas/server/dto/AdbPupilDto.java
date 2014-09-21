@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.domain;
+package lt.pavilonis.monpikas.server.dto;
 
 import java.time.LocalDate;
 
@@ -60,9 +60,5 @@ public class AdbPupilDto {
 
    public void setComment(String comment) {
       this.comment = comment;
-   }
-
-   public PupilInfo extractPupilInfo() {
-      return new PupilInfo(getCardId(), isDinnerPermitted(), getComment());
    }
 }
