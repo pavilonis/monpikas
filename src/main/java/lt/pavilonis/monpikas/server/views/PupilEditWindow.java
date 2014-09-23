@@ -7,12 +7,13 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.PupilInfo;
 
 import static com.vaadin.ui.Button.ClickListener;
 
@@ -22,25 +23,31 @@ public class PupilEditWindow extends Window {
    Button save = new Button("Saugoti");
    Button close = new Button("Uždaryti");
    FieldGroup editFields;
-   CheckBox dinnerPermitted = new CheckBox("Leidimas valgyti");
+   CheckBox dinnerPermitted = new CheckBox("Leidimas pietauti");
 
-   public PupilEditWindow(Item item, String caption) {
+   public PupilEditWindow(Item item, Image image) {
       editFields = new FieldGroup(item);
-      setCaption(caption);
+      setCaption("Mokinio nustatymai");
       setResizable(false);
-      setWidth("450px");
-      setHeight("450px");
+      setWidth("550px");
+      setHeight("500px");
       VerticalLayout vl = new VerticalLayout();
       vl.setSpacing(true);
       vl.setMargin(true);
 
-      vl.addComponent(new HorizontalLayout(
-            new Label("<b>Kortelės #:</b> " + item.getItemProperty("cardId"), ContentMode.HTML)));
-      vl.addComponent(new HorizontalLayout(
-            new Label("<b>Vardas:</b> " + item.getItemProperty("firstName") + " " + item.getItemProperty("lastName"), ContentMode.HTML)));
+      long cardId = (long) item.getItemProperty("cardId").getValue();
+      vl.addComponent(new Label("<b>Kortelės #:</b> " + cardId, ContentMode.HTML));
 
-      vl.addComponent(new HorizontalLayout(new Label("<b>Gimimo data</b>: " +
-            ((item.getItemProperty("birthDate").getValue() != null) ? item.getItemProperty("birthDate") : "nenurodyta"), ContentMode.HTML)));
+      String name = item.getItemProperty("firstName").getValue() + " " + item.getItemProperty("lastName").getValue();
+      Label nameLbl = new Label("<b>Vardas:</b> " + name, ContentMode.HTML);
+      nameLbl.setWidth("250px");
+      vl.addComponent(nameLbl);
+
+      String date = String.valueOf((item.getItemProperty("birthDate").getValue() != null)
+            ? item.getItemProperty("birthDate").getValue()
+            : "nenurodyta");
+      vl.addComponent(new Label("<b>Gimimo data</b>: " + date, ContentMode.HTML));
+
       vl.addComponent(dinnerPermitted);
       comment.setRows(4);
       vl.addComponent(comment);
@@ -53,7 +60,11 @@ public class PupilEditWindow extends Window {
       vl.addComponent(buttons);
       vl.setComponentAlignment(buttons, Alignment.BOTTOM_CENTER);
 
-      setContent(vl);
+      GridLayout gl = new GridLayout(2, 1);
+      image.setWidth("160px");
+      image.setHeight("200px");
+      gl.addComponents(vl, image);
+      setContent(gl);
       setModal(true);
    }
 
