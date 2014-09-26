@@ -15,5 +15,7 @@ public interface PupilService {
 
    boolean hadDinnerToday(long cardId);
 
+   boolean hadDinnerTodayCached(long cardId);
+
    void saveDinnerEvent(long cardId, String name);
 }

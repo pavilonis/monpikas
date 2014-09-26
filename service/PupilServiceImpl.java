@@ -7,6 +7,7 @@ import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.repositories.DinnerEventRepository;
 import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate4.HibernateTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
@@ -80,6 +81,13 @@ public class PupilServiceImpl implements PupilService {
          return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
                cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
       }
+   }
+
+   @SuppressWarnings("unchecked")
+   @Override
+   public boolean hadDinnerTodayCached(long cardId) {
+      List<Long> todaysDinnerEventsIds = dinnerRepo.todaysDinnerEvents();
+      return todaysDinnerEventsIds.contains(cardId);
    }
 
    @Override
