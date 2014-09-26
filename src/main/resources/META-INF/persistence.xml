@@ -8,7 +8,7 @@
       <properties>
 
          <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
-         <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost:3306/monpikasdb?useUnicode=true"/>
+         <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost:3306/monpikasdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"/>
          <property name="javax.persistence.jdbc.user"     value="monpikasAdmin"/>
          <property name="javax.persistence.jdbc.password" value="monpikaSSpaSS"/>
          <property name="hibernate.connection.useUnicode" value="true"/>

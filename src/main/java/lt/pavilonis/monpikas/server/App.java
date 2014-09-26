@@ -22,8 +22,6 @@ public class App extends UI {
 
    @Override
    protected void init(final VaadinRequest request) {
-      //ViewController controller = (ViewController)WebApplicationContextUtils.getRequiredWebApplicationContext(VaadinServlet.getCurrent().getServletContext()).getBean("viewController");
-      //new ClassPathXmlApplicationContext("../dispatcher-servlet.xml");
       VaadinSession.getCurrent().setErrorHandler(event -> {
          System.out.println("ErrorCause -> " + event.getThrowable().getCause());
          System.out.println("ErrorMsg -> " + event.getThrowable().getMessage());
@@ -31,7 +29,6 @@ public class App extends UI {
          event.getThrowable().printStackTrace();
          Notification.show("Klaida :'(\n ", event.getThrowable().getCause().toString(), Notification.Type.ERROR_MESSAGE);
       });
-      //setContent(new Label("Hello! :)"));
       setContent(controller.createAdbPulilListView());
       setSizeFull();
    }
