@@ -39,6 +39,8 @@ public class DinnerEventListView extends VerticalLayout {
       t.setColumnAlignment("cardId", Table.Align.CENTER);
       t.setColumnCollapsingAllowed(true);
       t.setColumnCollapsed("id", true);
+      t.setSortContainerPropertyId("date");
+      t.sort();
       t.setSelectable(true);
       t.setNullSelectionAllowed(false);
       t.setCacheRate(5);
@@ -50,6 +52,10 @@ public class DinnerEventListView extends VerticalLayout {
                container.addContainerFilter(filterPanel.getFilter());
             }
       );
+      filterPanel.addCancelFilterButtonListener(cancelFilterButtonClicked -> {
+         filterPanel.cleanFields();
+         container.removeAllContainerFilters();
+      });
    }
 
    public void setTableClickListener(ItemClickListener listener) {

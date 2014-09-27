@@ -4,6 +4,7 @@ import com.vaadin.data.Item;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Image;
@@ -54,8 +55,9 @@ public class ViewController {
 
       TabSheet tabs = new TabSheet();
       tabs.setSizeFull();
-      tabs.addTab(pupilsView, "Bendras sąrašas");
-      tabs.addTab(dinnersView, "Pietų žurnalas");
+
+      tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.USER);
+      tabs.addTab(dinnersView, "Pietų žurnalas", FontAwesome.COFFEE);
       return tabs;
    }
 

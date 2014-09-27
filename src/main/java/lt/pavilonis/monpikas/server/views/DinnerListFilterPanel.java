@@ -1,5 +1,7 @@
 package lt.pavilonis.monpikas.server.views;
 
+import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -14,10 +16,13 @@ public class DinnerListFilterPanel extends HorizontalLayout {
    private TextField text = new TextField();
    private CheckBox hadDinnerToday = new CheckBox("Šiandien pietavo");
    private Button filterButton = new Button("Filtruoti");
+   private Button cancelFilterButton = new Button("Atmesti");
 
    public DinnerListFilterPanel() {
-      Label lbl = new Label("Filtras");
-      addComponents(lbl, text, hadDinnerToday, filterButton);
+      Label lbl = new Label(FontAwesome.FILTER.getHtml() + " Filtras", ContentMode.HTML);
+      filterButton.setIcon(FontAwesome.CHECK);
+      cancelFilterButton.setIcon(FontAwesome.TIMES);
+      addComponents(lbl, text, hadDinnerToday, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
       setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
@@ -32,5 +37,14 @@ public class DinnerListFilterPanel extends HorizontalLayout {
 
    public DinnerFilter getFilter() {
       return new DinnerFilter(text.getValue(), hadDinnerToday.getValue());
+   }
+
+   public void addCancelFilterButtonListener(ClickListener listener) {
+      cancelFilterButton.addClickListener(listener);
+   }
+
+   public void cleanFields() {
+      text.setValue("");
+      hadDinnerToday.setValue(false);
    }
 }

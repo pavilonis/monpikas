@@ -1,5 +1,7 @@
 package lt.pavilonis.monpikas.server.views;
 
+import com.vaadin.server.FontAwesome;
+import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
@@ -14,10 +16,13 @@ public class PupilListFilterPanel extends HorizontalLayout {
    private TextField text = new TextField();
    private CheckBox dinnerPermission = new CheckBox("Gali pietauti");
    private Button filterButton = new Button("Filtruoti");
+   private Button cancelFilterButton = new Button("Atmesti");
 
    public PupilListFilterPanel() {
-      Label lbl = new Label("Filtras");
-      addComponents(lbl, text, dinnerPermission, filterButton);
+      Label lbl = new Label(FontAwesome.FILTER.getHtml() + " Filtras", ContentMode.HTML);
+      filterButton.setIcon(FontAwesome.CHECK);
+      cancelFilterButton.setIcon(FontAwesome.TIMES);
+      addComponents(lbl, text, dinnerPermission, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
       setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
@@ -32,6 +37,15 @@ public class PupilListFilterPanel extends HorizontalLayout {
 
    public PupilFilter getFilter() {
       return new PupilFilter(text.getValue(), dinnerPermission.getValue());
+   }
+
+   public void addCancelFilterButtonListener(ClickListener listener) {
+      cancelFilterButton.addClickListener(listener);
+   }
+
+   public void cleanFields() {
+      text.setValue("");
+      dinnerPermission.setValue(false);
    }
 }
 
