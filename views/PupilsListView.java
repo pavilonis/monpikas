@@ -28,6 +28,7 @@ public class PupilsListView extends VerticalLayout {
       t.setVisibleColumns(new String[]{"cardId", "firstName", "lastName", "birthDate", "dinnerPermitted", "comment"});
       t.setColumnWidth("dinnerPermitted", 70);
       t.setColumnWidth("birthDate", 130);
+      t.setColumnWidth("cardId", 90);
       t.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
       t.setColumnAlignment("birthDate", Table.Align.CENTER);
       t.setColumnCollapsingAllowed(true);
@@ -53,6 +54,10 @@ public class PupilsListView extends VerticalLayout {
                container.addContainerFilter(pupilListFilterPanel.getFilter());
             }
       );
+      pupilListFilterPanel.addCancelFilterButtonListener(cancelFilterButtonClicked -> {
+         pupilListFilterPanel.cleanFields();
+         container.removeAllContainerFilters();
+      });
    }
 
    public void setTableClickListener(ItemClickListener listener) {

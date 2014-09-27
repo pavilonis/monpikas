@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.server;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
 import com.vaadin.server.VaadinSession;
@@ -22,6 +23,8 @@ public class App extends UI {
 
    @Override
    protected void init(final VaadinRequest request) {
+      Page.Styles styles = Page.getCurrent().getStyles();
+      styles.add(".valo.v-app, .valo.v-app-loading { font-family: sans-serif; font-weight:500}");
       VaadinSession.getCurrent().setErrorHandler(event -> {
          System.out.println("ErrorCause -> " + event.getThrowable().getCause());
          System.out.println("ErrorMsg -> " + event.getThrowable().getMessage());
