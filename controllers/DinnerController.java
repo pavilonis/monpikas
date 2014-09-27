@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.transaction.Transactional;
 
+@RequestMapping("rest")
 @RestController
 public class DinnerController {
 

@@ -26,6 +26,9 @@ public class PupilServiceImpl implements PupilService {
    @Autowired
    private DinnerEventRepository dinnerRepo;
 
+   @Autowired
+   private DinnerService dinnerService;
+
    public List<AdbPupilDto> getOriginalList() {
       long start = System.nanoTime();
       List<PupilInfo> pupilInfos = pupilRepo.findAll();
@@ -71,16 +74,7 @@ public class PupilServiceImpl implements PupilService {
    @Override
    public boolean hadDinnerToday(long cardId) {
       Date lastDinner = dinnerRepo.lastDinnerEventDate(cardId);
-      if (lastDinner == null) {
-         return false;
-      } else {
-         Calendar cal1 = Calendar.getInstance();
-         Calendar cal2 = Calendar.getInstance();
-         cal1.setTime(lastDinner);
-         cal2.setTime(new Date());
-         return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
-               cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
-      }
+      return lastDinner != null && dinnerService.sameDay(lastDinner, new Date());
    }
 
    @SuppressWarnings("unchecked")
