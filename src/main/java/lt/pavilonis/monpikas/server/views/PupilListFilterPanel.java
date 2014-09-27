@@ -13,17 +13,15 @@ public class PupilListFilterPanel extends HorizontalLayout {
 
    private TextField text = new TextField();
    private CheckBox dinnerPermission = new CheckBox("Gali pietauti");
-   private CheckBox hadDinnerToday = new CheckBox("Šiandien pietavo");
    private Button filterButton = new Button("Filtruoti");
 
    public PupilListFilterPanel() {
       Label lbl = new Label("Filtras");
-      addComponents(lbl, text, dinnerPermission, hadDinnerToday, filterButton);
+      addComponents(lbl, text, dinnerPermission, filterButton);
       setSpacing(true);
       setMargin(true);
       setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
       setComponentAlignment(dinnerPermission, Alignment.MIDDLE_CENTER);
-      setComponentAlignment(hadDinnerToday, Alignment.MIDDLE_CENTER);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
       text.focus();
    }
@@ -33,7 +31,7 @@ public class PupilListFilterPanel extends HorizontalLayout {
    }
 
    public PupilFilter getFilter() {
-      return new PupilFilter(text.getValue(), dinnerPermission.getValue(), hadDinnerToday.getValue());
+      return new PupilFilter(text.getValue(), dinnerPermission.getValue());
    }
 }
 

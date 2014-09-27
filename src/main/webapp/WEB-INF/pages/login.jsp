@@ -45,7 +45,7 @@
    </div>
    <div class="content">
       <div id="form_wrapper" class="form_wrapper">
-         <form class="login active" action="${path}rest/j_spring_security_check" method="POST">
+         <form class="login active" action="${path}j_spring_security_check" method="POST">
             <h3>Prisijungimo forma</h3>
 
 

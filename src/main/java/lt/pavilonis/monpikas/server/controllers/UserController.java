@@ -10,6 +10,7 @@ public class UserController {
 
    @RequestMapping("/login")
    public void showLoginScreen(@RequestParam(defaultValue = "false", required = false) boolean error, Model m) {
+      System.out.println("got request");
       m.addAttribute("error", error);
    }
 }

@@ -19,19 +19,23 @@
       <beans:property name="useReferer" value="true"/>
    </beans:bean>
 
-   <http  use-expressions="true">
-      <form-login login-processing-url="/rest/j_spring_security_check"
-                  login-page="/rest/login"
-                  authentication-failure-url="/rest/login?error=true"
+   <http pattern="/rest/**" use-expressions="true">
+      <http-basic />
+      <intercept-url pattern="/rest/dinnerRequest/**" access="hasRole('ROLE_SCANNER')"/>
+   </http>
+
+   <http use-expressions="true">
+      <form-login login-processing-url="/j_spring_security_check"
+                  login-page="/login"
+                  authentication-failure-url="/login?error=true"
                   default-target-url="/app"
                   always-use-default-target="true"
                   authentication-success-handler-ref="authenticationSuccessHandler" />
-      <http-basic/>
-      <logout logout-url="/rest/j_spring_security_logout" logout-success-url="/rest/login" />
+      <logout logout-url="/j_spring_security_logout" logout-success-url="/login" />
 
+      <intercept-url pattern="/login" access="permitAll"/>
       <intercept-url pattern="/VAADIN/**" access="permitAll"/>
       <intercept-url pattern="/static/**" access="permitAll"/>
-      <intercept-url pattern="/rest/**" access="permitAll"/>
       <intercept-url pattern="/**" access="hasRole('ROLE_EMPLOYEE')"/>
    </http>
 
