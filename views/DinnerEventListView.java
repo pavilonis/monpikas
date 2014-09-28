@@ -3,6 +3,7 @@ package lt.pavilonis.monpikas.server.views;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.DinnerEvent;
@@ -25,11 +26,11 @@ public class DinnerEventListView extends VerticalLayout {
       t.setContainerDataSource(container);
       t.setColumnHeader("id", "ID");
       t.setColumnHeader("name", "Vardas");
-      t.setColumnHeader("cardId", "Kortelės #");
+      t.setColumnHeader("cardId", FontAwesome.BARCODE.getHtml());
       t.setColumnHeader("date", "Data");
-      t.setConverter("date", new StringToDateConverter(){
+      t.setConverter("date", new StringToDateConverter() {
          @Override
-         public DateFormat getFormat(Locale locale){
+         public DateFormat getFormat(Locale locale) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm");
          }
       });

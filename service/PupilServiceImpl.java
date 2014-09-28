@@ -33,12 +33,12 @@ public class PupilServiceImpl implements PupilService {
       long start = System.nanoTime();
       List<PupilInfo> pupilInfos = pupilRepo.findAll();
       long finish = System.nanoTime();
-      System.out.println("got ALL PupilInfo in " + (finish - start) / 1000000 + " milis");
+      System.out.println("got ALL PupilInfo in " + (finish - start) / 1000000 + " millis");
 
       start = System.nanoTime();
       List<AdbPupilDto> pupils = dao.getAllAdbPupils();
       finish = System.nanoTime();
-      System.out.println("got All AdbPupils in " + (finish - start) / 1000000 + " milis");
+      System.out.println("got All AdbPupils in " + (finish - start) / 1000000 + " millis");
 
       start = System.nanoTime();
       pupils.forEach(
@@ -52,7 +52,7 @@ public class PupilServiceImpl implements PupilService {
             )
       );
       finish = System.nanoTime();
-      System.out.println("merged AdbPupils with PupilInfo in " + (finish - start) / 1000000 + " milis");
+      System.out.println("merged AdbPupils with PupilInfo in " + (finish - start) / 1000000 + " millis");
       return pupils;
    }
 

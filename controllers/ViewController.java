@@ -56,7 +56,7 @@ public class ViewController {
       TabSheet tabs = new TabSheet();
       tabs.setSizeFull();
 
-      tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.USER);
+      tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.USERS);
       tabs.addTab(dinnersView, "Pietų žurnalas", FontAwesome.COFFEE);
       return tabs;
    }
@@ -66,7 +66,7 @@ public class ViewController {
          Item item = event.getItem();
          long id = (long) event.getItemId();
          if (event.isDoubleClick()) {
-            PupilEditWindow editView = new PupilEditWindow(item, getImage(id));
+            PupilEditWindow editView = new PupilEditWindow(item, getImage(id), dinnerService.lastDinner(id));
             editView.addCloseButtonListener(closeBtnClick -> editView.close());
             editView.addSaveButtonListener(
                   saveBtnClick -> {
