@@ -27,4 +27,8 @@ public class DinnerService {
       return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
    }
+
+   public Date lastDinner(long cardId) {
+      return dinnerRepo.lastDinnerEventDate(cardId);
+   }
 }

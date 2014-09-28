@@ -2,6 +2,7 @@ package lt.pavilonis.monpikas.server.views;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -15,6 +16,9 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import static com.vaadin.ui.Button.ClickListener;
 
 public class PupilEditWindow extends Window {
@@ -25,7 +29,7 @@ public class PupilEditWindow extends Window {
    FieldGroup editFields;
    CheckBox dinnerPermitted = new CheckBox("Leidimas pietauti");
 
-   public PupilEditWindow(Item item, Image image) {
+   public PupilEditWindow(Item item, Image image, Date lastDinner) {
       editFields = new FieldGroup(item);
       setCaption("Mokinio nustatymai");
       setResizable(false);
@@ -46,7 +50,12 @@ public class PupilEditWindow extends Window {
       String date = String.valueOf((item.getItemProperty("birthDate").getValue() != null)
             ? item.getItemProperty("birthDate").getValue()
             : "nenurodyta");
-      vl.addComponent(new Label("<b>Gimimo data</b>: " + date, ContentMode.HTML));
+      vl.addComponent(new Label("<b>Gimimo data:</b> " + date, ContentMode.HTML));
+
+      String lastDinnerString = lastDinner == null
+            ? "nėra duomenų"
+            : new SimpleDateFormat("yyyy-MM-dd HH:mm").format(lastDinner);
+      vl.addComponent(new Label("<b>Paskutiniai pietus:</b> " + lastDinnerString, ContentMode.HTML));
 
       vl.addComponent(dinnerPermitted);
       comment.setRows(4);

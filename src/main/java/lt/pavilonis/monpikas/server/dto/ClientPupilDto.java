@@ -1,10 +1,16 @@
 package lt.pavilonis.monpikas.server.dto;
 
-public class ClientPupilDto {
+import java.io.Serializable;
 
+public class ClientPupilDto implements Serializable {
+
+   private static final long serialVersionUID = 1L;
    private String name;
    private boolean dinnerPermitted;
    private Boolean hadDinnerToday;
+
+   public ClientPupilDto() {
+   }
 
    public ClientPupilDto(String name, boolean dinnerPermitted, Boolean hadDinnerToday) {
       this.name = name;

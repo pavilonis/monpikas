@@ -23,7 +23,6 @@ public class DinnerController {
    @Autowired
    PupilService pupilService;
 
-   @Transactional
    @ResponseBody
    @RequestMapping("dinnerRequest/{id}")
    public ResponseEntity<ClientPupilDto> dinnerRequest(@PathVariable long id) {
@@ -39,11 +38,11 @@ public class DinnerController {
 
       } else if (!adbDto.isDinnerPermitted()) {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to dinner");
-         return new ResponseEntity<>(new ClientPupilDto(fullName, false, null), HttpStatus.FORBIDDEN);
+         return new ResponseEntity<>(new ClientPupilDto(fullName, false, false), HttpStatus.OK);
 
       } else if (pupilService.hadDinnerToday(adbDto.getCardId())) {
          LOG.info("Pupil with id: " + id + " ALREADY HAD a dinner today");
-         return new ResponseEntity<>(new ClientPupilDto(fullName, true, true), HttpStatus.FORBIDDEN);
+         return new ResponseEntity<>(new ClientPupilDto(fullName, true, true), HttpStatus.OK);
 
       } else {
          LOG.info("Pupil with id: " + id + " is getting a dinner");
