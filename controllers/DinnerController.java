@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.transaction.Transactional;
-
 @RequestMapping("rest")
 @RestController
 public class DinnerController {
@@ -38,16 +36,16 @@ public class DinnerController {
 
       } else if (!adbDto.isDinnerPermitted()) {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to dinner");
-         return new ResponseEntity<>(new ClientPupilDto(fullName, false, false), HttpStatus.OK);
+         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.FORBIDDEN);
 
       } else if (pupilService.hadDinnerToday(adbDto.getCardId())) {
          LOG.info("Pupil with id: " + id + " ALREADY HAD a dinner today");
-         return new ResponseEntity<>(new ClientPupilDto(fullName, true, true), HttpStatus.OK);
+         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.FORBIDDEN);
 
       } else {
          LOG.info("Pupil with id: " + id + " is getting a dinner");
          pupilService.saveDinnerEvent(adbDto.getCardId(), fullName);
-         return new ResponseEntity<>(new ClientPupilDto(fullName, true, false), HttpStatus.OK);
+         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, false), HttpStatus.OK);
       }
    }
 }
