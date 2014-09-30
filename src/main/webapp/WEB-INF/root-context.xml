@@ -1,27 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
        xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/data/jpa
        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
        http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd">
+       http://www.springframework.org/schema/tx/spring-tx.xsd"
+       xmlns:p="http://www.springframework.org/schema/p">
 
-   <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-      <property name="url" value="jdbc:mysql://localhost:3306/monpikasdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"/>
-      <property name="username" value="monpikasAdmin"/>
-      <property name="password" value="monpikaSSpaSS"/>
-   </bean>
-
-   <bean id="adbDataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-      <property name="driverClassName" value="com.mysql.jdbc.Driver"/>
-      <property name="url"
-                value="jdbc:mysql://localhost:3306/adb??autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"/>
-      <property name="username" value="scan1_CLI"/>
-      <property name="password" value="s1"/>
+   <!--jndi config for data access-->
+   <bean id="adbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:comp/env/jdbc/Adb"/>
    </bean>
 
    <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
@@ -43,5 +35,10 @@
 
    <jpa:repositories base-package="lt.pavilonis.monpikas.server.repositories"/>
    <tx:annotation-driven transaction-manager="transactionManager"/>
+
+   <!--jndi config for properties-->
+   <bean id="configPath" class="org.springframework.jndi.JndiObjectFactoryBean"
+         p:jndiName="java:comp/env/props/Monpikas/configPath"
+         p:defaultObject="classpath:app.properties"/>
 
 </beans>

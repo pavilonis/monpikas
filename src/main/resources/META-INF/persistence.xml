@@ -5,16 +5,17 @@
              http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
    <persistence-unit name="defaultPersistenceUnit" transaction-type="RESOURCE_LOCAL">
       <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+      <non-jta-data-source>java:/comp/env/jdbc/Monpikas</non-jta-data-source>
       <properties>
 
-         <property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>
-         <property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost:3306/monpikasdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"/>
-         <property name="javax.persistence.jdbc.user"     value="monpikasAdmin"/>
-         <property name="javax.persistence.jdbc.password" value="monpikaSSpaSS"/>
+         <!--<property name="javax.persistence.jdbc.driver"   value="com.mysql.jdbc.Driver"/>-->
+         <!--<property name="javax.persistence.jdbc.url"      value="jdbc:mysql://localhost:3306/testdb?autoReconnect=true&amp;useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull"/>-->
+         <!--<property name="javax.persistence.jdbc.user"     value="testuser"/>-->
+         <!--<property name="javax.persistence.jdbc.password" value="testuserpass"/>-->
          <property name="hibernate.connection.useUnicode" value="true"/>
          <property name="hibernate.connection.characterEncoding" value="UTF-8"/>
-         <property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect"/>
-         <property name="hibernate.show_sql" value="false"/>
+         <property name="hibernate.dialect" value="${monpikas.hibernate.dialect}"/>
+         <property name="hibernate.show_sql" value="${monpikas.hibernate.show_sql}"/>
          <property name="hibernate.hbm2ddl.auto" value="none"/>
 
          	        <!--<property name="hibernate.connection.provider_class" value="org.hibernate.connection.C3P0ConnectionProvider" />-->
