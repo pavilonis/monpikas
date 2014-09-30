@@ -138,6 +138,11 @@
          <artifactId>hibernate-jpa-2.1-api</artifactId>
          <version>1.0.0.Final</version>
       </dependency>
+      <dependency>
+         <groupId>org.hibernate</groupId>
+         <artifactId>hibernate-c3p0</artifactId>
+         <version>${hibernate.version}</version>
+      </dependency>
 
       <dependency>
          <groupId>mysql</groupId>
@@ -180,6 +185,7 @@
          <artifactId>jackson-annotations</artifactId>
          <version>2.4.2</version>
       </dependency>
+
 
       <!-- Spring SECURITY -->
       <dependency>

@@ -2,7 +2,6 @@ package lt.pavilonis.monpikas.server.views;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -34,7 +33,7 @@ public class PupilEditWindow extends Window {
       setCaption("Mokinio nustatymai");
       setResizable(false);
       setWidth("550px");
-      setHeight("500px");
+      setHeight("530px");
       VerticalLayout vl = new VerticalLayout();
       vl.setSpacing(true);
       vl.setMargin(true);
@@ -55,7 +54,7 @@ public class PupilEditWindow extends Window {
       String lastDinnerString = lastDinner == null
             ? "nėra duomenų"
             : new SimpleDateFormat("yyyy-MM-dd HH:mm").format(lastDinner);
-      vl.addComponent(new Label("<b>Paskutiniai pietus:</b> " + lastDinnerString, ContentMode.HTML));
+      vl.addComponent(new Label("<b>Paskut. pietus:</b> " + lastDinnerString, ContentMode.HTML));
 
       vl.addComponent(dinnerPermitted);
       comment.setRows(4);

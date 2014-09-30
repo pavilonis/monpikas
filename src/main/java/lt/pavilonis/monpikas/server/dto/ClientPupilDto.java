@@ -5,22 +5,35 @@ import java.io.Serializable;
 public class ClientPupilDto implements Serializable {
 
    private static final long serialVersionUID = 1L;
+   private String cardId;
    private String name;
    private boolean dinnerPermitted;
-   private Boolean hadDinnerToday;
+   private boolean hadDinnerToday;
 
    public ClientPupilDto() {
    }
 
-   public ClientPupilDto(String name, boolean dinnerPermitted, Boolean hadDinnerToday) {
+   public ClientPupilDto(String cardId, String name, boolean dinnerPermitted, Boolean hadDinnerToday) {
+      this.cardId = cardId;
       this.name = name;
       this.dinnerPermitted = dinnerPermitted;
       this.hadDinnerToday = hadDinnerToday;
    }
 
-   @Override
-   public String toString() {
-      return "ClientPupilDto: " + name + ", DinnerPerm: " + dinnerPermitted + ", Had Dinner Today: " + hadDinnerToday;
+   public String getCardId() {
+      return cardId;
+   }
+
+   public void setCardId(String cardId) {
+      this.cardId = cardId;
+   }
+
+   public Boolean getHadDinnerToday() {
+      return hadDinnerToday;
+   }
+
+   public void setHadDinnerToday(Boolean hadDinnerToday) {
+      this.hadDinnerToday = hadDinnerToday;
    }
 
    public String getName() {
