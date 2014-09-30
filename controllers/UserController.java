@@ -13,4 +13,9 @@ public class UserController {
       System.out.println("got request");
       m.addAttribute("error", error);
    }
+
+   @RequestMapping()
+   public String redirect() {
+      return "redirect:app";
+   }
 }
