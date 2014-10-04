@@ -10,16 +10,19 @@ public class PupilInfo {
    public PupilInfo() {
    }
 
-   public PupilInfo(long cardId, boolean dinnerPermitted, String comment) {
+   public PupilInfo(long cardId, boolean breakfastPermitted, boolean dinnerPermitted, String comment) {
       this.cardId = cardId;
       this.dinnerPermitted = dinnerPermitted;
       this.comment = comment;
+      this.breakfastPermitted = breakfastPermitted;
    }
 
    @Id
    private long cardId;
 
    private boolean dinnerPermitted;
+
+   private boolean breakfastPermitted;
 
    @Lob
    private String comment;
@@ -46,5 +49,13 @@ public class PupilInfo {
 
    public void setComment(String comment) {
       this.comment = comment;
+   }
+
+   public boolean isBreakfastPermitted() {
+      return breakfastPermitted;
+   }
+
+   public void setBreakfastPermitted(boolean breakfastPermitted) {
+      this.breakfastPermitted = breakfastPermitted;
    }
 }

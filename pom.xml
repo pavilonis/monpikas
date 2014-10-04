@@ -162,14 +162,6 @@
          <!--</exclusions>-->
       <!--</dependency>-->
 
-      <!--Jackson JSON Mapper -->
-      <!--<dependency>-->
-         <!--<groupId>org.codehaus.jackson</groupId>-->
-         <!--<artifactId>jackson-mapper-asl</artifactId>-->
-         <!--<version>1.9.13</version>-->
-      <!--</dependency>-->
-
-
       <dependency>
          <groupId>com.fasterxml.jackson.core</groupId>
          <artifactId>jackson-core</artifactId>
@@ -186,7 +178,6 @@
          <version>2.4.2</version>
       </dependency>
 
-
       <!-- Spring SECURITY -->
       <dependency>
          <groupId>org.springframework.security</groupId>
@@ -202,7 +193,6 @@
          <groupId>org.springframework.security</groupId>
          <artifactId>spring-security-config</artifactId>
          <version>${spring.security.version}</version>
-
       </dependency>
       <dependency>
          <groupId>org.springframework.security</groupId>
@@ -227,8 +217,6 @@
          <scope>provided</scope>
       </dependency>
    </dependencies>
-
-
 
    <build>
       <plugins>

@@ -2,17 +2,17 @@ package lt.pavilonis.monpikas.server.views;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
-import lt.pavilonis.monpikas.server.service.DinnerService;
+import lt.pavilonis.monpikas.server.service.MealService;
 import ru.xpoft.vaadin.SpringApplicationContext;
 
 import java.util.Date;
 
-public class DinnerFilter implements Filter {
+public class MealEventFilter implements Filter {
    private String text;
    private boolean hadDinnerToday;
-   private DinnerService service = SpringApplicationContext.getApplicationContext().getBean(DinnerService.class);
+   private MealService service = SpringApplicationContext.getApplicationContext().getBean(MealService.class);
 
-   public DinnerFilter(String text, boolean hadDinnerToday) {
+   public MealEventFilter(String text, boolean hadDinnerToday) {
       this.text = text.toLowerCase();
       this.hadDinnerToday = hadDinnerToday;
    }
