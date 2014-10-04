@@ -6,19 +6,19 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.DinnerEvent;
+import lt.pavilonis.monpikas.server.domain.MealEvent;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class DinnerEventListView extends VerticalLayout {
+public class MealEventListView extends VerticalLayout {
 
    private Table t = new Table();
-   BeanContainer<Long, DinnerEvent> container = new BeanContainer<>(DinnerEvent.class);
-   DinnerListFilterPanel filterPanel = new DinnerListFilterPanel();
+   BeanContainer<Long, MealEvent> container = new BeanContainer<>(MealEvent.class);
+   MealEventListFilterPanel filterPanel = new MealEventListFilterPanel();
 
-   public DinnerEventListView() {
+   public MealEventListView() {
       setSizeFull();
       setSpacing(true);
       container.setBeanIdProperty("id");
@@ -26,7 +26,7 @@ public class DinnerEventListView extends VerticalLayout {
       t.setContainerDataSource(container);
       t.setColumnHeader("id", "ID");
       t.setColumnHeader("name", "Vardas");
-      t.setColumnHeader("cardId", FontAwesome.BARCODE.getHtml());
+      t.setColumnHeader("cardId", "Kortelės ID");
       t.setColumnHeader("date", "Data");
       t.setConverter("date", new StringToDateConverter() {
          @Override
@@ -35,7 +35,7 @@ public class DinnerEventListView extends VerticalLayout {
          }
       });
       t.setVisibleColumns(new String[]{"id", "cardId", "name", "date"});
-      t.setColumnWidth("cardId", 90);
+      t.setColumnWidth("cardId", 100);
       t.setColumnWidth("birthDate", 130);
       t.setColumnAlignment("cardId", Table.Align.CENTER);
       t.setColumnCollapsingAllowed(true);
@@ -63,11 +63,11 @@ public class DinnerEventListView extends VerticalLayout {
       t.addItemClickListener(listener);
    }
 
-   public BeanContainer<Long, DinnerEvent> getContainer() {
+   public BeanContainer<Long, MealEvent> getContainer() {
       return container;
    }
 
-   public DinnerListFilterPanel getFilterPanel() {
+   public MealEventListFilterPanel getFilterPanel() {
       return filterPanel;
    }
 

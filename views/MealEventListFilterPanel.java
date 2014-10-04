@@ -11,14 +11,14 @@ import com.vaadin.ui.TextField;
 
 import static com.vaadin.ui.Button.ClickListener;
 
-public class DinnerListFilterPanel extends HorizontalLayout {
+public class MealEventListFilterPanel extends HorizontalLayout {
 
    private TextField text = new TextField();
    private CheckBox hadDinnerToday = new CheckBox("Šiandien pietavo");
    private Button filterButton = new Button("Filtruoti");
    private Button cancelFilterButton = new Button("Atmesti");
 
-   public DinnerListFilterPanel() {
+   public MealEventListFilterPanel() {
       Label lbl = new Label(FontAwesome.FILTER.getHtml() + " Filtras", ContentMode.HTML);
       filterButton.setIcon(FontAwesome.CHECK);
       cancelFilterButton.setIcon(FontAwesome.TIMES);
@@ -35,8 +35,8 @@ public class DinnerListFilterPanel extends HorizontalLayout {
       filterButton.addClickListener(listener);
    }
 
-   public DinnerFilter getFilter() {
-      return new DinnerFilter(text.getValue(), hadDinnerToday.getValue());
+   public MealEventFilter getFilter() {
+      return new MealEventFilter(text.getValue(), hadDinnerToday.getValue());
    }
 
    public void addCancelFilterButtonListener(ClickListener listener) {

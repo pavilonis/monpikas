@@ -6,19 +6,16 @@ import com.vaadin.data.Item;
 public class PupilFilter implements Filter {
    private String text;
    private boolean dinnerPermitted;
-   private boolean hadDinnerToday;
+   private boolean breakfastPermitted;
 
-   public PupilFilter(String text, Boolean dinnerPermitted) {
+   public PupilFilter(String text, boolean breakfastPermitted, boolean dinnerPermitted) {
       this.text = text.toLowerCase();
+      this.breakfastPermitted = breakfastPermitted;
       this.dinnerPermitted = dinnerPermitted;
    }
 
    public String getText() {
       return text;
-   }
-
-   public boolean isDinnerPermitted() {
-      return dinnerPermitted;
    }
 
    @Override
@@ -27,7 +24,10 @@ public class PupilFilter implements Filter {
             item.getItemProperty("lastName").getValue().toString().toLowerCase() +
             (item.getItemProperty("birthDate").getValue() == null ? "" : item.getItemProperty("birthDate").getValue().toString());
       boolean itemDinnerPermission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
-      return stack.contains(text) && (!dinnerPermitted || itemDinnerPermission);
+      boolean itemBreakfastPermission = (boolean) item.getItemProperty("breakfastPermitted").getValue();
+      return stack.contains(text) &&
+            (!dinnerPermitted || itemDinnerPermission) &&
+            (!breakfastPermitted || itemBreakfastPermission);
    }
 
    @Override

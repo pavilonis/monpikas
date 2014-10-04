@@ -12,9 +12,9 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
-import lt.pavilonis.monpikas.server.service.DinnerService;
+import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PupilService;
-import lt.pavilonis.monpikas.server.views.DinnerEventListView;
+import lt.pavilonis.monpikas.server.views.MealEventListView;
 import lt.pavilonis.monpikas.server.views.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.PupilsListView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,21 +43,21 @@ public class ViewController {
    private PupilService pupilService;
 
    @Autowired
-   private DinnerService dinnerService;
+   private MealService mealService;
 
    public TabSheet createAdbPulilListView() {
       PupilsListView pupilsView = new PupilsListView();
-      pupilsView.getContainer().addAll(pupilService.getOriginalList());
+      pupilsView.getContainer().addAll(pupilService.getMergedList());
       pupilsView.setTableClickListener(newPulilListTableClickListener());
 
-      DinnerEventListView dinnersView = new DinnerEventListView();
-      dinnersView.getContainer().addAll(dinnerService.getDinnerEventList());
+      MealEventListView dinnersView = new MealEventListView();
+      dinnersView.getContainer().addAll(mealService.getDinnerEventList());
 
       TabSheet tabs = new TabSheet();
       tabs.setSizeFull();
 
       tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.USERS);
-      tabs.addTab(dinnersView, "Pietų žurnalas", FontAwesome.COFFEE);
+      tabs.addTab(dinnersView, "Maitinimosi žurnalas", FontAwesome.COFFEE);
       return tabs;
    }
 
@@ -66,14 +66,15 @@ public class ViewController {
          Item item = event.getItem();
          long id = (long) event.getItemId();
          if (event.isDoubleClick()) {
-            PupilEditWindow editView = new PupilEditWindow(item, getImage(id), dinnerService.lastDinner(id));
+            PupilEditWindow editView = new PupilEditWindow(item, getImage(id), mealService.lastMealEvent(id));
             editView.addCloseButtonListener(closeBtnClick -> editView.close());
             editView.addSaveButtonListener(
                   saveBtnClick -> {
                      editView.commit();
-                     boolean permission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
+                     boolean dinnerPermission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
+                     boolean breakfastPermission = (boolean) item.getItemProperty("breakfastPermitted").getValue();
                      String comment = (String) item.getItemProperty("comment").getValue();
-                     pupilService.saveOrUpdate(new PupilInfo(id, permission, comment));
+                     pupilService.saveOrUpdate(new PupilInfo(id, breakfastPermission, dinnerPermission, comment));
                      editView.close();
                      Notification.show("Išsaugota", TRAY_NOTIFICATION);
                   });

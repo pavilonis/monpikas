@@ -7,7 +7,11 @@ import java.util.List;
 
 public interface PupilService {
 
-   List<AdbPupilDto> getOriginalList();
+   /**
+    *
+    * @return List of Pupils from ADB merged with local Pupil information (PupilInfo)
+    */
+   List<AdbPupilDto> getMergedList();
 
    AdbPupilDto getByCardId(long cardId);
 
@@ -15,7 +19,5 @@ public interface PupilService {
 
    boolean hadDinnerToday(long cardId);
 
-   boolean hadDinnerTodayCached(long cardId);
-
-   void saveDinnerEvent(long cardId, String name);
+   boolean reachedTodaysMealLimit(AdbPupilDto dto);
 }

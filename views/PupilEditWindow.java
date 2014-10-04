@@ -26,14 +26,15 @@ public class PupilEditWindow extends Window {
    Button save = new Button("Saugoti");
    Button close = new Button("Uždaryti");
    FieldGroup editFields;
-   CheckBox dinnerPermitted = new CheckBox("Leidimas pietauti");
+   CheckBox breakfastPermitted = new CheckBox("Pusryčiai");
+   CheckBox dinnerPermitted = new CheckBox("Pietus");
 
    public PupilEditWindow(Item item, Image image, Date lastDinner) {
       editFields = new FieldGroup(item);
       setCaption("Mokinio nustatymai");
       setResizable(false);
       setWidth("550px");
-      setHeight("530px");
+      setHeight("580px");
       VerticalLayout vl = new VerticalLayout();
       vl.setSpacing(true);
       vl.setMargin(true);
@@ -54,11 +55,13 @@ public class PupilEditWindow extends Window {
       String lastDinnerString = lastDinner == null
             ? "nėra duomenų"
             : new SimpleDateFormat("yyyy-MM-dd HH:mm").format(lastDinner);
-      vl.addComponent(new Label("<b>Paskut. pietus:</b> " + lastDinnerString, ContentMode.HTML));
+      vl.addComponent(new Label("<b>Paskutinis<br/>maitinimasis:</b> " + lastDinnerString, ContentMode.HTML));
 
+      vl.addComponent(breakfastPermitted);
       vl.addComponent(dinnerPermitted);
       comment.setRows(4);
       vl.addComponent(comment);
+      editFields.bind(breakfastPermitted, "breakfastPermitted");
       editFields.bind(dinnerPermitted, "dinnerPermitted");
       editFields.bind(comment, "comment");
 

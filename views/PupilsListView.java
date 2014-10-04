@@ -24,29 +24,25 @@ public class PupilsListView extends VerticalLayout {
       t.setColumnHeader("lastName", "Pavarde");
       t.setColumnHeader("birthDate", "Gimimo data");
       t.setColumnHeader("dinnerPermitted", "Pietus");
+      t.setColumnHeader("breakfastPermitted", "Pusryčiai");
       t.setColumnHeader("comment", "Komentaras");
-      t.setVisibleColumns(new String[]{"cardId", "firstName", "lastName", "birthDate", "dinnerPermitted", "comment"});
-      t.setColumnWidth("dinnerPermitted", 70);
+      t.setVisibleColumns(
+            new String[]{"cardId", "firstName", "lastName", "birthDate", "breakfastPermitted", "dinnerPermitted", "comment"}
+      );
+      t.setColumnWidth("dinnerPermitted", 85);
+      t.setColumnWidth("breakfastPermitted", 85);
+      t.setConverter("dinnerPermitted", newStringToBoolConverter());
+      t.setConverter("breakfastPermitted", newStringToBoolConverter());
       t.setColumnWidth("birthDate", 130);
       t.setColumnWidth("cardId", 90);
       t.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
+      t.setColumnAlignment("breakfastPermitted", Table.Align.CENTER);
       t.setColumnAlignment("birthDate", Table.Align.CENTER);
       t.setColumnCollapsingAllowed(true);
       t.setColumnCollapsed("cardId", true);
       t.setSelectable(true);
       t.setNullSelectionAllowed(false);
       t.setCacheRate(5);
-      t.setConverter("dinnerPermitted", new StringToBooleanConverter() {
-         @Override
-         protected String getTrueString() {
-            return "✔";
-         }
-
-         @Override
-         protected String getFalseString() {
-            return "";
-         }
-      });
       addComponents(pupilListFilterPanel, t);
       setExpandRatio(t, 1f);
       pupilListFilterPanel.addFilterButtonListener(filterButtonClicked -> {
@@ -72,5 +68,17 @@ public class PupilsListView extends VerticalLayout {
       return pupilListFilterPanel;
    }
 
+   private StringToBooleanConverter newStringToBoolConverter() {
+      return new StringToBooleanConverter() {
+         @Override
+         protected String getTrueString() {
+            return "✔";
+         }
 
+         @Override
+         protected String getFalseString() {
+            return "";
+         }
+      };
+   }
 }

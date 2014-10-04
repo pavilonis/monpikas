@@ -2,6 +2,7 @@ package lt.pavilonis.monpikas.server.controllers;
 
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
+import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +15,20 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("rest")
 @RestController
-public class DinnerController {
+public class MealController {
 
-   private static final Logger LOG = Logger.getLogger(DinnerController.class.getName());
+   private static final Logger LOG = Logger.getLogger(MealController.class.getName());
 
    @Autowired
    PupilService pupilService;
 
+   @Autowired
+   MealService mealService;
+
    @ResponseBody
-   @RequestMapping("dinnerRequest/{id}")
+   @RequestMapping("mealRequest/{id}")
    public ResponseEntity<ClientPupilDto> dinnerRequest(@PathVariable long id) {
-      LOG.info("Pupil with id: " + id + " requested a dinner");
+      LOG.info("Pupil with id: " + id + " requested a meal");
       AdbPupilDto adbDto = pupilService.getByCardId(id);
       boolean notFound = adbDto == null;
 
@@ -35,16 +39,16 @@ public class DinnerController {
          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 
       } else if (!adbDto.isDinnerPermitted()) {
-         LOG.info("Pupil with id: " + id + " has NO PERMISSION to dinner");
+         LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
          return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.FORBIDDEN);
 
-      } else if (pupilService.hadDinnerToday(adbDto.getCardId())) {
-         LOG.info("Pupil with id: " + id + " ALREADY HAD a dinner today");
+      } else if (pupilService.reachedTodaysMealLimit(adbDto)) {
+         LOG.info("Pupil with id: " + id + " reached meal limit today");
          return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.FORBIDDEN);
 
       } else {
-         LOG.info("Pupil with id: " + id + " is getting a dinner");
-         pupilService.saveDinnerEvent(adbDto.getCardId(), fullName);
+         LOG.info("Pupil with id: " + id + " is getting the meal");
+         mealService.saveMealEvent(adbDto.getCardId(), fullName);
          return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, false), HttpStatus.OK);
       }
    }

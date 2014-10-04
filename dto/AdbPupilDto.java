@@ -12,6 +12,7 @@ public class AdbPupilDto {
    private String lastName;
    private LocalDate birthDate;
    private boolean dinnerPermitted;
+   private boolean breakfastPermitted;
    private String comment;
 
    public long getCardId() {
@@ -60,5 +61,20 @@ public class AdbPupilDto {
 
    public void setComment(String comment) {
       this.comment = comment;
+   }
+
+   public boolean isBreakfastPermitted() {
+      return breakfastPermitted;
+   }
+
+   public void setBreakfastPermitted(boolean breakfastPermitted) {
+      this.breakfastPermitted = breakfastPermitted;
+   }
+
+   public long mealsPermitted() {
+      long meals = 0;
+      if (isBreakfastPermitted()) meals++;
+      if (isDinnerPermitted()) meals++;
+      return meals;
    }
 }

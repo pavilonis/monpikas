@@ -14,19 +14,21 @@ import static com.vaadin.ui.Button.ClickListener;
 public class PupilListFilterPanel extends HorizontalLayout {
 
    private TextField text = new TextField();
-   private CheckBox dinnerPermission = new CheckBox("Gali pietauti");
+   private CheckBox breakfastPermission = new CheckBox("Pusryčiai");
+   private CheckBox dinnerPermission = new CheckBox("Pietus");
    private Button filterButton = new Button("Filtruoti");
    private Button cancelFilterButton = new Button("Atmesti");
 
    public PupilListFilterPanel() {
-      Label lbl = new Label(FontAwesome.FILTER.getHtml() + " Filtras", ContentMode.HTML);
+      Label lbl = new Label(FontAwesome.FILTER.getHtml(), ContentMode.HTML);
       filterButton.setIcon(FontAwesome.CHECK);
       cancelFilterButton.setIcon(FontAwesome.TIMES);
-      addComponents(lbl, text, dinnerPermission, filterButton, cancelFilterButton);
+      addComponents(lbl, text, breakfastPermission, dinnerPermission, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
       setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
       setComponentAlignment(dinnerPermission, Alignment.MIDDLE_CENTER);
+      setComponentAlignment(breakfastPermission, Alignment.MIDDLE_CENTER);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
       text.focus();
    }
@@ -36,7 +38,7 @@ public class PupilListFilterPanel extends HorizontalLayout {
    }
 
    public PupilFilter getFilter() {
-      return new PupilFilter(text.getValue(), dinnerPermission.getValue());
+      return new PupilFilter(text.getValue(), breakfastPermission.getValue(), dinnerPermission.getValue());
    }
 
    public void addCancelFilterButtonListener(ClickListener listener) {
@@ -46,6 +48,7 @@ public class PupilListFilterPanel extends HorizontalLayout {
    public void cleanFields() {
       text.setValue("");
       dinnerPermission.setValue(false);
+      breakfastPermission.setValue(false);
    }
 }
 

@@ -6,7 +6,7 @@ import javax.persistence.Id;
 import java.util.Date;
 
 @Entity
-public class DinnerEvent {
+public class MealEvent {
 
    @Id
    @GeneratedValue
@@ -18,10 +18,10 @@ public class DinnerEvent {
 
    private Date date;
 
-   public DinnerEvent() {
+   public MealEvent() {
    }
 
-   public DinnerEvent(long cardId, String name, Date date) {
+   public MealEvent(long cardId, String name, Date date) {
       this.cardId = cardId;
       this.name = name;
       this.date = date;
