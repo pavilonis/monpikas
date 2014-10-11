@@ -13,40 +13,39 @@ import java.util.Locale;
 
 public class MealEventListView extends VerticalLayout {
 
-   private Table t = new Table();
+   private Table table = new Table();
    BeanContainer<Long, MealEvent> container = new BeanContainer<>(MealEvent.class);
    MealEventListFilterPanel filterPanel = new MealEventListFilterPanel();
+   MealEventListControlPanel controlPanel = new MealEventListControlPanel();
 
    public MealEventListView() {
       setSizeFull();
-      setSpacing(true);
       container.setBeanIdProperty("id");
-      t.setSizeFull();
-      t.setContainerDataSource(container);
-      t.setColumnHeader("id", "ID");
-      t.setColumnHeader("name", "Vardas");
-      t.setColumnHeader("cardId", "Kortelės ID");
-      t.setColumnHeader("date", "Data");
-      t.setConverter("date", new StringToDateConverter() {
+      table.setSizeFull();
+      table.setContainerDataSource(container);
+      container.sort(new Object[] {"date"}, new boolean[] {true});
+      table.setColumnHeader("id", "ID");
+      table.setColumnHeader("name", "Vardas");
+      table.setColumnHeader("cardId", "Kortelės ID");
+      table.setColumnHeader("date", "Data");
+      table.setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm");
          }
       });
-      t.setVisibleColumns(new String[]{"id", "cardId", "name", "date"});
-      t.setColumnWidth("cardId", 100);
-      t.setColumnWidth("birthDate", 130);
-      t.setColumnAlignment("cardId", Table.Align.CENTER);
-      t.setColumnCollapsingAllowed(true);
-      t.setColumnCollapsed("id", true);
-      t.setSortContainerPropertyId("date");
-      t.sort();
-      t.setSelectable(true);
-      t.setNullSelectionAllowed(false);
-      t.setCacheRate(5);
+      table.setVisibleColumns(new String[]{"id", "cardId", "name", "date"});
+      table.setColumnWidth("cardId", 100);
+      table.setColumnWidth("birthDate", 130);
+      table.setColumnAlignment("cardId", Table.Align.CENTER);
+      table.setColumnCollapsingAllowed(true);
+      table.setColumnCollapsed("id", true);
+      table.setSelectable(true);
+      table.setNullSelectionAllowed(false);
+      table.setCacheRate(5);
 
-      addComponents(filterPanel, t);
-      setExpandRatio(t, 1f);
+      addComponents(filterPanel, table, controlPanel);
+      setExpandRatio(table, 1f);
       filterPanel.addFilterButtonListener(filterButtonClicked -> {
                container.removeAllContainerFilters();
                container.addContainerFilter(filterPanel.getFilter());
@@ -59,7 +58,7 @@ public class MealEventListView extends VerticalLayout {
    }
 
    public void setTableClickListener(ItemClickListener listener) {
-      t.addItemClickListener(listener);
+      table.addItemClickListener(listener);
    }
 
    public BeanContainer<Long, MealEvent> getContainer() {
@@ -70,5 +69,11 @@ public class MealEventListView extends VerticalLayout {
       return filterPanel;
    }
 
+   public MealEventListControlPanel getControlPanel() {
+      return controlPanel;
+   }
 
+   public Table getTable() {
+      return table;
+   }
 }

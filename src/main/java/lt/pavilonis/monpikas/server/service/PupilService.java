@@ -10,11 +10,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 @Service
-public class PupilService implements PupilService {
+public class PupilService {
 
    private static final Logger LOG = Logger.getLogger(PupilService.class.getName());
 
@@ -25,14 +26,14 @@ public class PupilService implements PupilService {
    private PupilInfoRepository pupilRepository;
 
    @Autowired
-   private PupilService pupilService;
-
-   @Autowired
    private MealEventRepository mealRepository;
 
    @Autowired
    private MealService mealService;
 
+   /**
+    * @return List of Pupils from ADB merged with local Pupil information (PupilInfo)
+    */
    public List<AdbPupilDto> getMergedList() {
       return merge(
             getPupilInfos(),
@@ -100,31 +101,38 @@ public class PupilService implements PupilService {
       return dto;
    }
 
-   @Override
    public void saveOrUpdate(PupilInfo info) {
       pupilRepository.save(info);
    }
 
-   @Override
    public boolean hadDinnerToday(long cardId) {
       Date lastDinner = mealRepository.lastMealEventDate(cardId);
       return lastDinner != null && mealService.sameDay(lastDinner, new Date());
    }
 
-   @Override
    public boolean reachedMealLimit(AdbPupilDto dto) {
-      return reachedMealLimit(dto, new Date());
+      return reachedMealLimit(dto, null);
    }
 
-   @Override
    public boolean reachedMealLimit(AdbPupilDto dto, Date date) {
-      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(dto.getCardId(), date);
+      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(dto.getCardId(), midnight(date));
       return todaysMeals >= dto.mealsPermitted();
    }
 
-   @Override
    public boolean reachedMealLimit(long cardId, Date date) {
-      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(cardId, date);
-      return todaysMeals >= pupilService.getByCardId(cardId).mealsPermitted();
+      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(cardId, midnight(date));
+      return todaysMeals >= getByCardId(cardId).mealsPermitted();
+   }
+
+   private Date midnight(Date date) {
+      Calendar c = Calendar.getInstance();
+      if (!(date == null)) {
+         c.setTime(date);
+      }
+      c.set(Calendar.HOUR_OF_DAY, 0);
+      c.set(Calendar.MINUTE, 0);
+      c.set(Calendar.SECOND, 0);
+      c.set(Calendar.MILLISECOND, 0);
+      return c.getTime();
    }
 }

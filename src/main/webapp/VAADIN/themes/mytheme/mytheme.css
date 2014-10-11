@@ -1,0 +1,6 @@
+/*this does not work, just a try*/
+@import "../valo/legacy-styles.css";
+@import "../valo/styles.css";
+.monpikasControlPanel{
+   margin: 10px;
+}

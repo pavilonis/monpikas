@@ -15,17 +15,13 @@ public class MealEventListFilterPanel extends HorizontalLayout {
 
    private TextField text = new TextField();
    private CheckBox hadDinnerToday = new CheckBox("Šiandien pietavo");
-   private Button filterButton = new Button("Filtruoti");
-   private Button cancelFilterButton = new Button("Atmesti");
+   private Button filterButton = new Button("Filtruoti", FontAwesome.FILTER);
+   private Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
 
    public MealEventListFilterPanel() {
-      Label lbl = new Label(FontAwesome.FILTER.getHtml() + " Filtras", ContentMode.HTML);
-      filterButton.setIcon(FontAwesome.CHECK);
-      cancelFilterButton.setIcon(FontAwesome.TIMES);
-      addComponents(lbl, text, hadDinnerToday, filterButton, cancelFilterButton);
+      addComponents(text, hadDinnerToday, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
-      setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
       setComponentAlignment(hadDinnerToday, Alignment.MIDDLE_CENTER);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
       text.focus();

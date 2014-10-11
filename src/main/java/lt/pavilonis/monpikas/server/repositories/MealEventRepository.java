@@ -16,8 +16,8 @@ public interface MealEventRepository extends JpaRepository<MealEvent, Long> {
    @Query("select m.cardId from MealEvent m where m.date > CURDATE()")
    List<Long> todaysMealEvents();
 
-   @Query("select count(m.cardId) from MealEvent m where m.date > CURDATE() and m.cardId = :cardId")
-   Long numOfTodaysMealEventsByCardId(@Param("cardId") long cardId);
+   @Query("select count(m.cardId) from MealEvent m where m.date > :checkDate and m.cardId = :cardId")
+   Long numOfTodaysMealEventsByCardId(@Param("cardId") long cardId, @Param("checkDate") Date checkDate);
 
    @Query("select m from MealEvent m where m.date > :minDate")
    List<MealEvent> findAfter(@Param("minDate") Date minDate);

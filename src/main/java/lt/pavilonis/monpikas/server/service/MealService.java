@@ -35,6 +35,18 @@ public class MealService {
    }
 
    public void saveMealEvent(long cardId, String name) {
-      mealRepository.save(new MealEvent(cardId, name, new Date()));
+      saveMealEvent(cardId, name, null);
+   }
+
+   public void saveMealEvent(long cardId, String name, Date date) {
+      saveMealEvent(new MealEvent(cardId, name, date == null ? new Date() : date));
+   }
+
+   public void saveMealEvent(MealEvent m) {
+      mealRepository.save(m);
+   }
+
+   public void deleteMealEvent(long id) {
+      mealRepository.delete(id);
    }
 }

@@ -42,7 +42,7 @@ public class MealRestController {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
          return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.OK);
 
-      } else if (pupilService.reachedTodaysMealLimit(adbDto)) {
+      } else if (pupilService.reachedMealLimit(adbDto)) {
          LOG.info("Pupil with id: " + id + " reached meal limit today");
          return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.OK);
 

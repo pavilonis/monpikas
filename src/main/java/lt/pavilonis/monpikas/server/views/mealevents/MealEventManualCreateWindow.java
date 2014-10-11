@@ -1,81 +1,70 @@
 package lt.pavilonis.monpikas.server.views.mealevents;
 
-import com.vaadin.data.Item;
-import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.util.BeanContainer;
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Image;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.TextArea;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.views.converters.StringToBooleanCellConverter;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.vaadin.ui.Button.ClickListener;
 
 public class MealEventManualCreateWindow extends Window {
 
-   TextArea comment = new TextArea("Komentaras");
-   Button save = new Button("Saugoti");
-   Button close = new Button("Uždaryti");
-   FieldGroup editFields;
-   CheckBox breakfastPermitted = new CheckBox("Pusryčiai");
-   CheckBox dinnerPermitted = new CheckBox("Pietus");
+   Button save = new Button("Saugoti", FontAwesome.SAVE);
+   Button close = new Button("Uždaryti", FontAwesome.TIMES);
+   BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
+   Table table = new Table("Pasirinkite mokinį");
+   DateField dateField = new DateField("Pasirinkite data: ", new Date());
 
-   public MealEventManualCreateWindow(Item item, Image image, Date lastDinner) {
-      editFields = new FieldGroup(item);
-      setCaption("Mokinio nustatymai");
+   public MealEventManualCreateWindow() {
+
+      setCaption("Rankinis maitinimosi įrašo įvėdimas");
       setResizable(false);
       setWidth("550px");
       setHeight("580px");
       VerticalLayout vl = new VerticalLayout();
       vl.setSpacing(true);
       vl.setMargin(true);
+      container.setBeanIdProperty("cardId");
 
-      long cardId = (long) item.getItemProperty("cardId").getValue();
-      vl.addComponent(new Label("<b>Kortelės #:</b> " + cardId, ContentMode.HTML));
+      table.setSizeFull();
+      table.setContainerDataSource(container);
+      table.setColumnHeader("firstName", "Vardas");
+      table.setColumnHeader("lastName", "Pavardė");
+      table.setColumnHeader("dinnerPermitted", "Pietus");
+      table.setColumnHeader("breakfastPermitted", "Pusryčiai");
+      table.setVisibleColumns(new String[]{"firstName", "lastName", "breakfastPermitted", "dinnerPermitted"}
+      );
+      table.setColumnWidth("dinnerPermitted", 85);
+      table.setColumnWidth("breakfastPermitted", 85);
+      table.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
+      table.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
+      table.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
+      table.setColumnAlignment("breakfastPermitted", Table.Align.CENTER);
+      table.setColumnCollapsingAllowed(true);
+      table.setSelectable(true);
+      table.setNullSelectionAllowed(false);
+      table.setCacheRate(5);
+      table.setHeight("340px");
 
-      String name = item.getItemProperty("firstName").getValue() + " " + item.getItemProperty("lastName").getValue();
-      Label nameLbl = new Label("<b>Vardas:</b> " + name, ContentMode.HTML);
-      nameLbl.setWidth("250px");
-      vl.addComponent(nameLbl);
-
-      String date = String.valueOf((item.getItemProperty("birthDate").getValue() != null)
-            ? item.getItemProperty("birthDate").getValue()
-            : "nenurodyta");
-      vl.addComponent(new Label("<b>Gimimo data:</b> " + date, ContentMode.HTML));
-
-      String lastDinnerString = lastDinner == null
-            ? "nėra duomenų"
-            : new SimpleDateFormat("yyyy-MM-dd HH:mm").format(lastDinner);
-      vl.addComponent(new Label("<b>Paskutinis<br/>maitinimasis:</b> " + lastDinnerString, ContentMode.HTML));
-
-      vl.addComponent(breakfastPermitted);
-      vl.addComponent(dinnerPermitted);
-      comment.setRows(4);
-      vl.addComponent(comment);
-      editFields.bind(breakfastPermitted, "breakfastPermitted");
-      editFields.bind(dinnerPermitted, "dinnerPermitted");
-      editFields.bind(comment, "comment");
+      dateField.setDateFormat("yyyy-MM-dd");
+      vl.addComponents(dateField, table);
 
       HorizontalLayout buttons = new HorizontalLayout(save, close);
       buttons.setSpacing(true);
       buttons.setMargin(new MarginInfo(true, false, false, false));
       vl.addComponent(buttons);
       vl.setComponentAlignment(buttons, Alignment.BOTTOM_CENTER);
-
-      GridLayout gl = new GridLayout(2, 1);
-      image.setWidth("160px");
-      image.setHeight("200px");
-      gl.addComponents(vl, image);
-      setContent(gl);
+      setContent(vl);
       setModal(true);
    }
 
@@ -87,11 +76,15 @@ public class MealEventManualCreateWindow extends Window {
       close.addClickListener(listener);
    }
 
-   public void commit() {
-      try {
-         editFields.commit();
-      } catch (FieldGroup.CommitException e) {
-         e.printStackTrace();
-      }
+   public BeanContainer<Long, AdbPupilDto> getContainer() {
+      return container;
+   }
+
+   public Table getTable() {
+      return table;
+   }
+
+   public DateField getDateField() {
+      return dateField;
    }
 }
