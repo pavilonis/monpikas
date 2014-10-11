@@ -6,6 +6,7 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.views.converters.StringToBooleanCellConverter;
 
 public class PupilsListView extends VerticalLayout {
 
@@ -15,7 +16,6 @@ public class PupilsListView extends VerticalLayout {
 
    public PupilsListView() {
       setSizeFull();
-      setSpacing(true);
       container.setBeanIdProperty("cardId");
       t.setSizeFull();
       t.setContainerDataSource(container);
@@ -31,8 +31,8 @@ public class PupilsListView extends VerticalLayout {
       );
       t.setColumnWidth("dinnerPermitted", 85);
       t.setColumnWidth("breakfastPermitted", 85);
-      t.setConverter("dinnerPermitted", newStringToBoolConverter());
-      t.setConverter("breakfastPermitted", newStringToBoolConverter());
+      t.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
+      t.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
       t.setColumnWidth("birthDate", 130);
       t.setColumnWidth("cardId", 90);
       t.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
@@ -66,19 +66,5 @@ public class PupilsListView extends VerticalLayout {
 
    public PupilListFilterPanel getPupilListFilterPanel() {
       return pupilListFilterPanel;
-   }
-
-   private StringToBooleanConverter newStringToBoolConverter() {
-      return new StringToBooleanConverter() {
-         @Override
-         protected String getTrueString() {
-            return "✔";
-         }
-
-         @Override
-         protected String getFalseString() {
-            return "";
-         }
-      };
    }
 }

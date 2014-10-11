@@ -16,17 +16,13 @@ public class PupilListFilterPanel extends HorizontalLayout {
    private TextField text = new TextField();
    private CheckBox breakfastPermission = new CheckBox("Pusryčiai");
    private CheckBox dinnerPermission = new CheckBox("Pietus");
-   private Button filterButton = new Button("Filtruoti");
-   private Button cancelFilterButton = new Button("Atmesti");
+   private Button filterButton = new Button("Filtruoti", FontAwesome.FILTER);
+   private Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
 
    public PupilListFilterPanel() {
-      Label lbl = new Label(FontAwesome.FILTER.getHtml(), ContentMode.HTML);
-      filterButton.setIcon(FontAwesome.CHECK);
-      cancelFilterButton.setIcon(FontAwesome.TIMES);
-      addComponents(lbl, text, breakfastPermission, dinnerPermission, filterButton, cancelFilterButton);
+      addComponents(text, breakfastPermission, dinnerPermission, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
-      setComponentAlignment(lbl, Alignment.MIDDLE_RIGHT);
       setComponentAlignment(dinnerPermission, Alignment.MIDDLE_CENTER);
       setComponentAlignment(breakfastPermission, Alignment.MIDDLE_CENTER);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
