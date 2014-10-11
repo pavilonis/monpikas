@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views;
+package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;

@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views;
+package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -20,7 +20,7 @@ import java.util.Date;
 
 import static com.vaadin.ui.Button.ClickListener;
 
-public class PupilEditWindow extends Window {
+public class MealEventManualCreateWindow extends Window {
 
    TextArea comment = new TextArea("Komentaras");
    Button save = new Button("Saugoti");
@@ -29,7 +29,7 @@ public class PupilEditWindow extends Window {
    CheckBox breakfastPermitted = new CheckBox("Pusryčiai");
    CheckBox dinnerPermitted = new CheckBox("Pietus");
 
-   public PupilEditWindow(Item item, Image image, Date lastDinner) {
+   public MealEventManualCreateWindow(Item item, Image image, Date lastDinner) {
       editFields = new FieldGroup(item);
       setCaption("Mokinio nustatymai");
       setResizable(false);

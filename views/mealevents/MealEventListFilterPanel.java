@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views;
+package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;

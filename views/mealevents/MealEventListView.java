@@ -1,9 +1,8 @@
-package lt.pavilonis.monpikas.server.views;
+package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
