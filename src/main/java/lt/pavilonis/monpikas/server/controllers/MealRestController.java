@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("rest")
 @RestController
-public class MealController {
+public class MealRestController {
 
-   private static final Logger LOG = Logger.getLogger(MealController.class.getName());
+   private static final Logger LOG = Logger.getLogger(MealRestController.class.getName());
 
    @Autowired
    PupilService pupilService;
@@ -40,11 +40,11 @@ public class MealController {
 
       } else if (!adbDto.isDinnerPermitted()) {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
-         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.FORBIDDEN);
+         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.OK);
 
       } else if (pupilService.reachedTodaysMealLimit(adbDto)) {
          LOG.info("Pupil with id: " + id + " reached meal limit today");
-         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.FORBIDDEN);
+         return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.OK);
 
       } else {
          LOG.info("Pupil with id: " + id + " is getting the meal");

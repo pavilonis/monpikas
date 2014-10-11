@@ -1,23 +1,130 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dao.AdbDao;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.repositories.MealEventRepository;
+import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
-public interface PupilService {
+@Service
+public class PupilService implements PupilService {
 
-   /**
-    *
-    * @return List of Pupils from ADB merged with local Pupil information (PupilInfo)
-    */
-   List<AdbPupilDto> getMergedList();
+   private static final Logger LOG = Logger.getLogger(PupilService.class.getName());
 
-   AdbPupilDto getByCardId(long cardId);
+   @Autowired
+   private AdbDao dao;
 
-   void saveOrUpdate(PupilInfo info);
+   @Autowired
+   private PupilInfoRepository pupilRepository;
 
-   boolean hadDinnerToday(long cardId);
+   @Autowired
+   private PupilService pupilService;
 
-   boolean reachedTodaysMealLimit(AdbPupilDto dto);
+   @Autowired
+   private MealEventRepository mealRepository;
+
+   @Autowired
+   private MealService mealService;
+
+   public List<AdbPupilDto> getMergedList() {
+      return merge(
+            getPupilInfos(),
+            getAdbPupilDtos(),
+            false
+      );
+   }
+
+   public List<AdbPupilDto> getMergedMealAllowedList() {
+      return merge(
+            pupilRepository.findByDinnerPermittedTrueOrBreakfastPermittedTrue(),
+            getAdbPupilDtos(),
+            true
+      );
+   }
+
+   private List<AdbPupilDto> merge(List<PupilInfo> pupilInfos, List<AdbPupilDto> adbPupils, boolean mealAllowedOnly) {
+      long start = System.nanoTime();
+      List<AdbPupilDto> result = new ArrayList<>();
+      adbPupils.forEach(dto -> {
+         pupilInfos.stream()
+               .filter(i -> !mealAllowedOnly || (i.isBreakfastPermitted() || i.isDinnerPermitted()))
+               .forEach(info -> {
+                  if (dto.getCardId() == info.getCardId()) {
+                     dto.setDinnerPermitted(info.isDinnerPermitted());
+                     dto.setBreakfastPermitted(info.isBreakfastPermitted());
+                     dto.setComment(info.getComment());
+                  }
+               });
+         if (!mealAllowedOnly || (dto.isBreakfastPermitted() || dto.isDinnerPermitted())) {
+            result.add(dto);
+         }
+
+      });
+      long finish = System.nanoTime();
+      LOG.info("merged AdbPupils with PupilInfo in " + (finish - start) / 1000000 + " millis. Returning " + result.size() + " dto's");
+      return result;
+   }
+
+   private List<PupilInfo> getPupilInfos() {
+      long start = System.nanoTime();
+      List<PupilInfo> pupilInfos = pupilRepository.findAll();
+      long finish = System.nanoTime();
+      LOG.info("got ALL PupilInfo in " + (finish - start) / 1000000 + " millis");
+      return pupilInfos;
+   }
+
+   private List<AdbPupilDto> getAdbPupilDtos() {
+      long start = System.nanoTime();
+      List<AdbPupilDto> pupils = dao.getAllAdbPupils();
+      long finish = System.nanoTime();
+      LOG.info("got All AdbPupils in " + (finish - start) / 1000000 + " millis");
+      return pupils;
+   }
+
+
+   public AdbPupilDto getByCardId(long cardId) {
+      AdbPupilDto dto = dao.getAdbPupil(cardId);
+      if (dto != null) {
+         PupilInfo info = pupilRepository.findByCardId(cardId);  //getting dinner information about pupil
+         dto.setBreakfastPermitted(info != null && info.isBreakfastPermitted());
+         dto.setDinnerPermitted(info != null && info.isDinnerPermitted());
+         dto.setComment(info == null ? "" : info.getComment());
+      }
+      return dto;
+   }
+
+   @Override
+   public void saveOrUpdate(PupilInfo info) {
+      pupilRepository.save(info);
+   }
+
+   @Override
+   public boolean hadDinnerToday(long cardId) {
+      Date lastDinner = mealRepository.lastMealEventDate(cardId);
+      return lastDinner != null && mealService.sameDay(lastDinner, new Date());
+   }
+
+   @Override
+   public boolean reachedMealLimit(AdbPupilDto dto) {
+      return reachedMealLimit(dto, new Date());
+   }
+
+   @Override
+   public boolean reachedMealLimit(AdbPupilDto dto, Date date) {
+      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(dto.getCardId(), date);
+      return todaysMeals >= dto.mealsPermitted();
+   }
+
+   @Override
+   public boolean reachedMealLimit(long cardId, Date date) {
+      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(cardId, date);
+      return todaysMeals >= pupilService.getByCardId(cardId).mealsPermitted();
+   }
 }
