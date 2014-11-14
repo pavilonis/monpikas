@@ -3,7 +3,6 @@ package lt.pavilonis.monpikas.server.views.mealevents;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
@@ -15,11 +14,13 @@ import lt.pavilonis.monpikas.server.views.converters.StringToBooleanCellConverte
 
 import java.util.Date;
 
+import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 import static com.vaadin.ui.Button.ClickListener;
+import static com.vaadin.ui.Table.Align.CENTER;
 
 public class MealEventManualCreateWindow extends Window {
 
-   Button save = new Button("Saugoti", FontAwesome.SAVE);
+   Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
    Button close = new Button("Uždaryti", FontAwesome.TIMES);
    BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
    Table table = new Table("Pasirinkite mokinį");
@@ -42,14 +43,13 @@ public class MealEventManualCreateWindow extends Window {
       table.setColumnHeader("lastName", "Pavardė");
       table.setColumnHeader("dinnerPermitted", "Pietus");
       table.setColumnHeader("breakfastPermitted", "Pusryčiai");
-      table.setVisibleColumns(new String[]{"firstName", "lastName", "breakfastPermitted", "dinnerPermitted"}
-      );
+      table.setVisibleColumns(new String[]{"firstName", "lastName", "breakfastPermitted", "dinnerPermitted"});
       table.setColumnWidth("dinnerPermitted", 85);
       table.setColumnWidth("breakfastPermitted", 85);
       table.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
       table.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
-      table.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
-      table.setColumnAlignment("breakfastPermitted", Table.Align.CENTER);
+      table.setColumnAlignment("dinnerPermitted", CENTER);
+      table.setColumnAlignment("breakfastPermitted", CENTER);
       table.setColumnCollapsingAllowed(true);
       table.setSelectable(true);
       table.setNullSelectionAllowed(false);
@@ -63,7 +63,7 @@ public class MealEventManualCreateWindow extends Window {
       buttons.setSpacing(true);
       buttons.setMargin(new MarginInfo(true, false, false, false));
       vl.addComponent(buttons);
-      vl.setComponentAlignment(buttons, Alignment.BOTTOM_CENTER);
+      vl.setComponentAlignment(buttons, BOTTOM_CENTER);
       setContent(vl);
       setModal(true);
    }

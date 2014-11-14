@@ -5,20 +5,6 @@ CREATE TABLE `Authority` (
   PRIMARY KEY (`id`)
 );
 
-CREATE TABLE `Message` (
-  `id`          BIGINT(20) NOT NULL AUTO_INCREMENT,
-  `sendermail`  VARCHAR(255)
-                COLLATE utf8_unicode_ci DEFAULT NULL,
-  `sendername`  VARCHAR(255)
-                COLLATE utf8_unicode_ci DEFAULT NULL,
-  `senderphone` VARCHAR(255)
-                COLLATE utf8_unicode_ci DEFAULT NULL,
-  `text`        LONGTEXT
-                COLLATE utf8_unicode_ci,
-  PRIMARY KEY (`id`)
-);
-
-
 CREATE TABLE `User` (
   `id`       BIGINT(20) NOT NULL AUTO_INCREMENT,
   `enabled`  BIT(1) DEFAULT NULL,

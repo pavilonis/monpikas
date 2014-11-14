@@ -15,15 +15,10 @@
       <constructor-arg ref="adbDataSource"/>
    </bean>
 
-   <!--<bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">-->
-   <!--<property name="dataSource" ref="dataSource" />-->
-   <!--</bean>-->
-
-   <!--JPA settings start-->
-   <!--depends-on="flyway" -->
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
    </bean>
+
    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
       <property name="entityManagerFactory" ref="entityManagerFactory"/>
    </bean>
@@ -34,6 +29,10 @@
    <!--jndi config for data access-->
    <bean id="adbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jdbc/Adb"/>
+   </bean>
+
+   <bean id="monpikasMigrationDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+      <property name="jndiName" value="java:/comp/env/jdbc/Monpikas"/>
    </bean>
 
    <!--jndi config for properties-->

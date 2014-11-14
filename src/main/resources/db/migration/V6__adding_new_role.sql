@@ -1,1 +1,0 @@
-INSERT into Authority (role) value ('ROLE_SCANNER');
