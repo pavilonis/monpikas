@@ -4,7 +4,7 @@ import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
 import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PupilService;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @RequestMapping("rest")
 @RestController
 public class MealRestController {
 
-   private static final Logger LOG = Logger.getLogger(MealRestController.class.getName());
+   private static final Logger LOG = getLogger(MealRestController.class);
 
    @Autowired
    PupilService pupilService;
@@ -36,7 +38,7 @@ public class MealRestController {
 
       if (notFound) {
          LOG.info("Pupil with id: " + id + " was NOT found in ADB");
-         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 
       } else if (!adbDto.isDinnerPermitted()) {
          LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");

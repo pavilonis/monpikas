@@ -8,6 +8,15 @@ import java.util.Date;
 @Entity
 public class MealEvent {
 
+   public MealEvent() {
+   }
+
+   public MealEvent(long cardId, String name, Date date) {
+      this.cardId = cardId;
+      this.name = name;
+      this.date = date;
+   }
+
    @Id
    @GeneratedValue
    private long id;
@@ -18,14 +27,9 @@ public class MealEvent {
 
    private Date date;
 
-   public MealEvent() {
-   }
+   private double price;
 
-   public MealEvent(long cardId, String name, Date date) {
-      this.cardId = cardId;
-      this.name = name;
-      this.date = date;
-   }
+   private String type;
 
    public Date getDate() {
       return date;
@@ -61,5 +65,21 @@ public class MealEvent {
 
    public void setName(String name) {
       this.name = name;
+   }
+
+   public double getPrice() {
+      return price;
+   }
+
+   public void setPrice(double price) {
+      this.price = price;
+   }
+
+   public String getType() {
+      return type;
+   }
+
+   public void setType(String type) {
+      this.type = type;
    }
 }

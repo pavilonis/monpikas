@@ -2,7 +2,9 @@ package lt.pavilonis.monpikas.server.domain;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class PupilInfo {
@@ -26,6 +28,14 @@ public class PupilInfo {
 
    @Lob
    private String comment;
+
+   @ManyToOne
+   @JoinColumn(name = "breakfastPortion_id")
+   private Portion breakfastPortion;
+
+   @ManyToOne
+   @JoinColumn(name = "dinnerPortion_id")
+   private Portion dinnerPortion;
 
    public long getCardId() {
       return cardId;
@@ -57,5 +67,21 @@ public class PupilInfo {
 
    public void setBreakfastPermitted(boolean breakfastPermitted) {
       this.breakfastPermitted = breakfastPermitted;
+   }
+
+   public Portion getBreakfastPortion() {
+      return breakfastPortion;
+   }
+
+   public void setBreakfastPortion(Portion breakfastPortion) {
+      this.breakfastPortion = breakfastPortion;
+   }
+
+   public Portion getDinnerPortion() {
+      return dinnerPortion;
+   }
+
+   public void setDinnerPortion(Portion dinnerPortion) {
+      this.dinnerPortion = dinnerPortion;
    }
 }

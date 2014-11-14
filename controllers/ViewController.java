@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.server.controllers;
 
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
 import com.vaadin.event.ItemClickEvent;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
@@ -8,17 +9,22 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
+import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.service.MealService;
+import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventManualCreateWindow;
+import lt.pavilonis.monpikas.server.views.portions.PortionFormWindow;
+import lt.pavilonis.monpikas.server.views.portions.PortionListView;
 import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,9 +36,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
 
-import static com.vaadin.ui.Notification.Type.HUMANIZED_MESSAGE;
+import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
+import static com.vaadin.ui.Notification.show;
+import static java.net.HttpURLConnection.HTTP_OK;
+import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Controller
 public class ViewController {
@@ -52,44 +62,110 @@ public class ViewController {
    @Autowired
    private MealService mealService;
 
+   @Autowired
+   private PortionService portionService;
+
    public TabSheet createAdbPulilListView() {
-      PupilsListView pupilsView = new PupilsListView();
-      pupilsView.getContainer().addAll(pupilService.getMergedList());
-      pupilsView.setTableClickListener(newPulilListTableClickListener());
-
-      MealEventListView mealView = new MealEventListView();
-      mealView.getContainer().addAll(mealService.getDinnerEventList());
-      mealView.getControlPanel().addAddListener(newAddMealEventListener(mealView));
-      mealView.getControlPanel().addDeleteListener(newDeleteMealEventListener(mealView));
-
       TabSheet tabs = new TabSheet();
       tabs.setSizeFull();
 
-      tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.USERS);
-      tabs.addTab(mealView, "Maitinimosi žurnalas", FontAwesome.COFFEE);
+      MealEventListView mealView = new MealEventListView();
+      mealView.getContainer().addAll(mealService.getDinnerEventList());
+      mealView.getControlPanel().addAddListener(mealAddEventListener(mealView));
+      mealView.getControlPanel().addDeleteListener(mealDeleteEventListener(mealView));
+      tabs.addTab(mealView, "Maitinimosi žurnalas", FontAwesome.CUTLERY);
+
+      tabs.addTab(new FormLayout(), "Ataskaitos", FontAwesome.FILE_PDF_O);
+
+      if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
+         PupilsListView pupilsView = new PupilsListView();
+         pupilsView.getContainer().addAll(pupilService.getMergedList());
+         pupilsView.setTableClickListener(pulilListTableClickListener());
+         tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.CHILD);
+
+         PortionListView plView = new PortionListView();
+         plView.getContainer().addAll(portionService.getAll());
+         plView.setTableClickListener(portionListTableClickListener());
+         plView.getControlPanel().addAddListener(portionAddListener(plView));
+         plView.getControlPanel().addDeleteListener(portionDeleteListener(plView));
+         tabs.addTab(plView, "Porcijos", FontAwesome.WRENCH);
+      }
       return tabs;
    }
 
    private boolean valid(Long id, Date date) {
       if (id == null) {
-         Notification.show("Nepasirinktas mokinys", WARNING_MESSAGE);
+         show("Nepasirinktas mokinys", WARNING_MESSAGE);
          return false;
       } else if (date == null) {
-         Notification.show("Nenurodyta data", WARNING_MESSAGE);
+         show("Nenurodyta data", WARNING_MESSAGE);
          return false;
       } else if (pupilService.reachedMealLimit(id, date)) {
-         Notification.show("Viršijamas nurodytos dienos maitinimosi limitas", WARNING_MESSAGE);
+         show("Viršijamas nurodytos dienos maitinimosi limitas", WARNING_MESSAGE);
          return false;
       } else {
          return true;
       }
    }
 
-   private ItemClickEvent.ItemClickListener newPulilListTableClickListener() {
+   private ClickListener portionDeleteListener(PortionListView view) {
+      return click -> {
+         Long id = (Long) view.getTable().getValue();
+         if (id == null) {
+            Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
+         } else {
+            portionService.delete(id);
+            view.getContainer().removeItem(id);
+            view.getTable().select(null);
+            show("Įrašas pašalintas", TRAY_NOTIFICATION);
+         }
+      };
+   }
+
+   private ClickListener portionAddListener(PortionListView listView) {
+      return click -> {
+         PortionFormWindow w = new PortionFormWindow();
+
+         w.addCloseButtonListener(closeClick -> w.close());
+         w.addSaveButtonListener(saveClick -> {
+            if (w.isValid()) {
+               w.commit();
+               Portion portion = w.getItemDateSource().getBean();
+               portionService.save(portion);
+               w.close();
+               listView.getContainer().addBean(portion);
+               show("Išsaugota", TRAY_NOTIFICATION);
+            }
+         });
+         UI.getCurrent().addWindow(w);
+      };
+   }
+
+   private ItemClickEvent.ItemClickListener portionListTableClickListener() {
       return event -> {
          Item item = event.getItem();
-         long id = (long) event.getItemId();
          if (event.isDoubleClick()) {
+            PortionFormWindow w = new PortionFormWindow(item);
+            UI.getCurrent().addWindow(w);
+            w.addCloseButtonListener(click -> w.close());
+            w.addSaveButtonListener(click -> {
+               if (w.isValid()) {
+                  w.commit();
+                  BeanItem<Portion> bean = w.getItemDateSource();
+                  portionService.save(bean.getBean());
+                  w.close();
+                  show("Išsaugota", TRAY_NOTIFICATION);
+               }
+            });
+         }
+      };
+   }
+
+   private ItemClickEvent.ItemClickListener pulilListTableClickListener() {
+      return event -> {
+         if (event.isDoubleClick()) {
+            Item item = event.getItem();
+            long id = (long) event.getItemId();
             PupilEditWindow editView = new PupilEditWindow(item, getImage(id), mealService.lastMealEvent(id));
             editView.addCloseButtonListener(closeBtnClick -> editView.close());
             editView.addSaveButtonListener(
@@ -100,7 +176,7 @@ public class ViewController {
                      String comment = (String) item.getItemProperty("comment").getValue();
                      pupilService.saveOrUpdate(new PupilInfo(id, breakfastPermission, dinnerPermission, comment));
                      editView.close();
-                     Notification.show("Išsaugota", TRAY_NOTIFICATION);
+                     show("Išsaugota", TRAY_NOTIFICATION);
                   });
             UI.getCurrent().addWindow(editView);
          }
@@ -126,14 +202,18 @@ public class ViewController {
          http.setInstanceFollowRedirects(false);
          http.setRequestMethod("HEAD");
          http.connect();
-         return (http.getResponseCode() == HttpURLConnection.HTTP_OK);
+         return (http.getResponseCode() == HTTP_OK);
       } catch (Exception e) {
          return false;
       }
    }
 
-   private ClickListener newAddMealEventListener(MealEventListView mealView) {
+   private ClickListener mealAddEventListener(MealEventListView listView) {
       return click -> {
+         if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
+            show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
+            return;
+         }
          MealEventManualCreateWindow w = new MealEventManualCreateWindow();
          w.getContainer().addAll(pupilService.getMergedMealAllowedList());
          w.addCloseButtonListener(closeClick -> w.close());
@@ -143,24 +223,29 @@ public class ViewController {
                String name = dto.getFirstName() + " " + dto.getLastName();
                MealEvent m = new MealEvent(dto.getCardId(), name, w.getDateField().getValue());
                mealService.saveMealEvent(m);
-               mealView.getContainer().addBean(m);
+               listView.getContainer().addBean(m);
                w.close();
+               show("Išsaugota", TRAY_NOTIFICATION);
             }
          });
          UI.getCurrent().addWindow(w);
       };
    }
 
-   private ClickListener newDeleteMealEventListener(MealEventListView mealView) {
+   private ClickListener mealDeleteEventListener(MealEventListView listView) {
       return click -> {
-         Long id = (Long) mealView.getTable().getValue();
+         if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
+            show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
+            return;
+         }
+         Long id = (Long) listView.getTable().getValue();
          if (id == null) {
             Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
             mealService.deleteMealEvent(id);
-            mealView.getContainer().removeItem(id);
-            mealView.getTable().select(null);
-            Notification.show("Įrašas pašalintas", TRAY_NOTIFICATION);
+            listView.getContainer().removeItem(id);
+            listView.getTable().select(null);
+            show("Įrašas pašalintas", TRAY_NOTIFICATION);
          }
       };
    }

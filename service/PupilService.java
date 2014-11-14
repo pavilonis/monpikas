@@ -5,7 +5,7 @@ import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.repositories.MealEventRepository;
 import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +14,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import static org.slf4j.LoggerFactory.getLogger;
+
 @Service
 public class PupilService {
 
-   private static final Logger LOG = Logger.getLogger(PupilService.class.getName());
+   private static final Logger LOG = getLogger(PupilService.class);
 
    @Autowired
    private AdbDao dao;
