@@ -65,4 +65,9 @@ public class Portion implements Serializable {
    public void setType(PortionType type) {
       this.type = type;
    }
+
+   @Override
+   public String toString() {
+      return name + " - " + price + " Lt.";
+   }
 }

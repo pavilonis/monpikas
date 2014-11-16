@@ -8,12 +8,7 @@
        http://www.springframework.org/schema/data/jpa
        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
        http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd"
-       xmlns:p="http://www.springframework.org/schema/p">
-
-   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
-      <constructor-arg ref="adbDataSource"/>
-   </bean>
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
 
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
@@ -26,6 +21,10 @@
    <jpa:repositories base-package="lt.pavilonis.monpikas.server.repositories"/>
    <tx:annotation-driven transaction-manager="transactionManager"/>
 
+   <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+      <constructor-arg ref="adbDataSource"/>
+   </bean>
+
    <!--jndi config for data access-->
    <bean id="adbDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:comp/env/jdbc/Adb"/>
@@ -34,10 +33,5 @@
    <bean id="monpikasMigrationDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:/comp/env/jdbc/Monpikas"/>
    </bean>
-
-   <!--jndi config for properties-->
-   <bean id="configPath" class="org.springframework.jndi.JndiObjectFactoryBean"
-         p:jndiName="java:comp/env/props/Monpikas/configPath"
-         p:defaultObject="classpath:app.properties"/>
 
 </beans>

@@ -38,6 +38,7 @@
          <param-name>beanName</param-name>
          <param-value>app</param-value>
       </init-param>
+      <load-on-startup>2</load-on-startup>
    </servlet>
 
    <servlet-mapping>
@@ -57,7 +58,7 @@
 
    <!-- Static mapping -->
    <servlet-mapping>
-      <servlet-name>default</servlet-name>
+      <servlet-name>dispatcher</servlet-name>
       <url-pattern>/static/*</url-pattern>
    </servlet-mapping>
 

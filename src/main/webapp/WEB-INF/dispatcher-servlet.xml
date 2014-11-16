@@ -16,7 +16,7 @@
       <property name="contentType" value="text/html;charset=UTF-8"/>
    </bean>
 
-   <context:component-scan base-package="lt.pavilonis.monpikas.server.controllers"/>
+   <!--<context:component-scan base-package="lt.pavilonis.monpikas.server.controllers"/>-->
    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
    <!--<mvc:resources mapping="/rest/resources/**" location="/resources/" cache-period="5000000"/>-->
 
@@ -32,5 +32,24 @@
       <property name="basename" value="messages"/>
    </bean>
 
-   <context:property-placeholder location="classpath:messages.properties" />
+   <!--<context:property-placeholder location="classpath:app.properties" />-->
+   <!--<context:property-placeholder location="classpath:app.properties" />-->
+
+   <bean id="propertyPlaceholderConfigurer"
+         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+      <property name="locations">
+         <list>
+            <value>classpath:app.properties</value>
+            <value>classpath:messages.properties</value>
+            <bean class="org.springframework.core.io.FileSystemResource">
+               <constructor-arg>
+                  <bean class="org.springframework.jndi.JndiObjectFactoryBean">
+                     <property name="jndiName" value="java:comp/env/props/Monpikas/config"/>
+                     <property name="resourceRef" value="false"/>
+                  </bean>
+               </constructor-arg>
+            </bean>
+         </list>
+      </property>
+   </bean>
 </beans>

@@ -1,80 +1,117 @@
 package lt.pavilonis.monpikas.server.views.pupils;
 
-import com.vaadin.data.Item;
+import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
+import com.vaadin.data.fieldgroup.PropertyId;
 import com.vaadin.shared.ui.MarginInfo;
-import com.vaadin.shared.ui.label.ContentMode;
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.TextArea;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import lt.pavilonis.monpikas.server.domain.Portion;
+import lt.pavilonis.monpikas.server.domain.PupilInfo;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 
+import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.Optional;
 
+import static com.vaadin.shared.ui.label.ContentMode.HTML;
+import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 import static com.vaadin.ui.Button.ClickListener;
+import static java.util.stream.Collectors.toList;
+import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
+import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 
 public class PupilEditWindow extends Window {
 
-   TextArea comment = new TextArea("Komentaras");
+   private final static Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
+   @PropertyId("comment")
    Button save = new Button("Saugoti");
    Button close = new Button("Uždaryti");
-   FieldGroup editFields;
-   CheckBox breakfastPermitted = new CheckBox("Pusryčiai");
-   CheckBox dinnerPermitted = new CheckBox("Pietus");
+   BeanFieldGroup<PupilInfo> group = new BeanFieldGroup<>(PupilInfo.class);
+   ComboBox breakfastPortionCombo;
+   ComboBox dinnerPortionCombo;
 
-   public PupilEditWindow(Item item, Image image, Date lastDinner) {
-      editFields = new FieldGroup(item);
+   public PupilEditWindow(PupilInfo info, AdbPupilDto dto, Image image, Optional<Date> lastDinner, List<Portion> portions) {
+
+      List<Portion> breakfasts = portions.stream()
+            .filter(p -> p.getType() == BREAKFAST && (info.getBreakfastPortion() == null || !p.getId().equals(info.getBreakfastPortion().getId())))
+            .collect(toList());
+
+      List<Portion> dinners = portions.stream()
+            .filter(p -> p.getType() == DINNER && (info.getDinnerPortion()==null || !p.getId().equals(info.getDinnerPortion().getId())))
+            .collect(toList());
+
+      if (info.getBreakfastPortion() != null) {
+         breakfasts.add(info.getBreakfastPortion());
+      }
+      if (info.getDinnerPortion() != null) {
+         dinners.add(info.getDinnerPortion());
+      }
+
+      breakfastPortionCombo = new ComboBox("Pusryčiai", breakfasts);
+      dinnerPortionCombo = new ComboBox("Pietus", dinners);
+
+      group.bind(breakfastPortionCombo, "breakfastPortion");
+      group.bind(dinnerPortionCombo, "dinnerPortion");
+      group.setItemDataSource(info);
+      group.setBuffered(true);
+      breakfastPortionCombo.select(info.getBreakfastPortion());
+
       setCaption("Mokinio nustatymai");
       setResizable(false);
-      setWidth("550px");
+      setWidth("500px");
       setHeight("580px");
-      VerticalLayout vl = new VerticalLayout();
-      vl.setSpacing(true);
-      vl.setMargin(true);
 
-      long cardId = (long) item.getItemProperty("cardId").getValue();
-      vl.addComponent(new Label("<b>Kortelės #:</b> " + cardId, ContentMode.HTML));
+      String birthDate = dto.getBirthDate().isPresent() ? dto.getBirthDate().get().toString() : "nenurodyta";
+      String mealDate = lastDinner.isPresent() ? DATE_FORMAT.format(lastDinner.get()) : "nėra duomenų";
 
-      String name = item.getItemProperty("firstName").getValue() + " " + item.getItemProperty("lastName").getValue();
-      Label nameLbl = new Label("<b>Vardas:</b> " + name, ContentMode.HTML);
-      nameLbl.setWidth("250px");
-      vl.addComponent(nameLbl);
+      VerticalLayout vl1 = new VerticalLayout(
+            new Label("<b>Kortelės #:</b> " + dto.getCardId(), HTML),
+            new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML),
+            new Label("<b>Gimimo data:</b> " + birthDate, HTML),
+            new Label("<b>Paskutinis<br/>maitinimasis:</b> " + mealDate, HTML)
+      );
+      vl1.setSpacing(true);
+      vl1.setMargin(true);
 
-      String date = String.valueOf((item.getItemProperty("birthDate").getValue() != null)
-            ? item.getItemProperty("birthDate").getValue()
-            : "nenurodyta");
-      vl.addComponent(new Label("<b>Gimimo data:</b> " + date, ContentMode.HTML));
+      TextField grade = group.buildAndBind("Klasė", "grade", TextField.class);
+      grade.setNullRepresentation("");
 
-      String lastDinnerString = lastDinner == null
-            ? "nėra duomenų"
-            : new SimpleDateFormat("yyyy-MM-dd HH:mm").format(lastDinner);
-      vl.addComponent(new Label("<b>Paskutinis<br/>maitinimasis:</b> " + lastDinnerString, ContentMode.HTML));
+      TextArea comment = group.buildAndBind("Komentaras", "comment", TextArea.class);
+      comment.setNullRepresentation("");
 
-      vl.addComponent(breakfastPermitted);
-      vl.addComponent(dinnerPermitted);
-      comment.setRows(4);
-      vl.addComponent(comment);
-      editFields.bind(breakfastPermitted, "breakfastPermitted");
-      editFields.bind(dinnerPermitted, "dinnerPermitted");
-      editFields.bind(comment, "comment");
+      vl1.addComponents(
+            breakfastPortionCombo,
+            dinnerPortionCombo,
+            grade
+      );
 
       HorizontalLayout buttons = new HorizontalLayout(save, close);
       buttons.setSpacing(true);
       buttons.setMargin(new MarginInfo(true, false, false, false));
-      vl.addComponent(buttons);
-      vl.setComponentAlignment(buttons, Alignment.BOTTOM_CENTER);
+      vl1.addComponent(buttons);
+      vl1.setComponentAlignment(buttons, BOTTOM_CENTER);
 
       GridLayout gl = new GridLayout(2, 1);
-      image.setWidth("160px");
-      image.setHeight("200px");
-      gl.addComponents(vl, image);
+      image.setWidth("170px");
+      image.setHeight("211px");
+
+      VerticalLayout vl2 = new VerticalLayout(image, comment);
+      vl2.setComponentAlignment(image, BOTTOM_CENTER);
+      vl2.setSpacing(true);
+
+      gl.addComponents(vl1, vl2);
       setContent(gl);
       setModal(true);
    }
@@ -89,9 +126,13 @@ public class PupilEditWindow extends Window {
 
    public void commit() {
       try {
-         editFields.commit();
+         group.commit();
       } catch (FieldGroup.CommitException e) {
          e.printStackTrace();
       }
+   }
+
+   public boolean isValid() {
+      return group.isValid();
    }
 }
