@@ -9,5 +9,5 @@ public interface PupilInfoRepository extends JpaRepository<PupilInfo, Long> {
 
    PupilInfo findByCardId(long id);
 
-   List<PupilInfo> findByDinnerPermittedTrueOrBreakfastPermittedTrue();
+   List<PupilInfo> findByDinnerPortionIsNotNullOrBreakfastPortionIsNotNull();
 }

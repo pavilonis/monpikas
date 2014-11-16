@@ -11,6 +11,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import static com.vaadin.ui.Table.Align.CENTER;
+
 public class MealEventListView extends VerticalLayout {
 
    private Table table = new Table();
@@ -23,7 +25,7 @@ public class MealEventListView extends VerticalLayout {
       container.setBeanIdProperty("id");
       table.setSizeFull();
       table.setContainerDataSource(container);
-      container.sort(new Object[] {"date"}, new boolean[] {true});
+      container.sort(new Object[]{"date"}, new boolean[]{true});
       table.setColumnHeader("id", "ID");
       table.setColumnHeader("name", "Vardas");
       table.setColumnHeader("cardId", "Kortelės ID");
@@ -37,7 +39,7 @@ public class MealEventListView extends VerticalLayout {
       table.setVisibleColumns(new String[]{"id", "cardId", "name", "date"});
       table.setColumnWidth("cardId", 100);
       table.setColumnWidth("birthDate", 130);
-      table.setColumnAlignment("cardId", Table.Align.CENTER);
+      table.setColumnAlignment("cardId", CENTER);
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
       table.setSelectable(true);

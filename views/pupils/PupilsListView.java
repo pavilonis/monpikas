@@ -1,12 +1,15 @@
 package lt.pavilonis.monpikas.server.views.pupils;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.StringToBooleanConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+
+import static com.vaadin.ui.Table.Align.CENTER;
+
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.views.converters.StringToBooleanCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.OptionalBooleanCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 
 public class PupilsListView extends VerticalLayout {
 
@@ -19,25 +22,32 @@ public class PupilsListView extends VerticalLayout {
       container.setBeanIdProperty("cardId");
       t.setSizeFull();
       t.setContainerDataSource(container);
+      //TODO use setColumnHeaderS
       t.setColumnHeader("cardId", "Kortelės #");
       t.setColumnHeader("firstName", "Vardas");
       t.setColumnHeader("lastName", "Pavarde");
       t.setColumnHeader("birthDate", "Gimimo data");
-      t.setColumnHeader("dinnerPermitted", "Pietus");
-      t.setColumnHeader("breakfastPermitted", "Pusryčiai");
+      t.setColumnHeader("breakfastPortion", "Pusryčiai");
+      t.setColumnHeader("dinnerPortion", "Pietus");
+      t.setColumnHeader("grade", "Klasė");
       t.setColumnHeader("comment", "Komentaras");
+      t.setConverter("comment", new OptionalCellConverter());
       t.setVisibleColumns(
-            new String[]{"cardId", "firstName", "lastName", "birthDate", "breakfastPermitted", "dinnerPermitted", "comment"}
+            new String[]{"cardId", "firstName", "lastName", "birthDate",
+                  "breakfastPortion", "dinnerPortion", "grade", "comment"}
       );
-      t.setColumnWidth("dinnerPermitted", 85);
-      t.setColumnWidth("breakfastPermitted", 85);
-      t.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
-      t.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
+      t.setColumnWidth("breakfastPortion", 85);
+      t.setColumnWidth("dinnerPortion", 85);
+      t.setColumnWidth("grade", 85);
+      t.setConverter("breakfastPortion", new OptionalBooleanCellConverter());
+      t.setConverter("dinnerPortion", new OptionalBooleanCellConverter());
       t.setColumnWidth("birthDate", 130);
+      t.setConverter("grade", new OptionalCellConverter());
+      t.setConverter("birthDate", new OptionalCellConverter());
       t.setColumnWidth("cardId", 90);
-      t.setColumnAlignment("dinnerPermitted", Table.Align.CENTER);
-      t.setColumnAlignment("breakfastPermitted", Table.Align.CENTER);
-      t.setColumnAlignment("birthDate", Table.Align.CENTER);
+      t.setColumnAlignment("breakfastPortion", CENTER);
+      t.setColumnAlignment("dinnerPortion", CENTER);
+      t.setColumnAlignment("birthDate", CENTER);
       t.setColumnCollapsingAllowed(true);
       t.setColumnCollapsed("cardId", true);
       t.setSelectable(true);

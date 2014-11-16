@@ -3,13 +3,11 @@ package lt.pavilonis.monpikas.server.dao;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 public interface AdbDao {
 
    List<AdbPupilDto> getAllAdbPupils();
 
-   AdbPupilDto getAdbPupil(long id);
-
-   List<AdbPupilDto>getAdbPupilsByIds(List<Long> cardIds);
+   Optional<AdbPupilDto> getAdbPupil(long id);
 }

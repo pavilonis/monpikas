@@ -13,7 +13,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
+import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -25,7 +27,7 @@ public class PupilService {
    private AdbDao dao;
 
    @Autowired
-   private PupilInfoRepository pupilRepository;
+   private PupilInfoRepository infoRepo;
 
    @Autowired
    private MealEventRepository mealRepository;
@@ -46,7 +48,7 @@ public class PupilService {
 
    public List<AdbPupilDto> getMergedMealAllowedList() {
       return merge(
-            pupilRepository.findByDinnerPermittedTrueOrBreakfastPermittedTrue(),
+            infoRepo.findByDinnerPortionIsNotNullOrBreakfastPortionIsNotNull(),
             getAdbPupilDtos(),
             true
       );
@@ -57,15 +59,16 @@ public class PupilService {
       List<AdbPupilDto> result = new ArrayList<>();
       adbPupils.forEach(dto -> {
          pupilInfos.stream()
-               .filter(i -> !mealAllowedOnly || (i.isBreakfastPermitted() || i.isDinnerPermitted()))
+               .filter(i -> !mealAllowedOnly || (i.getBreakfastPortion() != null || i.getDinnerPortion() != null))
                .forEach(info -> {
                   if (dto.getCardId() == info.getCardId()) {
-                     dto.setDinnerPermitted(info.isDinnerPermitted());
-                     dto.setBreakfastPermitted(info.isBreakfastPermitted());
-                     dto.setComment(info.getComment());
+                     dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
+                     dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
+                     dto.setGrade(ofNullable(info.getGrade()));
+                     dto.setComment(ofNullable(info.getComment()));
                   }
                });
-         if (!mealAllowedOnly || (dto.isBreakfastPermitted() || dto.isDinnerPermitted())) {
+         if (!mealAllowedOnly || (dto.getBreakfastPortion().isPresent() || dto.getDinnerPortion().isPresent())) {
             result.add(dto);
          }
 
@@ -77,7 +80,7 @@ public class PupilService {
 
    private List<PupilInfo> getPupilInfos() {
       long start = System.nanoTime();
-      List<PupilInfo> pupilInfos = pupilRepository.findAll();
+      List<PupilInfo> pupilInfos = infoRepo.findAll();
       long finish = System.nanoTime();
       LOG.info("got ALL PupilInfo in " + (finish - start) / 1000000 + " millis");
       return pupilInfos;
@@ -92,19 +95,25 @@ public class PupilService {
    }
 
 
-   public AdbPupilDto getByCardId(long cardId) {
-      AdbPupilDto dto = dao.getAdbPupil(cardId);
-      if (dto != null) {
-         PupilInfo info = pupilRepository.findByCardId(cardId);  //getting dinner information about pupil
-         dto.setBreakfastPermitted(info != null && info.isBreakfastPermitted());
-         dto.setDinnerPermitted(info != null && info.isDinnerPermitted());
-         dto.setComment(info == null ? "" : info.getComment());
-      }
+   public Optional<AdbPupilDto> getByCardId(long cardId) {
+      Optional<AdbPupilDto> dto = dao.getAdbPupil(cardId);
+      dto.ifPresent(d -> {
+         Optional<PupilInfo> info = ofNullable(infoRepo.findByCardId(cardId));  //getting information about pupil
+         info.ifPresent(i -> {
+            d.setBreakfastPortion(ofNullable(i.getBreakfastPortion()));
+            d.setDinnerPortion(ofNullable(i.getDinnerPortion()));
+            d.setComment(ofNullable(i.getComment()));
+         });
+      });
       return dto;
    }
 
+   public Optional<PupilInfo> infoByCardId(long cardId) {
+      return ofNullable(infoRepo.findByCardId(cardId));
+   }
+
    public void saveOrUpdate(PupilInfo info) {
-      pupilRepository.save(info);
+      infoRepo.saveAndFlush(info);
    }
 
    public boolean hadDinnerToday(long cardId) {
@@ -123,7 +132,7 @@ public class PupilService {
 
    public boolean reachedMealLimit(long cardId, Date date) {
       Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(cardId, midnight(date));
-      return todaysMeals >= getByCardId(cardId).mealsPermitted();
+      return todaysMeals >= getByCardId(cardId).get().mealsPermitted();
    }
 
    private Date midnight(Date date) {

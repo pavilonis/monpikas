@@ -5,6 +5,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Entity
 public class PupilInfo {
@@ -12,19 +14,16 @@ public class PupilInfo {
    public PupilInfo() {
    }
 
-   public PupilInfo(long cardId, boolean breakfastPermitted, boolean dinnerPermitted, String comment) {
+   public PupilInfo(long cardId) {
       this.cardId = cardId;
-      this.dinnerPermitted = dinnerPermitted;
-      this.comment = comment;
-      this.breakfastPermitted = breakfastPermitted;
    }
 
    @Id
    private long cardId;
 
-   private boolean dinnerPermitted;
-
-   private boolean breakfastPermitted;
+   @Size(min = 1, max = 3)
+   @NotNull
+   private String grade;
 
    @Lob
    private String comment;
@@ -41,16 +40,16 @@ public class PupilInfo {
       return cardId;
    }
 
-   public void setCardId(long adbUserId) {
-      this.cardId = adbUserId;
+   public void setCardId(long cardId) {
+      this.cardId = cardId;
    }
 
-   public boolean isDinnerPermitted() {
-      return dinnerPermitted;
+   public String getGrade() {
+      return grade;
    }
 
-   public void setDinnerPermitted(boolean dinnerPermission) {
-      this.dinnerPermitted = dinnerPermission;
+   public void setGrade(String grade) {
+      this.grade = grade;
    }
 
    public String getComment() {
@@ -59,14 +58,6 @@ public class PupilInfo {
 
    public void setComment(String comment) {
       this.comment = comment;
-   }
-
-   public boolean isBreakfastPermitted() {
-      return breakfastPermitted;
-   }
-
-   public void setBreakfastPermitted(boolean breakfastPermitted) {
-      this.breakfastPermitted = breakfastPermitted;
    }
 
    public Portion getBreakfastPortion() {

@@ -8,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import static java.util.Optional.ofNullable;
 
 @Service
 public class MealService {
@@ -30,8 +33,8 @@ public class MealService {
             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
    }
 
-   public Date lastMealEvent(long cardId) {
-      return mealRepository.lastMealEventDate(cardId);
+   public Optional<Date> lastMealEvent(long cardId) {
+      return ofNullable(mealRepository.lastMealEventDate(cardId));
    }
 
    public void saveMealEvent(long cardId, String name) {

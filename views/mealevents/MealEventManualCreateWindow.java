@@ -10,13 +10,11 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.views.converters.StringToBooleanCellConverter;
 
 import java.util.Date;
 
 import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 import static com.vaadin.ui.Button.ClickListener;
-import static com.vaadin.ui.Table.Align.CENTER;
 
 public class MealEventManualCreateWindow extends Window {
 
@@ -41,15 +39,15 @@ public class MealEventManualCreateWindow extends Window {
       table.setContainerDataSource(container);
       table.setColumnHeader("firstName", "Vardas");
       table.setColumnHeader("lastName", "Pavardė");
-      table.setColumnHeader("dinnerPermitted", "Pietus");
-      table.setColumnHeader("breakfastPermitted", "Pusryčiai");
-      table.setVisibleColumns(new String[]{"firstName", "lastName", "breakfastPermitted", "dinnerPermitted"});
-      table.setColumnWidth("dinnerPermitted", 85);
-      table.setColumnWidth("breakfastPermitted", 85);
-      table.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
-      table.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
-      table.setColumnAlignment("dinnerPermitted", CENTER);
-      table.setColumnAlignment("breakfastPermitted", CENTER);
+      //table.setColumnHeader("dinnerPermitted", "Pietus");
+      //table.setColumnHeader("breakfastPermitted", "Pusryčiai");
+      table.setVisibleColumns(new String[]{"firstName", "lastName"});
+      //table.setColumnWidth("dinnerPermitted", 85);
+      //table.setColumnWidth("breakfastPermitted", 85);
+      //table.setConverter("dinnerPermitted", new StringToBooleanCellConverter());
+      //table.setConverter("breakfastPermitted", new StringToBooleanCellConverter());
+      //table.setColumnAlignment("dinnerPermitted", CENTER);
+      //table.setColumnAlignment("breakfastPermitted", CENTER);
       table.setColumnCollapsingAllowed(true);
       table.setSelectable(true);
       table.setNullSelectionAllowed(false);

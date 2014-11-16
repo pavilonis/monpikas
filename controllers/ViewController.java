@@ -13,6 +13,7 @@ import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.domain.Portion;
@@ -29,31 +30,34 @@ import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.Optional;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 import static com.vaadin.ui.Notification.show;
 import static java.net.HttpURLConnection.HTTP_OK;
+import static java.util.Optional.ofNullable;
 import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Controller
 public class ViewController {
 
-   @Value("${PupilEditWindow.PhotoBasePath}")
+   @Value("${pupilEditWindow.PhotoBasePath}")
    private String adbImageBasePath;
 
-   @Value("${Images.Extension}")
+   @Value("${images.Extension}")
    private String imageExtension;
 
-   @Value("${Images.DefaultPhotoPath}")
+   @Value("${images.DefaultPhotoPath}")
    private String noPhotoPath;
 
    @Autowired
@@ -64,6 +68,9 @@ public class ViewController {
 
    @Autowired
    private PortionService portionService;
+
+   @Autowired
+   private Environment env;
 
    public TabSheet createAdbPulilListView() {
       TabSheet tabs = new TabSheet();
@@ -164,21 +171,36 @@ public class ViewController {
    private ItemClickEvent.ItemClickListener pulilListTableClickListener() {
       return event -> {
          if (event.isDoubleClick()) {
-            Item item = event.getItem();
-            long id = (long) event.getItemId();
-            PupilEditWindow editView = new PupilEditWindow(item, getImage(id), mealService.lastMealEvent(id));
-            editView.addCloseButtonListener(closeBtnClick -> editView.close());
-            editView.addSaveButtonListener(
+            BeanItem<AdbPupilDto> item = (BeanItem<AdbPupilDto>) event.getItem();
+            AdbPupilDto dto = item.getBean();/////?
+            PupilInfo info = pupilService.infoByCardId(dto.getCardId()).orElse(new PupilInfo(dto.getCardId()));
+            PupilEditWindow view = new PupilEditWindow(
+                  info,
+                  dto,
+                  getImage(dto.getCardId()),
+                  mealService.lastMealEvent(dto.getCardId()),
+                  portionService.getAll()
+            );
+            view.addCloseButtonListener(closeBtnClick -> view.close());
+            view.addSaveButtonListener(
                   saveBtnClick -> {
-                     editView.commit();
-                     boolean dinnerPermission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
-                     boolean breakfastPermission = (boolean) item.getItemProperty("breakfastPermitted").getValue();
-                     String comment = (String) item.getItemProperty("comment").getValue();
-                     pupilService.saveOrUpdate(new PupilInfo(id, breakfastPermission, dinnerPermission, comment));
-                     editView.close();
+                     if (!view.isValid()) {
+                        return;
+                     }
+                     view.commit();
+                     System.out.println("2 "+info.getBreakfastPortion() + " === " + info.getDinnerPortion());
+                     pupilService.saveOrUpdate(info);
+                     System.out.println("3 "+info.getBreakfastPortion() + " === " + info.getDinnerPortion());
+                     dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
+                     dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
+                     dto.setGrade(ofNullable(info.getGrade()));
+                     dto.setComment(ofNullable(info.getComment()));
+                     Table tbl = (Table) event.getSource();
+                     tbl.refreshRowCache();
+                     view.close();
                      show("Išsaugota", TRAY_NOTIFICATION);
                   });
-            UI.getCurrent().addWindow(editView);
+            UI.getCurrent().addWindow(view);
          }
       };
    }
@@ -218,12 +240,16 @@ public class ViewController {
          w.getContainer().addAll(pupilService.getMergedMealAllowedList());
          w.addCloseButtonListener(closeClick -> w.close());
          w.addSaveButtonListener(saveClick -> {
-            if (valid((Long) w.getTable().getValue(), w.getDateField().getValue())) {
-               AdbPupilDto dto = pupilService.getByCardId((long) w.getTable().getValue());
-               String name = dto.getFirstName() + " " + dto.getLastName();
-               MealEvent m = new MealEvent(dto.getCardId(), name, w.getDateField().getValue());
-               mealService.saveMealEvent(m);
-               listView.getContainer().addBean(m);
+            long id = (long) w.getTable().getValue();
+            if (valid(id, w.getDateField().getValue())) {
+               Optional<AdbPupilDto> dto = pupilService.getByCardId(id);
+               MealEvent event = new MealEvent(
+                     dto.get().getCardId(),
+                     dto.get().getFirstName() + " " + dto.get().getLastName(),
+                     w.getDateField().getValue()
+               );
+               mealService.saveMealEvent(event);
+               listView.getContainer().addBean(event);
                w.close();
                show("Išsaugota", TRAY_NOTIFICATION);
             }
