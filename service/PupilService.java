@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.AdbDao;
+import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
@@ -119,18 +120,9 @@ public class PupilService {
       infoRepo.saveAndFlush(info);
    }
 
-   public boolean hadDinnerToday(long cardId) {
+   public boolean hadMealToday(long cardId) {
       Date lastDinner = mealRepo.lastMealEventDate(cardId);
       return lastDinner != null && mealService.sameDay(lastDinner, new Date());
-   }
-
-   public boolean reachedMealLimit(AdbPupilDto dto) {
-      return reachedMealLimit(dto, null);
-   }
-
-   public boolean reachedMealLimit(AdbPupilDto dto, Date date) {
-      Long todaysMeals = mealRepo.numOfTodaysMealEventsByCardId(dto.getCardId(), beginning(date));
-      return todaysMeals >= dto.mealsPermitted();
    }
 
    public boolean canHaveMeal(long cardId, Date day, PortionType type) {
@@ -138,15 +130,21 @@ public class PupilService {
       return mealsThatDay == 0;
    }
 
-   public boolean hasPermission(long cardId, PortionType type) {
+   public boolean portionAssigned(long cardId, PortionType type) {
       PupilInfo info = infoRepo.findByCardId(cardId);
       return (type == BREAKFAST && info.getBreakfastPortion() != null) ||
             (type == DINNER && info.getDinnerPortion() != null);
    }
 
-   public boolean reachedMealLimit(long cardId, Date date) {
-      Long todaysMeals = mealRepo.numOfTodaysMealEventsByCardId(cardId, beginning(date));
-      return todaysMeals >= getByCardId(cardId).get().mealsPermitted();
+   public int numOfPortionAssigned(AdbPupilDto dto) {
+      return (dto.getBreakfastPortion().isPresent() ? 1 : 0)
+            + (dto.getDinnerPortion().isPresent() ? 1 : 0);
+   }
+
+   public Portion onlyPortionFor(AdbPupilDto dto) {
+      return dto.getBreakfastPortion().isPresent()
+            ? dto.getBreakfastPortion().get()
+            : dto.getDinnerPortion().get();
    }
 
    private Date beginning(Date date) {

@@ -1,7 +1,6 @@
 package lt.pavilonis.monpikas.server.views.portions;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;

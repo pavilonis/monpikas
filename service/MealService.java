@@ -37,14 +37,6 @@ public class MealService {
       return ofNullable(mealRepository.lastMealEventDate(cardId));
    }
 
-//   public void saveMealEvent(long cardId, String name) {
-//      saveMealEvent(cardId, name, null);
-//   }
-//
-//   public void saveMealEvent(long cardId, String name, Date date) {
-//      saveMealEvent(new MealEvent(cardId, name, date == null ? new Date() : date));
-//   }
-
    public void saveMealEvent(MealEvent m) {
       mealRepository.save(m);
    }

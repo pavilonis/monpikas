@@ -257,7 +257,7 @@ public class ViewController {
       } else if (date == null) {
          show("Nenurodyta data", WARNING_MESSAGE);
          return false;
-      } else if (!pupilService.hasPermission(id, type)) {
+      } else if (!pupilService.portionAssigned(id, type)) {
          show("Mokinys neturi leidimo šio tipo maitinimuisi", ERROR_MESSAGE);
          return false;
       } else if (!pupilService.canHaveMeal(id, date, type)) {

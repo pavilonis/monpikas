@@ -10,6 +10,7 @@ import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.views.converters.OptionalBooleanCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
 public class PupilsListView extends VerticalLayout {
 
@@ -33,18 +34,20 @@ public class PupilsListView extends VerticalLayout {
       t.setColumnHeader("comment", "Komentaras");
       t.setConverter("comment", new OptionalCellConverter());
       t.setVisibleColumns(
-            new String[]{"cardId", "firstName", "lastName", "birthDate",
-                  "breakfastPortion", "dinnerPortion", "grade", "comment"}
+            new String[]{
+                  "cardId", "firstName", "lastName", "birthDate", "breakfastPortion", "dinnerPortion", "grade", "comment"
+            }
       );
       t.setColumnWidth("breakfastPortion", 85);
       t.setColumnWidth("dinnerPortion", 85);
       t.setColumnWidth("grade", 85);
+      t.setColumnWidth("birthDate", 130);
+      t.setColumnWidth("cardId", 90);
       t.setConverter("breakfastPortion", new OptionalBooleanCellConverter());
       t.setConverter("dinnerPortion", new OptionalBooleanCellConverter());
-      t.setColumnWidth("birthDate", 130);
       t.setConverter("grade", new OptionalCellConverter());
       t.setConverter("birthDate", new OptionalCellConverter());
-      t.setColumnWidth("cardId", 90);
+      t.setConverter("cardId", new SimpleStringToLongConverter());
       t.setColumnAlignment("breakfastPortion", CENTER);
       t.setColumnAlignment("dinnerPortion", CENTER);
       t.setColumnAlignment("birthDate", CENTER);
@@ -72,9 +75,5 @@ public class PupilsListView extends VerticalLayout {
 
    public BeanContainer<Long, AdbPupilDto> getContainer() {
       return container;
-   }
-
-   public PupilListFilterPanel getPupilListFilterPanel() {
-      return pupilListFilterPanel;
    }
 }

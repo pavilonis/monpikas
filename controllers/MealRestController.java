@@ -1,5 +1,7 @@
 package lt.pavilonis.monpikas.server.controllers;
 
+import lt.pavilonis.monpikas.server.domain.MealEvent;
+import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
 import lt.pavilonis.monpikas.server.service.MealService;
@@ -14,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Date;
 import java.util.Optional;
 
 import static java.time.LocalTime.now;
@@ -25,8 +28,8 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealRestController {
    private static final Logger LOG = getLogger(MealRestController.class);
 
-   @Value("${time.breakfastDinnerBorder}")
-   private String breakfastDinnerBorder;
+   @Value("${time.midday}")
+   private String midday;
 
    @Autowired
    PupilService pupilService;
@@ -35,48 +38,75 @@ public class MealRestController {
    MealService mealService;
 
    @ResponseBody
-   @RequestMapping("asdf")
-   public void asdf() {
-      if (now().isBefore(parse(breakfastDinnerBorder))) {
-         System.out.println("mourning");
-      } else {
-         System.out.println("eventing");
-      }
-   }
-
-
-   @ResponseBody
    @RequestMapping("mealRequest/{id}")
    public ResponseEntity<ClientPupilDto> dinnerRequest(@PathVariable long id) {
-//      if (now().isBefore(parse(breakfastDinnerBorder))) {
-//         System.out.println("mourning");
-//      } else {
-//         System.out.println("eventing");
-//      }
+
       LOG.info("Pupil with id: " + id + " requested a meal");
-      Optional<AdbPupilDto> adbDto = pupilService.getByCardId(id);
+      Optional<AdbPupilDto> dto = pupilService.getByCardId(id);
 
-      adbDto.ifPresent(d -> {
-         String fullName = d.getFirstName() + " " + d.getLastName();
-//
-//         LocalTime.now()
-//         d.getBreakfastPortion().ifPresent(p);
-//         if (!adbDto.getDinnerPortion().isPresent()) {
-//            LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
-//            return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, false, false), HttpStatus.OK);
-//
-//         } else if (pupilService.reachedMealLimit(adbDto)) {
-//            LOG.info("Pupil with id: " + id + " reached meal limit today");
-//            return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, true), HttpStatus.OK);
-//
-//         } else {
-//            LOG.info("Pupil with id: " + id + " is getting the meal");
-//            mealService.saveMealEvent(adbDto.getCardId(), fullName);
-//            return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), fullName, true, false), HttpStatus.OK);
-//         }
-      });
 
-      LOG.info("Pupil with id: " + id + " was NOT found in ADB");
-      return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+      if (!dto.isPresent()) {
+         LOG.info("Pupil with id: " + id + " was NOT found in ADB");
+         return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+
+      } else {
+
+         String name = dto.get().getFirstName() + " " + dto.get().getLastName();
+
+         switch (pupilService.numOfPortionAssigned(dto.get())) {
+
+            case 0:
+               LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
+               return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), name, false, false), HttpStatus.OK);
+
+            case 1:
+               Portion portion = pupilService.onlyPortionFor(dto.get());
+               if (pupilService.canHaveMeal(id, new Date(), portion.getType())) {
+
+                  mealService.saveMealEvent(
+                        new MealEvent(id, name, new Date(), portion.getPrice(), portion.getType())
+                  );
+
+                  //TODO store these messages in message container
+                  LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " +
+                        portion.getType().name() + " for " + portion.getPrice() + "units of money");
+
+                  return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), name, true, false), HttpStatus.OK);
+
+               } else {
+
+                  LOG.info("REJECT - Pupil '" + name + "' (id " + id + ") already had his meal");
+                  return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), name, true, true), HttpStatus.OK);
+
+               }
+
+            case 2:
+               //TODO parsing every time?
+               portion = now().isBefore(parse(midday))
+                     ? dto.get().getBreakfastPortion().get()
+                     : dto.get().getDinnerPortion().get();
+
+               if (pupilService.canHaveMeal(id, new Date(), portion.getType())) {
+
+                  mealService.saveMealEvent(
+                        new MealEvent(id, name, new Date(), portion.getPrice(), portion.getType())
+                  );
+
+                  LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " +
+                        portion.getType().name() + " for " + portion.getPrice() + "units of money");
+
+                  return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), name, true, false), HttpStatus.OK);
+               } else {
+
+                  LOG.info("REJECT - Pupil '" + name + "' (id " + id + ") already had his meal");
+                  return new ResponseEntity<>(new ClientPupilDto(String.valueOf(id), name, true, true), HttpStatus.OK);
+
+               }
+
+            default:
+               LOG.error("found more than 3 meals assigned?");
+               return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+         }
+      }
    }
 }
