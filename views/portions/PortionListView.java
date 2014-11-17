@@ -1,10 +1,12 @@
 package lt.pavilonis.monpikas.server.views.portions;
 
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.Portion;
+import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
 
 public class PortionListView extends VerticalLayout {
 
@@ -21,9 +23,10 @@ public class PortionListView extends VerticalLayout {
       table.setColumnHeader("id", "ID");
       table.setColumnHeader("name", "Pavadinimas");
       table.setColumnHeader("type", "Tipas");
-      table.setColumnHeader("price", "Kaina");
+      table.setColumnHeader("price", "Kaina (Lt.)");
 
       table.setVisibleColumns(new String[]{"id", "name", "type", "price"});
+      table.setConverter("type", new PortionTypeCellConverter());
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
       table.setSelectable(true);

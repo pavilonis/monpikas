@@ -6,6 +6,7 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
+import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -30,13 +31,16 @@ public class MealEventListView extends VerticalLayout {
       table.setColumnHeader("name", "Vardas");
       table.setColumnHeader("cardId", "Kortelės ID");
       table.setColumnHeader("date", "Data");
+      table.setColumnHeader("type", "Tipas");
+      table.setColumnHeader("price", "Kaina (Lt.)");
       table.setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm");
          }
       });
-      table.setVisibleColumns(new String[]{"id", "cardId", "name", "date"});
+      table.setConverter("type", new PortionTypeCellConverter());
+      table.setVisibleColumns(new String[]{"id", "cardId", "name", "date", "type", "price"});
       table.setColumnWidth("cardId", 100);
       table.setColumnWidth("birthDate", 130);
       table.setColumnAlignment("cardId", CENTER);

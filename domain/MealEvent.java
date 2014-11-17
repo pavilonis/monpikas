@@ -1,6 +1,10 @@
 package lt.pavilonis.monpikas.server.domain;
 
+import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
+
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.util.Date;
@@ -11,10 +15,12 @@ public class MealEvent {
    public MealEvent() {
    }
 
-   public MealEvent(long cardId, String name, Date date) {
+   public MealEvent(long cardId, String name, Date date, double price, PortionType type) {
       this.cardId = cardId;
       this.name = name;
       this.date = date;
+      this.price = price;
+      this.type = type;
    }
 
    @Id
@@ -29,7 +35,8 @@ public class MealEvent {
 
    private double price;
 
-   private String type;
+   @Enumerated(EnumType.STRING)
+   private PortionType type;
 
    public Date getDate() {
       return date;
@@ -75,11 +82,11 @@ public class MealEvent {
       this.price = price;
    }
 
-   public String getType() {
+   public PortionType getType() {
       return type;
    }
 
-   public void setType(String type) {
+   public void setType(PortionType type) {
       this.type = type;
    }
 }

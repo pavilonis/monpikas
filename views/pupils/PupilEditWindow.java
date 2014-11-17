@@ -42,17 +42,17 @@ public class PupilEditWindow extends Window {
    ComboBox breakfastPortionCombo;
    ComboBox dinnerPortionCombo;
 
-   public PupilEditWindow(PupilInfo info, AdbPupilDto dto, Image image, Optional<Date> lastDinner, List<Portion> portions) {
+   public PupilEditWindow(PupilInfo info, AdbPupilDto dto, Image image, Optional<Date> lastMealDate, List<Portion> portions) {
 
-      List<Portion> breakfasts = portions.stream()
+      List<Portion> breakfasts = portions.stream() //get only breakfasts and filter out current value
             .filter(p -> p.getType() == BREAKFAST && (info.getBreakfastPortion() == null || !p.getId().equals(info.getBreakfastPortion().getId())))
             .collect(toList());
 
       List<Portion> dinners = portions.stream()
-            .filter(p -> p.getType() == DINNER && (info.getDinnerPortion()==null || !p.getId().equals(info.getDinnerPortion().getId())))
+            .filter(p -> p.getType() == DINNER && (info.getDinnerPortion() == null || !p.getId().equals(info.getDinnerPortion().getId())))
             .collect(toList());
 
-      if (info.getBreakfastPortion() != null) {
+      if (info.getBreakfastPortion() != null) {    //add current value (this way vaadin combobox displays current value)
          breakfasts.add(info.getBreakfastPortion());
       }
       if (info.getDinnerPortion() != null) {
@@ -70,18 +70,18 @@ public class PupilEditWindow extends Window {
 
       setCaption("Mokinio nustatymai");
       setResizable(false);
-      setWidth("500px");
-      setHeight("580px");
+      setWidth("480px");
+      setHeight("550px");
 
       String birthDate = dto.getBirthDate().isPresent() ? dto.getBirthDate().get().toString() : "nenurodyta";
-      String mealDate = lastDinner.isPresent() ? DATE_FORMAT.format(lastDinner.get()) : "nėra duomenų";
+      String mealDate = lastMealDate.isPresent() ? DATE_FORMAT.format(lastMealDate.get()) : "nėra duomenų";
 
-      VerticalLayout vl1 = new VerticalLayout(
-            new Label("<b>Kortelės #:</b> " + dto.getCardId(), HTML),
-            new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML),
-            new Label("<b>Gimimo data:</b> " + birthDate, HTML),
-            new Label("<b>Paskutinis<br/>maitinimasis:</b> " + mealDate, HTML)
-      );
+      Label last = new Label("<b>Paskutinis<br/>maitinimasis:</b> " + mealDate, HTML);
+      Label card = new Label("<b>Kortelės #:</b> " + dto.getCardId(), HTML);
+      Label name = new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML);
+      Label date = new Label("<b>Gimimo data:</b> " + birthDate, HTML);
+
+      VerticalLayout vl1 = new VerticalLayout(card, name, date, last);
       vl1.setSpacing(true);
       vl1.setMargin(true);
 
@@ -111,9 +111,16 @@ public class PupilEditWindow extends Window {
       vl2.setComponentAlignment(image, BOTTOM_CENTER);
       vl2.setSpacing(true);
 
+      breakfastPortionCombo.setWidth("220px");
+      dinnerPortionCombo.setWidth("220px");
+      grade.setWidth("220px");
+      name.setWidth("220px");
+
       gl.addComponents(vl1, vl2);
       setContent(gl);
       setModal(true);
+
+
    }
 
    public void addSaveButtonListener(ClickListener listener) {
