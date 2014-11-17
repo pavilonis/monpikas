@@ -18,6 +18,7 @@ import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
+import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PortionService;
@@ -37,7 +38,6 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-import java.util.Optional;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
@@ -45,6 +45,7 @@ import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 import static com.vaadin.ui.Notification.show;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Optional.ofNullable;
+import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
 import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
@@ -98,21 +99,6 @@ public class ViewController {
          tabs.addTab(plView, "Porcijos", FontAwesome.WRENCH);
       }
       return tabs;
-   }
-
-   private boolean valid(Long id, Date date) {
-      if (id == null) {
-         show("Nepasirinktas mokinys", WARNING_MESSAGE);
-         return false;
-      } else if (date == null) {
-         show("Nenurodyta data", WARNING_MESSAGE);
-         return false;
-      } else if (pupilService.reachedMealLimit(id, date)) {
-         show("Viršijamas nurodytos dienos maitinimosi limitas", WARNING_MESSAGE);
-         return false;
-      } else {
-         return true;
-      }
    }
 
    private ClickListener portionDeleteListener(PortionListView view) {
@@ -188,9 +174,7 @@ public class ViewController {
                         return;
                      }
                      view.commit();
-                     System.out.println("2 "+info.getBreakfastPortion() + " === " + info.getDinnerPortion());
                      pupilService.saveOrUpdate(info);
-                     System.out.println("3 "+info.getBreakfastPortion() + " === " + info.getDinnerPortion());
                      dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
                      dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
                      dto.setGrade(ofNullable(info.getGrade()));
@@ -240,13 +224,21 @@ public class ViewController {
          w.getContainer().addAll(pupilService.getMergedMealAllowedList());
          w.addCloseButtonListener(closeClick -> w.close());
          w.addSaveButtonListener(saveClick -> {
-            long id = (long) w.getTable().getValue();
-            if (valid(id, w.getDateField().getValue())) {
-               Optional<AdbPupilDto> dto = pupilService.getByCardId(id);
+            Long id = (Long) w.getTable().getValue();
+            PortionType type = w.getPortionType();
+            if (valid(id, w.getDate(), type)) {
+               AdbPupilDto dto = pupilService.getByCardId(id).get();
+
+               Double price = type == BREAKFAST
+                     ? dto.getBreakfastPortion().get().getPrice()
+                     : dto.getDinnerPortion().get().getPrice();
+
                MealEvent event = new MealEvent(
-                     dto.get().getCardId(),
-                     dto.get().getFirstName() + " " + dto.get().getLastName(),
-                     w.getDateField().getValue()
+                     dto.getCardId(),
+                     dto.getFirstName() + " " + dto.getLastName(),
+                     w.getDate(),
+                     price,
+                     type
                );
                mealService.saveMealEvent(event);
                listView.getContainer().addBean(event);
@@ -256,6 +248,24 @@ public class ViewController {
          });
          UI.getCurrent().addWindow(w);
       };
+   }
+
+   private boolean valid(Long id, Date date, PortionType type) {
+      if (id == null) {
+         show("Nepasirinktas mokinys", WARNING_MESSAGE);
+         return false;
+      } else if (date == null) {
+         show("Nenurodyta data", WARNING_MESSAGE);
+         return false;
+      } else if (!pupilService.hasPermission(id, type)) {
+         show("Mokinys neturi leidimo šio tipo maitinimuisi", ERROR_MESSAGE);
+         return false;
+      } else if (!pupilService.canHaveMeal(id, date, type)) {
+         show("Viršijamas nurodytos dienos maitinimosi limitas", ERROR_MESSAGE);
+         return false;
+      } else {
+         return true;
+      }
    }
 
    private ClickListener mealDeleteEventListener(MealEventListView listView) {

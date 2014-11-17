@@ -2,6 +2,7 @@ package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.AdbDao;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
+import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.repositories.MealEventRepository;
 import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
@@ -16,6 +17,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static java.util.Optional.ofNullable;
+import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
+import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -30,7 +33,7 @@ public class PupilService {
    private PupilInfoRepository infoRepo;
 
    @Autowired
-   private MealEventRepository mealRepository;
+   private MealEventRepository mealRepo;
 
    @Autowired
    private MealService mealService;
@@ -117,7 +120,7 @@ public class PupilService {
    }
 
    public boolean hadDinnerToday(long cardId) {
-      Date lastDinner = mealRepository.lastMealEventDate(cardId);
+      Date lastDinner = mealRepo.lastMealEventDate(cardId);
       return lastDinner != null && mealService.sameDay(lastDinner, new Date());
    }
 
@@ -126,23 +129,42 @@ public class PupilService {
    }
 
    public boolean reachedMealLimit(AdbPupilDto dto, Date date) {
-      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(dto.getCardId(), midnight(date));
+      Long todaysMeals = mealRepo.numOfTodaysMealEventsByCardId(dto.getCardId(), beginning(date));
       return todaysMeals >= dto.mealsPermitted();
    }
 
+   public boolean canHaveMeal(long cardId, Date day, PortionType type) {
+      long mealsThatDay = mealRepo.numOfMealEvents(cardId, beginning(day), end(day), type.name());
+      return mealsThatDay == 0;
+   }
+
+   public boolean hasPermission(long cardId, PortionType type) {
+      PupilInfo info = infoRepo.findByCardId(cardId);
+      return (type == BREAKFAST && info.getBreakfastPortion() != null) ||
+            (type == DINNER && info.getDinnerPortion() != null);
+   }
+
    public boolean reachedMealLimit(long cardId, Date date) {
-      Long todaysMeals = mealRepository.numOfTodaysMealEventsByCardId(cardId, midnight(date));
+      Long todaysMeals = mealRepo.numOfTodaysMealEventsByCardId(cardId, beginning(date));
       return todaysMeals >= getByCardId(cardId).get().mealsPermitted();
    }
 
-   private Date midnight(Date date) {
+   private Date beginning(Date date) {
       Calendar c = Calendar.getInstance();
-      if (!(date == null)) {
-         c.setTime(date);
-      }
+      c.setTime(date);
       c.set(Calendar.HOUR_OF_DAY, 0);
       c.set(Calendar.MINUTE, 0);
       c.set(Calendar.SECOND, 0);
+      c.set(Calendar.MILLISECOND, 0);
+      return c.getTime();
+   }
+
+   private Date end(Date date) {
+      Calendar c = Calendar.getInstance();
+      c.setTime(date);
+      c.set(Calendar.HOUR_OF_DAY, 23);
+      c.set(Calendar.MINUTE, 59);
+      c.set(Calendar.SECOND, 59);
       c.set(Calendar.MILLISECOND, 0);
       return c.getTime();
    }

@@ -37,12 +37,16 @@ public class PortionFormWindow extends Window {
       setResizable(false);
       setWidth("350px");
       setHeight("280px");
+
       type.setNullSelectionAllowed(false);
+      type.setItemCaption(PortionType.BREAKFAST, "Pusryčiai");
+      type.setItemCaption(PortionType.DINNER, "Pietus");
       group.bind(type, "type");
+
       FormLayout fl = new FormLayout(
             group.buildAndBind("Pavadinimas", "name"),
             type,
-            group.buildAndBind("Kaina", "price")
+            group.buildAndBind("Kaina (Lt.)", "price")
       );
       ((TextField) group.getField("name")).setNullRepresentation("");
       group.setBuffered(true);

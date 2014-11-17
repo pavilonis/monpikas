@@ -2,32 +2,33 @@ package lt.pavilonis.monpikas.server.views.pupils;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
+import com.vaadin.data.util.BeanItem;
+import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 
 public class PupilFilter implements Filter {
    private String text;
-   private boolean dinnerPermitted;
-   private boolean breakfastPermitted;
+   private boolean breakfastChecked;
+   private boolean dinnerChecked;
 
-   public PupilFilter(String text, boolean breakfastPermitted, boolean dinnerPermitted) {
-      this.text = text.toLowerCase();
-      this.breakfastPermitted = breakfastPermitted;
-      this.dinnerPermitted = dinnerPermitted;
+   public PupilFilter(String text, boolean breakfastChecked, boolean dinnerChecked) {
+      this.text = text;
+      this.breakfastChecked = breakfastChecked;
+      this.dinnerChecked = dinnerChecked;
    }
 
-   public String getText() {
-      return text;
-   }
-
+   @SuppressWarnings("unchecked")
    @Override
    public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-      String stack = item.getItemProperty("firstName").getValue().toString().toLowerCase() +
-            item.getItemProperty("lastName").getValue().toString().toLowerCase() +
-            (item.getItemProperty("birthDate").getValue() == null ? "" : item.getItemProperty("birthDate").getValue().toString());
-      boolean itemDinnerPermission = (boolean) item.getItemProperty("dinnerPermitted").getValue();
-      boolean itemBreakfastPermission = (boolean) item.getItemProperty("breakfastPermitted").getValue();
+
+      AdbPupilDto dto = ((BeanItem<AdbPupilDto>) item).getBean();
+
+      String stack = dto.getFirstName().toLowerCase() + dto.getLastName().toLowerCase() +
+            (dto.getBirthDate().isPresent() ? dto.getBirthDate().get() : "") +
+            (dto.getGrade().isPresent() ? dto.getGrade().get() : "");
+
       return stack.contains(text) &&
-            (!dinnerPermitted || itemDinnerPermission) &&
-            (!breakfastPermitted || itemBreakfastPermission);
+            (!breakfastChecked || dto.getBreakfastPortion().isPresent())
+            && (!dinnerChecked || dto.getDinnerPortion().isPresent());
    }
 
    @Override

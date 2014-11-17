@@ -6,9 +6,9 @@ CREATE TABLE `Portion` (
   PRIMARY KEY (`id`)
 );
 
-INSERT INTO Portion (name, type, price) VALUES ('Pusryčiai', 'BREAKFAST', 3.00);
+INSERT INTO Portion (name, type, price) VALUES ('Pradinukai', 'BREAKFAST', 3.00);
 INSERT INTO Portion (name, type, price) VALUES ('Pradinukai', 'DINNER', 4.00);
-INSERT INTO Portion (name, type, price) VALUES ('5-12', 'DINNER', 4.60);
+INSERT INTO Portion (name, type, price) VALUES ('5-12 kl.', 'DINNER', 4.60);
 
 ALTER TABLE PupilInfo ADD COLUMN breakfastPortion_id BIGINT(20) DEFAULT NULL;
 ALTER TABLE PupilInfo ADD COLUMN dinnerPortion_id BIGINT(20) DEFAULT NULL;
@@ -18,7 +18,7 @@ ALTER TABLE MealEvent ADD COLUMN price BIGINT(20) NOT NULL;
 ALTER TABLE MealEvent ADD COLUMN type VARCHAR(255) NOT NULL;
 
 UPDATE MealEvent
-SET type = 'Nenurodyta'
+SET type = 'DINNER'
 WHERE type = '';
 
 UPDATE PupilInfo
