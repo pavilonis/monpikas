@@ -7,12 +7,11 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
-
-import static com.vaadin.ui.Table.Align.CENTER;
 
 public class MealEventListView extends VerticalLayout {
 
@@ -29,7 +28,7 @@ public class MealEventListView extends VerticalLayout {
       container.sort(new Object[]{"date"}, new boolean[]{true});
       table.setColumnHeader("id", "ID");
       table.setColumnHeader("name", "Vardas");
-      table.setColumnHeader("cardId", "Kortelės ID");
+      table.setColumnHeader("cardId", "Kortelės #");
       table.setColumnHeader("date", "Data");
       table.setColumnHeader("type", "Tipas");
       table.setColumnHeader("price", "Kaina (Lt.)");
@@ -40,10 +39,10 @@ public class MealEventListView extends VerticalLayout {
          }
       });
       table.setConverter("type", new PortionTypeCellConverter());
+      table.setConverter("cardId", new SimpleStringToLongConverter());
       table.setVisibleColumns(new String[]{"id", "cardId", "name", "date", "type", "price"});
       table.setColumnWidth("cardId", 100);
       table.setColumnWidth("birthDate", 130);
-      table.setColumnAlignment("cardId", CENTER);
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
       table.setSelectable(true);
