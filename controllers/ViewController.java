@@ -9,7 +9,6 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button.ClickListener;
-import com.vaadin.ui.FormLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
@@ -21,6 +20,7 @@ import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
 import lt.pavilonis.monpikas.server.service.MealService;
+import lt.pavilonis.monpikas.server.reports.ReportService;
 import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
@@ -29,6 +29,7 @@ import lt.pavilonis.monpikas.server.views.portions.PortionFormWindow;
 import lt.pavilonis.monpikas.server.views.portions.PortionListView;
 import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
+import lt.pavilonis.monpikas.server.views.reports.ReportGeneratorView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.env.Environment;
@@ -71,6 +72,9 @@ public class ViewController {
    private PortionService portionService;
 
    @Autowired
+   private ReportService pdf;
+
+   @Autowired
    private Environment env;
 
    public TabSheet createAdbPulilListView() {
@@ -81,9 +85,11 @@ public class ViewController {
       mealView.getContainer().addAll(mealService.getDinnerEventList());
       mealView.getControlPanel().addAddListener(mealAddEventListener(mealView));
       mealView.getControlPanel().addDeleteListener(mealDeleteEventListener(mealView));
-      tabs.addTab(mealView, "Maitinimosi žurnalas", FontAwesome.CUTLERY);
+      tabs.addTab(mealView, "Žurnalas", FontAwesome.CUTLERY);
 
-      tabs.addTab(new FormLayout(), "Ataskaitos", FontAwesome.FILE_PDF_O);
+      ReportGeneratorView reportView = new ReportGeneratorView();
+      reportView.addGenerateActionListener(generateReportListener(reportView));
+      tabs.addTab(reportView, "Ataskaitos", FontAwesome.FILE_PDF_O);
 
       if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
          PupilsListView pupilsView = new PupilsListView();
@@ -99,6 +105,12 @@ public class ViewController {
          tabs.addTab(plView, "Porcijos", FontAwesome.WRENCH);
       }
       return tabs;
+   }
+
+   private ClickListener generateReportListener(ReportGeneratorView view) {
+      return click -> {
+         pdf.generate(new Date(1414792800000L), new Date());
+      };
    }
 
    private ClickListener portionDeleteListener(PortionListView view) {

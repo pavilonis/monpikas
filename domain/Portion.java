@@ -11,6 +11,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 @Entity
 public class Portion implements Serializable {
@@ -68,6 +69,6 @@ public class Portion implements Serializable {
 
    @Override
    public String toString() {
-      return name + " - " + price + " Lt.";
+      return name + " - " + new DecimalFormat("0.00").format(price);
    }
 }

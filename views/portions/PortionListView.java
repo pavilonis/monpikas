@@ -1,11 +1,16 @@
 package lt.pavilonis.monpikas.server.views.portions;
 
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
+
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Locale;
 
 public class PortionListView extends VerticalLayout {
 
@@ -22,7 +27,13 @@ public class PortionListView extends VerticalLayout {
       table.setColumnHeader("id", "ID");
       table.setColumnHeader("name", "Pavadinimas");
       table.setColumnHeader("type", "Tipas");
-      table.setColumnHeader("price", "Kaina (Lt.)");
+      table.setColumnHeader("price", "Kaina");
+      table.setConverter("price", new StringToDoubleConverter() {
+         @Override
+         protected NumberFormat getFormat(Locale locale) {
+            return new DecimalFormat("0.00");
+         }
+      });
 
       table.setVisibleColumns(new String[]{"id", "name", "type", "price"});
       table.setConverter("type", new PortionTypeCellConverter());

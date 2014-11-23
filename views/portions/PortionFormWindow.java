@@ -46,7 +46,7 @@ public class PortionFormWindow extends Window {
       FormLayout fl = new FormLayout(
             group.buildAndBind("Pavadinimas", "name"),
             type,
-            group.buildAndBind("Kaina (Lt.)", "price")
+            group.buildAndBind("Kaina", "price")
       );
       ((TextField) group.getField("name")).setNullRepresentation("");
       group.setBuffered(true);

@@ -7,10 +7,14 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.util.Date;
+import java.util.Optional;
+
+import static java.util.Optional.empty;
 
 @Entity
-public class MealEvent {
+public class MealEvent implements Comparable {
 
    public MealEvent() {
    }
@@ -37,6 +41,9 @@ public class MealEvent {
 
    @Enumerated(EnumType.STRING)
    private PortionType type;
+
+   @Transient
+   private Optional<PupilInfo> info = empty();
 
    public Date getDate() {
       return date;
@@ -88,5 +95,18 @@ public class MealEvent {
 
    public void setType(PortionType type) {
       this.type = type;
+   }
+
+   @Override
+   public int compareTo(Object o) {
+      return ((MealEvent) o).getDate().compareTo(this.date);
+   }
+
+   public Optional<PupilInfo> getInfo() {
+      return info;
+   }
+
+   public void setInfo(Optional<PupilInfo> info) {
+      this.info = info;
    }
 }

@@ -1,7 +1,6 @@
 package lt.pavilonis.monpikas.server.repositories;
 
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

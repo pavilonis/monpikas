@@ -1,7 +1,9 @@
 package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
+import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToDateConverter;
+import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
@@ -10,6 +12,8 @@ import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -31,11 +35,17 @@ public class MealEventListView extends VerticalLayout {
       table.setColumnHeader("cardId", "Kortelės #");
       table.setColumnHeader("date", "Data");
       table.setColumnHeader("type", "Tipas");
-      table.setColumnHeader("price", "Kaina (Lt.)");
+      table.setColumnHeader("price", "Kaina");
       table.setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
             return new SimpleDateFormat("yyyy-MM-dd HH:mm");
+         }
+      });
+      table.setConverter("price", new StringToDoubleConverter() {
+         @Override
+         protected NumberFormat getFormat(Locale locale) {
+            return new DecimalFormat("0.00");
          }
       });
       table.setConverter("type", new PortionTypeCellConverter());
