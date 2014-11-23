@@ -32,10 +32,11 @@ public interface MealEventRepository extends JpaRepository<MealEvent, Long> {
          @Param("cardId") long cardId,
          @Param("start") Date start,
          @Param("end") Date end,
-         @Param("type") String type
+         @Param("type") PortionType type
    );
-
 
    @Query("select m from MealEvent m where m.date > :minDate")
    List<MealEvent> findAfter(@Param("minDate") Date minDate);
+
+   List<MealEvent> findByDateBetween(Date start, Date end);
 }

@@ -120,13 +120,8 @@ public class PupilService {
       infoRepo.saveAndFlush(info);
    }
 
-   public boolean hadMealToday(long cardId) {
-      Date lastDinner = mealRepo.lastMealEventDate(cardId);
-      return lastDinner != null && mealService.sameDay(lastDinner, new Date());
-   }
-
    public boolean canHaveMeal(long cardId, Date day, PortionType type) {
-      long mealsThatDay = mealRepo.numOfMealEvents(cardId, beginning(day), end(day), type.name());
+      long mealsThatDay = mealRepo.numOfMealEvents(cardId, beginning(day), end(day), type);
       return mealsThatDay == 0;
    }
 
