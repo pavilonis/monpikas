@@ -72,7 +72,7 @@ public class ViewController {
    private PortionService portionService;
 
    @Autowired
-   private ReportService pdf;
+   private ReportService reportService;
 
    @Autowired
    private Environment env;
@@ -87,8 +87,8 @@ public class ViewController {
       mealView.getControlPanel().addDeleteListener(mealDeleteEventListener(mealView));
       tabs.addTab(mealView, "Žurnalas", FontAwesome.CUTLERY);
 
-      ReportGeneratorView reportView = new ReportGeneratorView();
-      reportView.addGenerateActionListener(generateReportListener(reportView));
+      ReportGeneratorView reportView = new ReportGeneratorView(reportService);
+      //reportView.addGenerateActionListener(generateReportListener(reportView));
       tabs.addTab(reportView, "Ataskaitos", FontAwesome.FILE_PDF_O);
 
       if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
@@ -107,11 +107,11 @@ public class ViewController {
       return tabs;
    }
 
-   private ClickListener generateReportListener(ReportGeneratorView view) {
-      return click -> {
-         pdf.generate(new Date(1414792800000L), new Date());
-      };
-   }
+//   private ClickListener generateReportListener(ReportGeneratorView view) {
+//      return click -> {
+//         reportService.generate(new Date(1414792800000L), new Date());
+//      };
+//   }
 
    private ClickListener portionDeleteListener(PortionListView view) {
       return click -> {

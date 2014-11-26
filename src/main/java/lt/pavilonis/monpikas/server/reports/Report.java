@@ -39,7 +39,7 @@ public class Report {
       sheet.setMargin(Sheet.TopMargin, 0);
       sheet.setMargin(Sheet.BottomMargin, 0);
       sheet.setMargin(Sheet.RightMargin, 0);
-      sheet.setMargin(Sheet.LeftMargin, 0);
+      sheet.setMargin(Sheet.LeftMargin, .3);
 
       sheet.setColumnWidth(0, 1000);
       sheet.setColumnWidth(1, 6700);

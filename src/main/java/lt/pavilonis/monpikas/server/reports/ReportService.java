@@ -11,6 +11,7 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.Format;
@@ -37,7 +38,7 @@ public class ReportService {
    private static final String REPORT_TITLE = "Socialiai remtinų mokinių maitinimas Nacionalinėje M.K. Čiurlionio menų mokykloje";
    private static final Logger LOG = getLogger(PupilService.class);
 
-   public void generate(Date from, Date to) {
+   public ByteArrayOutputStream generate(Date from, Date to) {
 
       HSSFWorkbook wb = new HSSFWorkbook();
 
@@ -67,14 +68,17 @@ public class ReportService {
       );
 
       FileOutputStream fileOut;
+      ByteArrayOutputStream baos = null;
       try {
-         fileOut = new FileOutputStream("/home/art/Desktop/meal_report.xlsx");
-         wb.write(fileOut);
-         fileOut.close();
+         baos = new ByteArrayOutputStream();
+         //fileOut = new FileOutputStream("/home/art/Desktop/meal_report.xlsx");
+         wb.write(baos);
+         baos.close();
       } catch (IOException e) {
          e.printStackTrace();
       }
       LOG.info("Report was generated");
+      return baos;
    }
 
 }
