@@ -1,7 +1,6 @@
 package lt.pavilonis.monpikas.server.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
@@ -29,7 +28,6 @@ public class MealEventListView extends VerticalLayout {
       container.setBeanIdProperty("id");
       table.setSizeFull();
       table.setContainerDataSource(container);
-      container.sort(new Object[]{"date"}, new boolean[]{true});
       table.setColumnHeader("id", "ID");
       table.setColumnHeader("name", "Vardas");
       table.setColumnHeader("cardId", "Kortelės #");
