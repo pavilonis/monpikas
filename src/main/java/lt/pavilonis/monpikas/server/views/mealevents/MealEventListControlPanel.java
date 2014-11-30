@@ -13,6 +13,7 @@ public class MealEventListControlPanel extends HorizontalLayout {
    private Button deleteButton = new Button("Ištrinti", FontAwesome.WARNING);
 
    public MealEventListControlPanel() {
+      deleteButton.addStyleName("redicon");
       addComponents(addButton, deleteButton);
       setSpacing(true);
       setMargin(true);

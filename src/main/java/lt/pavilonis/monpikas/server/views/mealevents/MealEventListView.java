@@ -37,7 +37,7 @@ public class MealEventListView extends VerticalLayout {
       table.setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
-            return new SimpleDateFormat("yyyy-MM-dd HH:mm");
+            return new SimpleDateFormat("yyyy-MM-dd  HH:mm");
          }
       });
       table.setConverter("price", new StringToDoubleConverter() {

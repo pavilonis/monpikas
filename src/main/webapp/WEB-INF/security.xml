@@ -13,11 +13,11 @@
       <authentication-provider user-service-ref="monpikasUserDetailsService"/>
    </authentication-manager>
 
-   <beans:bean id="authenticationSuccessHandler"
-               class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">
-      <!-- After login, return to the last visited page -->
-      <beans:property name="useReferer" value="true"/>
-   </beans:bean>
+   <!--<beans:bean id="authenticationSuccessHandler"-->
+               <!--class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">-->
+      <!--&lt;!&ndash; After login, return to the last visited page &ndash;&gt;-->
+      <!--<beans:property name="useReferer" value="true"/>-->
+   <!--</beans:bean>-->
 
    <http pattern="/rest/**" use-expressions="true" create-session="never">
       <http-basic/>
@@ -29,8 +29,7 @@
                   login-page="/login"
                   authentication-failure-url="/login?error=true"
                   default-target-url="/app"
-                  always-use-default-target="true"
-                  authentication-success-handler-ref="authenticationSuccessHandler"/>
+                  always-use-default-target="true"/>
       <logout logout-url="/j_spring_security_logout" logout-success-url="/login"/>
 
       <intercept-url pattern="/login" access="permitAll"/>

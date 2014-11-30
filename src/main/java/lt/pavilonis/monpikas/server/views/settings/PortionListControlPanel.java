@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.portions;
+package lt.pavilonis.monpikas.server.views.settings;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
@@ -13,6 +13,7 @@ public class PortionListControlPanel extends HorizontalLayout {
    private Button deleteButton = new Button("Ištrinti", FontAwesome.WARNING);
 
    public PortionListControlPanel() {
+      deleteButton.addStyleName("redicon");
       addComponents(addButton, deleteButton);
       setSpacing(true);
       setMargin(true);
