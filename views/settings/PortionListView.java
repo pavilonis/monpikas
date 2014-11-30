@@ -1,8 +1,9 @@
-package lt.pavilonis.monpikas.server.views.portions;
+package lt.pavilonis.monpikas.server.views.settings;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.Portion;
@@ -19,6 +20,7 @@ public class PortionListView extends VerticalLayout {
    PortionListControlPanel controlPanel = new PortionListControlPanel();
 
    public PortionListView() {
+      setMargin(true);
       setSizeFull();
       container.setBeanIdProperty("id");
       table.setSizeFull();
@@ -43,7 +45,7 @@ public class PortionListView extends VerticalLayout {
       table.setNullSelectionAllowed(false);
       table.setCacheRate(5);
 
-      addComponents(table, controlPanel);
+      addComponents(new Label("Porcijos"), table, controlPanel);
       setExpandRatio(table, 1f);
    }
 

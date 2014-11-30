@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.portions;
+package lt.pavilonis.monpikas.server.views.settings;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;

@@ -36,9 +36,6 @@ public class PupilService {
    @Autowired
    private MealEventRepository mealRepo;
 
-   @Autowired
-   private MealService mealService;
-
    /**
     * @return List of Pupils from ADB merged with local Pupil information (PupilInfo)
     */
@@ -107,6 +104,7 @@ public class PupilService {
             d.setBreakfastPortion(ofNullable(i.getBreakfastPortion()));
             d.setDinnerPortion(ofNullable(i.getDinnerPortion()));
             d.setComment(ofNullable(i.getComment()));
+            d.setGrade(ofNullable(i.getGrade()));
          });
       });
       return dto;

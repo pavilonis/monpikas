@@ -9,30 +9,33 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button.ClickListener;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
 import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
 import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.reports.ReportService;
+import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventManualCreateWindow;
-import lt.pavilonis.monpikas.server.views.portions.PortionFormWindow;
-import lt.pavilonis.monpikas.server.views.portions.PortionListView;
+import lt.pavilonis.monpikas.server.views.settings.PortionFormWindow;
+import lt.pavilonis.monpikas.server.views.settings.PortionListView;
+import lt.pavilonis.monpikas.server.views.settings.OtherSettingsView;
 import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
 import lt.pavilonis.monpikas.server.views.reports.ReportGeneratorView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
@@ -41,6 +44,7 @@ import java.net.URL;
 import java.util.Date;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
+import static com.vaadin.ui.Notification.Type.HUMANIZED_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 import static com.vaadin.ui.Notification.show;
@@ -74,44 +78,72 @@ public class ViewController {
    @Autowired
    private ReportService reportService;
 
-   @Autowired
-   private Environment env;
+   public void attachComponents(VerticalLayout base) {
 
-   public TabSheet createAdbPulilListView() {
-      TabSheet tabs = new TabSheet();
-      tabs.setSizeFull();
+      VerticalLayout content = new VerticalLayout();
+      content.setSizeFull();
 
-      MealEventListView mealView = new MealEventListView();
-      mealView.getContainer().addAll(mealService.getDinnerEventList());
-      mealView.getControlPanel().addAddListener(mealAddEventListener(mealView));
-      mealView.getControlPanel().addDeleteListener(mealDeleteEventListener(mealView));
-      tabs.addTab(mealView, "Žurnalas", FontAwesome.CUTLERY);
+      MenuBar menu = new MenuBar();
 
-      ReportGeneratorView reportView = new ReportGeneratorView(reportService);
-      //reportView.addGenerateActionListener(generateReportListener(reportView));
-      tabs.addTab(reportView, "Ataskaitos", FontAwesome.FILE_PDF_O);
+      menu.addItem(" Žurnalas", FontAwesome.CUTLERY, selected -> {
+
+         MealEventListView view = new MealEventListView();
+         view.getContainer().addAll(mealService.getDinnerEventList());
+         view.getControlPanel().addAddListener(mealAddEventListener(view));
+         view.getControlPanel().addDeleteListener(mealDeleteEventListener(view));
+
+         content.removeAllComponents();
+         content.addComponent(view);
+      });
+
+      menu.addItem(" Ataskaitos", FontAwesome.FILE_PDF_O, selected -> {
+
+         ReportGeneratorView view = new ReportGeneratorView(reportService);
+
+         content.removeAllComponents();
+         content.addComponent(view);
+      });
+
 
       if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
-         PupilsListView pupilsView = new PupilsListView();
-         pupilsView.getContainer().addAll(pupilService.getMergedList());
-         pupilsView.setTableClickListener(pulilListTableClickListener());
-         tabs.addTab(pupilsView, "Bendras sąrašas", FontAwesome.CHILD);
 
-         PortionListView plView = new PortionListView();
-         plView.getContainer().addAll(portionService.getAll());
-         plView.setTableClickListener(portionListTableClickListener());
-         plView.getControlPanel().addAddListener(portionAddListener(plView));
-         plView.getControlPanel().addDeleteListener(portionDeleteListener(plView));
-         tabs.addTab(plView, "Porcijos", FontAwesome.WRENCH);
+         menu.addItem(" Bendras sąrašas", FontAwesome.CHILD, selected -> {
+
+            PupilsListView view = new PupilsListView();
+            view.getContainer().addAll(pupilService.getMergedList());
+            view.setTableClickListener(pulilListTableClickListener());
+
+            content.removeAllComponents();
+            content.addComponent(view);
+         });
+
+         menu.addItem(" Nustatymai", FontAwesome.WRENCH, selected -> {
+            HorizontalLayout hl = new HorizontalLayout();
+            hl.setSizeFull();
+
+            PortionListView view1 = new PortionListView();
+            view1.getContainer().addAll(portionService.getAll());
+            view1.setTableClickListener(portionListTableClickListener());
+            view1.getControlPanel().addAddListener(portionAddListener(view1));
+            view1.getControlPanel().addDeleteListener(portionDeleteListener(view1));
+
+            OtherSettingsView view2 = new OtherSettingsView();
+            view2.addSaveButtonClickListener(click -> show("Funkcionalumas nerealizuotas", WARNING_MESSAGE));
+            hl.addComponents(view1, view2);
+            content.removeAllComponents();
+            content.addComponent(hl);
+         });
+
+         MenuItem userItem = menu.addItem(" " + getContext().getAuthentication().getName(), FontAwesome.USER, null);
+         userItem.addItem(" Atsijungti", FontAwesome.POWER_OFF, selected -> {
+            getContext().getAuthentication().setAuthenticated(false);
+            content.removeAllComponents();
+            show("Atsijungta", HUMANIZED_MESSAGE);
+         });
       }
-      return tabs;
+      base.addComponents(menu, content);
+      base.setExpandRatio(content, 1f);
    }
-
-//   private ClickListener generateReportListener(ReportGeneratorView view) {
-//      return click -> {
-//         reportService.generate(new Date(1414792800000L), new Date());
-//      };
-//   }
 
    private ClickListener portionDeleteListener(PortionListView view) {
       return click -> {
