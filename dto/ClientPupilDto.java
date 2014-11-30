@@ -1,39 +1,32 @@
 package lt.pavilonis.monpikas.server.dto;
 
+import lt.pavilonis.monpikas.server.domain.Portion;
+
 import java.io.Serializable;
 
 public class ClientPupilDto implements Serializable {
 
-   private static final long serialVersionUID = 1L;
-   private String cardId;
+   private long cardId;
    private String name;
-   private boolean dinnerPermitted;
-   private boolean hadDinnerToday;
+   private Portion portion;
+   private String grade;
 
    public ClientPupilDto() {
    }
 
-   public ClientPupilDto(String cardId, String name, boolean dinnerPermitted, Boolean hadDinnerToday) {
+   public ClientPupilDto(long cardId, String name, Portion portion, String grade) {
       this.cardId = cardId;
       this.name = name;
-      this.dinnerPermitted = dinnerPermitted;
-      this.hadDinnerToday = hadDinnerToday;
+      this.portion = portion;
+      this.grade = grade;
    }
 
-   public String getCardId() {
+   public long getCardId() {
       return cardId;
    }
 
-   public void setCardId(String cardId) {
+   public void setCardId(long cardId) {
       this.cardId = cardId;
-   }
-
-   public Boolean getHadDinnerToday() {
-      return hadDinnerToday;
-   }
-
-   public void setHadDinnerToday(Boolean hadDinnerToday) {
-      this.hadDinnerToday = hadDinnerToday;
    }
 
    public String getName() {
@@ -44,19 +37,19 @@ public class ClientPupilDto implements Serializable {
       this.name = name;
    }
 
-   public boolean isDinnerPermitted() {
-      return dinnerPermitted;
+   public Portion getPortion() {
+      return portion;
    }
 
-   public void setDinnerPermitted(boolean dinnerPermitted) {
-      this.dinnerPermitted = dinnerPermitted;
+   public void setPortion(Portion portion) {
+      this.portion = portion;
    }
 
-   public boolean isHadDinnerToday() {
-      return hadDinnerToday;
+   public String getGrade() {
+      return grade;
    }
 
-   public void setHadDinnerToday(boolean hadDinnerToday) {
-      this.hadDinnerToday = hadDinnerToday;
+   public void setGrade(String grade) {
+      this.grade = grade;
    }
 }

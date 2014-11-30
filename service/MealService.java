@@ -20,7 +20,7 @@ public class MealService {
 
    public List<MealEvent> getDinnerEventList() {
       Calendar minDate = Calendar.getInstance();
-      minDate.add(Calendar.DATE, -30);
+      minDate.add(Calendar.DATE, -60);
       return mealRepository.findAfter(minDate.getTime());
    }
 

@@ -35,7 +35,7 @@ public interface MealEventRepository extends JpaRepository<MealEvent, Long> {
          @Param("type") PortionType type
    );
 
-   @Query("select m from MealEvent m where m.date > :minDate")
+   @Query("select m from MealEvent m where m.date > :minDate order by m.date desc")
    List<MealEvent> findAfter(@Param("minDate") Date minDate);
 
    List<MealEvent> findByDateBetween(Date start, Date end);

@@ -80,10 +80,7 @@ public class MealEventManualCreateWindow extends Window {
       hl.setComponentAlignment(portionType, MIDDLE_RIGHT);
 
       dateField.setDateFormat("yyyy-MM-dd");
-      vl.addComponents(
-            hl,
-            table
-      );
+      vl.addComponents(hl, table);
 
       HorizontalLayout buttons = new HorizontalLayout(save, close);
       buttons.setSpacing(true);
