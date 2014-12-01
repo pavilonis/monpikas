@@ -24,7 +24,7 @@ public class PupilFilter implements Filter {
 
       String stack = dto.getFirstName().toLowerCase() + dto.getLastName().toLowerCase() +
             (dto.getBirthDate().isPresent() ? dto.getBirthDate().get() : "") +
-            (dto.getGrade().isPresent() ? dto.getGrade().get() : "");
+            dto.getGrade().orElse("") + dto.getCardId();
 
       return stack.contains(text) &&
             (!breakfastChecked || dto.getBreakfastPortion().isPresent())

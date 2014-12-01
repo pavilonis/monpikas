@@ -33,8 +33,6 @@ public class User implements UserDetails {
 
    private String password;
 
-   private String phone;
-
    private Boolean enabled;
 
    @JoinTable(name = "User_Authority",
@@ -74,14 +72,6 @@ public class User implements UserDetails {
 
    public String getName() {
       return name;
-   }
-
-   public String getPhone() {
-      return phone;
-   }
-
-   public void setPhone(String phone) {
-      this.phone = phone;
    }
 
    public void setUsername(String username) {
@@ -128,6 +118,6 @@ public class User implements UserDetails {
 
    @Override
    public boolean isEnabled() {
-      return true;
+      return enabled;
    }
 }
