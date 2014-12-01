@@ -159,4 +159,8 @@ public class PupilService {
       c.set(Calendar.MILLISECOND, 0);
       return c.getTime();
    }
+
+   public List<PupilInfo> findFirstByPortionId(Long id) {
+      return infoRepo.findFirstByPortionId(id);
+   }
 }

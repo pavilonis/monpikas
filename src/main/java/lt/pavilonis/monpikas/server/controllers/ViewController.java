@@ -17,6 +17,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import lt.pavilonis.monpikas.server.App;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
@@ -28,12 +29,12 @@ import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventManualCreateWindow;
-import lt.pavilonis.monpikas.server.views.settings.PortionFormWindow;
-import lt.pavilonis.monpikas.server.views.settings.PortionListView;
-import lt.pavilonis.monpikas.server.views.settings.OtherSettingsView;
 import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
 import lt.pavilonis.monpikas.server.views.reports.ReportGeneratorView;
+import lt.pavilonis.monpikas.server.views.settings.OtherSettingsView;
+import lt.pavilonis.monpikas.server.views.settings.PortionFormWindow;
+import lt.pavilonis.monpikas.server.views.settings.PortionListView;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -42,6 +43,7 @@ import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.List;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.HUMANIZED_MESSAGE;
@@ -77,6 +79,9 @@ public class ViewController {
 
    @Autowired
    private ReportService reportService;
+
+//   @Autowired
+//   private App app;
 
    public void attachComponents(VerticalLayout base) {
 
@@ -133,14 +138,15 @@ public class ViewController {
             content.removeAllComponents();
             content.addComponent(hl);
          });
-
-         MenuItem userItem = menu.addItem(" " + getContext().getAuthentication().getName(), FontAwesome.USER, null);
-         userItem.addItem(" Atsijungti", FontAwesome.POWER_OFF, selected -> {
-            getContext().getAuthentication().setAuthenticated(false);
-            content.removeAllComponents();
-            show("Atsijungta", HUMANIZED_MESSAGE);
-         });
       }
+
+      MenuItem userItem = menu.addItem(" " + getContext().getAuthentication().getName(), FontAwesome.USER, null);
+      userItem.addItem(" Atsijungti", FontAwesome.POWER_OFF, selected -> {
+         content.removeAllComponents();
+         UI.getCurrent().close();
+         show("Atsijungta", HUMANIZED_MESSAGE);
+      });
+
       base.addComponents(menu, content);
       base.setExpandRatio(content, 1f);
    }
@@ -151,10 +157,15 @@ public class ViewController {
          if (id == null) {
             Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            portionService.delete(id);
-            view.getContainer().removeItem(id);
-            view.getTable().select(null);
-            show("Įrašas pašalintas", TRAY_NOTIFICATION);
+            List<PupilInfo> portionUsers = pupilService.findFirstByPortionId(id);
+            if (portionUsers.isEmpty()) {
+               portionService.delete(id);
+               view.getContainer().removeItem(id);
+               view.getTable().select(null);
+               show("Įrašas pašalintas", TRAY_NOTIFICATION);
+            } else {
+               show("Porciją priskirta šioms kortelėms:", portionUsers.toString(), ERROR_MESSAGE);
+            }
          }
       };
    }
@@ -202,7 +213,7 @@ public class ViewController {
       return event -> {
          if (event.isDoubleClick()) {
             BeanItem<AdbPupilDto> item = (BeanItem<AdbPupilDto>) event.getItem();
-            AdbPupilDto dto = item.getBean();/////?
+            AdbPupilDto dto = item.getBean();
             PupilInfo info = pupilService.infoByCardId(dto.getCardId()).orElse(new PupilInfo(dto.getCardId()));
             PupilEditWindow view = new PupilEditWindow(
                   info,

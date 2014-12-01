@@ -75,4 +75,9 @@ public class PupilInfo {
    public void setDinnerPortion(Portion dinnerPortion) {
       this.dinnerPortion = dinnerPortion;
    }
+
+   @Override
+   public String toString() {
+      return String.valueOf(cardId);
+   }
 }

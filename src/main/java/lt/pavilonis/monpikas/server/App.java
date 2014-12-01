@@ -14,6 +14,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import static com.vaadin.ui.Notification.show;
+import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Component
@@ -64,7 +66,7 @@ public class App extends UI {
          LOG.error("ErrorMsg -> " + event.getThrowable().getMessage());
          LOG.error("ErrorStackTrace -> ");
          event.getThrowable().printStackTrace();
-         Notification.show("Klaida :'(\n ", event.getThrowable().toString(), Notification.Type.ERROR_MESSAGE);
+         show("Klaida :'(\n ", event.getThrowable().toString(), ERROR_MESSAGE);
       });
       VerticalLayout vl = new VerticalLayout();
       vl.setSizeFull();
