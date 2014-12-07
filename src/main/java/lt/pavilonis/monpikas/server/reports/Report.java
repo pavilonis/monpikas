@@ -9,12 +9,13 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import java.text.DecimalFormat;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import static java.math.BigDecimal.ZERO;
 import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
 import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
@@ -26,9 +27,8 @@ public class Report {
 
    private ReportHelper helper;
    private HSSFSheet sheet;
-   private double breakfastSum = 0;
-   private double dinnerSum = 0;
-   DecimalFormat df = new DecimalFormat("0.00");
+   private BigDecimal breakfastSum = ZERO;
+   private BigDecimal dinnerSum = BigDecimal.ZERO;
 
    public void create(String title, String period, Multimap<Long, MealEvent> breakfastEvents,
                       Multimap<Long, MealEvent> dinnerEvents, HSSFSheet sh) {
@@ -36,18 +36,18 @@ public class Report {
       helper = new ReportHelper(sheet);
       sheet.getPrintSetup().setLandscape(true);
       sheet.getPrintSetup().setPaperSize(A4_PAPERSIZE);
-      sheet.setMargin(Sheet.TopMargin, 0);
-      sheet.setMargin(Sheet.BottomMargin, 0);
-      sheet.setMargin(Sheet.RightMargin, 0);
-      sheet.setMargin(Sheet.LeftMargin, .3);
+      sheet.setMargin(Sheet.TopMargin, .1);
+      sheet.setMargin(Sheet.BottomMargin, .1);
+      sheet.setMargin(Sheet.RightMargin, .5);
+      sheet.setMargin(Sheet.LeftMargin, .5);
 
-      sheet.setColumnWidth(0, 1000);
-      sheet.setColumnWidth(1, 6700);
-      sheet.setColumnWidth(2, 1000);
-      sheet.setColumnWidth(3, 17000);
-      sheet.setColumnWidth(4, 2200);
-      sheet.setColumnWidth(5, 2200);
-      sheet.setColumnWidth(6, 2600);
+      sheet.setColumnWidth(0, 1500);   //#
+      sheet.setColumnWidth(1, 7000);   //name
+      sheet.setColumnWidth(2, 1500);   //grade
+      sheet.setColumnWidth(3, 17000);  //days
+      sheet.setColumnWidth(4, 2500);   //days sum
+      sheet.setColumnWidth(5, 2500);   //day price
+      sheet.setColumnWidth(6, 3300);   //money used
 
       helper.title(0, 6, 0, title, 14);
       helper.title(0, 6, 1, period, 14);
@@ -60,10 +60,10 @@ public class Report {
 
 
       sheet.addMergedRegion(new CellRangeAddress(row, row, 4, 5));
-      helper.sumCell(4, 6, row++, "Pusryčiams", df.format(breakfastSum), false);
+      helper.sumCell(4, 6, row++, "Pusryčiams", breakfastSum.toString(), false);
       sheet.addMergedRegion(new CellRangeAddress(row, row, 4, 5));
-      helper.sumCell(4, 6, row++, "Pietūms", df.format(dinnerSum), false);
-      helper.sumCell(5, 6, row++, "VISO", df.format(dinnerSum + breakfastSum), false);
+      helper.sumCell(4, 6, row++, "Pietūms", dinnerSum.toString(), false);
+      helper.sumCell(5, 6, row++, "VISO", dinnerSum.add(breakfastSum).toString(), false);
 
       helper.cell(1, ++row, "Socialinis pedagogas", ALIGN_CENTER, false);
       helper.cell(3, row, "Darius Jucys", ALIGN_RIGHT, false);
@@ -86,14 +86,14 @@ public class Report {
       for (long cardId : events.keySet()) {
          String mealDaysString = "";
          int mealDaysCount = 0;
-         double priceSum = 0.0;
+         BigDecimal priceSum = BigDecimal.ZERO;
          List<MealEvent> cardEvents = new ArrayList<>(events.get(cardId));
          Collections.sort(cardEvents);
          for (MealEvent event : cardEvents) {
             Calendar c = Calendar.getInstance();
             c.setTime(event.getDate());
             mealDaysString += c.get(Calendar.DAY_OF_MONTH) + " ";
-            priceSum += event.getPrice();
+            priceSum = priceSum.add(event.getPrice());
             mealDaysCount++;
          }
          int row = lastRow + rownumber;
@@ -106,12 +106,12 @@ public class Report {
             Portion portion;
             if (type == BREAKFAST) {
                portion = info.getBreakfastPortion();
-               breakfastSum = portion == null ? breakfastSum : breakfastSum + priceSum;
+               breakfastSum = portion == null ? breakfastSum : breakfastSum.add(priceSum);
             } else {
                portion = info.getDinnerPortion();
-               dinnerSum = portion == null ? dinnerSum : dinnerSum + priceSum;
+               dinnerSum = portion == null ? dinnerSum : dinnerSum.add(priceSum);
             }
-            portionPrice = portion == null ? "" : df.format(portion.getPrice());
+            portionPrice = portion == null ? "" : String.valueOf(portion.getPrice());
             grade = info.getGrade();
          }
 
@@ -121,7 +121,7 @@ public class Report {
          helper.cell(3, row, mealDaysString, ALIGN_LEFT);
          helper.cell(4, row, mealDaysCount);
          helper.cell(5, row, portionPrice);
-         helper.cell(6, row, df.format(priceSum));
+         helper.cell(6, row, priceSum);
 
          rownumber++;
       }

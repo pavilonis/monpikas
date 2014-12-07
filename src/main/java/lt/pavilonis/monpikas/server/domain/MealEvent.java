@@ -8,6 +8,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Transient;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Optional;
 
@@ -19,7 +20,7 @@ public class MealEvent implements Comparable {
    public MealEvent() {
    }
 
-   public MealEvent(long cardId, String name, Date date, double price, PortionType type) {
+   public MealEvent(long cardId, String name, Date date, BigDecimal price, PortionType type) {
       this.cardId = cardId;
       this.name = name;
       this.date = date;
@@ -37,7 +38,7 @@ public class MealEvent implements Comparable {
 
    private Date date;
 
-   private double price;
+   private BigDecimal price;
 
    @Enumerated(EnumType.STRING)
    private PortionType type;
@@ -81,11 +82,11 @@ public class MealEvent implements Comparable {
       this.name = name;
    }
 
-   public double getPrice() {
+   public BigDecimal getPrice() {
       return price;
    }
 
-   public void setPrice(double price) {
+   public void setPrice(BigDecimal price) {
       this.price = price;
    }
 

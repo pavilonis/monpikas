@@ -40,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 
 import java.io.File;
+import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
@@ -143,6 +144,7 @@ public class ViewController {
       MenuItem userItem = menu.addItem(" " + getContext().getAuthentication().getName(), FontAwesome.USER, null);
       userItem.addItem(" Atsijungti", FontAwesome.POWER_OFF, selected -> {
          content.removeAllComponents();
+         getContext().setAuthentication(null);
          UI.getCurrent().close();
          show("Atsijungta", HUMANIZED_MESSAGE);
       });
@@ -155,7 +157,7 @@ public class ViewController {
       return click -> {
          Long id = (Long) view.getTable().getValue();
          if (id == null) {
-            Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
+            show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
             List<PupilInfo> portionUsers = pupilService.findFirstByPortionId(id);
             if (portionUsers.isEmpty()) {
@@ -284,7 +286,7 @@ public class ViewController {
             if (valid(id, w.getDate(), type)) {
                AdbPupilDto dto = pupilService.getByCardId(id).get();
 
-               Double price = type == BREAKFAST
+               BigDecimal price = type == BREAKFAST
                      ? dto.getBreakfastPortion().get().getPrice()
                      : dto.getDinnerPortion().get().getPrice();
 

@@ -8,6 +8,7 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.math.BigDecimal;
 import java.util.OptionalInt;
 
 import static java.util.OptionalInt.empty;
@@ -74,16 +75,16 @@ public class ReportHelper {
 
       HSSFCell cell = newRow.createCell(col);
       cell.setCellStyle(style(sheet.getWorkbook(), 10, bold, border, halign));
-
-      if (value instanceof String) {
-         cell.setCellValue((String) value);
-      } else {
-         cell.setCellValue(value instanceof Double
-                     ? (Double) value
-                     : (Integer) value
-         );
-         cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
-      }
+      cell.setCellValue(value.toString());
+//      if (value instanceof String) {
+//         cell.setCellValue((String) value);
+//      } else {
+//         cell.setCellValue(value instanceof BigDecimal
+//                     ? ((BigDecimal) value).doubleValue()
+//                     : (Integer) value
+//         );
+//         cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
+//      }
    }
 
    public void title(int startCol, int endCol, int row, String text, int height) {

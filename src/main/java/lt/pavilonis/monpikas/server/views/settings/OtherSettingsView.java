@@ -18,8 +18,8 @@ public class OtherSettingsView extends VerticalLayout {
       Label title = new Label("Kiti nustatymai (neveikia, bus realizuota vėliau)");
       ComboBox hour = new ComboBox("Pusryčių ir pietų riba (val.)");
       TextField currencyTextField = new TextField("Valiutos pavadinimas");
-      TextField employeePosition = new TextField("Sąskaitos daruotojo pareigos");
-      TextField employeeName = new TextField("Sąskaitos daruotojo vardas");
+      TextField employeePosition = new TextField("Sąskaita, daruotojo pareigos");
+      TextField employeeName = new TextField("Sąskaita, daruotojo vardas");
 
       addComponents(
             title,
