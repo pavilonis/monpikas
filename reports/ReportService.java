@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.Format;
 import java.text.SimpleDateFormat;
@@ -67,18 +66,15 @@ public class ReportService {
             sheet
       );
 
-      FileOutputStream fileOut;
-      ByteArrayOutputStream baos = null;
-      try {
-         baos = new ByteArrayOutputStream();
-         //fileOut = new FileOutputStream("/home/art/Desktop/meal_report.xlsx");
+      try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
          wb.write(baos);
-         baos.close();
+         LOG.info("Report was generated");
+         return baos;
       } catch (IOException e) {
          e.printStackTrace();
+         LOG.info("Report Error");
+         throw new RuntimeException("Report Error: " + e);
       }
-      LOG.info("Report was generated");
-      return baos;
    }
 
 }
