@@ -20,9 +20,10 @@ public class MealEvent implements Comparable {
    public MealEvent() {
    }
 
-   public MealEvent(long cardId, String name, Date date, BigDecimal price, PortionType type) {
+   public MealEvent(long cardId, String name, String grade, Date date, BigDecimal price, PortionType type) {
       this.cardId = cardId;
       this.name = name;
+      this.grade = grade;
       this.date = date;
       this.price = price;
       this.type = type;
@@ -35,6 +36,8 @@ public class MealEvent implements Comparable {
    private long cardId;
 
    private String name;
+
+   private String grade;
 
    private Date date;
 
@@ -105,6 +108,14 @@ public class MealEvent implements Comparable {
 
    public Optional<PupilInfo> getInfo() {
       return info;
+   }
+
+   public String getGrade() {
+      return grade;
+   }
+
+   public void setGrade(String grade) {
+      this.grade = grade;
    }
 
    public void setInfo(Optional<PupilInfo> info) {

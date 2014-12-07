@@ -84,7 +84,7 @@ public class MealRestController {
    private ResponseEntity<ClientPupilDto> getMealResponse(long id, AdbPupilDto dto, String name, Portion portion) {
 
       if (pupilService.canHaveMeal(id, new Date(), portion.getType())) {
-         mealService.saveMealEvent(new MealEvent(id, name, new Date(), portion.getPrice(), portion.getType()));
+         mealService.saveMealEvent(new MealEvent(id, name, dto.getGrade().orElse(""), new Date(), portion.getPrice(), portion.getType()));
          LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " + portion.getType().name() + " for " + portion.getPrice() + " units of money");
          return new ResponseEntity<>(new ClientPupilDto(id, name, portion, dto.getGrade().orElse("")), ACCEPTED);
 

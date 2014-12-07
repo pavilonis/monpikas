@@ -17,7 +17,6 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.App;
 import lt.pavilonis.monpikas.server.domain.MealEvent;
 import lt.pavilonis.monpikas.server.domain.Portion;
 import lt.pavilonis.monpikas.server.domain.PupilInfo;
@@ -102,7 +101,7 @@ public class ViewController {
          content.addComponent(view);
       });
 
-      menu.addItem(" Ataskaitos", FontAwesome.FILE_PDF_O, selected -> {
+      menu.addItem(" Ataskaitos", FontAwesome.FILE_EXCEL_O, selected -> {
 
          ReportGeneratorView view = new ReportGeneratorView(reportService);
 
@@ -293,6 +292,7 @@ public class ViewController {
                MealEvent event = new MealEvent(
                      dto.getCardId(),
                      dto.getFirstName() + " " + dto.getLastName(),
+                     dto.getGrade().orElse(""),
                      w.getDate(),
                      price,
                      type
