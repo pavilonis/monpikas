@@ -26,10 +26,11 @@ public class PortionListView extends VerticalLayout {
       table.setSizeFull();
       table.setContainerDataSource(container);
       container.sort(new Object[]{"id"}, new boolean[]{true});
-      table.setColumnHeader("id", "ID");
-      table.setColumnHeader("name", "Pavadinimas");
-      table.setColumnHeader("type", "Tipas");
-      table.setColumnHeader("price", "Kaina");
+
+      table.setVisibleColumns("id", "name", "type", "price");
+      table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina");
+
+      table.setConverter("type", new PortionTypeCellConverter());
       table.setConverter("price", new StringToDoubleConverter() {
          @Override
          protected NumberFormat getFormat(Locale locale) {
@@ -37,8 +38,6 @@ public class PortionListView extends VerticalLayout {
          }
       });
 
-      table.setVisibleColumns(new String[]{"id", "name", "type", "price"});
-      table.setConverter("type", new PortionTypeCellConverter());
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
       table.setSelectable(true);

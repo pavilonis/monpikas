@@ -16,6 +16,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
+import static com.vaadin.ui.Table.Align.CENTER;
+
 public class MealEventListView extends VerticalLayout {
 
    private Table table = new Table();
@@ -28,12 +30,6 @@ public class MealEventListView extends VerticalLayout {
       container.setBeanIdProperty("id");
       table.setSizeFull();
       table.setContainerDataSource(container);
-      table.setColumnHeader("id", "ID");
-      table.setColumnHeader("name", "Vardas");
-      table.setColumnHeader("cardId", "Kortelės #");
-      table.setColumnHeader("date", "Data");
-      table.setColumnHeader("type", "Tipas");
-      table.setColumnHeader("price", "Kaina");
       table.setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
@@ -48,11 +44,15 @@ public class MealEventListView extends VerticalLayout {
       });
       table.setConverter("type", new PortionTypeCellConverter());
       table.setConverter("cardId", new SimpleStringToLongConverter());
-      table.setVisibleColumns(new String[]{"id", "cardId", "name", "date", "type", "price"});
+      table.setVisibleColumns("id", "cardId", "grade", "name", "date", "type", "price");
+      table.setColumnHeaders("Id", "Kortelės nr.", "Klasė", "Vardas", "Data", "Tipas", "Kaina");
       table.setColumnWidth("cardId", 100);
+      table.setColumnWidth("grade", 60);
+      table.setColumnAlignment("grade", CENTER);
       table.setColumnWidth("birthDate", 130);
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
+      table.setColumnCollapsed("cardId", true);
       table.setSelectable(true);
       table.setNullSelectionAllowed(false);
       table.setCacheRate(5);
