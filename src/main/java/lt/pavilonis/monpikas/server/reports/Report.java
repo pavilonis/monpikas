@@ -16,6 +16,7 @@ import java.util.Collections;
 import java.util.List;
 
 import static java.math.BigDecimal.ZERO;
+import static java.util.Collections.reverseOrder;
 import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
 import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
@@ -88,7 +89,7 @@ public class Report {
          int mealDaysCount = 0;
          BigDecimal priceSum = BigDecimal.ZERO;
          List<MealEvent> cardEvents = new ArrayList<>(events.get(cardId));
-         Collections.sort(cardEvents);
+         Collections.sort(cardEvents, reverseOrder());
          for (MealEvent event : cardEvents) {
             Calendar c = Calendar.getInstance();
             c.setTime(event.getDate());

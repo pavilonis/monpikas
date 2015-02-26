@@ -121,4 +121,9 @@ public class MealEvent implements Comparable {
    public void setInfo(Optional<PupilInfo> info) {
       this.info = info;
    }
+
+   @Override
+   public String toString() {
+      return name + " " + date + " " + price;
+   }
 }

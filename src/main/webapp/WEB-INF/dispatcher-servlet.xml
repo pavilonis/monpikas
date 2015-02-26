@@ -32,9 +32,6 @@
       <property name="basename" value="messages"/>
    </bean>
 
-   <!--<context:property-placeholder location="classpath:app.properties" />-->
-   <!--<context:property-placeholder location="classpath:app.properties" />-->
-
    <bean id="propertyPlaceholderConfigurer"
          class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
       <property name="locations">

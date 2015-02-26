@@ -22,13 +22,13 @@ public class JdbcAdbDao implements AdbDao {
 
    @Override
    public List<AdbPupilDto> getAllAdbPupils() {
-      return jdbcTemplate.query("SELECT card, fname, lname, gdata FROM gs_ecard_mok_users", newRowMapper());
+      return jdbcTemplate.query("SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users", newRowMapper());
    }
 
    @Override
    public Optional<AdbPupilDto> getAdbPupil(long cardId) {
       List<AdbPupilDto> pupilList = jdbcTemplate.query(
-            "SELECT card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = " + getString(cardId), newRowMapper()
+            "SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = " + getString(cardId), newRowMapper()
       );
       return pupilList.isEmpty()
             ? empty()
@@ -38,7 +38,8 @@ public class JdbcAdbDao implements AdbDao {
    private RowMapper<AdbPupilDto> newRowMapper() {
       return (rs, rowNum) -> {
          AdbPupilDto dto = new AdbPupilDto();
-         dto.setCardId(Integer.valueOf(rs.getString("card")));
+         dto.setAdbId(rs.getLong("id"));
+         dto.setCardId(rs.getInt("card"));
          dto.setFirstName(rs.getString("fname"));
          dto.setLastName(rs.getString("lname"));
          Optional<Date> date = ofNullable(rs.getDate("gdata"));

@@ -70,8 +70,8 @@ public class PupilEditWindow extends Window {
 
       setCaption("Mokinio nustatymai");
       setResizable(false);
-      setWidth("480px");
-      setHeight("550px");
+      setWidth("510px");
+      setHeight("580px");
 
       String birthDate = dto.getBirthDate().isPresent() ? dto.getBirthDate().get().toString() : "nenurodyta";
       String mealDate = lastMealDate.isPresent() ? DATE_FORMAT.format(lastMealDate.get()) : "nėra duomenų";
