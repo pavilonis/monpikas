@@ -76,15 +76,6 @@ public class ReportHelper {
       HSSFCell cell = newRow.createCell(col);
       cell.setCellStyle(style(sheet.getWorkbook(), 10, bold, border, halign));
       cell.setCellValue(value.toString());
-//      if (value instanceof String) {
-//         cell.setCellValue((String) value);
-//      } else {
-//         cell.setCellValue(value instanceof BigDecimal
-//                     ? ((BigDecimal) value).doubleValue()
-//                     : (Integer) value
-//         );
-//         cell.setCellType(HSSFCell.CELL_TYPE_NUMERIC);
-//      }
    }
 
    public void title(int startCol, int endCol, int row, String text, int height) {

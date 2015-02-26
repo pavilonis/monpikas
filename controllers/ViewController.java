@@ -7,7 +7,6 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.Resource;
-import com.vaadin.server.VaadinService;
 import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -34,6 +33,7 @@ import lt.pavilonis.monpikas.server.views.reports.ReportGeneratorView;
 import lt.pavilonis.monpikas.server.views.settings.OtherSettingsView;
 import lt.pavilonis.monpikas.server.views.settings.PortionFormWindow;
 import lt.pavilonis.monpikas.server.views.settings.PortionListView;
+import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
@@ -45,6 +45,7 @@ import java.net.URL;
 import java.util.Date;
 import java.util.List;
 
+import static com.vaadin.server.VaadinService.getCurrent;
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.HUMANIZED_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
@@ -54,10 +55,13 @@ import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Optional.ofNullable;
 import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
 import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
+import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
 @Controller
 public class ViewController {
+
+   private static final Logger LOG = getLogger(ViewController.class.getSimpleName());
 
    @Value("${pupilEditWindow.PhotoBasePath}")
    private String adbImageBasePath;
@@ -219,10 +223,10 @@ public class ViewController {
             PupilEditWindow view = new PupilEditWindow(
                   info,
                   dto,
-                  getImage(dto.getCardId()),
+                  getImage(dto.getAdbId()),
                   mealService.lastMealEvent(dto.getCardId()),
-                  portionService.getAll()
-            );
+                  portionService.getAll());
+
             view.addCloseButtonListener(closeBtnClick -> view.close());
             view.addSaveButtonListener(
                   saveBtnClick -> {
@@ -251,21 +255,24 @@ public class ViewController {
       if (remoteImageExists(remoteImgUrl)) {
          resource = new ExternalResource(remoteImgUrl);
       } else {
-         String basePath = VaadinService.getCurrent().getBaseDirectory().getAbsolutePath();
-         resource = new FileResource(new File(basePath + File.separator + noPhotoPath));
+         resource = new FileResource(new File(
+               getCurrent().getBaseDirectory().getAbsolutePath() + File.separator + noPhotoPath
+         ));
       }
-      return new Image("", resource);
+      return new Image(null, resource);
    }
 
    private boolean remoteImageExists(String url) {
       try {
          URL u = new URL(url);
+         u.getPath();
          HttpURLConnection http = (HttpURLConnection) u.openConnection();
          http.setInstanceFollowRedirects(false);
          http.setRequestMethod("HEAD");
          http.connect();
          return (http.getResponseCode() == HTTP_OK);
       } catch (Exception e) {
+         LOG.error("Image request error: " + e);
          return false;
       }
    }

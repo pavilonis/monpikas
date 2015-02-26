@@ -12,6 +12,7 @@ public class AdbPupilDto {
    public AdbPupilDto() {
    }
 
+   private long adbId;
    private long cardId;
    private String firstName;
    private String lastName;
@@ -90,5 +91,13 @@ public class AdbPupilDto {
       if (breakfastPortion.isPresent()) meals++;
       if (dinnerPortion.isPresent()) meals++;
       return meals;
+   }
+
+   public long getAdbId() {
+      return adbId;
+   }
+
+   public void setAdbId(long adbId) {
+      this.adbId = adbId;
    }
 }

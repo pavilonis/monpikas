@@ -7,12 +7,12 @@ import org.springframework.stereotype.Component;
 @Component
 public class MessageUtils {
 
-   @Autowired
-   private Environment source;
+    @Autowired
+    private Environment source;
 
-   //private static final ResourceBundle properties = ResourceBundle.getBundle("messages.properties");
+    //private static final ResourceBundle properties = ResourceBundle.getBundle("messages.properties");
 
-   public String getValue(String key) {
-      return source.getProperty(key);
-   }
+    public String getValue(String key) {
+        return source.getProperty(key);
+    }
 }

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class ClientPupilDto implements Serializable {
 
-   private long cardId;
+   private long id;
    private String name;
    private Portion portion;
    private String grade;
@@ -14,19 +14,19 @@ public class ClientPupilDto implements Serializable {
    public ClientPupilDto() {
    }
 
-   public ClientPupilDto(long cardId, String name, Portion portion, String grade) {
-      this.cardId = cardId;
+   public ClientPupilDto(long id, String name, Portion portion, String grade) {
+      this.id = id;
       this.name = name;
       this.portion = portion;
       this.grade = grade;
    }
 
-   public long getCardId() {
-      return cardId;
+   public long getId() {
+      return id;
    }
 
-   public void setCardId(long cardId) {
-      this.cardId = cardId;
+   public void setId(long id) {
+      this.id = id;
    }
 
    public String getName() {

@@ -57,7 +57,9 @@ public class MealRestController {
 
             case 0:
                LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
-               return new ResponseEntity<>(new ClientPupilDto(id, name, null, dto.getGrade().orElse("")), FORBIDDEN);
+               return new ResponseEntity<>(
+                     new ClientPupilDto(dto.getAdbId(), name, null, dto.getGrade().orElse("")),
+                     FORBIDDEN);
 
             case 1:
                Portion portion = pupilService.onlyPortionFor(dto);
@@ -86,11 +88,15 @@ public class MealRestController {
       if (pupilService.canHaveMeal(id, new Date(), portion.getType())) {
          mealService.saveMealEvent(new MealEvent(id, name, dto.getGrade().orElse(""), new Date(), portion.getPrice(), portion.getType()));
          LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " + portion.getType().name() + " for " + portion.getPrice() + " units of money");
-         return new ResponseEntity<>(new ClientPupilDto(id, name, portion, dto.getGrade().orElse("")), ACCEPTED);
+         return new ResponseEntity<>(
+               new ClientPupilDto(dto.getAdbId(), name, portion, dto.getGrade().orElse("")),
+               ACCEPTED);
 
       } else {
          LOG.info("REJECT - Pupil '" + name + "' (id " + id + ") already had his meal");
-         return new ResponseEntity<>(new ClientPupilDto(id, name, portion, dto.getGrade().orElse("")), ALREADY_REPORTED);
+         return new ResponseEntity<>(
+               new ClientPupilDto(dto.getAdbId(), name, portion, dto.getGrade().orElse("")),
+               ALREADY_REPORTED);
       }
    }
 }
