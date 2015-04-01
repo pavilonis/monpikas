@@ -30,7 +30,7 @@ public class ReportGeneratorView extends VerticalLayout {
 
       Calendar cal = Calendar.getInstance();
       cal.setTime(new Date());
-      cal.add(Calendar.MONTH, -1);
+      //cal.add(Calendar.MONTH, -1);
       cal.set(Calendar.DAY_OF_MONTH, 1);
       cal.set(Calendar.HOUR, 1);
       Date firstDayOfLastMonth = cal.getTime();

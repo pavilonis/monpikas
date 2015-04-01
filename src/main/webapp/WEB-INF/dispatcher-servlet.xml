@@ -16,9 +16,7 @@
       <property name="contentType" value="text/html;charset=UTF-8"/>
    </bean>
 
-   <!--<context:component-scan base-package="lt.pavilonis.monpikas.server.controllers"/>-->
    <mvc:annotation-driven content-negotiation-manager="contentNegotiationManager"/>
-   <!--<mvc:resources mapping="/rest/resources/**" location="/resources/" cache-period="5000000"/>-->
 
    <bean id="contentNegotiationManager" class="org.springframework.web.accept.ContentNegotiationManagerFactoryBean">
       <!-- Turn off working out content type based on URL file extension, should fall back to looking at the Accept headers -->

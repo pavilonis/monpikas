@@ -84,9 +84,6 @@ public class ViewController {
    @Autowired
    private ReportService reportService;
 
-//   @Autowired
-//   private App app;
-
    public void attachComponents(VerticalLayout base) {
 
       VerticalLayout content = new VerticalLayout();

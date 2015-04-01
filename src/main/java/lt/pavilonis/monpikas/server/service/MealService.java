@@ -19,9 +19,9 @@ public class MealService {
    private MealEventRepository mealRepository;
 
    public List<MealEvent> getDinnerEventList() {
-      Calendar minDate = Calendar.getInstance();
-      minDate.add(Calendar.DATE, -60);
-      return mealRepository.findAfter(minDate.getTime());
+      Calendar from = Calendar.getInstance();
+      from.add(Calendar.DATE, -100); // 100 days back
+      return mealRepository.findAfter(from.getTime());
    }
 
    public boolean sameDay(Date date1, Date date2) {

@@ -2,13 +2,13 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:jpa="http://www.springframework.org/schema/data/jpa"
-       xmlns:tx="http://www.springframework.org/schema/tx" xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:tx="http://www.springframework.org/schema/tx"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
        http://www.springframework.org/schema/data/jpa
        http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
        http://www.springframework.org/schema/tx
-       http://www.springframework.org/schema/tx/spring-tx.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+       http://www.springframework.org/schema/tx/spring-tx.xsd">
 
    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
       <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
@@ -33,8 +33,5 @@
    <bean id="monpikasMigrationDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:/comp/env/jdbc/Monpikas"/>
    </bean>
-
-   <!--<util:properties id="pom"-->
-                    <!--location="classpath:META-INF/groupId/artifactId/pom.properties" />-->
 
 </beans>

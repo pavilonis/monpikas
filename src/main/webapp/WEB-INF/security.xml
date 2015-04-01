@@ -13,12 +13,6 @@
       <authentication-provider user-service-ref="monpikasUserDetailsService"/>
    </authentication-manager>
 
-   <!--<beans:bean id="authenticationSuccessHandler"-->
-               <!--class="org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler">-->
-      <!--&lt;!&ndash; After login, return to the last visited page &ndash;&gt;-->
-      <!--<beans:property name="useReferer" value="true"/>-->
-   <!--</beans:bean>-->
-
    <http pattern="/rest/**" use-expressions="true" create-session="never">
       <http-basic/>
       <intercept-url pattern="/rest/**" access="hasRole('ROLE_SCANNER')"/>
