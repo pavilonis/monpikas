@@ -21,16 +21,16 @@ public class OtherSettingsView extends VerticalLayout {
       TextField employeePosition = new TextField("Sąskaita, daruotojo pareigos");
       TextField employeeName = new TextField("Sąskaita, daruotojo vardas");
 
-      addComponents(
-            title,
-            hour,
-            currencyTextField,
-            employeePosition,
-            employeeName
-      );
+//      addComponents(
+//            title,
+//            hour,
+//            currencyTextField,
+//            employeePosition,
+//            employeeName
+//      );
 
-      setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
-      setComponentAlignment(title, Alignment.TOP_LEFT);
+//      setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+//      setComponentAlignment(title, Alignment.TOP_LEFT);
    }
 
    public void addSaveButtonClickListener(Button.ClickListener listener) {

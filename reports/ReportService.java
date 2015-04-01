@@ -33,7 +33,7 @@ public class ReportService {
    @Autowired
    private PupilInfoRepository infoRepo;
 
-   private final static Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+   private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private static final String REPORT_TITLE = "Socialiai remtinų mokinių maitinimas Nacionalinėje M.K. Čiurlionio menų mokykloje";
    private static final Logger LOG = getLogger(PupilService.class);
 
