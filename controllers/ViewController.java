@@ -213,36 +213,40 @@ public class ViewController {
 
    private ItemClickEvent.ItemClickListener pulilListTableClickListener() {
       return event -> {
-         if (event.isDoubleClick()) {
-            BeanItem<AdbPupilDto> item = (BeanItem<AdbPupilDto>) event.getItem();
-            AdbPupilDto dto = item.getBean();
-            PupilInfo info = pupilService.infoByCardId(dto.getCardId()).orElse(new PupilInfo(dto.getCardId()));
-            PupilEditWindow view = new PupilEditWindow(
-                  info,
-                  dto,
-                  getImage(dto.getAdbId()),
-                  mealService.lastMealEvent(dto.getCardId()),
-                  portionService.getAll());
 
-            view.addCloseButtonListener(closeBtnClick -> view.close());
-            view.addSaveButtonListener(
-                  saveBtnClick -> {
-                     if (!view.isValid()) {
-                        return;
-                     }
-                     view.commit();
-                     pupilService.saveOrUpdate(info);
-                     dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
-                     dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
-                     dto.setGrade(ofNullable(info.getGrade()));
-                     dto.setComment(ofNullable(info.getComment()));
-                     Table tbl = (Table) event.getSource();
-                     tbl.refreshRowCache();
-                     view.close();
-                     show("Išsaugota", TRAY_NOTIFICATION);
-                  });
-            UI.getCurrent().addWindow(view);
-         }
+         if (!event.isDoubleClick())
+            return;
+
+         BeanItem<AdbPupilDto> item = (BeanItem<AdbPupilDto>) event.getItem();
+         AdbPupilDto dto = item.getBean();
+         PupilInfo info = pupilService.infoByCardId(dto.getCardId()).orElse(new PupilInfo(dto.getCardId()));
+         PupilEditWindow view = new PupilEditWindow(
+               info,
+               dto,
+               getImage(dto.getAdbId()),
+               mealService.lastMealEvent(dto.getCardId()),
+               portionService.getAll());
+
+         view.addCloseButtonListener(closeBtnClick -> view.close());
+         view.addSaveButtonListener(
+               saveBtnClick -> {
+
+                  if (!view.isValid())
+                     return;
+
+                  view.commit();
+                  pupilService.saveOrUpdate(info);
+                  dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
+                  dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
+                  dto.setGrade(ofNullable(info.getGrade()));
+                  dto.setComment(ofNullable(info.getComment()));
+                  Table tbl = (Table) event.getSource();
+                  tbl.refreshRowCache();
+                  view.close();
+                  show("Išsaugota", TRAY_NOTIFICATION);
+               });
+
+         UI.getCurrent().addWindow(view);
       };
    }
 
