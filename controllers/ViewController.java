@@ -12,27 +12,30 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.MenuBar.MenuItem;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.MealEvent;
-import lt.pavilonis.monpikas.server.domain.Portion;
-import lt.pavilonis.monpikas.server.domain.PupilInfo;
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.domain.MealEventLog;
+import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.monpikas.server.domain.Pupil;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
 import lt.pavilonis.monpikas.server.reports.ReportService;
+import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
+import lt.pavilonis.monpikas.server.repositories.MealRepository;
+import lt.pavilonis.monpikas.server.repositories.PupilRepository;
 import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventManualCreateWindow;
+import lt.pavilonis.monpikas.server.views.pupils.PupilEditMealSelectionWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilEditWindow;
 import lt.pavilonis.monpikas.server.views.pupils.PupilsListView;
 import lt.pavilonis.monpikas.server.views.reports.ReportGeneratorView;
+import lt.pavilonis.monpikas.server.views.settings.MealFormWindow;
+import lt.pavilonis.monpikas.server.views.settings.MealListView;
 import lt.pavilonis.monpikas.server.views.settings.OtherSettingsView;
-import lt.pavilonis.monpikas.server.views.settings.PortionFormWindow;
-import lt.pavilonis.monpikas.server.views.settings.PortionListView;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,8 +45,10 @@ import java.io.File;
 import java.math.BigDecimal;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import static com.vaadin.server.VaadinService.getCurrent;
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
@@ -53,7 +58,6 @@ import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 import static com.vaadin.ui.Notification.show;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Optional.ofNullable;
-import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
 import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
@@ -73,7 +77,13 @@ public class ViewController {
    private String noPhotoPath;
 
    @Autowired
+   private MealRepository mealRepository;
+
+   @Autowired
    private PupilService pupilService;
+
+   @Autowired
+   private PupilRepository pupilRepository;
 
    @Autowired
    private MealService mealService;
@@ -83,6 +93,9 @@ public class ViewController {
 
    @Autowired
    private ReportService reportService;
+
+   @Autowired
+   private MealEventLogRepository mealEventLogRepository;
 
    public void attachComponents(VerticalLayout base) {
 
@@ -127,7 +140,7 @@ public class ViewController {
             HorizontalLayout hl = new HorizontalLayout();
             hl.setSizeFull();
 
-            PortionListView view1 = new PortionListView();
+            MealListView view1 = new MealListView();
             view1.getContainer().addAll(portionService.getAll());
             view1.setTableClickListener(portionListTableClickListener());
             view1.getControlPanel().addAddListener(portionAddListener(view1));
@@ -153,16 +166,16 @@ public class ViewController {
       base.setExpandRatio(content, 1f);
    }
 
-   private ClickListener portionDeleteListener(PortionListView view) {
+   private ClickListener portionDeleteListener(MealListView view) {
       return click -> {
-         Long id = (Long) view.getTable().getValue();
-         if (id == null) {
+         Long portionId = (Long) view.getTable().getValue();
+         if (portionId == null) {
             show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            List<PupilInfo> portionUsers = pupilService.findFirstByPortionId(id);
+            List<Pupil> portionUsers = pupilRepository.findPortionUsers(portionId);
             if (portionUsers.isEmpty()) {
-               portionService.delete(id);
-               view.getContainer().removeItem(id);
+               portionService.delete(portionId);
+               view.getContainer().removeItem(portionId);
                view.getTable().select(null);
                show("Įrašas pašalintas", TRAY_NOTIFICATION);
             } else {
@@ -172,18 +185,18 @@ public class ViewController {
       };
    }
 
-   private ClickListener portionAddListener(PortionListView listView) {
+   private ClickListener portionAddListener(MealListView listView) {
       return click -> {
-         PortionFormWindow w = new PortionFormWindow();
+         MealFormWindow w = new MealFormWindow();
 
          w.addCloseButtonListener(closeClick -> w.close());
          w.addSaveButtonListener(saveClick -> {
             if (w.isValid()) {
                w.commit();
-               Portion portion = w.getItemDateSource().getBean();
-               portionService.save(portion);
+               Meal meal = w.getItemDateSource().getBean();
+               portionService.save(meal);
                w.close();
-               listView.getContainer().addBean(portion);
+               listView.getContainer().addBean(meal);
                show("Išsaugota", TRAY_NOTIFICATION);
             }
          });
@@ -195,13 +208,14 @@ public class ViewController {
       return event -> {
          Item item = event.getItem();
          if (event.isDoubleClick()) {
-            PortionFormWindow w = new PortionFormWindow(item);
+            MealFormWindow w = new MealFormWindow(item);
+
             UI.getCurrent().addWindow(w);
             w.addCloseButtonListener(click -> w.close());
             w.addSaveButtonListener(click -> {
                if (w.isValid()) {
                   w.commit();
-                  BeanItem<Portion> bean = w.getItemDateSource();
+                  BeanItem<Meal> bean = w.getItemDateSource();
                   portionService.save(bean.getBean());
                   w.close();
                   show("Išsaugota", TRAY_NOTIFICATION);
@@ -217,15 +231,38 @@ public class ViewController {
          if (!event.isDoubleClick())
             return;
 
-         BeanItem<AdbPupilDto> item = (BeanItem<AdbPupilDto>) event.getItem();
-         AdbPupilDto dto = item.getBean();
-         PupilInfo info = pupilService.infoByCardId(dto.getCardId()).orElse(new PupilInfo(dto.getCardId()));
-         PupilEditWindow view = new PupilEditWindow(
-               info,
-               dto,
-               getImage(dto.getAdbId()),
-               mealService.lastMealEvent(dto.getCardId()),
-               portionService.getAll());
+         @SuppressWarnings("unchecked")
+         BeanItem<PupilDto> item = (BeanItem<PupilDto>) event.getItem();
+         PupilDto dto = item.getBean();
+         Pupil pupil = pupilService.infoByCardId(dto.getCardId())
+               .map(p -> {
+//                  ht.initialize(p.getMeals());
+                  return p;
+               })
+               .orElse(new Pupil(dto.getCardId()));
+
+         Optional<Date> lastMeal = mealService.lastMealEvent(dto.getCardId());
+         Image photo = getImage(dto.getAdbId());
+         PupilEditWindow view = new PupilEditWindow(pupil, dto, photo, lastMeal);
+
+         view.addAddMealButtonListener(click -> {
+            PupilEditMealSelectionWindow selectionWindow = new PupilEditMealSelectionWindow();
+            selectionWindow.getContainer().addAll(mealRepository.findAll());
+            selectionWindow.addCloseButtonListener(close -> selectionWindow.close());
+            selectionWindow.addSaveButtonListener(select -> {
+               @SuppressWarnings("unchecked")
+               Collection<Long> selected = (Collection<Long>) selectionWindow.getTable().getValue();
+               view.addToContainer(mealRepository.findAll(selected));
+               selectionWindow.close();
+            });
+            UI.getCurrent().addWindow(selectionWindow);
+         });
+
+         view.addRemoveMealButtonListener(click -> {
+            @SuppressWarnings("unchecked")
+            Collection<Long> selected = (Collection<Long>) view.getTable().getValue();
+            view.removeFromContainer(selected);
+         });
 
          view.addCloseButtonListener(closeBtnClick -> view.close());
          view.addSaveButtonListener(
@@ -234,12 +271,17 @@ public class ViewController {
                   if (!view.isValid())
                      return;
 
+                  Collection<Long> mealIds = (Collection<Long>) view.getTable().getItemIds();
+
+                  pupil.getMeals().clear();
+                  pupil.getMeals().addAll(mealRepository.findAll(mealIds));
+
                   view.commit();
-                  pupilService.saveOrUpdate(info);
-                  dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
-                  dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
-                  dto.setGrade(ofNullable(info.getGrade()));
-                  dto.setComment(ofNullable(info.getComment()));
+                  pupilService.saveOrUpdate(pupil);
+//                  dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
+//                  dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
+                  dto.setGrade(ofNullable(pupil.getGrade()));
+                  dto.setComment(ofNullable(pupil.getComment()));
                   Table tbl = (Table) event.getSource();
                   tbl.refreshRowCache();
                   view.close();
@@ -285,27 +327,30 @@ public class ViewController {
             return;
          }
          MealEventManualCreateWindow w = new MealEventManualCreateWindow();
-         w.getContainer().addAll(pupilService.getMergedMealAllowedList());
+         w.getContainer().addAll(pupilService.getMergedWithPortions());
          w.addCloseButtonListener(closeClick -> w.close());
          w.addSaveButtonListener(saveClick -> {
             Long id = (Long) w.getTable().getValue();
-            PortionType type = w.getPortionType();
+            MealType type = w.getEventType();
             if (valid(id, w.getDate(), type)) {
-               AdbPupilDto dto = pupilService.getByCardId(id).get();
+               PupilDto dto = pupilService.getByCardId(id).get();
 
-               BigDecimal price = type == BREAKFAST
-                     ? dto.getBreakfastPortion().get().getPrice()
-                     : dto.getDinnerPortion().get().getPrice();
+               BigDecimal price = dto.getMeals().stream()
+                     .filter(portion -> portion.getType() == type)
+                     .findFirst()
+                     .get()
+                     .getPrice();
 
-               MealEvent event = new MealEvent(
+               MealEventLog event = new MealEventLog(
                      dto.getCardId(),
                      dto.getFirstName() + " " + dto.getLastName(),
                      dto.getGrade().orElse(""),
                      w.getDate(),
                      price,
-                     type
+                     type,
+                     dto.getPupilType()
                );
-               mealService.saveMealEvent(event);
+               mealEventLogRepository.save(event);
                listView.getContainer().addBean(event);
                w.close();
                show("Išsaugota", TRAY_NOTIFICATION);
@@ -315,7 +360,7 @@ public class ViewController {
       };
    }
 
-   private boolean valid(Long id, Date date, PortionType type) {
+   private boolean valid(Long id, Date date, MealType type) {
       if (id == null) {
          show("Nepasirinktas mokinys", WARNING_MESSAGE);
          return false;
@@ -341,9 +386,9 @@ public class ViewController {
          }
          Long id = (Long) listView.getTable().getValue();
          if (id == null) {
-            Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
+            show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            mealService.deleteMealEvent(id);
+            mealEventLogRepository.delete(id);
             listView.getContainer().removeItem(id);
             listView.getTable().select(null);
             show("Įrašas pašalintas", TRAY_NOTIFICATION);

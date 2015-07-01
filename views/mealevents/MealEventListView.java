@@ -6,8 +6,9 @@ import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.MealEvent;
-import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
+import lt.pavilonis.monpikas.server.domain.MealEventLog;
+import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.PupilTypeCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
 import java.text.DateFormat;
@@ -20,67 +21,36 @@ import static com.vaadin.ui.Table.Align.CENTER;
 
 public class MealEventListView extends VerticalLayout {
 
-   private Table table = new Table();
-   BeanContainer<Long, MealEvent> container = new BeanContainer<>(MealEvent.class);
-   MealEventListFilterPanel filterPanel = new MealEventListFilterPanel();
-   MealEventListControlPanel controlPanel = new MealEventListControlPanel();
+   private final BeanContainer<Long, MealEventLog> container = new BeanContainer<>(MealEventLog.class);
+   private final Table table = new MealEventTable(container);
+   private final MealEventListFilterPanel filterPanel = new MealEventListFilterPanel();
+   private final MealEventListControlPanel controlPanel = new MealEventListControlPanel();
 
    public MealEventListView() {
       setSizeFull();
-      container.setBeanIdProperty("id");
-      table.setSizeFull();
-      table.setContainerDataSource(container);
-      table.setConverter("date", new StringToDateConverter() {
-         @Override
-         public DateFormat getFormat(Locale locale) {
-            return new SimpleDateFormat("yyyy-MM-dd  HH:mm");
-         }
-      });
-      table.setConverter("price", new StringToDoubleConverter() {
-         @Override
-         protected NumberFormat getFormat(Locale locale) {
-            return new DecimalFormat("0.00");
-         }
-      });
-      table.setConverter("type", new PortionTypeCellConverter());
-      table.setConverter("cardId", new SimpleStringToLongConverter());
-      table.setVisibleColumns("id", "cardId", "grade", "name", "date", "type", "price");
-      table.setColumnHeaders("Id", "Kortelės nr.", "Klasė", "Vardas", "Data", "Tipas", "Kaina");
-      table.setColumnWidth("cardId", 100);
-      table.setColumnWidth("grade", 60);
-      table.setColumnAlignment("grade", CENTER);
-      table.setColumnWidth("birthDate", 130);
-      table.setColumnCollapsingAllowed(true);
-      table.setColumnCollapsed("id", true);
-      table.setColumnCollapsed("cardId", true);
-      table.setSelectable(true);
-      table.setNullSelectionAllowed(false);
-      table.setCacheRate(5);
-
       addComponents(filterPanel, table, controlPanel);
       setExpandRatio(table, 1f);
       filterPanel.addFilterButtonListener(filterButtonClicked -> {
-               container.removeAllContainerFilters();
-               container.addContainerFilter(filterPanel.getFilter());
-            }
-      );
+         container.removeAllContainerFilters();
+         container.addContainerFilter(filterPanel.getFilter());
+      });
       filterPanel.addCancelFilterButtonListener(cancelFilterButtonClicked -> {
          filterPanel.cleanFields();
          container.removeAllContainerFilters();
       });
    }
 
-   public void setTableClickListener(ItemClickListener listener) {
-      table.addItemClickListener(listener);
-   }
+//   public void setTableClickListener(ItemClickListener listener) {
+//      table.addItemClickListener(listener);
+//   }
 
-   public BeanContainer<Long, MealEvent> getContainer() {
+   public BeanContainer<Long, MealEventLog> getContainer() {
       return container;
    }
 
-   public MealEventListFilterPanel getFilterPanel() {
-      return filterPanel;
-   }
+//   public MealEventListFilterPanel getFilterPanel() {
+//      return filterPanel;
+//   }
 
    public MealEventListControlPanel getControlPanel() {
       return controlPanel;
@@ -88,5 +58,40 @@ public class MealEventListView extends VerticalLayout {
 
    public Table getTable() {
       return table;
+   }
+
+   private class MealEventTable extends Table {
+      public MealEventTable(BeanContainer<Long, MealEventLog> container) {
+         container.setBeanIdProperty("id");
+         setSizeFull();
+         setContainerDataSource(container);
+         setConverter("date", new StringToDateConverter() {
+            @Override
+            public DateFormat getFormat(Locale locale) {
+               return new SimpleDateFormat("yyyy-MM-dd  HH:mm");
+            }
+         });
+         setConverter("price", new StringToDoubleConverter() {
+            @Override
+            protected NumberFormat getFormat(Locale locale) {
+               return new DecimalFormat("0.00");
+            }
+         });
+         setConverter("mealType", new MealTypeCellConverter());
+         setConverter("pupilType", new PupilTypeCellConverter());
+         setConverter("cardId", new SimpleStringToLongConverter());
+         setVisibleColumns("id", "cardId", "grade", "name", "date", "mealType", "pupilType", "price");
+         setColumnHeaders("Id", "Kortelės nr.", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
+         setColumnWidth("cardId", 100);
+         setColumnWidth("grade", 60);
+         setColumnAlignment("grade", CENTER);
+         setColumnWidth("birthDate", 130);
+         setColumnCollapsingAllowed(true);
+         setColumnCollapsed("id", true);
+         setColumnCollapsed("cardId", true);
+         setSelectable(true);
+         setNullSelectionAllowed(false);
+         setCacheRate(5);
+      }
    }
 }

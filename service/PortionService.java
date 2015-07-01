@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.domain.Portion;
-import lt.pavilonis.monpikas.server.repositories.PortionRepository;
+import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.repositories.MealRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,17 +11,17 @@ import java.util.List;
 public class PortionService {
 
    @Autowired
-   private PortionRepository portionRepository;
+   private MealRepository mealRepository;
 
-   public List<Portion> getAll() {
-      return portionRepository.findAll();
+   public List<Meal> getAll() {
+      return mealRepository.findAll();
    }
 
    public void delete(long id) {
-      portionRepository.delete(id);
+      mealRepository.delete(id);
    }
 
-   public void save(Portion portion) {
-      portionRepository.save(portion);
+   public void save(Meal meal) {
+      mealRepository.save(meal);
    }
 }

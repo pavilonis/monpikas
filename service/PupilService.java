@@ -1,108 +1,103 @@
 package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.dao.AdbDao;
-import lt.pavilonis.monpikas.server.domain.Portion;
-import lt.pavilonis.monpikas.server.domain.PupilInfo;
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.repositories.MealEventRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilInfoRepository;
+import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.monpikas.server.domain.Pupil;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
+import lt.pavilonis.monpikas.server.repositories.PupilRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import static java.lang.System.nanoTime;
 import static java.util.Optional.ofNullable;
-import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
-import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
 public class PupilService {
 
-   private static final Logger LOG = getLogger(PupilService.class);
+   private static final Logger LOG = getLogger(PupilService.class.getSimpleName());
 
    @Autowired
    private AdbDao dao;
 
    @Autowired
-   private PupilInfoRepository infoRepo;
+   private PupilRepository pupilsRepository;
 
    @Autowired
-   private MealEventRepository mealRepo;
+   private MealEventLogRepository eventsRepository;
+
+   @Autowired
+   private EntityManager entityManager;
 
    /**
-    * @return List of Pupils from ADB merged with local Pupil information (PupilInfo)
+    * @return List of Pupils from ADB merged with local Pupil information
     */
-   public List<AdbPupilDto> getMergedList() {
+   public List<PupilDto> getMergedList() {
       return merge(
             getPupilInfos(),
-            getAdbPupilDtos(),
-            false
-      );
-   }
-
-   public List<AdbPupilDto> getMergedMealAllowedList() {
-      return merge(
-            infoRepo.findByDinnerPortionIsNotNullOrBreakfastPortionIsNotNull(),
             getAdbPupilDtos(),
             true
       );
    }
 
-   private List<AdbPupilDto> merge(List<PupilInfo> pupilInfos, List<AdbPupilDto> adbPupils, boolean mealAllowedOnly) {
-      long start = System.nanoTime();
-      List<AdbPupilDto> result = new ArrayList<>();
-      adbPupils.forEach(dto -> {
-         pupilInfos.stream()
-               .filter(i -> !mealAllowedOnly || (i.getBreakfastPortion() != null || i.getDinnerPortion() != null))
-               .forEach(info -> {
-                  if (dto.getCardId() == info.getCardId()) {
-                     dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
-                     dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
-                     dto.setGrade(ofNullable(info.getGrade()));
-                     dto.setComment(ofNullable(info.getComment()));
-                  }
-               });
-         if (!mealAllowedOnly || (dto.getBreakfastPortion().isPresent() || dto.getDinnerPortion().isPresent())) {
-            result.add(dto);
-         }
+   public List<PupilDto> getMergedWithPortions() {
+      return merge(
+            pupilsRepository.findWithPortions(),
+            getAdbPupilDtos(),
+            false
+      );
+   }
 
+   private List<PupilDto> merge(List<Pupil> pupils, List<PupilDto> adbPupils, boolean withoutMeals) {
+      long start = nanoTime();
+      List<PupilDto> result = new ArrayList<>();
+      adbPupils.forEach(adbDto -> {
+         Optional<Pupil> matchingPupil = pupils.stream()
+               .filter(pupil -> (withoutMeals || !pupil.getMeals().isEmpty())
+                     && adbDto.getCardId() == pupil.getCardId()).findAny();
+
+         matchingPupil.ifPresent(pupil -> {
+            adbDto.setMeals(pupil.getMeals());
+            adbDto.setGrade(ofNullable(pupil.getGrade()));
+            adbDto.setComment(ofNullable(pupil.getComment()));
+            adbDto.setPupilType(pupil.getType());
+            result.add(adbDto);
+         });
       });
-      long finish = System.nanoTime();
-      LOG.info("merged AdbPupils with PupilInfo in " + (finish - start) / 1000000 + " millis. Returning " + result.size() + " dto's");
+
+      LOG.info("merged AdbPupils with PupilInfo in " + durationFrom(start) + "Returning " + result.size() + " adbDto's");
       return result;
    }
 
-   private List<PupilInfo> getPupilInfos() {
-      long start = System.nanoTime();
-      List<PupilInfo> pupilInfos = infoRepo.findAll();
-      long finish = System.nanoTime();
-      LOG.info("got ALL PupilInfo in " + (finish - start) / 1000000 + " millis");
-      return pupilInfos;
-   }
-
-   private List<AdbPupilDto> getAdbPupilDtos() {
-      long start = System.nanoTime();
-      List<AdbPupilDto> pupils = dao.getAllAdbPupils();
-      long finish = System.nanoTime();
-      LOG.info("got All AdbPupils in " + (finish - start) / 1000000 + " millis");
+   private List<Pupil> getPupilInfos() {
+      long start = nanoTime();
+      List<Pupil> pupils = pupilsRepository.findAll();
+      LOG.info(pupils.size() + " Pupils loaded in " + durationFrom(start));
       return pupils;
    }
 
+   private List<PupilDto> getAdbPupilDtos() {
+      long start = nanoTime();
+      List<PupilDto> pupils = dao.getAllAdbPupils();
+      LOG.info(pupils.size() + " AdbPupils loaded in " + durationFrom(start));
+      return pupils;
+   }
 
-   public Optional<AdbPupilDto> getByCardId(long cardId) {
-      Optional<AdbPupilDto> dto = dao.getAdbPupil(cardId);
+   public Optional<PupilDto> getByCardId(long cardId) {
+      Optional<PupilDto> dto = dao.getAdbPupil(cardId);
       dto.ifPresent(d -> {
-         Optional<PupilInfo> info = ofNullable(infoRepo.findByCardId(cardId));  //getting information about pupil
+         Optional<Pupil> info = ofNullable(pupilsRepository.findByCardId(cardId));  //getting information about pupil
          info.ifPresent(i -> {
-            d.setBreakfastPortion(ofNullable(i.getBreakfastPortion()));
-            d.setDinnerPortion(ofNullable(i.getDinnerPortion()));
+            d.setMeals(i.getMeals());
             d.setComment(ofNullable(i.getComment()));
             d.setGrade(ofNullable(i.getGrade()));
          });
@@ -110,34 +105,23 @@ public class PupilService {
       return dto;
    }
 
-   public Optional<PupilInfo> infoByCardId(long cardId) {
-      return ofNullable(infoRepo.findByCardId(cardId));
+   public Optional<Pupil> infoByCardId(long cardId) {
+      return ofNullable(pupilsRepository.findByCardId(cardId));
    }
 
-   public void saveOrUpdate(PupilInfo info) {
-      infoRepo.saveAndFlush(info);
+   public void saveOrUpdate(Pupil info) {
+      pupilsRepository.saveAndFlush(info);
    }
 
-   public boolean canHaveMeal(long cardId, Date day, PortionType type) {
-      long mealsThatDay = mealRepo.numOfMealEvents(cardId, beginning(day), end(day), type);
+   public boolean canHaveMeal(long cardId, Date day, MealType type) {
+      long mealsThatDay = eventsRepository.numOfMealEvents(cardId, beginning(day), end(day), type);
       return mealsThatDay == 0;
    }
 
-   public boolean portionAssigned(long cardId, PortionType type) {
-      PupilInfo info = infoRepo.findByCardId(cardId);
-      return (type == BREAKFAST && info.getBreakfastPortion() != null) ||
-            (type == DINNER && info.getDinnerPortion() != null);
-   }
-
-   public int numOfPortionAssigned(AdbPupilDto dto) {
-      return (dto.getBreakfastPortion().isPresent() ? 1 : 0)
-            + (dto.getDinnerPortion().isPresent() ? 1 : 0);
-   }
-
-   public Portion onlyPortionFor(AdbPupilDto dto) {
-      return dto.getBreakfastPortion().isPresent()
-            ? dto.getBreakfastPortion().get()
-            : dto.getDinnerPortion().get();
+   public boolean portionAssigned(long cardId, MealType type) {
+      Pupil pupil = pupilsRepository.findByCardId(cardId);
+      return pupil.getMeals().stream()
+            .anyMatch(portion -> portion.getType() == type);
    }
 
    private Date beginning(Date date) {
@@ -160,7 +144,7 @@ public class PupilService {
       return c.getTime();
    }
 
-   public List<PupilInfo> findFirstByPortionId(Long id) {
-      return infoRepo.findFirstByPortionId(id);
+   private static String durationFrom(long start) {
+      return (nanoTime() - start) / 1_000_000 + " ms.";
    }
 }

@@ -1,7 +1,5 @@
 package lt.pavilonis.monpikas.server.domain;
 
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -9,17 +7,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.validation.constraints.DecimalMax;
 import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.LocalTime;
 
 @Entity
-public class Portion implements Serializable {
+public class Meal implements Serializable {
 
-   public Portion() {
+   public Meal() {
    }
 
    @Id
@@ -32,12 +30,16 @@ public class Portion implements Serializable {
 
    @NotNull
    @Enumerated(EnumType.STRING)
-   private PortionType type;
+   private MealType type;
 
    @DecimalMin("0")
    @DecimalMax("99")
    @NotNull
    private BigDecimal price;
+
+   private LocalTime startTime;
+
+   private LocalTime endTime;
 
    public Long getId() {
       return id;
@@ -63,12 +65,28 @@ public class Portion implements Serializable {
       this.name = name;
    }
 
-   public PortionType getType() {
+   public MealType getType() {
       return type;
    }
 
-   public void setType(PortionType type) {
+   public void setType(MealType type) {
       this.type = type;
+   }
+
+   public LocalTime getStartTime() {
+      return startTime;
+   }
+
+   public void setStartTime(LocalTime startTime) {
+      this.startTime = startTime;
+   }
+
+   public LocalTime getEndTime() {
+      return endTime;
+   }
+
+   public void setEndTime(LocalTime endTime) {
+      this.endTime = endTime;
    }
 
    @Override

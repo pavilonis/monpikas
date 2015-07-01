@@ -3,26 +3,29 @@ package lt.pavilonis.monpikas.server.views.pupils;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
 
 import static com.vaadin.ui.Button.ClickListener;
 
 public class PupilListFilterPanel extends HorizontalLayout {
 
-   private TextField text = new TextField();
-   private CheckBox breakfastPermission = new CheckBox("Pusryčiai");
-   private CheckBox dinnerPermission = new CheckBox("Pietus");
-   private Button filterButton = new Button("Filtruoti", FontAwesome.FILTER);
-   private Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
+   private final TextField text = new TextField();
+   private final ComboBox mealType = new MealTypeComboBox();
+   private final Button filterButton = new Button("Filtruoti", FontAwesome.FILTER);
+   private final Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
 
    public PupilListFilterPanel() {
-      addComponents(text, breakfastPermission, dinnerPermission, filterButton, cancelFilterButton);
+//      mealType.setEnabled(false);
+      mealType.setCaption(null);
+      mealType.setNullSelectionAllowed(true);
+      mealType.setValue(null);
+      addComponents(text, mealType, filterButton, cancelFilterButton);
       setSpacing(true);
       setMargin(true);
-      setComponentAlignment(dinnerPermission, Alignment.MIDDLE_CENTER);
-      setComponentAlignment(breakfastPermission, Alignment.MIDDLE_CENTER);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
       text.focus();
    }
@@ -32,7 +35,7 @@ public class PupilListFilterPanel extends HorizontalLayout {
    }
 
    public PupilFilter getFilter() {
-      return new PupilFilter(text.getValue(), breakfastPermission.getValue(), dinnerPermission.getValue());
+      return new PupilFilter(text.getValue(), (MealType) mealType.getValue());
    }
 
    public void addCancelFilterButtonListener(ClickListener listener) {
@@ -41,8 +44,7 @@ public class PupilListFilterPanel extends HorizontalLayout {
 
    public void cleanFields() {
       text.setValue("");
-      dinnerPermission.setValue(false);
-      breakfastPermission.setValue(false);
+      mealType.setValue(null);
    }
 }
 
