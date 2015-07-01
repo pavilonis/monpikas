@@ -8,7 +8,6 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
-import java.math.BigDecimal;
 import java.util.OptionalInt;
 
 import static java.util.OptionalInt.empty;
@@ -16,7 +15,6 @@ import static org.apache.poi.hssf.usermodel.HSSFCellStyle.BORDER_THIN;
 import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_CENTER;
 import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_RIGHT;
 import static org.apache.poi.ss.usermodel.CellStyle.VERTICAL_CENTER;
-
 
 public class ReportHelper {
 
@@ -30,10 +28,10 @@ public class ReportHelper {
       return style(wb, size, bold, border, ALIGN_CENTER);
    }
 
-   public HSSFCellStyle style(HSSFWorkbook wb, int size, boolean bold, boolean border, short halign) {
+   public HSSFCellStyle style(HSSFWorkbook wb, int fontSize, boolean bold, boolean border, short halign) {
       HSSFCellStyle style = wb.createCellStyle();
       HSSFFont font = wb.createFont();
-      font.setFontHeightInPoints((short) size);
+      font.setFontHeightInPoints((short) fontSize);
       style.setVerticalAlignment(VERTICAL_CENTER);
       style.setAlignment(halign);
       if (border) {
@@ -66,15 +64,18 @@ public class ReportHelper {
       cell(col, row, OptionalInt.of(900), value, true, true, ALIGN_CENTER);
    }
 
-   private void cell(int col, int row, OptionalInt rowHeight, Object value, boolean bold, boolean border, short halign) {
-      HSSFRow newRow = sheet.getRow(row) == null
-            ? sheet.createRow(row)
-            : sheet.getRow(row);
+   private void cell(int col, int rowNumber, OptionalInt rowHeight, Object value, boolean bold, boolean border, short halign) {
+      HSSFRow row = sheet.getRow(rowNumber) == null
+            ? sheet.createRow(rowNumber)
+            : sheet.getRow(rowNumber);
 
-      rowHeight.ifPresent(h -> newRow.setHeight((short) (h)));
+      //rowHeight.ifPresent(h -> row.setHeight((short) (h)));
 
-      HSSFCell cell = newRow.createCell(col);
-      cell.setCellStyle(style(sheet.getWorkbook(), 10, bold, border, halign));
+      HSSFCellStyle style = style(sheet.getWorkbook(), 10, bold, border, halign);
+      row.setRowStyle(style);
+
+      HSSFCell cell = row.createCell(col);
+      cell.setCellStyle(style);
       cell.setCellValue(value.toString());
    }
 

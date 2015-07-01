@@ -3,7 +3,7 @@ package lt.pavilonis.monpikas.server.views.mealevents;
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
-import lt.pavilonis.monpikas.server.domain.MealEvent;
+import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.service.MealService;
 
 import java.util.Date;
@@ -24,7 +24,7 @@ public class MealEventFilter implements Filter {
    @Override
    public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
 
-      MealEvent event = ((BeanItem<MealEvent>) item).getBean();
+      MealEventLog event = ((BeanItem<MealEventLog>) item).getBean();
 
       String s = event.getName() + event.getGrade() + event.getCardId() + event.getDate() + event.getPrice();
 

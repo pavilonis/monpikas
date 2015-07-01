@@ -3,36 +3,30 @@ package lt.pavilonis.monpikas.server.views.mealevents;
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
-import com.vaadin.ui.Label;
-import com.vaadin.ui.OptionGroup;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.views.converters.OptionalBooleanCellConverter;
+import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
 import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 
 import java.util.Date;
 
 import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
-import static com.vaadin.ui.Alignment.MIDDLE_RIGHT;
 import static com.vaadin.ui.Button.ClickListener;
-import static com.vaadin.ui.Table.Align.CENTER;
-import static java.util.Arrays.asList;
-import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.BREAKFAST;
-import static lt.pavilonis.monpikas.server.domain.enumeration.PortionType.DINNER;
 
 public class MealEventManualCreateWindow extends Window {
 
-   Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
-   Button close = new Button("Uždaryti", FontAwesome.TIMES);
-   BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
-   Table table = new Table("Pasirinkite mokinį");
-   DateField dateField = new DateField("Pasirinkite data: ", new Date());
-   OptionGroup portionType = new OptionGroup("Maitinimosi tipas", asList(PortionType.values()));
+   private final Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
+   private final Button close = new Button("Uždaryti", FontAwesome.TIMES);
+   private final BeanContainer<Long, PupilDto> container = new BeanContainer<>(PupilDto.class);
+   private final Table table = new PupilsTable("Pasirinkite mokinį", container);
+   private final DateField dateField = new DateField("Pasirinkite data: ", new Date());
+   private final ComboBox eventTypeCombo = new MealTypeComboBox();
 
    public MealEventManualCreateWindow() {
 
@@ -42,45 +36,14 @@ public class MealEventManualCreateWindow extends Window {
       setResizable(false);
       setWidth("550px");
       setHeight("580px");
-      VerticalLayout vl = new VerticalLayout();
-      vl.setSpacing(true);
-      vl.setMargin(true);
-      container.setBeanIdProperty("cardId");
 
-      table.setSizeFull();
-      table.setContainerDataSource(container);
-      table.setVisibleColumns(new String[]{"firstName", "lastName", "grade", "breakfastPortion", "dinnerPortion"});
-
-      table.setColumnHeader("firstName", "Vardas");
-      table.setColumnHeader("lastName", "Pavardė");
-      table.setColumnHeader("breakfastPortion", "Pusryčiai");
-      table.setColumnHeader("dinnerPortion", "Pietus");
-      table.setColumnHeader("grade", "Klasė");
-      table.setColumnWidth("breakfastPortion", 85);
-      table.setColumnWidth("dinnerPortion", 85);
-      table.setColumnWidth("grade", 85);
-
-      table.setConverter("breakfastPortion", new OptionalBooleanCellConverter());
-      table.setConverter("dinnerPortion", new OptionalBooleanCellConverter());
-      table.setConverter("grade", new OptionalCellConverter());
-      table.setColumnAlignment("breakfastPortion", CENTER);
-      table.setColumnAlignment("dinnerPortion", CENTER);
-      table.setColumnCollapsingAllowed(true);
-      table.setSelectable(true);
-      table.setNullSelectionAllowed(false);
-      table.setCacheRate(5);
-      table.setHeight("340px");
-
-      portionType.setNullSelectionAllowed(false);
-      portionType.select(DINNER);
-      portionType.setItemCaption(BREAKFAST, "Pusryčiai");
-      portionType.setItemCaption(DINNER, "Pietus");
-      HorizontalLayout hl = new HorizontalLayout(dateField, new Label(" "), portionType);
+      HorizontalLayout hl = new HorizontalLayout(dateField, eventTypeCombo);
       hl.setSpacing(true);
-      hl.setComponentAlignment(portionType, MIDDLE_RIGHT);
 
       dateField.setDateFormat("yyyy-MM-dd");
-      vl.addComponents(hl, table);
+      VerticalLayout vl = new VerticalLayout(hl, table);
+      vl.setSpacing(true);
+      vl.setMargin(true);
 
       HorizontalLayout buttons = new HorizontalLayout(save, close);
       buttons.setSpacing(true);
@@ -98,7 +61,7 @@ public class MealEventManualCreateWindow extends Window {
       close.addClickListener(listener);
    }
 
-   public BeanContainer<Long, AdbPupilDto> getContainer() {
+   public BeanContainer<Long, PupilDto> getContainer() {
       return container;
    }
 
@@ -110,7 +73,24 @@ public class MealEventManualCreateWindow extends Window {
       return dateField.getValue();
    }
 
-   public PortionType getPortionType() {
-      return (PortionType) portionType.getValue();
+   public MealType getEventType() {
+      return (MealType) eventTypeCombo.getValue();
+   }
+
+   private class PupilsTable extends Table {
+      public PupilsTable(String caption, BeanContainer<Long, PupilDto> container) {
+         super(caption, container);
+         container.setBeanIdProperty("cardId");
+         setSizeFull();
+         setVisibleColumns(new String[]{"firstName", "lastName", "grade"});
+         setColumnHeaders("Vardas", "Pavardė", "Klasė");
+         setColumnWidth("grade", 85);
+         setConverter("grade", new OptionalCellConverter());
+         setColumnCollapsingAllowed(true);
+         setSelectable(true);
+         setNullSelectionAllowed(false);
+         setCacheRate(5);
+         setHeight("340px");
+      }
    }
 }

@@ -1,24 +1,29 @@
 package lt.pavilonis.monpikas.server.dto;
 
-import lt.pavilonis.monpikas.server.domain.Portion;
+import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.domain.PupilType;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.util.Optional.empty;
 
-public class AdbPupilDto {
+public class PupilDto {
 
-   public AdbPupilDto() {
+   public PupilDto() {
    }
 
    private long adbId;
    private long cardId;
    private String firstName;
    private String lastName;
+   private PupilType pupilType;
+   private Set<Meal> meals = new HashSet<>();
    private Optional<LocalDate> birthDate = empty();
-   private Optional<Portion> breakfastPortion = empty();
-   private Optional<Portion> dinnerPortion = empty();
+   //   private Optional<Portion> breakfastPortion = empty();
+//   private Optional<Portion> dinnerPortion = empty();
    private Optional<String> grade = empty();
    private Optional<String> comment = empty();
 
@@ -62,21 +67,37 @@ public class AdbPupilDto {
       this.comment = comment;
    }
 
-   public Optional<Portion> getBreakfastPortion() {
-      return breakfastPortion;
+   public Set<Meal> getMeals() {
+      return meals;
    }
 
-   public void setBreakfastPortion(Optional<Portion> breakfastPortion) {
-      this.breakfastPortion = breakfastPortion;
+   public void setMeals(Set<Meal> meals) {
+      this.meals = meals;
    }
 
-   public Optional<Portion> getDinnerPortion() {
-      return dinnerPortion;
+   public PupilType getPupilType() {
+      return pupilType;
    }
 
-   public void setDinnerPortion(Optional<Portion> dinnerPortion) {
-      this.dinnerPortion = dinnerPortion;
+   public void setPupilType(PupilType pupilType) {
+      this.pupilType = pupilType;
    }
+
+   //   public Optional<Portion> getBreakfastPortion() {
+//      return breakfastPortion;
+//   }
+//
+//   public void setBreakfastPortion(Optional<Portion> breakfastPortion) {
+//      this.breakfastPortion = breakfastPortion;
+//   }
+//
+//   public Optional<Portion> getDinnerPortion() {
+//      return dinnerPortion;
+//   }
+//
+//   public void setDinnerPortion(Optional<Portion> dinnerPortion) {
+//      this.dinnerPortion = dinnerPortion;
+//   }
 
    public Optional<String> getGrade() {
       return grade;
@@ -84,13 +105,6 @@ public class AdbPupilDto {
 
    public void setGrade(Optional<String> grade) {
       this.grade = grade;
-   }
-
-   public long mealsPermitted() {
-      long meals = 0;
-      if (breakfastPortion.isPresent()) meals++;
-      if (dinnerPortion.isPresent()) meals++;
-      return meals;
    }
 
    public long getAdbId() {

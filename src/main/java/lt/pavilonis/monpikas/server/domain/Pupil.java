@@ -1,20 +1,24 @@
 package lt.pavilonis.monpikas.server.domain;
 
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-public class PupilInfo {
+public class Pupil {
 
-   public PupilInfo() {
+   public Pupil() {
    }
 
-   public PupilInfo(long cardId) {
+   public Pupil(long cardId) {
       this.cardId = cardId;
    }
 
@@ -28,13 +32,12 @@ public class PupilInfo {
    @Lob
    private String comment;
 
-   @ManyToOne
-   @JoinColumn(name = "breakfastPortion_id")
-   private Portion breakfastPortion;
+   @NotNull
+   @Enumerated(EnumType.STRING)
+   private PupilType type;
 
-   @ManyToOne
-   @JoinColumn(name = "dinnerPortion_id")
-   private Portion dinnerPortion;
+   @ManyToMany(fetch = FetchType.EAGER)
+   private Set<Meal> meals = new HashSet<>();
 
    public long getCardId() {
       return cardId;
@@ -60,20 +63,20 @@ public class PupilInfo {
       this.comment = comment;
    }
 
-   public Portion getBreakfastPortion() {
-      return breakfastPortion;
+   public PupilType getType() {
+      return type;
    }
 
-   public void setBreakfastPortion(Portion breakfastPortion) {
-      this.breakfastPortion = breakfastPortion;
+   public void setType(PupilType type) {
+      this.type = type;
    }
 
-   public Portion getDinnerPortion() {
-      return dinnerPortion;
+   public Set<Meal> getMeals() {
+      return meals;
    }
 
-   public void setDinnerPortion(Portion dinnerPortion) {
-      this.dinnerPortion = dinnerPortion;
+   public void setMeals(Set<Meal> meals) {
+      this.meals = meals;
    }
 
    @Override

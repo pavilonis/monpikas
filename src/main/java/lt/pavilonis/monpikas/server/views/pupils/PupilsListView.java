@@ -4,8 +4,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
-import lt.pavilonis.monpikas.server.views.converters.OptionalBooleanCellConverter;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
 import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
@@ -13,50 +12,19 @@ import static com.vaadin.ui.Table.Align.CENTER;
 
 public class PupilsListView extends VerticalLayout {
 
-   private Table t = new Table();
-   BeanContainer<Long, AdbPupilDto> container = new BeanContainer<>(AdbPupilDto.class);
-   PupilListFilterPanel pupilListFilterPanel = new PupilListFilterPanel();
+   private final BeanContainer<Long, PupilDto> container = new BeanContainer<>(PupilDto.class);
+   private final Table table = new PupilsTable(container);
+   private final PupilListFilterPanel pupilListFilterPanel = new PupilListFilterPanel();
 
    public PupilsListView() {
       setSizeFull();
-      container.setBeanIdProperty("cardId");
-      t.setSizeFull();
-      t.setContainerDataSource(container);
-
-      t.setVisibleColumns("cardId", "firstName", "lastName", "birthDate", "breakfastPortion", "dinnerPortion", "grade", "comment");
-      t.setColumnHeaders("Kortelės nr.", "Vardas", "Pavardė", "Gimimo data", "Pusryčiai", "Pietus", "Klasė", "Komentaras");
-
-      t.setColumnWidth("breakfastPortion", 85);
-      t.setColumnWidth("dinnerPortion", 85);
-      t.setColumnWidth("grade", 85);
-      t.setColumnWidth("birthDate", 130);
-      t.setColumnWidth("cardId", 90);
-
-      t.setConverter("cardId", new SimpleStringToLongConverter());
-      t.setConverter("breakfastPortion", new OptionalBooleanCellConverter());
-      t.setConverter("dinnerPortion", new OptionalBooleanCellConverter());
-      t.setConverter("grade", new OptionalCellConverter());
-      t.setConverter("birthDate", new OptionalCellConverter());
-      t.setConverter("comment", new OptionalCellConverter());
-
-      t.setColumnAlignment("breakfastPortion", CENTER);
-      t.setColumnAlignment("dinnerPortion", CENTER);
-      t.setColumnAlignment("birthDate", CENTER);
-
-      t.setColumnCollapsingAllowed(true);
-      t.setColumnCollapsed("cardId", true);
-      t.setSelectable(true);
-      t.setNullSelectionAllowed(false);
-      t.setCacheRate(5);
-
-      addComponents(pupilListFilterPanel, t);
-      setExpandRatio(t, 1f);
+      addComponents(pupilListFilterPanel, table);
+      setExpandRatio(table, 1f);
 
       pupilListFilterPanel.addFilterButtonListener(filterButtonClicked -> {
-               container.removeAllContainerFilters();
-               container.addContainerFilter(pupilListFilterPanel.getFilter());
-            }
-      );
+         container.removeAllContainerFilters();
+         container.addContainerFilter(pupilListFilterPanel.getFilter());
+      });
 
       pupilListFilterPanel.addCancelFilterButtonListener(cancelFilterButtonClicked -> {
          pupilListFilterPanel.cleanFields();
@@ -65,10 +33,39 @@ public class PupilsListView extends VerticalLayout {
    }
 
    public void setTableClickListener(ItemClickListener listener) {
-      t.addItemClickListener(listener);
+      table.addItemClickListener(listener);
    }
 
-   public BeanContainer<Long, AdbPupilDto> getContainer() {
+   public BeanContainer<Long, PupilDto> getContainer() {
       return container;
+   }
+
+
+   private class PupilsTable extends Table {
+      public PupilsTable(BeanContainer<Long, PupilDto> container) {
+         setSizeFull();
+         container.setBeanIdProperty("cardId");
+         setContainerDataSource(container);
+
+         setVisibleColumns("cardId", "firstName", "lastName", "birthDate", "grade", "comment");
+         setColumnHeaders("Kortelės nr.", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras");
+
+         setColumnWidth("grade", 85);
+         setColumnWidth("birthDate", 130);
+         setColumnWidth("cardId", 90);
+
+         setConverter("cardId", new SimpleStringToLongConverter());
+         setConverter("grade", new OptionalCellConverter());
+         setConverter("birthDate", new OptionalCellConverter());
+         setConverter("comment", new OptionalCellConverter());
+
+         setColumnAlignment("birthDate", CENTER);
+
+         setColumnCollapsingAllowed(true);
+         setColumnCollapsed("cardId", true);
+         setSelectable(true);
+         setNullSelectionAllowed(false);
+         setCacheRate(5);
+      }
    }
 }

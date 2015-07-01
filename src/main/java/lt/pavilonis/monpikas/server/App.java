@@ -37,28 +37,33 @@ public class App extends UI {
       Page.Styles styles = Page.getCurrent().getStyles();
       styles.add(
             ".valo.v-app, .valo.v-app-loading { " +
-                  "     font-family: sans-serif; " +
-                  "     font-weight: 500 " +
+                  "  font-family: sans-serif; " +
+                  "  font-weight: 500 " +
                   "} " +
 
                   ".valo .v-margin-top { " +
-                  "     padding-top: 20px " +
+                  "  padding-top: 20px " +
                   "} " +
 
                   ".valo .v-margin-right { " +
-                  "     padding-right: 20px " +
+                  "  padding-right: 20px " +
                   "} " +
 
                   ".valo .v-margin-bottom { " +
-                  "     padding-bottom: 20px " +
+                  "  padding-bottom: 20px " +
                   "} " +
 
                   ".valo .v-margin-left { " +
-                  "     padding-left: 20px " +
+                  "  padding-left: 20px " +
                   "} " +
                   ".redicon .v-icon { " +
                   "     color: red; " +
-                  "} "
+                  "} "+
+
+                  ".time-only .v-inline-datefield-calendarpanel-header," +
+                  ".time-only .v-inline-datefield-calendarpanel-body {" +
+                  "  display: none;" +
+                  "}"
       );
       VaadinSession.getCurrent().setErrorHandler(event -> {
          LOG.error("ErrorCause -> " + event.getThrowable().getCause());

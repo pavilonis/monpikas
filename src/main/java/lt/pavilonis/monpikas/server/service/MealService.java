@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.domain.MealEvent;
-import lt.pavilonis.monpikas.server.repositories.MealEventRepository;
+import lt.pavilonis.monpikas.server.domain.MealEventLog;
+import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -16,9 +16,9 @@ import static java.util.Optional.ofNullable;
 public class MealService {
 
    @Autowired
-   private MealEventRepository mealRepository;
+   private MealEventLogRepository mealRepository;
 
-   public List<MealEvent> getDinnerEventList() {
+   public List<MealEventLog> getDinnerEventList() {
       Calendar from = Calendar.getInstance();
       from.add(Calendar.DATE, -100); // 100 days back
       return mealRepository.findAfter(from.getTime());
@@ -35,13 +35,5 @@ public class MealService {
 
    public Optional<Date> lastMealEvent(long cardId) {
       return ofNullable(mealRepository.lastMealEventDate(cardId));
-   }
-
-   public void saveMealEvent(MealEvent m) {
-      mealRepository.save(m);
-   }
-
-   public void deleteMealEvent(long id) {
-      mealRepository.delete(id);
    }
 }

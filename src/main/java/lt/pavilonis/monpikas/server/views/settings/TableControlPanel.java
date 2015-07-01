@@ -7,16 +7,16 @@ import com.vaadin.ui.HorizontalLayout;
 
 import static com.vaadin.ui.Button.ClickListener;
 
-public class PortionListControlPanel extends HorizontalLayout {
+public class TableControlPanel extends HorizontalLayout {
 
    private Button addButton = new Button("Pridėti", FontAwesome.PLUS);
-   private Button deleteButton = new Button("Ištrinti", FontAwesome.WARNING);
+   private Button deleteButton = new Button("Šalinti", FontAwesome.WARNING);
 
-   public PortionListControlPanel() {
+   public TableControlPanel() {
       deleteButton.addStyleName("redicon");
       addComponents(addButton, deleteButton);
       setSpacing(true);
-      setMargin(true);
+      setMargin(true);//new MarginInfo(false, true, true, true));
       setComponentAlignment(addButton, Alignment.MIDDLE_CENTER);
       setComponentAlignment(deleteButton, Alignment.MIDDLE_RIGHT);
    }

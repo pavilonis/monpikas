@@ -6,20 +6,23 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.Portion;
-import lt.pavilonis.monpikas.server.views.converters.PortionTypeCellConverter;
+import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
+import lt.pavilonis.monpikas.server.views.converters.ModifiedStringToDoubleConverter;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Locale;
 
-public class PortionListView extends VerticalLayout {
+public class MealListView extends VerticalLayout {
 
-   private Table table = new Table();
-   BeanContainer<Long, Portion> container = new BeanContainer<>(Portion.class);
-   PortionListControlPanel controlPanel = new PortionListControlPanel();
+   private final Table table = new Table();
+   private final BeanContainer<Long, Meal> container = new BeanContainer<>(Meal.class);
+   private final TableControlPanel controlPanel = new TableControlPanel();
 
-   public PortionListView() {
+   //TODO add popup dialog "are you sure..."
+
+   public MealListView() {
       setMargin(true);
       setSizeFull();
       container.setBeanIdProperty("id");
@@ -30,13 +33,8 @@ public class PortionListView extends VerticalLayout {
       table.setVisibleColumns("id", "name", "type", "price");
       table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina");
 
-      table.setConverter("type", new PortionTypeCellConverter());
-      table.setConverter("price", new StringToDoubleConverter() {
-         @Override
-         protected NumberFormat getFormat(Locale locale) {
-            return new DecimalFormat("0.00");
-         }
-      });
+      table.setConverter("type", new MealTypeCellConverter());
+      table.setConverter("price", new ModifiedStringToDoubleConverter());
 
       table.setColumnCollapsingAllowed(true);
       table.setColumnCollapsed("id", true);
@@ -52,11 +50,11 @@ public class PortionListView extends VerticalLayout {
       table.addItemClickListener(listener);
    }
 
-   public BeanContainer<Long, Portion> getContainer() {
+   public BeanContainer<Long, Meal> getContainer() {
       return container;
    }
 
-   public PortionListControlPanel getControlPanel() {
+   public TableControlPanel getControlPanel() {
       return controlPanel;
    }
 

@@ -1,6 +1,6 @@
 package lt.pavilonis.monpikas.server.dto;
 
-import lt.pavilonis.monpikas.server.domain.Portion;
+import lt.pavilonis.monpikas.server.domain.Meal;
 
 import java.io.Serializable;
 
@@ -8,16 +8,16 @@ public class ClientPupilDto implements Serializable {
 
    private long id;
    private String name;
-   private Portion portion;
+   private Meal meal;
    private String grade;
 
    public ClientPupilDto() {
    }
 
-   public ClientPupilDto(long id, String name, Portion portion, String grade) {
+   public ClientPupilDto(long id, String name, Meal meal, String grade) {
       this.id = id;
       this.name = name;
-      this.portion = portion;
+      this.meal = meal;
       this.grade = grade;
    }
 
@@ -37,12 +37,12 @@ public class ClientPupilDto implements Serializable {
       this.name = name;
    }
 
-   public Portion getPortion() {
-      return portion;
+   public Meal getMeal() {
+      return meal;
    }
 
-   public void setPortion(Portion portion) {
-      this.portion = portion;
+   public void setMeal(Meal meal) {
+      this.meal = meal;
    }
 
    public String getGrade() {

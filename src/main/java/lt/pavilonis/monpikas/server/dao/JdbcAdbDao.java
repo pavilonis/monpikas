@@ -1,6 +1,6 @@
 package lt.pavilonis.monpikas.server.dao;
 
-import lt.pavilonis.monpikas.server.dto.AdbPupilDto;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -21,13 +21,13 @@ public class JdbcAdbDao implements AdbDao {
    private JdbcTemplate jdbcTemplate;
 
    @Override
-   public List<AdbPupilDto> getAllAdbPupils() {
+   public List<PupilDto> getAllAdbPupils() {
       return jdbcTemplate.query("SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users", newRowMapper());
    }
 
    @Override
-   public Optional<AdbPupilDto> getAdbPupil(long cardId) {
-      List<AdbPupilDto> pupilList = jdbcTemplate.query(
+   public Optional<PupilDto> getAdbPupil(long cardId) {
+      List<PupilDto> pupilList = jdbcTemplate.query(
             "SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = " + getString(cardId), newRowMapper()
       );
       return pupilList.isEmpty()
@@ -35,9 +35,9 @@ public class JdbcAdbDao implements AdbDao {
             : ofNullable(pupilList.get(0));
    }
 
-   private RowMapper<AdbPupilDto> newRowMapper() {
+   private RowMapper<PupilDto> newRowMapper() {
       return (rs, rowNum) -> {
-         AdbPupilDto dto = new AdbPupilDto();
+         PupilDto dto = new PupilDto();
          dto.setAdbId(rs.getLong("id"));
          dto.setCardId(rs.getInt("card"));
          dto.setFirstName(rs.getString("fname"));

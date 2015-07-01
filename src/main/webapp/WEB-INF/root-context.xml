@@ -10,7 +10,11 @@
        http://www.springframework.org/schema/tx
        http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean">
+   <bean id="flyway" class="org.flywaydb.core.Flyway" init-method="migrate">
+      <property name="dataSource" ref="monpikasMigrationDataSource"/>
+   </bean>
+
+   <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalEntityManagerFactoryBean" depends-on="flyway">
       <property name="persistenceUnitName" value="defaultPersistenceUnit"/>
    </bean>
 
@@ -33,5 +37,4 @@
    <bean id="monpikasMigrationDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
       <property name="jndiName" value="java:/comp/env/jdbc/Monpikas"/>
    </bean>
-
 </beans>

@@ -4,10 +4,12 @@ import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
+import lt.pavilonis.monpikas.server.domain.PupilType;
 import lt.pavilonis.monpikas.server.reports.ReportService;
 
 import java.io.ByteArrayInputStream;
@@ -18,13 +20,16 @@ import java.util.Date;
 
 import static com.vaadin.shared.ui.label.ContentMode.HTML;
 import static com.vaadin.ui.Alignment.MIDDLE_CENTER;
+import static java.util.Arrays.asList;
+import static lt.pavilonis.monpikas.server.utils.Messages.label;
 
 public class ReportGeneratorView extends VerticalLayout {
 
-   Button generateButton = new Button("Sukurti");
-   StreamResource streamResource;
-   DateField from;
-   DateField to;
+   private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+   private final StreamResource streamResource;
+   private final ComboBox pupilTypeCombo;
+   private final DateField from;
+   private final DateField to;
 
    public ReportGeneratorView(ReportService service) {
 
@@ -50,9 +55,21 @@ public class ReportGeneratorView extends VerticalLayout {
       HorizontalLayout hl = new HorizontalLayout(from, to);
       hl.setSpacing(true);
       hl.setMargin(new MarginInfo(true, true, true, true));
+
+      pupilTypeCombo = new ComboBox("Tipas", asList(PupilType.values())) {
+         @Override
+         public String getItemCaption(Object itemId) {
+            return label("PupilType." + itemId.toString());
+         }
+      };
+      pupilTypeCombo.setNullSelectionAllowed(false);
+      pupilTypeCombo.setValue(PupilType.SOCIAL);
+
+      Button generateButton = new Button("Sukurti");
       addComponents(
-            new Label("<center><h3>Ataskaitos sukūrimas pasirinktam laikotarpiui</h3></center>", HTML),
+            new Label(label("ReportGeneratorView.title"), HTML),
             hl,
+            pupilTypeCombo,
             generateButton
       );
 
@@ -63,12 +80,15 @@ public class ReportGeneratorView extends VerticalLayout {
 
    private StreamResource getStream(ReportService service) {
 
+      PupilType type = (PupilType) pupilTypeCombo.getValue();
       StreamResource.StreamSource source = () -> {
 
-         ByteArrayOutputStream stream = service.generate(from.getValue(), to.getValue());
-
-         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-         streamResource.setFilename("ataskaita_" + sdf.format(from.getValue()) + "_" + sdf.format(to.getValue()) + ".xls");
+         ByteArrayOutputStream stream = service.generate(from.getValue(), to.getValue(), type);
+         streamResource.setFilename(
+               "ataskaita_" + type.toString().toLowerCase() + "_" +
+                     DATE_FORMAT.format(from.getValue()) + "_" + DATE_FORMAT.format(to.getValue())
+                     + ".xls"
+         );
 
          return new ByteArrayInputStream(stream.toByteArray());
       };

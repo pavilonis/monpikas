@@ -1,7 +1,5 @@
 package lt.pavilonis.monpikas.server.domain;
 
-import lt.pavilonis.monpikas.server.domain.enumeration.PortionType;
-
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -15,18 +13,20 @@ import java.util.Optional;
 import static java.util.Optional.empty;
 
 @Entity
-public class MealEvent implements Comparable {
+public class MealEventLog implements Comparable {
 
-   public MealEvent() {
+   public MealEventLog() {
    }
 
-   public MealEvent(long cardId, String name, String grade, Date date, BigDecimal price, PortionType type) {
+   public MealEventLog(long cardId, String name, String grade, Date date,
+                       BigDecimal price, MealType mealType, PupilType pupilType) {
       this.cardId = cardId;
       this.name = name;
       this.grade = grade;
       this.date = date;
       this.price = price;
-      this.type = type;
+      this.mealType = mealType;
+      this.pupilType = pupilType;
    }
 
    @Id
@@ -44,10 +44,13 @@ public class MealEvent implements Comparable {
    private BigDecimal price;
 
    @Enumerated(EnumType.STRING)
-   private PortionType type;
+   private MealType mealType;
+
+   @Enumerated(EnumType.STRING)
+   private PupilType pupilType;
 
    @Transient
-   private Optional<PupilInfo> info = empty();
+   private Optional<Pupil> pupil = empty();
 
    public Date getDate() {
       return date;
@@ -93,21 +96,29 @@ public class MealEvent implements Comparable {
       this.price = price;
    }
 
-   public PortionType getType() {
-      return type;
+   public MealType getMealType() {
+      return mealType;
    }
 
-   public void setType(PortionType type) {
-      this.type = type;
+   public void setMealType(MealType type) {
+      this.mealType = type;
+   }
+
+   public PupilType getPupilType() {
+      return pupilType;
+   }
+
+   public void setPupilType(PupilType pupilType) {
+      this.pupilType = pupilType;
    }
 
    @Override
    public int compareTo(Object o) {
-      return ((MealEvent) o).getDate().compareTo(this.date);
+      return ((MealEventLog) o).getDate().compareTo(this.date);
    }
 
-   public Optional<PupilInfo> getInfo() {
-      return info;
+   public Optional<Pupil> getPupil() {
+      return pupil;
    }
 
    public String getGrade() {
@@ -118,8 +129,8 @@ public class MealEvent implements Comparable {
       this.grade = grade;
    }
 
-   public void setInfo(Optional<PupilInfo> info) {
-      this.info = info;
+   public void setPupil(Optional<Pupil> pupil) {
+      this.pupil = pupil;
    }
 
    @Override
