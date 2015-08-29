@@ -10,16 +10,16 @@ import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.persistence.EntityManager;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.lang.System.nanoTime;
 import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
+import static org.springframework.util.CollectionUtils.isEmpty;
 
 @Service
 public class PupilService {
@@ -35,47 +35,32 @@ public class PupilService {
    @Autowired
    private MealEventLogRepository eventsRepository;
 
-   @Autowired
-   private EntityManager entityManager;
-
    /**
     * @return List of Pupils from ADB merged with local Pupil information
     */
    public List<PupilDto> getMergedList() {
-      return merge(
-            getPupilInfos(),
-            getAdbPupilDtos(),
-            true
-      );
+      List<PupilDto> adbPupils = getAdbPupilDtos();
+      List<Pupil> pupils = getPupilInfos();
+
+      long start = nanoTime();
+      adbPupils.stream()
+            .forEach(adb -> pupils.stream().parallel()
+                  .filter(pupil -> adb.getCardId() == pupil.getCardId())
+                  .findAny()
+                  .ifPresent(pupil -> {
+                     adb.setMeals(pupil.getMeals());
+                     adb.setComment(ofNullable(pupil.getComment()));
+                     adb.setPupilType(pupil.getType());
+                  }));
+      LOG.info("merged AdbPupils with PupilInfo in " + durationFrom(start) + " Returning " + adbPupils.size() + " adbDto's");
+
+      return adbPupils;
    }
 
    public List<PupilDto> getMergedWithPortions() {
-      return merge(
-            pupilsRepository.findWithPortions(),
-            getAdbPupilDtos(),
-            false
-      );
-   }
-
-   private List<PupilDto> merge(List<Pupil> pupils, List<PupilDto> adbPupils, boolean withoutMeals) {
-      long start = nanoTime();
-      List<PupilDto> result = new ArrayList<>();
-      adbPupils.forEach(adbDto -> {
-         Optional<Pupil> matchingPupil = pupils.stream()
-               .filter(pupil -> (withoutMeals || !pupil.getMeals().isEmpty())
-                     && adbDto.getCardId() == pupil.getCardId()).findAny();
-
-         matchingPupil.ifPresent(pupil -> {
-            adbDto.setMeals(pupil.getMeals());
-            adbDto.setGrade(ofNullable(pupil.getGrade()));
-            adbDto.setComment(ofNullable(pupil.getComment()));
-            adbDto.setPupilType(pupil.getType());
-            result.add(adbDto);
-         });
-      });
-
-      LOG.info("merged AdbPupils with PupilInfo in " + durationFrom(start) + "Returning " + result.size() + " adbDto's");
-      return result;
+      return getMergedList().stream()
+            .filter(dto -> !isEmpty(dto.getMeals()))
+            .collect(Collectors.toList());
    }
 
    private List<Pupil> getPupilInfos() {
@@ -94,19 +79,18 @@ public class PupilService {
 
    public Optional<PupilDto> getByCardId(long cardId) {
       Optional<PupilDto> dto = dao.getAdbPupil(cardId);
-      dto.ifPresent(d -> {
-         Optional<Pupil> info = ofNullable(pupilsRepository.findByCardId(cardId));  //getting information about pupil
-         info.ifPresent(i -> {
-            d.setMeals(i.getMeals());
-            d.setComment(ofNullable(i.getComment()));
-            d.setGrade(ofNullable(i.getGrade()));
-         });
-      });
+
+      //getting information about pupil
+      dto.ifPresent(d -> pupilsRepository.findByCardId(cardId)
+            .ifPresent(i -> {
+               d.setMeals(i.getMeals());
+               d.setComment(ofNullable(i.getComment()));
+            }));
       return dto;
    }
 
    public Optional<Pupil> infoByCardId(long cardId) {
-      return ofNullable(pupilsRepository.findByCardId(cardId));
+      return pupilsRepository.findByCardId(cardId);
    }
 
    public void saveOrUpdate(Pupil info) {
@@ -119,8 +103,10 @@ public class PupilService {
    }
 
    public boolean portionAssigned(long cardId, MealType type) {
-      Pupil pupil = pupilsRepository.findByCardId(cardId);
-      return pupil.getMeals().stream()
+      Optional<Pupil> pupil = pupilsRepository.findByCardId(cardId);
+
+      return pupil.orElseThrow(IllegalArgumentException::new)
+            .getMeals().stream()
             .anyMatch(portion -> portion.getType() == type);
    }
 

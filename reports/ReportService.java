@@ -36,7 +36,7 @@ public class ReportService {
 
       List<MealEventLog> events = mealEventLogRepository.findByDateBetweenAndPupilType(from, to, pupilType);
 
-      events.forEach(e -> e.setPupil(ofNullable(pupilRepository.findByCardId(e.getCardId()))));
+      events.forEach(e -> e.setPupil(pupilRepository.findByCardId(e.getCardId())));
 
       String reportPeriod = DATE_FORMAT.format(from) + "  -  " + DATE_FORMAT.format(to);
       HSSFWorkbook wb = new Report(reportPeriod, events).create();

@@ -25,10 +25,6 @@ public class Pupil {
    @Id
    private long cardId;
 
-   @Size(min = 1, max = 3)
-   @NotNull
-   private String grade;
-
    @Lob
    private String comment;
 
@@ -45,14 +41,6 @@ public class Pupil {
 
    public void setCardId(long cardId) {
       this.cardId = cardId;
-   }
-
-   public String getGrade() {
-      return grade;
-   }
-
-   public void setGrade(String grade) {
-      this.grade = grade;
    }
 
    public String getComment() {

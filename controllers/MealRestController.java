@@ -1,12 +1,11 @@
 package lt.pavilonis.monpikas.server.controllers;
 
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
+import lt.pavilonis.monpikas.server.dto.PupilDto;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
-import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -59,7 +58,7 @@ public class MealRestController {
             case 0:
                LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
                return new ResponseEntity<>(
-                     new ClientPupilDto(dto.getAdbId(), name, null, dto.getGrade().orElse("")), FORBIDDEN);
+                     new ClientPupilDto(dto.getAdbId(), name, null, dto.getGrade()), FORBIDDEN);
 
             case 1:
                return getMealResponse(id, dto, name, dto.getMeals().iterator().next());
@@ -94,20 +93,20 @@ public class MealRestController {
       if (pupilService.canHaveMeal(id, new Date(), meal.getType())) {
          mealEventLogRepository.save(
                new MealEventLog(
-                     id, name, dto.getGrade().orElse(""), new Date(), meal.getPrice(), meal.getType(), dto.getPupilType()
+                     id, name, dto.getGrade(), new Date(), meal.getPrice(), meal.getType(), dto.getPupilType()
                )
          );
 
          LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " + meal.getType().name() + " for " + meal.getPrice() + " units of money");
          return new ResponseEntity<>(
-               new ClientPupilDto(dto.getAdbId(), name, meal, dto.getGrade().orElse("")),
+               new ClientPupilDto(dto.getAdbId(), name, meal, dto.getGrade()),
                ACCEPTED
          );
 
       } else {
          LOG.info("REJECT - Pupil '" + name + "' (id " + id + ") already had his meal");
          return new ResponseEntity<>(
-               new ClientPupilDto(dto.getAdbId(), name, meal, dto.getGrade().orElse("")),
+               new ClientPupilDto(dto.getAdbId(), name, meal, dto.getGrade()),
                ALREADY_REPORTED);
       }
    }

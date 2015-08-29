@@ -232,14 +232,8 @@ public class ViewController {
             return;
 
          @SuppressWarnings("unchecked")
-         BeanItem<PupilDto> item = (BeanItem<PupilDto>) event.getItem();
-         PupilDto dto = item.getBean();
-         Pupil pupil = pupilService.infoByCardId(dto.getCardId())
-               .map(p -> {
-//                  ht.initialize(p.getMeals());
-                  return p;
-               })
-               .orElse(new Pupil(dto.getCardId()));
+         PupilDto dto = ((BeanItem<PupilDto>) event.getItem()).getBean();
+         Pupil pupil = pupilService.infoByCardId(dto.getCardId()).orElse(new Pupil(dto.getCardId()));
 
          Optional<Date> lastMeal = mealService.lastMealEvent(dto.getCardId());
          Image photo = getImage(dto.getAdbId());
@@ -271,6 +265,7 @@ public class ViewController {
                   if (!view.isValid())
                      return;
 
+                  @SuppressWarnings("unchecked")
                   Collection<Long> mealIds = (Collection<Long>) view.getTable().getItemIds();
 
                   pupil.getMeals().clear();
@@ -278,9 +273,6 @@ public class ViewController {
 
                   view.commit();
                   pupilService.saveOrUpdate(pupil);
-//                  dto.setBreakfastPortion(ofNullable(info.getBreakfastPortion()));
-//                  dto.setDinnerPortion(ofNullable(info.getDinnerPortion()));
-                  dto.setGrade(ofNullable(pupil.getGrade()));
                   dto.setComment(ofNullable(pupil.getComment()));
                   Table tbl = (Table) event.getSource();
                   tbl.refreshRowCache();
@@ -344,7 +336,7 @@ public class ViewController {
                MealEventLog event = new MealEventLog(
                      dto.getCardId(),
                      dto.getFirstName() + " " + dto.getLastName(),
-                     dto.getGrade().orElse(""),
+                     dto.getGrade(),
                      w.getDate(),
                      price,
                      type,

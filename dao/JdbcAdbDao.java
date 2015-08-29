@@ -7,6 +7,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Date;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,35 +19,34 @@ import static java.util.Optional.ofNullable;
 @Repository
 public class JdbcAdbDao implements AdbDao {
 
+   private static final String BASE_QUERY =
+         "SELECT u.id, u.card, u.fname, u.lname, u.gdata, g.text AS grade " +
+               "FROM gs_ecard_mok_users u " +
+               "JOIN gs_ecard_mok_static g ON u.group_id = g.id";
+
+   private static final RowMapper<PupilDto> ROW_MAPPER = (rs, rowNum) -> {
+      PupilDto dto = new PupilDto();
+      dto.setAdbId(rs.getLong("id"));
+      dto.setCardId(rs.getInt("card"));
+      dto.setFirstName(rs.getString("fname"));
+      dto.setLastName(rs.getString("lname"));
+      dto.setGrade(rs.getString("grade"));
+      dto.setBirthDate(ofNullable(rs.getDate("gdata")));
+      return dto;
+   };
+
    @Autowired
-   private JdbcTemplate jdbcTemplate;
+   private JdbcTemplate jdbc;
 
    @Override
    public List<PupilDto> getAllAdbPupils() {
-      return jdbcTemplate.query("SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users", newRowMapper());
+      return jdbc.query(BASE_QUERY, ROW_MAPPER);
    }
 
    @Override
    public Optional<PupilDto> getAdbPupil(long cardId) {
-      List<PupilDto> pupilList = jdbcTemplate.query(
-            "SELECT id, card, fname, lname, gdata FROM gs_ecard_mok_users WHERE card = " + getString(cardId), newRowMapper()
-      );
-      return pupilList.isEmpty()
-            ? empty()
-            : ofNullable(pupilList.get(0));
-   }
-
-   private RowMapper<PupilDto> newRowMapper() {
-      return (rs, rowNum) -> {
-         PupilDto dto = new PupilDto();
-         dto.setAdbId(rs.getLong("id"));
-         dto.setCardId(rs.getInt("card"));
-         dto.setFirstName(rs.getString("fname"));
-         dto.setLastName(rs.getString("lname"));
-         Optional<Date> date = ofNullable(rs.getDate("gdata"));
-         dto.setBirthDate(date.isPresent() ? of(date.get().toLocalDate()) : empty());
-         return dto;
-      };
+      PupilDto dto = jdbc.queryForObject(BASE_QUERY + " WHERE card = " + getString(cardId), ROW_MAPPER);
+      return ofNullable(dto);
    }
 
    private String getString(Long id) {

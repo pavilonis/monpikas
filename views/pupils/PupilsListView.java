@@ -55,7 +55,6 @@ public class PupilsListView extends VerticalLayout {
          setColumnWidth("cardId", 90);
 
          setConverter("cardId", new SimpleStringToLongConverter());
-         setConverter("grade", new OptionalCellConverter());
          setConverter("birthDate", new OptionalCellConverter());
          setConverter("comment", new OptionalCellConverter());
 
