@@ -6,6 +6,12 @@ import com.vaadin.data.util.BeanItem;
 import lt.pavilonis.monpikas.server.domain.MealType;
 import lt.pavilonis.monpikas.server.dto.PupilDto;
 
+import java.util.Collection;
+import java.util.Date;
+
+import static java.util.Arrays.asList;
+import static org.apache.commons.lang3.StringUtils.containsIgnoreCase;
+
 public class PupilFilter implements Filter {
    private String text;
    private MealType mealType;
@@ -21,13 +27,19 @@ public class PupilFilter implements Filter {
 
       PupilDto dto = ((BeanItem<PupilDto>) item).getBean();
 
-      String stack = dto.getFirstName().toLowerCase() + dto.getLastName().toLowerCase() +
-            (dto.getBirthDate().isPresent() ? dto.getBirthDate().get() : "") +
-            dto.getGrade().orElse("") + dto.getCardId();
+      Collection<Object> pupilData = asList(
+            dto.getFirstName(),
+            dto.getLastName(),
+            dto.getBirthDate().map(Date::toString).orElse(""),
+            dto.getGrade(),
+            dto.getCardId()
+      );
 
-      return stack.contains(text) &&
-            (mealType == null || dto.getMeals().stream()
-                  .anyMatch(dtoMeal -> dtoMeal.getType() == mealType));
+      return pupilData.stream()
+
+            .anyMatch(element -> containsIgnoreCase(String.valueOf(element), text))
+
+            && mealType == null || dto.getMeals().stream().anyMatch(meal -> meal.getType() == mealType);
    }
 
    @Override

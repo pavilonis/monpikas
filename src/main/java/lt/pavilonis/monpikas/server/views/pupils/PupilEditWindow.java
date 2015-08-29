@@ -39,7 +39,8 @@ import static lt.pavilonis.monpikas.server.utils.Messages.label;
 
 public class PupilEditWindow extends Window {
 
-   private final static Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+   private final static Format DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+   private final static Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
    @PropertyId("comment")
    private final Button save = new Button("Saugoti");
@@ -83,16 +84,13 @@ public class PupilEditWindow extends Window {
       setWidth("655px");
       setHeight("650px");
 
-      String birthDate = dto.getBirthDate().map(LocalDate::toString).orElse("nenurodyta");
-      String mealDate = lastMealDate.map(DATE_FORMAT::format).orElse("nėra duomenų");
+      String birthDate = dto.getBirthDate().map(DATE_FORMAT::format).orElse("nenurodyta");
+      String mealDate = lastMealDate.map(DATE_TIME_FORMAT::format).orElse("nėra duomenų");
 
       Label last = new Label(label("PupilEditWindow.Label.LastMeal") + mealDate, HTML);
       Label card = new Label("<b>Kortelės #:</b> " + dto.getCardId(), HTML);
       Label name = new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML);
       Label date = new Label("<b>Gimimo data:</b> " + birthDate, HTML);
-
-      TextField grade = group.buildAndBind("Klasė", "grade", TextField.class);
-      grade.setNullRepresentation("");
 
       TextArea comment = group.buildAndBind("Komentaras", "comment", TextArea.class);
       comment.setNullRepresentation("");
@@ -102,7 +100,6 @@ public class PupilEditWindow extends Window {
       buttons.setMargin(new MarginInfo(true, false, false, false));
 
       VerticalLayout leftColumn = new VerticalLayout(name, date, last, table, controlPanel, buttons);
-      //vl1.setExpandRatio(table, 1f);
       leftColumn.setSpacing(true);
       leftColumn.setWidth("450px");
       leftColumn.setMargin(true);
@@ -111,12 +108,9 @@ public class PupilEditWindow extends Window {
       image.setWidth("170px");
       image.setHeight("211px");
 
-      VerticalLayout rightColumn = new VerticalLayout(image, card, grade, comment);
+      VerticalLayout rightColumn = new VerticalLayout(image, card, comment);
       rightColumn.setComponentAlignment(image, BOTTOM_CENTER);
       rightColumn.setSpacing(true);
-
-      //grade.setWidth("220px");
-      //name.setWidth("220px");
 
       setContent(new HorizontalLayout(leftColumn, rightColumn));
       setModal(true);

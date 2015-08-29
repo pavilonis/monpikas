@@ -45,6 +45,7 @@ public class Report {
       formatPage();
       setColumnWidths();
 
+
       helper.title(0, 6, 0, REPORT_TITLE, 14);
       helper.title(0, 6, 1, periodTitle, 14);
 

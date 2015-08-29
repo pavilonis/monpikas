@@ -1,5 +1,7 @@
 package lt.pavilonis.monpikas.server.views.pupils;
 
+import com.vaadin.event.ShortcutAction;
+import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -19,7 +21,6 @@ public class PupilListFilterPanel extends HorizontalLayout {
    private final Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
 
    public PupilListFilterPanel() {
-//      mealType.setEnabled(false);
       mealType.setCaption(null);
       mealType.setNullSelectionAllowed(true);
       mealType.setValue(null);
@@ -27,6 +28,12 @@ public class PupilListFilterPanel extends HorizontalLayout {
       setSpacing(true);
       setMargin(true);
       setComponentAlignment(filterButton, Alignment.MIDDLE_RIGHT);
+      filterButton.addShortcutListener(new ShortcutListener("search", ShortcutAction.KeyCode.ENTER, null) {
+         @Override
+         public void handleAction(Object sender, Object target) {
+            filterButton.click();
+         }
+      });
       text.focus();
    }
 
