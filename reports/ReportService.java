@@ -26,9 +26,6 @@ public class ReportService {
    @Autowired
    private MealEventLogRepository mealEventLogRepository;
 
-   @Autowired
-   private PupilRepository pupilRepository;
-
    private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private static final Logger LOG = getLogger(PupilService.class);
 
@@ -36,10 +33,8 @@ public class ReportService {
 
       List<MealEventLog> events = mealEventLogRepository.findByDateBetweenAndPupilType(from, to, pupilType);
 
-      events.forEach(e -> e.setPupil(pupilRepository.findByCardId(e.getCardId())));
-
       String reportPeriod = DATE_FORMAT.format(from) + "  -  " + DATE_FORMAT.format(to);
-      HSSFWorkbook wb = new Report(reportPeriod, events).create();
+      HSSFWorkbook wb = new Report(reportPeriod, events).create(pupilType);
 
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
          wb.write(baos);

@@ -8,89 +8,101 @@ import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.util.CellRangeAddress;
 
+import java.util.Optional;
 import java.util.OptionalInt;
 
-import static java.util.OptionalInt.empty;
 import static org.apache.poi.hssf.usermodel.HSSFCellStyle.BORDER_THIN;
 import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_CENTER;
-import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_RIGHT;
 import static org.apache.poi.ss.usermodel.CellStyle.VERTICAL_CENTER;
 
 public class ReportHelper {
 
-   private HSSFSheet sheet;
+   private final HSSFSheet sheet;
 
    public ReportHelper(HSSFSheet sheet) {
       this.sheet = sheet;
    }
 
-   public HSSFCellStyle style(HSSFWorkbook wb, int size, boolean bold, boolean border) {
-      return style(wb, size, bold, border, ALIGN_CENTER);
+   public CellBuilder cell(int col, int row, Object value) {
+      return new CellBuilder(col, row, value);
    }
 
-   public HSSFCellStyle style(HSSFWorkbook wb, int fontSize, boolean bold, boolean border, short halign) {
-      HSSFCellStyle style = wb.createCellStyle();
-      HSSFFont font = wb.createFont();
-      font.setFontHeightInPoints((short) fontSize);
-      style.setVerticalAlignment(VERTICAL_CENTER);
-      style.setAlignment(halign);
-      if (border) {
-         style.setBorderBottom(BORDER_THIN);
-         style.setBorderRight(BORDER_THIN);
-         style.setBorderLeft(BORDER_THIN);
-         style.setBorderTop(BORDER_THIN);
+   class CellBuilder {
+      private int colNum;
+      private int rowNum;
+      private String value;
+      private short hAlign = ALIGN_CENTER;
+      private boolean bold;
+      private boolean border = true;
+      private Optional<Short> height = Optional.empty();
+      private OptionalInt endColNum = OptionalInt.empty();
+
+      public CellBuilder(int colNum, int rowNum, Object value) {
+         this.colNum = colNum;
+         this.rowNum = rowNum;
+         this.value = String.valueOf(value);
       }
-      if (bold) {
-         font.setBoldweight((short) 12700);
+
+      public CellBuilder align(short hAlign) {
+         this.hAlign = hAlign;
+         return this;
       }
-      style.setWrapText(true);
-      style.setFont(font);
-      return style;
-   }
 
-   public void cell(int col, int row, Object value) {
-      cell(col, row, empty(), value, false, true, ALIGN_CENTER);
-   }
+      public CellBuilder bold() {
+         this.bold = true;
+         return this;
+      }
 
-   public void cell(int col, int row, Object value, short halign, boolean border) {
-      cell(col, row, empty(), value, false, border, halign);
-   }
+      public CellBuilder noBorder() {
+         this.border = false;
+         return this;
+      }
 
-   public void cell(int col, int row, Object value, short halign) {
-      cell(col, row, empty(), value, false, true, halign);
-   }
+      public CellBuilder heigth(int height) {
+         this.height = Optional.of((short) height);
+         return this;
+      }
 
-   public void headerCell(int col, int row, Object value) {
-      cell(col, row, OptionalInt.of(900), value, true, true, ALIGN_CENTER);
-   }
+      public CellBuilder mergeTo(int endColNum) {
+         this.endColNum = OptionalInt.of(endColNum);
+         return this;
+      }
 
-   private void cell(int col, int rowNumber, OptionalInt rowHeight, Object value, boolean bold, boolean border, short halign) {
-      HSSFRow row = sheet.getRow(rowNumber) == null
-            ? sheet.createRow(rowNumber)
-            : sheet.getRow(rowNumber);
+      public void create() {
+         endColNum.ifPresent(endCol -> sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, colNum, endCol)));
 
-      //rowHeight.ifPresent(h -> row.setHeight((short) (h)));
+         HSSFRow row = sheet.getRow(rowNum) == null
+               ? sheet.createRow(rowNum)
+               : sheet.getRow(rowNum);
 
-      HSSFCellStyle style = style(sheet.getWorkbook(), 10, bold, border, halign);
-      row.setRowStyle(style);
+         height.ifPresent(row::setHeight);
+         HSSFCellStyle style = style(sheet.getWorkbook(), 10, bold, border, hAlign);
+         row.setRowStyle(style);
 
-      HSSFCell cell = row.createCell(col);
-      cell.setCellStyle(style);
-      cell.setCellValue(value.toString());
-   }
+         HSSFCell cell = row.createCell(colNum);
+         cell.setCellStyle(style);
+         cell.setCellValue(value);
+      }
 
-   public void title(int startCol, int endCol, int row, String text, int height) {
-      sheet.addMergedRegion(new CellRangeAddress(row, row, startCol, endCol));
-      HSSFCell cell = sheet.getRow(row) == null
-            ? sheet.createRow(row).createCell(startCol)
-            : sheet.getRow(row).createCell(startCol);
 
-      cell.setCellValue(text);
-      cell.setCellStyle(style(sheet.getWorkbook(), height, false, false));
-   }
-
-   public void sumCell(int startCol, int endCol, int row, String title, String text, boolean border) {
-      cell(startCol, row, OptionalInt.of(450), title, true, border, ALIGN_RIGHT);
-      cell(endCol, row, OptionalInt.of(450), text, true, border, ALIGN_CENTER);
+      public HSSFCellStyle style(HSSFWorkbook wb, int fontSize, boolean bold, boolean border, short hAlign) {
+         HSSFCellStyle style = wb.createCellStyle();
+         HSSFFont font = wb.createFont();
+         font.setFontHeightInPoints((short) fontSize);
+         style.setVerticalAlignment(VERTICAL_CENTER);
+         style.setAlignment(hAlign);
+         if (border) {
+            style.setBorderBottom(BORDER_THIN);
+            style.setBorderRight(BORDER_THIN);
+            style.setBorderLeft(BORDER_THIN);
+            style.setBorderTop(BORDER_THIN);
+         }
+         if (bold) {
+            font.setBoldweight((short) 12700);
+         }
+         style.setWrapText(true);
+         style.setFont(font);
+         return style;
+      }
    }
 }

@@ -13,16 +13,6 @@ public class ClientPupilDto implements Serializable {
    private String grade;
    private PupilType type;
 
-   public ClientPupilDto() {
-   }
-
-   public ClientPupilDto(long id, String name, Meal meal, String grade) {
-      this.id = id;
-      this.name = name;
-      this.meal = meal;
-      this.grade = grade;
-   }
-
    public long getId() {
       return id;
    }
