@@ -84,6 +84,7 @@ public class PupilService {
       dto.ifPresent(d -> pupilsRepository.findByCardId(cardId)
             .ifPresent(i -> {
                d.setMeals(i.getMeals());
+               d.setPupilType(i.getType());
                d.setComment(ofNullable(i.getComment()));
             }));
       return dto;

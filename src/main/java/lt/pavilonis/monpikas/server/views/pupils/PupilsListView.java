@@ -5,6 +5,7 @@ import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.views.converters.CollectionCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
 
@@ -47,8 +48,8 @@ public class PupilsListView extends VerticalLayout {
          container.setBeanIdProperty("cardId");
          setContainerDataSource(container);
 
-         setVisibleColumns("cardId", "firstName", "lastName", "birthDate", "grade", "comment");
-         setColumnHeaders("Kortelės nr.", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras");
+         setVisibleColumns("cardId", "firstName", "lastName", "birthDate", "grade", "comment", "meals");
+         setColumnHeaders("Kortelės nr.", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras", "Porcijos");
 
          setColumnWidth("grade", 85);
          setColumnWidth("birthDate", 130);
@@ -57,6 +58,7 @@ public class PupilsListView extends VerticalLayout {
          setConverter("cardId", new SimpleStringToLongConverter());
          setConverter("birthDate", new OptionalCellConverter());
          setConverter("comment", new OptionalCellConverter());
+         setConverter("meals", new CollectionCellConverter());
 
          setColumnAlignment("birthDate", CENTER);
 

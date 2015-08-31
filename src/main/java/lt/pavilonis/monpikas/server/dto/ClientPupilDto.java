@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.server.dto;
 
 import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.domain.PupilType;
 
 import java.io.Serializable;
 
@@ -10,6 +11,7 @@ public class ClientPupilDto implements Serializable {
    private String name;
    private Meal meal;
    private String grade;
+   private PupilType type;
 
    public ClientPupilDto() {
    }
@@ -51,5 +53,13 @@ public class ClientPupilDto implements Serializable {
 
    public void setGrade(String grade) {
       this.grade = grade;
+   }
+
+   public PupilType getType() {
+      return type;
+   }
+
+   public void setType(PupilType type) {
+      this.type = type;
    }
 }

@@ -25,7 +25,6 @@ import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
 import lt.pavilonis.monpikas.server.repositories.PupilRepository;
 import lt.pavilonis.monpikas.server.service.MealService;
-import lt.pavilonis.monpikas.server.service.PortionService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventManualCreateWindow;
@@ -89,7 +88,7 @@ public class ViewController {
    private MealService mealService;
 
    @Autowired
-   private PortionService portionService;
+   private MealService portionService;
 
    @Autowired
    private ReportService reportService;
@@ -141,7 +140,7 @@ public class ViewController {
             hl.setSizeFull();
 
             MealListView view1 = new MealListView();
-            view1.getContainer().addAll(portionService.getAll());
+            view1.getContainer().addAll(mealRepository.findAll());
             view1.setTableClickListener(portionListTableClickListener());
             view1.getControlPanel().addAddListener(portionAddListener(view1));
             view1.getControlPanel().addDeleteListener(portionDeleteListener(view1));
@@ -168,14 +167,14 @@ public class ViewController {
 
    private ClickListener portionDeleteListener(MealListView view) {
       return click -> {
-         Long portionId = (Long) view.getTable().getValue();
-         if (portionId == null) {
+         Long mealId = (Long) view.getTable().getValue();
+         if (mealId == null) {
             show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            List<Pupil> portionUsers = pupilRepository.findPortionUsers(portionId);
+            List<Pupil> portionUsers = pupilRepository.findPortionUsers(mealId);
             if (portionUsers.isEmpty()) {
-               portionService.delete(portionId);
-               view.getContainer().removeItem(portionId);
+               mealRepository.delete(mealId);
+               view.getContainer().removeItem(mealId);
                view.getTable().select(null);
                show("Įrašas pašalintas", TRAY_NOTIFICATION);
             } else {
@@ -194,7 +193,7 @@ public class ViewController {
             if (w.isValid()) {
                w.commit();
                Meal meal = w.getItemDateSource().getBean();
-               portionService.save(meal);
+               mealRepository.save(meal);
                w.close();
                listView.getContainer().addBean(meal);
                show("Išsaugota", TRAY_NOTIFICATION);
@@ -216,7 +215,7 @@ public class ViewController {
                if (w.isValid()) {
                   w.commit();
                   BeanItem<Meal> bean = w.getItemDateSource();
-                  portionService.save(bean.getBean());
+                  mealRepository.save(bean.getBean());
                   w.close();
                   show("Išsaugota", TRAY_NOTIFICATION);
                }

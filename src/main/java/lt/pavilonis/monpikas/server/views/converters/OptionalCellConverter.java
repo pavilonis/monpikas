@@ -13,7 +13,7 @@ public class OptionalCellConverter implements Converter<String, Optional<?>> {
 
    @Override
    public String convertToPresentation(Optional<?> value, Class<? extends String> targetType, Locale locale) throws ConversionException {
-      return value.isPresent() ? value.get().toString() : null;
+      return value.map(String::valueOf).orElse("");
    }
 
    @Override

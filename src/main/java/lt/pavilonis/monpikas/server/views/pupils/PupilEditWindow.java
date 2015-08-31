@@ -7,17 +7,18 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.monpikas.server.domain.Meal;
 import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.views.components.PupilTypeComboBox;
 import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
 import lt.pavilonis.monpikas.server.views.settings.TableControlPanel;
 
@@ -25,7 +26,6 @@ import java.text.DecimalFormat;
 import java.text.Format;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Locale;
@@ -45,6 +45,7 @@ public class PupilEditWindow extends Window {
    @PropertyId("comment")
    private final Button save = new Button("Saugoti");
    private final Button close = new Button("Uždaryti");
+   private final ComboBox typeCombo = new PupilTypeComboBox();
    private final BeanFieldGroup<Pupil> group = new BeanFieldGroup<>(Pupil.class);
    private final TableControlPanel controlPanel = new TableControlPanel();
    private final BeanContainer<Long, Meal> container = new BeanContainer<>(Meal.class);
@@ -92,6 +93,9 @@ public class PupilEditWindow extends Window {
       Label name = new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML);
       Label date = new Label("<b>Gimimo data:</b> " + birthDate, HTML);
 
+      group.bind(typeCombo, "type");
+      typeCombo.setNullSelectionAllowed(false);
+
       TextArea comment = group.buildAndBind("Komentaras", "comment", TextArea.class);
       comment.setNullRepresentation("");
 
@@ -108,7 +112,7 @@ public class PupilEditWindow extends Window {
       image.setWidth("170px");
       image.setHeight("211px");
 
-      VerticalLayout rightColumn = new VerticalLayout(image, card, comment);
+      VerticalLayout rightColumn = new VerticalLayout(image, card, typeCombo, comment);
       rightColumn.setComponentAlignment(image, BOTTOM_CENTER);
       rightColumn.setSpacing(true);
 
