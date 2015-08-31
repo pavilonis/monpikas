@@ -30,8 +30,8 @@ public class MealListView extends VerticalLayout {
       table.setContainerDataSource(container);
       container.sort(new Object[]{"id"}, new boolean[]{true});
 
-      table.setVisibleColumns("id", "name", "type", "price");
-      table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina");
+      table.setVisibleColumns("id", "name", "type", "price", "startTime", "endTime");
+      table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina", "Periodo pradžia", "Periodo pabaiga");
 
       table.setConverter("type", new MealTypeCellConverter());
       table.setConverter("price", new ModifiedStringToDoubleConverter());

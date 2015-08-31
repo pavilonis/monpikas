@@ -2,10 +2,11 @@ package lt.pavilonis.monpikas.server.views.converters;
 
 import com.vaadin.data.util.converter.Converter;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -19,9 +20,16 @@ public class LocalTimeToDateConverter implements Converter<Date, LocalTime> {
 
    @Override
    public Date convertToPresentation(LocalTime value, Class<? extends Date> targetType, Locale locale) throws ConversionException {
-      return value == null
-            ? new Date()
-            : Date.from(value.atDate(now()).toInstant(ZoneOffset.ofHours(0)));
+      if (value == null) {
+         Calendar calendar = Calendar.getInstance();
+         calendar.set(Calendar.HOUR, 0);
+         calendar.set(Calendar.MINUTE, 0);
+         calendar.set(Calendar.SECOND, 0);
+         calendar.set(Calendar.MILLISECOND, 0);
+         return new Date(calendar.getTimeInMillis());
+      }
+      Instant instant = now().atTime(value).atZone(ZoneId.systemDefault()).toInstant();
+      return Date.from(instant);
    }
 
    @Override
