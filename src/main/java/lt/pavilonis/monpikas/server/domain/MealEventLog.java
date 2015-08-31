@@ -49,9 +49,6 @@ public class MealEventLog implements Comparable {
    @Enumerated(EnumType.STRING)
    private PupilType pupilType;
 
-   @Transient
-   private Optional<Pupil> pupil = empty();
-
    public Date getDate() {
       return date;
    }
@@ -117,20 +114,12 @@ public class MealEventLog implements Comparable {
       return ((MealEventLog) o).getDate().compareTo(this.date);
    }
 
-   public Optional<Pupil> getPupil() {
-      return pupil;
-   }
-
    public String getGrade() {
       return grade;
    }
 
    public void setGrade(String grade) {
       this.grade = grade;
-   }
-
-   public void setPupil(Optional<Pupil> pupil) {
-      this.pupil = pupil;
    }
 
    @Override

@@ -1,35 +1,37 @@
 package lt.pavilonis.monpikas.server.reports;
 
 import lt.pavilonis.monpikas.server.domain.MealEventLog;
+import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.monpikas.server.domain.PupilType;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
-import static java.lang.String.valueOf;
 import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.reverseOrder;
+import static lt.pavilonis.monpikas.server.utils.Messages.label;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
-import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_CENTER;
+import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_LEFT;
 import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_RIGHT;
 
 public class Report {
-
-   private static final String REPORT_TITLE = "Socialiai remtinų mokinių maitinimas Nacionalinėje M.K. Čiurlionio menų mokykloje";
 
    private final ReportHelper helper;
    private final HSSFSheet sheet;
    private final HSSFWorkbook workbook;
    private final String periodTitle;
    private final List<MealEventLog> events;
-   private BigDecimal breakfastSum = ZERO;
-   private BigDecimal dinnerSum = BigDecimal.ZERO;
+   private final Map<MealType, BigDecimal> sums = new HashMap<>();
 
    public Report(String periodTitle, List<MealEventLog> events) {
       this.workbook = new HSSFWorkbook();
@@ -39,97 +41,86 @@ public class Report {
       this.events = events;
    }
 
-   //public HSSFWorkbook create(Multimap<Long, MealEvent> breakfastEvents, Multimap<Long, MealEvent> dinnerEvents) {
-   public HSSFWorkbook create() {
+   public HSSFWorkbook create(PupilType pupilType) {
 
       formatPage();
       setColumnWidths();
 
+      helper.cell(0, 0, label("Report.Title")).bold().mergeTo(6).create();
+      helper.cell(0, 1, periodTitle).bold().mergeTo(6).create();
+      helper.cell(0, 3, label("PupilType." + pupilType)).mergeTo(6).create();
 
-      helper.title(0, 6, 0, REPORT_TITLE, 14);
-      helper.title(0, 6, 1, periodTitle, 14);
+      for (MealType type : MealType.values()) {
 
-      printEvents();
+         Map<Long, List<MealEventLog>> pupilMealsMap = events.stream()
+               .filter(event -> event.getMealType() == type)
+               .collect(Collectors.groupingBy(MealEventLog::getCardId));
 
-      int row = sheet.getLastRowNum() + 2;
-      helper.cell(3, row, "Viso panaudota lėšų:", ALIGN_RIGHT, false);
+         if (!pupilMealsMap.isEmpty()) {
+            int rowNum = lastRow(2);
+            helper.cell(0, rowNum++, label("MealType." + type)).mergeTo(6).bold().heigth(500).create();
+            helper.cell(0, rowNum, "Eil.\nnr.").bold().heigth(900).create();
+            helper.cell(1, rowNum, "Vardas Pavardė").bold().create();
+            helper.cell(2, rowNum, "Kl.").bold().create();
+            helper.cell(3, rowNum, "Maitinimosi dienos").bold().create();
+            helper.cell(4, rowNum, "Viso\nmaitinta\ndienų").bold().create();
+            helper.cell(5, rowNum, "Skirta\nlėšų\ndienai").bold().create();
+            helper.cell(6, rowNum, "Viso\npanaudota\nlėšų").bold().create();
 
-      merge(row, 4, 5);
-      helper.sumCell(4, 6, row++, "Pusryčiams", breakfastSum.toString(), false);
-      merge(row, 4, 5);
-      helper.sumCell(4, 6, row++, "Pietūms", dinnerSum.toString(), false);
-      helper.sumCell(5, 6, row++, "VISO", dinnerSum.add(breakfastSum).toString(), false);
+            sums.put(type, BigDecimal.ZERO);
 
-      helper.cell(1, ++row, "Socialinis pedagogas", ALIGN_CENTER, false);
-      helper.cell(3, row, "Darius Jucys", ALIGN_RIGHT, false);
+            int index = 1;
+            for (List<MealEventLog> events : pupilMealsMap.values()) {
+               sums.put(type, sums.get(type).add(printCalculate(index++, events)));
+            }
+         }
+      }
+
+
+      helper.cell(3, lastRow(2), "Viso panaudota lėšų:").align(ALIGN_RIGHT).noBorder().create();
+
+      sums.forEach((k, v) -> {
+         helper.cell(4, lastRow() + 1, label("MealType." + k)).mergeTo(5).align(ALIGN_RIGHT).noBorder().create();
+         helper.cell(6, lastRow(), v.toString()).noBorder().bold().create();
+      });
+
+      BigDecimal total = sums.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
+      helper.cell(5, lastRow(1), "VISO").noBorder().align(ALIGN_RIGHT).create();
+      helper.cell(6, lastRow(), total).noBorder().bold().create();
+
+      helper.cell(1, lastRow(2), "Socialinis pedagogas").noBorder().create();
+      helper.cell(3, lastRow(), "Darius Jucys").align(ALIGN_RIGHT).noBorder().create();
 
       return workbook;
    }
 
-   private void printEvents() {
+   private BigDecimal printCalculate(int index, List<MealEventLog> events) {
 
-      events.forEach(event -> {
+      String mealDaysString = "";
+      int mealDaysCount = 0;
+      BigDecimal priceSum = BigDecimal.ZERO;
 
-//         int lastRow = sheet.getLastRowNum();
-//         lastRow += 2;
-//         helper.title(0, 6, lastRow++, label("PortionType." + event.getType()), 12);
-//
-//         helper.headerCell(0, lastRow, "Eil.\nnr.");
-//         helper.headerCell(1, lastRow, "Vardas Pavardė");
-//         helper.headerCell(2, lastRow, "Kl.");
-//         helper.headerCell(3, lastRow, "Maitinimosi dienos");
-//         helper.headerCell(4, lastRow, "Viso\nmaitinta\ndienų");
-//         helper.headerCell(5, lastRow, "Skirta\nlėšų\ndienai");
-//         helper.headerCell(6, lastRow, "Viso\npanaudota\nlėšų");
-//
-//         int rowNumber = 1;
-//         for (long cardId : events.keySet()) {
-//            String mealDaysString = "";
-//            int mealDaysCount = 0;
-//            final BigDecimal priceSum = BigDecimal.ZERO;
-//            List<MealEvent> cardEvents = new ArrayList<>(events.get(cardId));
-//            Collections.sort(cardEvents, reverseOrder());
-//            for (MealEvent event : cardEvents) {
-//               Calendar c = Calendar.getInstance();
-//               c.setTime(event.getDate());
-//               mealDaysString += c.get(Calendar.DAY_OF_MONTH) + " ";
-//               priceSum = priceSum.add(event.getPrice());
-//               mealDaysCount++;
-//            }
-//            int row = lastRow + rowNumber;
-//
-//            MealEvent event = cardEvents.get(0);
-//            String grade = "";
-//            String portionPrice = "";
-//            event.getPupil().ifPresent(info -> {
-//
-//               Portion portion;
-//               if (type == BREAKFAST) {
-//                  portion = info.getBreakfastPortion();
-//                  breakfastSum = portion == null ? breakfastSum : breakfastSum.add(priceSum);
-//               } else {
-//                  portion = info.getDinnerPortion();
-//                  dinnerSum = portion == null ? dinnerSum : dinnerSum.add(priceSum);
-//               }
-//               portionPrice = portion == null ? "" : valueOf(portion.getPrice());
-//               grade = info.getGrade();
-//            });
-//
-//            helper.cell(0, row, rowNumber);
-//            helper.cell(1, row, cardEvents.get(0).getName(), ALIGN_LEFT);
-//            helper.cell(2, row, grade);
-//            helper.cell(3, row, mealDaysString, ALIGN_LEFT);
-//            helper.cell(4, row, mealDaysCount);
-//            helper.cell(5, row, portionPrice);
-//            helper.cell(6, row, priceSum);
-//
-//            rowNumber++;
-//         }
-//         helper.sumCell(5, 6, sheet.getLastRowNum() + 1, "VISO", valueOf(type == BREAKFAST ? breakfastSum : dinnerSum), true);
-//
-      });
+      Collections.sort(events, reverseOrder());
+
+      for (MealEventLog event : events) {
+         Calendar c = Calendar.getInstance();
+         c.setTime(event.getDate());
+         mealDaysString += c.get(Calendar.DAY_OF_MONTH) + " ";
+         priceSum = priceSum.add(event.getPrice());
+         mealDaysCount++;
+      }
+
+      int row = lastRow(1);
+      helper.cell(0, row, index).create();
+      helper.cell(1, row, events.get(0).getName()).align(ALIGN_LEFT).create();
+      helper.cell(2, row, events.get(0).getGrade()).create();
+      helper.cell(3, row, mealDaysString).align(ALIGN_LEFT).create();
+      helper.cell(4, row, mealDaysCount).create();
+      helper.cell(5, row, events.get(0).getPrice()).create();
+      helper.cell(6, row, priceSum).create();
+
+      return priceSum;
    }
-
 
    private void setColumnWidths() {
       sheet.setColumnWidth(0, 1500);   //#
@@ -152,5 +143,13 @@ public class Report {
 
    private void merge(int row, int startCol, int endCol) {
       sheet.addMergedRegion(new CellRangeAddress(row, row, startCol, endCol));
+   }
+
+   private int lastRow(int plus) {
+      return sheet.getLastRowNum() + plus;
+   }
+
+   private int lastRow() {
+      return lastRow(0);
    }
 }

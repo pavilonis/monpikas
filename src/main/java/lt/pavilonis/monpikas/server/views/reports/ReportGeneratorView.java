@@ -63,6 +63,7 @@ public class ReportGeneratorView extends VerticalLayout {
          }
       };
       pupilTypeCombo.setNullSelectionAllowed(false);
+      pupilTypeCombo.setImmediate(true);
       pupilTypeCombo.setValue(PupilType.SOCIAL);
 
       Button generateButton = new Button("Sukurti");
@@ -80,9 +81,8 @@ public class ReportGeneratorView extends VerticalLayout {
 
    private StreamResource getStream(ReportService service) {
 
-      PupilType type = (PupilType) pupilTypeCombo.getValue();
       StreamResource.StreamSource source = () -> {
-
+         PupilType type = (PupilType) pupilTypeCombo.getValue();
          ByteArrayOutputStream stream = service.generate(from.getValue(), to.getValue(), type);
          streamResource.setFilename(
                "ataskaita_" + type.toString().toLowerCase() + "_" +
