@@ -3,10 +3,10 @@ package lt.pavilonis.monpikas.server.reports;
 import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.domain.MealType;
 import lt.pavilonis.monpikas.server.domain.PupilType;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -14,10 +14,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static java.math.BigDecimal.ZERO;
 import static java.util.Collections.reverseOrder;
 import static lt.pavilonis.monpikas.server.utils.Messages.label;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
@@ -113,7 +111,10 @@ public class Report {
       int row = lastRow(1);
       helper.cell(0, row, index).create();
       helper.cell(1, row, events.get(0).getName()).align(ALIGN_LEFT).create();
-      helper.cell(2, row, events.get(0).getGrade()).create();
+
+      String grade = StringUtils.substring(events.get(0).getGrade(), 0, 5);
+      helper.cell(2, row, grade).create();
+
       helper.cell(3, row, mealDaysString).align(ALIGN_LEFT).create();
       helper.cell(4, row, mealDaysCount).create();
       helper.cell(5, row, events.get(0).getPrice()).create();
@@ -139,10 +140,6 @@ public class Report {
       sheet.setMargin(Sheet.BottomMargin, .1);
       sheet.setMargin(Sheet.RightMargin, .5);
       sheet.setMargin(Sheet.LeftMargin, .5);
-   }
-
-   private void merge(int row, int startCol, int endCol) {
-      sheet.addMergedRegion(new CellRangeAddress(row, row, startCol, endCol));
    }
 
    private int lastRow(int plus) {
