@@ -85,7 +85,6 @@ public class MealEventManualCreateWindow extends Window {
          setVisibleColumns(new String[]{"firstName", "lastName", "grade"});
          setColumnHeaders("Vardas", "Pavardė", "Klasė");
          setColumnWidth("grade", 85);
-         setConverter("grade", new OptionalCellConverter());
          setColumnCollapsingAllowed(true);
          setSelectable(true);
          setNullSelectionAllowed(false);
