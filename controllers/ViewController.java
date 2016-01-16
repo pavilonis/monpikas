@@ -61,6 +61,8 @@ import static lt.pavilonis.monpikas.server.utils.SecurityCheckUtils.hasRole;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
+// TODO Create some kind of structure to manage this
+
 @Controller
 public class ViewController {
 
@@ -272,7 +274,8 @@ public class ViewController {
 
                   view.commit();
                   pupilService.saveOrUpdate(pupil);
-                  dto.setComment(ofNullable(pupil.getComment()));
+                  //TODO reload record from db
+//                  dto.setComment(ofNullable(pupil.getComment()));  //manual value refresh in list?
                   Table tbl = (Table) event.getSource();
                   tbl.refreshRowCache();
                   view.close();

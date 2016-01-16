@@ -1,52 +1,46 @@
 package lt.pavilonis.monpikas.server.dao;
 
+import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.dto.PupilDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
-import java.sql.Date;
-import java.text.Format;
-import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-
-import static java.util.Optional.empty;
-import static java.util.Optional.of;
-import static java.util.Optional.ofNullable;
 
 @Repository
 public class JdbcAdbDao implements AdbDao {
 
-   private static final String BASE_QUERY =
+   private static final String BASE_QUERY = "" +
          "SELECT u.id, u.card, u.fname, u.lname, u.gdata, g.text AS grade " +
-               "FROM gs_ecard_mok_users u " +
-               "JOIN gs_ecard_mok_static g ON u.group_id = g.id";
-
-   private static final RowMapper<PupilDto> ROW_MAPPER = (rs, rowNum) -> {
-      PupilDto dto = new PupilDto();
-      dto.setAdbId(rs.getLong("id"));
-      dto.setCardId(rs.getInt("card"));
-      dto.setFirstName(rs.getString("fname"));
-      dto.setLastName(rs.getString("lname"));
-      dto.setGrade(rs.getString("grade"));
-      dto.setBirthDate(ofNullable(rs.getDate("gdata")));
-      return dto;
-   };
+         "FROM gs_ecard_mok_users u " +
+         "  JOIN gs_ecard_mok_static g ON u.group_id = g.id";
 
    @Autowired
    private JdbcTemplate jdbc;
 
    @Override
-   public List<PupilDto> getAllAdbPupils() {
-      return jdbc.query(BASE_QUERY, ROW_MAPPER);
+   public List<PupilDto> getAllAdbPupils(List<Pupil> pupilData) {
+      return jdbc.query(BASE_QUERY, mapper(pupilData));
    }
 
    @Override
-   public Optional<PupilDto> getAdbPupil(long cardId) {
-      PupilDto dto = jdbc.queryForObject(BASE_QUERY + " WHERE card = " + getString(cardId), ROW_MAPPER);
-      return ofNullable(dto);
+   public Optional<PupilDto> getAdbPupil(long cardId, Optional<Pupil> pupilData) {
+      List<Pupil> mappingData = pupilData.isPresent()
+            ? Collections.singletonList(pupilData.get())
+            : Collections.emptyList();
+
+      return Optional.ofNullable(
+            jdbc.queryForObject(
+                  BASE_QUERY + " WHERE card = ?",
+                  mapper(mappingData),
+                  getString(cardId)
+            )
+      );
    }
 
    private String getString(Long id) {
@@ -55,5 +49,28 @@ public class JdbcAdbDao implements AdbDao {
          s = 0 + s;
       }
       return s;
+   }
+
+   private RowMapper<PupilDto> mapper(List<Pupil> pupilData) {
+      return (rs, rowNum) -> {
+
+         long cardId = rs.getLong("card");
+
+         Optional<Pupil> pupil = pupilData.stream()
+               .filter(data -> data.getCardId() == cardId)
+               .findAny();
+
+         return new PupilDto(
+               rs.getLong("id"),
+               cardId,
+               rs.getString("fname"),
+               rs.getString("lname"),
+               rs.getString("grade"),
+               Optional.ofNullable(rs.getDate("gdata")),
+               pupil.isPresent() ? pupil.get().getType() : null,
+               pupil.isPresent() ? pupil.get().getMeals() : Collections.<Meal>emptySet(),
+               pupil.isPresent() ? Optional.ofNullable(pupil.get().getComment()) : Optional.empty()
+         );
+      };
    }
 }

@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static java.lang.System.nanoTime;
-import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 import static org.springframework.util.CollectionUtils.isEmpty;
 
@@ -39,22 +38,10 @@ public class PupilService {
     * @return List of Pupils from ADB merged with local Pupil information
     */
    public List<PupilDto> getMergedList() {
-      List<PupilDto> adbPupils = getAdbPupilDtos();
-      List<Pupil> pupils = getPupilInfos();
-
       long start = nanoTime();
-      adbPupils.stream()
-            .forEach(adb -> pupils.stream().parallel()
-                  .filter(pupil -> adb.getCardId() == pupil.getCardId())
-                  .findAny()
-                  .ifPresent(pupil -> {
-                     adb.setMeals(pupil.getMeals());
-                     adb.setComment(ofNullable(pupil.getComment()));
-                     adb.setPupilType(pupil.getType());
-                  }));
-      LOG.info("merged AdbPupils with PupilInfo in " + durationFrom(start) + " Returning " + adbPupils.size() + " adbDto's");
-
-      return adbPupils;
+      List<PupilDto> pupils = dao.getAllAdbPupils(getPupilInfos());
+      LOG.info(pupils.size() + " AdbPupils loaded in " + durationFrom(start));
+      return pupils;
    }
 
    public List<PupilDto> getMergedWithPortions() {
@@ -64,30 +51,11 @@ public class PupilService {
    }
 
    private List<Pupil> getPupilInfos() {
-      long start = nanoTime();
-      List<Pupil> pupils = pupilsRepository.findAll();
-      LOG.info(pupils.size() + " Pupils loaded in " + durationFrom(start));
-      return pupils;
-   }
-
-   private List<PupilDto> getAdbPupilDtos() {
-      long start = nanoTime();
-      List<PupilDto> pupils = dao.getAllAdbPupils();
-      LOG.info(pupils.size() + " AdbPupils loaded in " + durationFrom(start));
-      return pupils;
+      return pupilsRepository.findAll();
    }
 
    public Optional<PupilDto> getByCardId(long cardId) {
-      Optional<PupilDto> dto = dao.getAdbPupil(cardId);
-
-      //getting information about pupil
-      dto.ifPresent(d -> pupilsRepository.findByCardId(cardId)
-            .ifPresent(i -> {
-               d.setMeals(i.getMeals());
-               d.setPupilType(i.getType());
-               d.setComment(ofNullable(i.getComment()));
-            }));
-      return dto;
+      return dao.getAdbPupil(cardId, infoByCardId(cardId));
    }
 
    public Optional<Pupil> infoByCardId(long cardId) {
