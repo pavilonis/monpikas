@@ -217,7 +217,7 @@
       <dependency>
          <groupId>com.google.guava</groupId>
          <artifactId>guava</artifactId>
-         <version>18.0</version>
+         <version>19.0</version>
       </dependency>
 
       <!-- APACHE COMMONS LANG3-->
@@ -231,6 +231,21 @@
 
    <build>
       <plugins>
+         <plugin>
+            <groupId>external.atlassian.jgitflow</groupId>
+            <artifactId>jgitflow-maven-plugin</artifactId>
+            <version>1.0-m5.1</version>
+            <configuration>
+               <flowInitContext>
+                  <masterBranchName>master</masterBranchName>
+                  <developBranchName>develop</developBranchName>
+                  <featureBranchPrefix>feature-</featureBranchPrefix>
+                  <releaseBranchPrefix>release-</releaseBranchPrefix>
+                  <hotfixBranchPrefix>hotfix-</hotfixBranchPrefix>
+                  <versionTagPrefix>v-</versionTagPrefix>
+               </flowInitContext>
+            </configuration>
+         </plugin>
          <plugin>
             <artifactId>maven-compiler-plugin</artifactId>
             <version>3.1</version>
