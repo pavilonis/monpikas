@@ -12,6 +12,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.google.common.collect.Lists.newArrayList;
+
 @Repository
 public class JdbcAdbDao implements AdbDao {
 
@@ -33,6 +35,8 @@ public class JdbcAdbDao implements AdbDao {
       List<Pupil> mappingData = pupilData.isPresent()
             ? Collections.singletonList(pupilData.get())
             : Collections.emptyList();
+
+//      newArrayList(pupilData.orElse(null));
 
       return Optional.ofNullable(
             jdbc.queryForObject(
@@ -67,6 +71,7 @@ public class JdbcAdbDao implements AdbDao {
                rs.getString("lname"),
                rs.getString("grade"),
                Optional.ofNullable(rs.getDate("gdata")),
+
                pupil.isPresent() ? pupil.get().getType() : null,
                pupil.isPresent() ? pupil.get().getMeals() : Collections.<Meal>emptySet(),
                pupil.isPresent() ? Optional.ofNullable(pupil.get().getComment()) : Optional.empty()
