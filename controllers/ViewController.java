@@ -90,9 +90,6 @@ public class ViewController {
    private MealService mealService;
 
    @Autowired
-   private MealService portionService;
-
-   @Autowired
    private ReportService reportService;
 
    @Autowired

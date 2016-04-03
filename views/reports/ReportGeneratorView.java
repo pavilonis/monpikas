@@ -11,6 +11,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.monpikas.server.domain.PupilType;
 import lt.pavilonis.monpikas.server.reports.ReportService;
+import lt.pavilonis.monpikas.server.utils.DateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -35,10 +36,9 @@ public class ReportGeneratorView extends VerticalLayout {
 
       Calendar cal = Calendar.getInstance();
       cal.setTime(new Date());
-      //cal.add(Calendar.MONTH, -1);
       cal.set(Calendar.DAY_OF_MONTH, 1);
-      cal.set(Calendar.HOUR, 1);
       Date firstDayOfLastMonth = cal.getTime();
+
       cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
       Date lastDayOfLastMonth = cal.getTime();
 
@@ -83,11 +83,17 @@ public class ReportGeneratorView extends VerticalLayout {
 
       StreamResource.StreamSource source = () -> {
          PupilType type = (PupilType) pupilTypeCombo.getValue();
-         ByteArrayOutputStream stream = service.generate(from.getValue(), to.getValue(), type);
+         Date periodStart = DateUtils.startOfDay(from.getValue());
+         Date periodEnd = DateUtils.endOfDay(to.getValue());
+
+         ByteArrayOutputStream stream = service.generate(periodStart, periodEnd, type);
          streamResource.setFilename(
-               "ataskaita_" + type.toString().toLowerCase() + "_" +
-                     DATE_FORMAT.format(from.getValue()) + "_" + DATE_FORMAT.format(to.getValue())
-                     + ".xls"
+               String.join("_",
+                     "ataskaita",
+                     type.toString().toLowerCase(),
+                     DATE_FORMAT.format(periodStart),
+                     DATE_FORMAT.format(periodEnd) + ".xls"
+               )
          );
 
          return new ByteArrayInputStream(stream.toByteArray());
