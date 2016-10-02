@@ -2,8 +2,8 @@ package lt.pavilonis.monpikas.server.controllers;
 
 import lt.pavilonis.monpikas.server.domain.Meal;
 import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.dto.ClientPupilDto;
-import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.domain.Pupil;
+import lt.pavilonis.monpikas.server.domain.PupilRepresentation;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
 import lt.pavilonis.monpikas.server.service.PupilService;
@@ -22,11 +22,6 @@ import java.util.Optional;
 
 import static java.time.LocalTime.now;
 import static org.slf4j.LoggerFactory.getLogger;
-import static org.springframework.http.HttpStatus.ACCEPTED;
-import static org.springframework.http.HttpStatus.ALREADY_REPORTED;
-import static org.springframework.http.HttpStatus.FORBIDDEN;
-import static org.springframework.http.HttpStatus.INTERNAL_SERVER_ERROR;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
 
 @RequestMapping("rest")
 @RestController
@@ -40,88 +35,78 @@ public class MealRestController {
    private MealRepository mealRepository;
 
    @Autowired
-   private MealEventLogRepository mealEventLogRepository;
+   private MealEventLogRepository eventLogs;
 
    @ResponseBody
-   @RequestMapping("mealRequest/{id}")
-   public ResponseEntity<ClientPupilDto> dinnerRequest(@PathVariable long id) {
+   @RequestMapping("mealRequest/{cardCode}")
+   public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
 
-      LOG.info("Pupil with id: " + id + " requested a meal");
-      Optional<PupilDto> pupilDto = pupilService.getByCardId(id);
+      LOG.info("Pupil meal request [cardCode={}]", cardCode);
+      Optional<Pupil> pupilDto = pupilService.getByCardCode(cardCode);
 
       if (!pupilDto.isPresent()) {
-         LOG.info("Pupil with id: " + id + " was NOT found in ADB");
-         return new ResponseEntity<>(NOT_FOUND);
+         LOG.info("Pupil NOT found in ADB [cardCode={}]", cardCode);
+         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
-      PupilDto dto = pupilDto.get();
-      String name = dto.getFirstName() + " " + dto.getLastName();
+      Pupil dto = pupilDto.get();
 
-      switch (dto.getMeals().size()) {
+      switch (dto.meals.size()) {
 
          case 0:
-            LOG.info("Pupil with id: " + id + " has NO PERMISSION to have a meal");
-            ClientPupilDto clientDto = new ClientPupilDto();
-            clientDto.setName(name);
-            clientDto.setGrade(dto.getGrade());
-            clientDto.setId(dto.getAdbId());
-            return new ResponseEntity<>(clientDto, FORBIDDEN);
+            LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", cardCode);
+            PupilRepresentation clientDto = new PupilRepresentation(cardCode, dto.name(), null, dto.grade, null);
+            return new ResponseEntity<>(clientDto, HttpStatus.FORBIDDEN);
 
          case 1:
-            return getMealResponse(id, dto, name, dto.getMeals().iterator().next());
+            return getMealResponse(dto, dto.meals.iterator().next());
 
          default:
             LocalTime now = now();
-            Optional<Meal> meal = mealRepository.findAll().stream()
+            Optional<Meal> meal = mealRepository.loadAll().stream()
                   .filter(mt -> mt.getStartTime().isBefore(now) && mt.getEndTime().isAfter(now))
-                  .findAny()
-                  .flatMap(mealByTime -> dto.getMeals().stream()
-                        .filter(pupilsMeal -> pupilsMeal.getType() == mealByTime.getType())
-                        .findAny());
+                  .filter(mealByTime ->
+                        dto.meals.stream().anyMatch(pupilMeal -> pupilMeal.getType() == mealByTime.getType()))
+                  .findAny();
 
-            if (meal.isPresent()) {
-               return getMealResponse(id, dto, name, meal.get());
-
-            } else {
-
-               return new ResponseEntity<>(HttpStatus.MULTIPLE_CHOICES);
-            }
+            return meal.isPresent()
+                  ? getMealResponse(dto, meal.get())
+                  : new ResponseEntity<>(HttpStatus.MULTIPLE_CHOICES);
       }
    }
 
 
-   private ResponseEntity<ClientPupilDto> getMealResponse(long id, PupilDto dto, String name, Meal meal) {
+   private ResponseEntity<PupilRepresentation> getMealResponse(Pupil dto, Meal meal) {
 
-      if (pupilService.canHaveMeal(id, new Date(), meal.getType())) {
+      if (pupilService.canHaveMeal(dto.cardCode, new Date(), meal.getType())) {
 
-         MealEventLog log = new MealEventLog();
-         log.setCardId(id);
-         log.setName(name);
-         log.setGrade(dto.getGrade());
-         log.setDate(new Date());
-         log.setPrice(meal.getPrice());
-         log.setPupilType(dto.getPupilType());
-         log.setMealType(meal.getType());
-         mealEventLogRepository.save(log);
+         MealEventLog log = new MealEventLog(
+               null,
+               dto.cardCode,
+               dto.name(),
+               dto.grade,
+               new Date(),
+               meal.getPrice(),
+               meal.getType(),
+               dto.pupilType
+         );
 
-         LOG.info("OK - Pupil '" + name + "' (id " + id + ") is getting " + meal.getType().name() + " for " + meal.getPrice() + " units of money");
+         eventLogs.save(dto.cardCode, dto.name(), dto.grade, meal.getPrice(), meal.getType(), dto.pupilType);
 
-         ClientPupilDto clientDto = new ClientPupilDto();
-         clientDto.setId(dto.getAdbId());
-         clientDto.setName(name);
-         clientDto.setMeal(meal);
-         clientDto.setGrade(dto.getGrade());
-         clientDto.setType(dto.getPupilType());
-         return new ResponseEntity<>(clientDto, ACCEPTED);
+         LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
+               dto.name(), dto.cardCode, meal.getType().name(), meal.getPrice());
+
+         return new ResponseEntity<>(
+               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.pupilType),
+               HttpStatus.ACCEPTED
+         );
 
       } else {
-         LOG.info("REJECT - Pupil '" + name + "' (id " + id + ") already had his meal");
-         ClientPupilDto clientDto = new ClientPupilDto();
-         clientDto.setId(dto.getAdbId());
-         clientDto.setName(name);
-         clientDto.setMeal(meal);
-         clientDto.setGrade(dto.getGrade());
-         return new ResponseEntity<>(clientDto, ALREADY_REPORTED);
+         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", dto.name(), dto.cardCode);
+         return new ResponseEntity<>(
+               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.pupilType),
+               HttpStatus.ALREADY_REPORTED
+         );
       }
    }
 }

@@ -50,9 +50,9 @@ public class Report {
 
       for (MealType type : MealType.values()) {
 
-         Map<Long, List<MealEventLog>> pupilMealsMap = events.stream()
+         Map<String, List<MealEventLog>> pupilMealsMap = events.stream()
                .filter(event -> event.getMealType() == type)
-               .collect(Collectors.groupingBy(MealEventLog::getCardId));
+               .collect(Collectors.groupingBy(MealEventLog::getCardCode));
 
          if (!pupilMealsMap.isEmpty()) {
             int rowNum = lastRow(2);

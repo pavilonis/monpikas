@@ -3,7 +3,6 @@ package lt.pavilonis.monpikas.server.reports;
 import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.domain.PupilType;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilRepository;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
@@ -17,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-import static java.util.Optional.ofNullable;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Service
@@ -31,7 +29,7 @@ public class ReportService {
 
    public ByteArrayOutputStream generate(Date from, Date to, PupilType pupilType) {
 
-      List<MealEventLog> events = mealEventLogRepository.findByDateBetweenAndPupilType(from, to, pupilType);
+      List<MealEventLog> events = mealEventLogRepository.load(from, to, pupilType);
 
       String reportPeriod = DATE_FORMAT.format(from) + "  -  " + DATE_FORMAT.format(to);
       HSSFWorkbook wb = new Report(reportPeriod, events).create(pupilType);

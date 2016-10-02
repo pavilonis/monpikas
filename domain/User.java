@@ -4,96 +4,48 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
-@Entity
-public class User implements UserDetails {
+public final class User implements UserDetails {
 
-   private static final long serialVersionUID = 1L;
+   private final String name;
+   private final String username;
+   private final String password;
+   private final boolean enabled;
+   private final Set<String> roles;
 
-   @Id
-   @GeneratedValue(strategy = GenerationType.AUTO)
-   private Long id;
-
-   private String name;
-
-   @Column(unique = true)
-   private String username;
-
-   private String password;
-
-   private Boolean enabled;
-
-   @JoinTable(name = "User_Authority",
-         joinColumns = {
-               @JoinColumn(name = "user_id", referencedColumnName = "id")
-         },
-         inverseJoinColumns = {
-               @JoinColumn(name = "authority_id", referencedColumnName = "id")
-         }
-   )
-   @ManyToMany(fetch = FetchType.EAGER)
-   private List<Authority> authorities = new ArrayList<>();
-
-   public void setEnabled(Boolean enabled) {
-      this.enabled = enabled;
-   }
-
-   public String getPassword() {
-      return password;
-   }
-
-   public void setPassword(String password) {
-      this.password = password;
-   }
-
-   public Long getId() {
-      return id;
-   }
-
-   public void setId(Long id) {
-      this.id = id;
-   }
-
-   public void setName(String name) {
+   public User(String name, String username, String password, boolean enabled, Set<String> roles) {
       this.name = name;
+      this.username = username;
+      this.password = password;
+      this.enabled = enabled;
+      this.roles = roles;
    }
 
    public String getName() {
       return name;
    }
 
-   public void setUsername(String username) {
-      this.username = username;
+   @Override
+   public String getPassword() {
+      return password;
    }
 
-   public void setAuthorities(List<Authority> authorities) {
-      this.authorities = authorities;
+   public boolean getEnabled() {
+      return enabled;
    }
 
-   public void addAuthority(Authority auth) {
-      this.authorities.add(auth);
+   public Set<String> getRoles() {
+      return roles;
    }
 
-   //implementing 'UserDetails' interface methods
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
-      List<GrantedAuthority> authList = new ArrayList<GrantedAuthority>();
-      for (Authority auth : authorities) {
-         authList.add(new SimpleGrantedAuthority(auth.getRole()));
-      }
-      return authList;
+      return this.roles.stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
    }
 
    @Override

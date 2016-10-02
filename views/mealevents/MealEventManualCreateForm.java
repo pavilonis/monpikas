@@ -10,25 +10,24 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
-import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 
 import java.util.Date;
 
 import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 import static com.vaadin.ui.Button.ClickListener;
 
-public class MealEventManualCreateWindow extends Window {
+public class MealEventManualCreateForm extends Window {
 
    private final Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
    private final Button close = new Button("Uždaryti", FontAwesome.TIMES);
-   private final BeanContainer<Long, PupilDto> container = new BeanContainer<>(PupilDto.class);
+   private final BeanContainer<Long, Pupil> container = new BeanContainer<>(Pupil.class);
    private final Table table = new PupilsTable("Pasirinkite mokinį", container);
    private final DateField dateField = new DateField("Pasirinkite data: ", new Date());
    private final ComboBox eventTypeCombo = new MealTypeComboBox();
 
-   public MealEventManualCreateWindow() {
+   public MealEventManualCreateForm() {
 
       //TODO set form model (container) instead of getting values from fields manually
 
@@ -61,7 +60,7 @@ public class MealEventManualCreateWindow extends Window {
       close.addClickListener(listener);
    }
 
-   public BeanContainer<Long, PupilDto> getContainer() {
+   public BeanContainer<Long, Pupil> getContainer() {
       return container;
    }
 
@@ -78,7 +77,7 @@ public class MealEventManualCreateWindow extends Window {
    }
 
    private class PupilsTable extends Table {
-      public PupilsTable(String caption, BeanContainer<Long, PupilDto> container) {
+      public PupilsTable(String caption, BeanContainer<Long, Pupil> container) {
          super(caption, container);
          container.setBeanIdProperty("cardId");
          setSizeFull();

@@ -17,7 +17,6 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.monpikas.server.domain.Meal;
 import lt.pavilonis.monpikas.server.domain.Pupil;
-import lt.pavilonis.monpikas.server.dto.PupilDto;
 import lt.pavilonis.monpikas.server.views.components.PupilTypeComboBox;
 import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
 import lt.pavilonis.monpikas.server.views.settings.TableControlPanel;
@@ -45,22 +44,20 @@ public class PupilEditWindow extends Window {
    @PropertyId("comment")
    private final Button save = new Button("Saugoti");
    private final Button close = new Button("Uždaryti");
-   private final ComboBox typeCombo = new PupilTypeComboBox();
    private final BeanFieldGroup<Pupil> group = new BeanFieldGroup<>(Pupil.class);
    private final TableControlPanel controlPanel = new TableControlPanel();
    private final BeanContainer<Long, Meal> container = new BeanContainer<>(Meal.class);
    private final Table table = new Table(label("PupilEditWindow.PortionsTable.Caption"), container);
 
-   public PupilEditWindow(Pupil pupil, PupilDto dto, Image image, Optional<Date> lastMealDate) {
+   public PupilEditWindow(Pupil pupil, Image image, Optional<Date> lastMealDate) {
 
       group.setItemDataSource(pupil);
       group.setBuffered(true);
 
-      //table.setSizeFull();
       table.setHeight("270px");
       table.setWidth("400px");
       container.setBeanIdProperty("id");
-      container.addAll(pupil.getMeals());
+      container.addAll(pupil.meals);
       container.sort(new Object[]{"id"}, new boolean[]{true});
       table.setVisibleColumns("id", "name", "type", "price");
       table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina");
@@ -85,14 +82,15 @@ public class PupilEditWindow extends Window {
       setWidth("655px");
       setHeight("650px");
 
-      String birthDate = dto.getBirthDate().map(DATE_FORMAT::format).orElse("nenurodyta");
+      String birthDate = pupil.birthDate.map(DATE_FORMAT::format).orElse("nenurodyta");
       String mealDate = lastMealDate.map(DATE_TIME_FORMAT::format).orElse("nėra duomenų");
 
       Label last = new Label(label("PupilEditWindow.Label.LastMeal") + mealDate, HTML);
-      Label card = new Label("<b>Kortelės #:</b> " + dto.getCardId(), HTML);
-      Label name = new Label("<b>Vardas:</b> " + dto.getFirstName() + " " + dto.getLastName(), HTML);
+      Label card = new Label("<b>Kortelės #:</b> " + pupil.cardCode, HTML);
+      Label name = new Label("<b>Vardas:</b> " + pupil.name(), HTML);
       Label date = new Label("<b>Gimimo data:</b> " + birthDate, HTML);
 
+      ComboBox typeCombo = new PupilTypeComboBox();
       group.bind(typeCombo, "type");
       typeCombo.setNullSelectionAllowed(false);
 

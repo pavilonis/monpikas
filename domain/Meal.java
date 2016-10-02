@@ -1,92 +1,76 @@
 package lt.pavilonis.monpikas.server.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.DecimalMin;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
 
-@Entity
-public class Meal implements Serializable {
+public final class Meal {
+
+   private Long id;
+   private String name;
+   private MealType type;
+   private BigDecimal price;
+   private LocalTime startTime;
+   private LocalTime endTime;
 
    public Meal() {
    }
 
-   @Id
-   @GeneratedValue
-   private Long id;
-
-   @Size(min = 2)
-   @NotNull
-   private String name;
-
-   @NotNull
-   @Enumerated(EnumType.STRING)
-   private MealType type;
-
-   @DecimalMin("0")
-   @DecimalMax("99")
-   @NotNull
-   private BigDecimal price;
-
-   private LocalTime startTime;
-
-   private LocalTime endTime;
+   public Meal(Long id, String name, MealType type, BigDecimal price, LocalTime startTime, LocalTime endTime) {
+      this.id = id;
+      this.name = name;
+      this.type = type;
+      this.price = price;
+      this.startTime = startTime;
+      this.endTime = endTime;
+   }
 
    public Long getId() {
       return id;
-   }
-
-   public void setId(Long id) {
-      this.id = id;
-   }
-
-   public BigDecimal getPrice() {
-      return price;
-   }
-
-   public void setPrice(BigDecimal price) {
-      this.price = price;
    }
 
    public String getName() {
       return name;
    }
 
-   public void setName(String name) {
-      this.name = name;
-   }
-
    public MealType getType() {
       return type;
    }
 
-   public void setType(MealType type) {
-      this.type = type;
+   public BigDecimal getPrice() {
+      return price;
    }
 
    public LocalTime getStartTime() {
       return startTime;
    }
 
-   public void setStartTime(LocalTime startTime) {
-      this.startTime = startTime;
-   }
-
    public LocalTime getEndTime() {
       return endTime;
    }
 
+   public void setId(Long id) {
+      this.id = id;
+   }
+
    public void setEndTime(LocalTime endTime) {
       this.endTime = endTime;
+   }
+
+   public void setStartTime(LocalTime startTime) {
+      this.startTime = startTime;
+   }
+
+   public void setPrice(BigDecimal price) {
+      this.price = price;
+   }
+
+   public void setType(MealType type) {
+      this.type = type;
+   }
+
+   public void setName(String name) {
+      this.name = name;
    }
 
    @Override

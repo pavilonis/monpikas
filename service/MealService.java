@@ -21,7 +21,7 @@ public class MealService {
    public List<MealEventLog> getDinnerEventList() {
       Calendar from = Calendar.getInstance();
       from.add(Calendar.DATE, -100); // 100 days back
-      return mealRepository.findAfter(from.getTime());
+      return mealRepository.loadAfter(from.getTime());
    }
 
    public boolean sameDay(Date date1, Date date2) {
@@ -33,7 +33,7 @@ public class MealService {
             cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
    }
 
-   public Optional<Date> lastMealEvent(long cardId) {
-      return ofNullable(mealRepository.lastMealEventDate(cardId));
+   public Optional<Date> lastMealEvent(String cardCode) {
+      return ofNullable(mealRepository.lastMealEventDate(cardCode));
    }
 }

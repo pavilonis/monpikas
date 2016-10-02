@@ -4,7 +4,7 @@ import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.dto.PupilDto;
+import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.views.converters.CollectionCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.OptionalCellConverter;
 import lt.pavilonis.monpikas.server.views.converters.SimpleStringToLongConverter;
@@ -13,7 +13,7 @@ import static com.vaadin.ui.Table.Align.CENTER;
 
 public class PupilsListView extends VerticalLayout {
 
-   private final BeanContainer<Long, PupilDto> container = new BeanContainer<>(PupilDto.class);
+   private final BeanContainer<Long, Pupil> container = new BeanContainer<>(Pupil.class);
    private final Table table = new PupilsTable(container);
    private final PupilListFilterPanel pupilListFilterPanel = new PupilListFilterPanel();
 
@@ -37,13 +37,13 @@ public class PupilsListView extends VerticalLayout {
       table.addItemClickListener(listener);
    }
 
-   public BeanContainer<Long, PupilDto> getContainer() {
+   public BeanContainer<Long, Pupil> getContainer() {
       return container;
    }
 
 
    private class PupilsTable extends Table {
-      public PupilsTable(BeanContainer<Long, PupilDto> container) {
+      public PupilsTable(BeanContainer<Long, Pupil> container) {
          setSizeFull();
          container.setBeanIdProperty("cardId");
          setContainerDataSource(container);
