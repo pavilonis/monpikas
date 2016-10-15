@@ -2,22 +2,24 @@ package lt.pavilonis.monpikas.server.service;
 
 import lt.pavilonis.monpikas.server.domain.MealType;
 import lt.pavilonis.monpikas.server.domain.Pupil;
+import lt.pavilonis.monpikas.server.domain.PupilLocalData;
+import lt.pavilonis.monpikas.server.domain.UserRepresentation;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilRepository;
-import org.apache.commons.lang3.NotImplementedException;
+import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
+import lt.pavilonis.monpikas.server.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import static java.lang.System.nanoTime;
-import static org.springframework.util.CollectionUtils.isEmpty;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class PupilService {
@@ -25,23 +27,34 @@ public class PupilService {
    private static final Logger LOG = LoggerFactory.getLogger(PupilService.class.getSimpleName());
 
    @Autowired
-   private PupilRepository pupilsRepository;
+   private PupilDataRepository pupilDataRepository;
+
+   @Autowired
+   private UserRepository usersRepository;
 
    @Autowired
    private MealEventLogRepository eventsRepository;
 
-   public List<Pupil> loadPupilsWithAssignedPortions() {
-      return pupilsRepository.loadAll().stream()
-            .filter(dto -> !isEmpty(dto.meals))
-            .collect(Collectors.toList());
-   }
+   public Optional<Pupil> find(String cardCode) {
+      Optional<UserRepresentation> optionalUser = usersRepository.load(cardCode);
+      if (!optionalUser.isPresent()) {
+         return Optional.empty();
+      }
 
-   public Optional<Pupil> getByCardCode(String cardCode) {
-      return pupilsRepository.getAdbPupil(cardCode, infoByCardCode(cardCode));
-   }
-
-   public Optional<Pupil> infoByCardCode(String cardCode) {
-      return pupilsRepository.findByCardCode(cardCode);
+      UserRepresentation user = optionalUser.get();
+      Optional<PupilLocalData> data = pupilDataRepository.load(cardCode);
+      Pupil result = new Pupil(
+            user.cardCode,
+            user.firstName,
+            user.lastName,
+            user.description,
+            user.birthDate,
+            data.isPresent() ? data.get().getType() : null,
+            data.isPresent() ? data.get().getMeals() : new HashSet<>(),
+            data.isPresent() ? data.get().getComment() : null,
+            user.photoUrl
+      );
+      return Optional.of(result);
    }
 
    public boolean canHaveMeal(String cardCode, Date day, MealType type) {
@@ -50,10 +63,10 @@ public class PupilService {
    }
 
    public boolean portionAssigned(String cardCode, MealType type) {
-      Optional<Pupil> pupil = pupilsRepository.findByCardCode(cardCode);
+      Optional<PupilLocalData> pupil = pupilDataRepository.load(cardCode);
 
       return pupil.orElseThrow(IllegalArgumentException::new)
-            .meals.stream()
+            .getMeals().stream()
             .anyMatch(portion -> portion.getType() == type);
    }
 
@@ -77,7 +90,66 @@ public class PupilService {
       return c.getTime();
    }
 
-   private static String durationFrom(long start) {
-      return (nanoTime() - start) / 1_000_000 + " ms.";
+   public Collection<Pupil> loadAll() {
+      Collection<PupilLocalData> pupilDataCollection = pupilDataRepository.loadAll(false);
+      List<UserRepresentation> users = usersRepository.loadAll();
+      return users.stream()
+            .map(user -> {
+               Optional<PupilLocalData> pupilData = pupilDataCollection.stream()
+                     .filter(data -> data.getCardCode().equals(user.cardCode))
+                     .findFirst();
+               return new Pupil(
+                     user.cardCode,
+                     user.firstName,
+                     user.lastName,
+                     user.description,
+                     user.birthDate,
+                     pupilData.isPresent() ? pupilData.get().getType() : null,
+                     pupilData.isPresent() ? pupilData.get().getMeals() : new HashSet<>(),
+                     pupilData.isPresent() ? pupilData.get().getComment() : null,
+                     user.photoUrl
+               );
+            })
+            .collect(toList());
+   }
+
+   public List<Pupil> loadWithMealAssigned() {
+      Collection<PupilLocalData> pupilData = pupilDataRepository.loadAll(true);
+      return loadAndMerge(pupilData);
+   }
+
+   public List<Pupil> loadByMeal(Long mealId) {
+      Collection<PupilLocalData> pupilLocalData = pupilDataRepository.loadByMeal(mealId);
+      return loadAndMerge(pupilLocalData);
+   }
+
+   private List<Pupil> loadAndMerge(Collection<PupilLocalData> pupilData) {
+      List<UserRepresentation> users = usersRepository.loadAll();
+      return pupilData.stream()
+            .map(data -> {
+               Optional<UserRepresentation> correspondingUser = users.stream()
+                     .filter(user -> user.cardCode.equals(data.getCardCode()))
+                     .findFirst();
+               if (!correspondingUser.isPresent()) {
+                  return Optional.<Pupil>empty();
+               } else {
+                  UserRepresentation user = correspondingUser.get();
+                  Pupil pupil = new Pupil(
+                        user.cardCode,
+                        user.firstName,
+                        user.lastName,
+                        user.description,
+                        user.birthDate,
+                        data.getType(),
+                        data.getMeals(),
+                        data.getComment(),
+                        user.photoUrl
+                  );
+                  return Optional.of(pupil);
+               }
+            })
+            .filter(Optional::isPresent)
+            .map(Optional::get)
+            .collect(toList());
    }
 }

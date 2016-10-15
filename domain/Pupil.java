@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.server.domain;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.Optional;
 import java.util.Set;
@@ -10,10 +11,10 @@ public final class Pupil {
                 String firstName,
                 String lastName,
                 String grade,
-                Optional<Date> birthDate,
+                LocalDate birthDate,
                 PupilType pupilType,
                 Set<Meal> meals,
-                Optional<String> comment,
+                String comment,
                 String photoPath) {
 
       this.cardCode = cardCode;
@@ -31,10 +32,10 @@ public final class Pupil {
    public final String firstName;
    public final String lastName;
    public final String grade;
-   public final Optional<Date> birthDate;
+   public final LocalDate birthDate;
    public final PupilType pupilType;
    public final Set<Meal> meals;
-   public final Optional<String> comment;
+   public final String comment;
    public final String photoPath;
 
    public String name() {

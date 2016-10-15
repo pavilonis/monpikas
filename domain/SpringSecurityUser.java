@@ -8,7 +8,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class User implements UserDetails {
+public final class SpringSecurityUser implements UserDetails {
 
    private final String name;
    private final String username;
@@ -16,7 +16,7 @@ public final class User implements UserDetails {
    private final boolean enabled;
    private final Set<String> roles;
 
-   public User(String name, String username, String password, boolean enabled, Set<String> roles) {
+   public SpringSecurityUser(String name, String username, String password, boolean enabled, Set<String> roles) {
       this.name = name;
       this.username = username;
       this.password = password;

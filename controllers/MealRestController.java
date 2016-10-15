@@ -1,11 +1,11 @@
 package lt.pavilonis.monpikas.server.controllers;
 
 import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
 import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.domain.PupilRepresentation;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
+import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,7 +29,7 @@ public class MealRestController {
    private static final Logger LOG = getLogger(MealRestController.class);
 
    @Autowired
-   private PupilService pupilService;
+   private PupilService pupils;
 
    @Autowired
    private MealRepository mealRepository;
@@ -42,10 +42,10 @@ public class MealRestController {
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
 
       LOG.info("Pupil meal request [cardCode={}]", cardCode);
-      Optional<Pupil> pupilDto = pupilService.getByCardCode(cardCode);
+      Optional<Pupil> pupilDto = pupils.find(cardCode);
 
       if (!pupilDto.isPresent()) {
-         LOG.info("Pupil NOT found in ADB [cardCode={}]", cardCode);
+         LOG.info("User NOT found in DB [cardCode={}]", cardCode);
          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
@@ -78,18 +78,7 @@ public class MealRestController {
 
    private ResponseEntity<PupilRepresentation> getMealResponse(Pupil dto, Meal meal) {
 
-      if (pupilService.canHaveMeal(dto.cardCode, new Date(), meal.getType())) {
-
-         MealEventLog log = new MealEventLog(
-               null,
-               dto.cardCode,
-               dto.name(),
-               dto.grade,
-               new Date(),
-               meal.getPrice(),
-               meal.getType(),
-               dto.pupilType
-         );
+      if (pupils.canHaveMeal(dto.cardCode, new Date(), meal.getType())) {
 
          eventLogs.save(dto.cardCode, dto.name(), dto.grade, meal.getPrice(), meal.getType(), dto.pupilType);
 

@@ -22,7 +22,7 @@ import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.reports.ReportService;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilRepository;
+import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
 import lt.pavilonis.monpikas.server.service.MealService;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import lt.pavilonis.monpikas.server.views.mealevents.MealEventListView;
@@ -77,7 +77,7 @@ public class ViewController {
    private PupilService pupilService;
 
    @Autowired
-   private PupilRepository pupilRepository;
+   private PupilDataRepository pupilDataRepository;
 
    @Autowired
    private MealService mealService;
@@ -120,7 +120,7 @@ public class ViewController {
          menu.addItem(" Bendras sąrašas", FontAwesome.CHILD, selected -> {
 
             PupilsListView view = new PupilsListView();
-            view.getContainer().addAll(pupilRepository.loadAll());
+            view.getContainer().addAll(pupilService.loadAll());
             view.setTableClickListener(pulilListTableClickListener());
 
             content.removeAllComponents();
@@ -163,7 +163,7 @@ public class ViewController {
          if (mealId == null) {
             show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            List<Pupil> portionUsers = pupilRepository.findPortionUsers(mealId);
+            List<Pupil> portionUsers = pupilService.loadByMeal(mealId);
             if (portionUsers.isEmpty()) {
                mealRepository.delete(mealId);
                view.getContainer().removeItem(mealId);
@@ -262,7 +262,7 @@ public class ViewController {
                   pupil.meals.addAll(mealRepository.load(mealIds));
 
                   view.commit();
-                  pupilRepository.saveOrUpdate(pupil);
+                  pupilDataRepository.saveOrUpdate(pupil);
                   //TODO reload record from db
 //                  dto.setComment(ofNullable(pupil.getComment()));  //manual value refresh in list?
                   Table tbl = (Table) event.getSource();
@@ -310,13 +310,13 @@ public class ViewController {
             return;
          }
          MealEventManualCreateForm form = new MealEventManualCreateForm();
-         form.getContainer().addAll(pupilService.loadPupilsWithAssignedPortions());
+         form.getContainer().addAll(pupilService.loadWithMealAssigned());
          form.addCloseButtonListener(closeClick -> form.close());
          form.addSaveButtonListener(saveClick -> {
             String cardCode = (String) form.getTable().getValue();
             MealType type = form.getEventType();
             if (valid(cardCode, form.getDate(), type)) {
-               Pupil dto = pupilService.getByCardCode(cardCode).get();
+               Pupil dto = pupilService.find(cardCode).get();
 
                BigDecimal price = dto.meals.stream()
                      .filter(portion -> portion.getType() == type)

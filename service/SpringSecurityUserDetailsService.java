@@ -1,6 +1,6 @@
 package lt.pavilonis.monpikas.server.service;
 
-import lt.pavilonis.monpikas.server.domain.User;
+import lt.pavilonis.monpikas.server.domain.SpringSecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -11,7 +11,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Service
-public class JdbcUserDetailsService implements UserDetailsService {
+public class SpringSecurityUserDetailsService implements UserDetailsService {
 
    @Autowired
    private JdbcTemplate jdbc;
@@ -39,7 +39,7 @@ public class JdbcUserDetailsService implements UserDetailsService {
                   roles.add(rs.getString("r.name"));
                }
                return userDataCollected
-                     ? new User(name, username1, password, enabled, roles)
+                     ? new SpringSecurityUser(name, username1, password, enabled, roles)
                      : null;
             },
             username
