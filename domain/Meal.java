@@ -77,4 +77,9 @@ public final class Meal {
    public String toString() {
       return name + " - " + new DecimalFormat("0.00").format(price);
    }
+
+   @Override
+   public int hashCode() {
+      return Math.toIntExact(id);
+   }
 }

@@ -27,11 +27,11 @@ public class ReportService {
    private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private static final Logger LOG = getLogger(PupilService.class);
 
-   public ByteArrayOutputStream generate(Date from, Date to, PupilType pupilType) {
+   public ByteArrayOutputStream generate(Date periodStart, Date periodEnd, PupilType pupilType) {
 
-      List<MealEventLog> events = mealEventLogRepository.load(from, to, pupilType);
+      List<MealEventLog> events = mealEventLogRepository.load(pupilType, periodStart, periodEnd);
 
-      String reportPeriod = DATE_FORMAT.format(from) + "  -  " + DATE_FORMAT.format(to);
+      String reportPeriod = DATE_FORMAT.format(periodStart) + "  -  " + DATE_FORMAT.format(periodEnd);
       HSSFWorkbook wb = new Report(reportPeriod, events).create(pupilType);
 
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {

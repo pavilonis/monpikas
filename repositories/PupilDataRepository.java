@@ -1,13 +1,16 @@
 package lt.pavilonis.monpikas.server.repositories;
 
-import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.domain.PupilLocalData;
+import lt.pavilonis.monpikas.server.utils.DateTimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -19,6 +22,7 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class PupilDataRepository {
 
+   private static final Logger LOG = LoggerFactory.getLogger(PupilDataRepository.class.getSimpleName());
    private static final PupilDataResultSetExtractor PUPIL_DATA_EXTRACTOR = new PupilDataResultSetExtractor();
 
    @Autowired
@@ -48,8 +52,12 @@ public class PupilDataRepository {
       args.put("cardCode", cardCode);
       args.put("mealId", mealId);
       args.put("withMealsAssigned", withMealsAssigned);
-      return namedJdbc.query("" +
-                  "SELECT p.*, m.* FROM Pupil p" +
+      LocalDateTime opStart = LocalDateTime.now();
+      Map<String, PupilLocalData> result = namedJdbc.query("" +
+                  "SELECT " +
+                  "  p.cardCode, p.comment, p.type, " +
+                  "  m.id, m.name, m.type, m.price, m.startTime, m.endTime " +
+                  "FROM Pupil p" +
                   "  LEFT JOIN PupilMeal pm ON pm.pupil_cardCode = p.cardCode " +
                   "  LEFT JOIN Meal m ON m.id = pm.meal_id " +
                   "WHERE (:cardCode IS NULL OR :cardCode = p.cardCode)" +
@@ -58,14 +66,17 @@ public class PupilDataRepository {
             args,
             PUPIL_DATA_EXTRACTOR
       );
+      LOG.info("Query completed [duration={}]", DateTimeUtils.duration(opStart));
+
+      return result;
    }
 
    @Transactional
-   public PupilLocalData saveOrUpdate(Pupil pupil) {
+   public PupilLocalData saveOrUpdate(PupilLocalData pupil) {
       Map<String, Object> args = new HashMap<>();
-      args.put("cardCode", pupil.cardCode);
-      args.put("type", pupil.pupilType);
-      args.put("comment", pupil.comment);
+      args.put("cardCode", pupil.getCardCode());
+      args.put("type", pupil.getType().name());
+      args.put("comment", pupil.getComment());
 
       namedJdbc.update("" +
                   "INSERT INTO Pupil (cardCode, type, comment) " +
@@ -74,16 +85,16 @@ public class PupilDataRepository {
             args
       );
 
-      jdbc.update("DELETE FROM PupilMeal WHERE pupil_cardCode = ?", pupil.cardCode);
+      jdbc.update("DELETE FROM PupilMeal WHERE pupil_cardCode = ?", pupil.getCardCode());
 
-      List<Object[]> batchArgs = pupil.meals.stream()
-            .map(meal -> new Object[]{pupil.cardCode, meal.getId()})
+      List<Object[]> batchArgs = pupil.getMeals().stream()
+            .map(meal -> new Object[]{pupil.getCardCode(), meal.getId()})
             .collect(toList());
 
       if (!batchArgs.isEmpty()) {
          jdbc.batchUpdate("INSERT INTO PupilMeal (pupil_cardCode, meal_id) VALUES (?, ?)", batchArgs);
       }
 
-      return load(pupil.cardCode).get();
+      return load(pupil.getCardCode()).get();
    }
 }

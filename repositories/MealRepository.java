@@ -8,13 +8,16 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 
 @Repository
@@ -36,12 +39,10 @@ public class MealRepository {
       jdbc.update("DELETE FROM Meal WHERE id = ?", mealId);
    }
 
-   public List<Meal> load(Set<Long> ids) {
-      return namedJdbc.query(
-            "SELECT m.* FROM Meal m WHERE m.id IN (:ids)",
-            Collections.singletonMap("ids", ids),
-            MAPPER
-      );
+   public List<Meal> load(Collection ids) {
+      return CollectionUtils.isEmpty(ids)
+            ? Collections.emptyList()
+            : namedJdbc.query("SELECT m.* FROM Meal m WHERE m.id IN (:ids)", singletonMap("ids", ids), MAPPER);
    }
 
    public Meal saveOrUpdate(Meal meal) {

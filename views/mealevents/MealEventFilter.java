@@ -26,7 +26,7 @@ public class MealEventFilter implements Filter {
 
       MealEventLog event = ((BeanItem<MealEventLog>) item).getBean();
 
-      String s = event.getName() + event.getGrade() + event.getCardId() + event.getDate() + event.getPrice();
+      String s = event.getName() + event.getGrade() + event.getCardCode() + event.getDate() + event.getPrice();
 
       return s.toLowerCase().contains(text)
             && (!hadDinnerToday || service.sameDay(event.getDate(), new Date()));

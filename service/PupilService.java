@@ -7,11 +7,13 @@ import lt.pavilonis.monpikas.server.domain.UserRepresentation;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
 import lt.pavilonis.monpikas.server.repositories.UserRepository;
+import lt.pavilonis.monpikas.server.utils.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -91,9 +93,16 @@ public class PupilService {
    }
 
    public Collection<Pupil> loadAll() {
+      LocalDateTime opStart = LocalDateTime.now();
       Collection<PupilLocalData> pupilDataCollection = pupilDataRepository.loadAll(false);
+      LOG.info("Loaded pupil meal data [duration={}]", DateTimeUtils.duration(opStart));
+
+      opStart = LocalDateTime.now();
       List<UserRepresentation> users = usersRepository.loadAll();
-      return users.stream()
+      LOG.info("Loaded user data [duration={}]", DateTimeUtils.duration(opStart));
+
+      opStart = LocalDateTime.now();
+      List<Pupil> result = users.stream()
             .map(user -> {
                Optional<PupilLocalData> pupilData = pupilDataCollection.stream()
                      .filter(data -> data.getCardCode().equals(user.cardCode))
@@ -111,6 +120,9 @@ public class PupilService {
                );
             })
             .collect(toList());
+      LOG.info("Composed dtos [duration={}]", DateTimeUtils.duration(opStart));
+
+      return result;
    }
 
    public List<Pupil> loadWithMealAssigned() {
@@ -151,5 +163,26 @@ public class PupilService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
+   }
+
+   public Optional<Pupil> load(String cardCode) {
+      Optional<UserRepresentation> optionalUser = usersRepository.load(cardCode);
+      if (!optionalUser.isPresent()) {
+         return Optional.empty();
+      }
+      UserRepresentation user = optionalUser.get();
+      Optional<PupilLocalData> pupilData = pupilDataRepository.load(cardCode);
+      Pupil pupil = new Pupil(
+            user.cardCode,
+            user.firstName,
+            user.lastName,
+            user.description,
+            user.birthDate,
+            pupilData.isPresent() ? pupilData.get().getType() : null,
+            pupilData.isPresent() ? pupilData.get().getMeals() : new HashSet<>(),
+            pupilData.isPresent() ? pupilData.get().getComment() : null,
+            user.photoUrl
+      );
+      return Optional.of(pupil);
    }
 }

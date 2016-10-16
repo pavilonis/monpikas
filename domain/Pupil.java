@@ -1,8 +1,6 @@
 package lt.pavilonis.monpikas.server.domain;
 
 import java.time.LocalDate;
-import java.util.Date;
-import java.util.Optional;
 import java.util.Set;
 
 public final class Pupil {
@@ -12,7 +10,7 @@ public final class Pupil {
                 String lastName,
                 String grade,
                 LocalDate birthDate,
-                PupilType pupilType,
+                PupilType type,
                 Set<Meal> meals,
                 String comment,
                 String photoPath) {
@@ -23,22 +21,58 @@ public final class Pupil {
       this.grade = grade;
       this.birthDate = birthDate;
       this.meals = meals;
-      this.pupilType = pupilType;
+      this.type = type;
       this.comment = comment;
       this.photoPath = photoPath;
    }
 
-   public final String cardCode;
-   public final String firstName;
-   public final String lastName;
-   public final String grade;
-   public final LocalDate birthDate;
-   public final PupilType pupilType;
-   public final Set<Meal> meals;
-   public final String comment;
-   public final String photoPath;
+   private final String cardCode;
+   private final String firstName;
+   private final String lastName;
+   private final String grade;
+   private final LocalDate birthDate;
+   private final PupilType type;
+   private final Set<Meal> meals;
+   private final String comment;
+   private final String photoPath;
 
    public String name() {
       return this.firstName + " " + this.lastName;
+   }
+
+   public String getCardCode() {
+      return cardCode;
+   }
+
+   public String getFirstName() {
+      return firstName;
+   }
+
+   public String getLastName() {
+      return lastName;
+   }
+
+   public String getGrade() {
+      return grade;
+   }
+
+   public LocalDate getBirthDate() {
+      return birthDate;
+   }
+
+   public PupilType getType() {
+      return type;
+   }
+
+   public Set<Meal> getMeals() {
+      return meals;
+   }
+
+   public String getComment() {
+      return comment;
+   }
+
+   public String getPhotoPath() {
+      return photoPath;
    }
 }

@@ -75,25 +75,24 @@ public class MealRestController {
       }
    }
 
-
    private ResponseEntity<PupilRepresentation> getMealResponse(Pupil dto, Meal meal) {
 
       if (pupils.canHaveMeal(dto.cardCode, new Date(), meal.getType())) {
 
-         eventLogs.save(dto.cardCode, dto.name(), dto.grade, meal.getPrice(), meal.getType(), dto.pupilType);
+         eventLogs.save(dto.cardCode, dto.name(), dto.grade, meal.getPrice(), meal.getType(), dto.type);
 
          LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
                dto.name(), dto.cardCode, meal.getType().name(), meal.getPrice());
 
          return new ResponseEntity<>(
-               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.pupilType),
+               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.type),
                HttpStatus.ACCEPTED
          );
 
       } else {
          LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", dto.name(), dto.cardCode);
          return new ResponseEntity<>(
-               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.pupilType),
+               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.type),
                HttpStatus.ALREADY_REPORTED
          );
       }

@@ -1,18 +1,25 @@
 package lt.pavilonis.monpikas.server.domain;
 
+import java.util.HashSet;
 import java.util.Set;
 
 public final class PupilLocalData {
-   private final String cardCode;
-   private final PupilType type;
-   private final String comment;
-   private final Set<Meal> meals;
+   private String cardCode;
+   private PupilType type;
+   private String comment;
+   private Set<Meal> meals = new HashSet<>();
+
+//   public PupilLocalData() {/**/}
 
    public PupilLocalData(String cardCode, PupilType type, String comment, Set<Meal> meals) {
       this.cardCode = cardCode;
       this.type = type;
       this.comment = comment;
       this.meals = meals;
+   }
+
+   public PupilLocalData(String cardCode) {
+      this.cardCode = cardCode;
    }
 
    public String getCardCode() {
@@ -29,5 +36,21 @@ public final class PupilLocalData {
 
    public Set<Meal> getMeals() {
       return meals;
+   }
+
+   public void setCardCode(String cardCode) {
+      this.cardCode = cardCode;
+   }
+
+   public void setType(PupilType type) {
+      this.type = type;
+   }
+
+   public void setComment(String comment) {
+      this.comment = comment;
+   }
+
+   public void setMeals(Set<Meal> meals) {
+      this.meals = meals;
    }
 }

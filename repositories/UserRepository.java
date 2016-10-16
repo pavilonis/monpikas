@@ -23,7 +23,7 @@ public class UserRepository {
    private static final Logger LOG = LoggerFactory.getLogger(UserRepository.class.getSimpleName());
 
    @Value(("${api.path.users}"))
-   private String apiPath;
+   private String apiUsersPath;
 
    @Autowired
    private RestTemplate rest;
@@ -59,7 +59,7 @@ public class UserRepository {
    }
 
    private URI uri(String... segments) {
-      return UriComponentsBuilder.fromUriString(apiPath)
+      return UriComponentsBuilder.fromUriString(apiUsersPath)
             .pathSegment(segments)
             .build()
             .toUri();
