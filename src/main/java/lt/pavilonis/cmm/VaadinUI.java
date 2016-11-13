@@ -3,18 +3,15 @@ package lt.pavilonis.cmm;
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.VerticalLayout;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
+import org.vaadin.viritin.fields.MTable;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Collections;
 
@@ -22,33 +19,57 @@ import java.util.Collections;
 @Theme("valo")
 public class VaadinUI extends UI {
 
-   private final UserRestRepository repo;
-   private final Table table = new Table();
-   private final TextField filter = new TextField();
-   private final Button addNewBtn = new Button("New customer", FontAwesome.PLUS);
+   @Autowired
+   private UserRestRepository repo;
 
    @Autowired
-   public VaadinUI(UserRestRepository repo) {
-      this.repo = repo;
-   }
+   private UserTable table;
+
+   @Autowired
+   private UserEditPopup editForm;
+
+   @Autowired
+   private ControlPanel controlPanel;
 
    @Override
    protected void init(VaadinRequest request) {
-      HorizontalLayout actions = new HorizontalLayout(filter, addNewBtn);
-      VerticalLayout mainLayout = new VerticalLayout(actions, table);
-      setContent(mainLayout);
+      addStyles();
 
-      actions.setSpacing(true);
-      mainLayout.setMargin(true);
-      mainLayout.setSpacing(true);
+      setContent(new MVerticalLayout(controlPanel, table).withFullWidth().expand(table));
+   }
 
-      updateContainer(null);
-      table.setVisibleColumns("cardCode", "firstName", "lastName");
-      table.setColumnHeaders("Card", "First name", "Last name");
-      filter.setInputPrompt("Filter by last name");
+   private void addStyles() {
+      Page.Styles styles = Page.getCurrent().getStyles();
+      styles.add(
+            ".valo.v-app, .valo.v-app-loading { " +
+                  "  font-family: sans-serif; " +
+                  "  font-weight: 500 " +
+                  "} " +
 
-      filter.addTextChangeListener(e -> updateContainer(e.getText()));
+                  ".valo .v-margin-top { " +
+                  "  padding-top: 20px " +
+                  "} " +
 
+                  ".valo .v-margin-right { " +
+                  "  padding-right: 20px " +
+                  "} " +
+
+                  ".valo .v-margin-bottom { " +
+                  "  padding-bottom: 20px " +
+                  "} " +
+
+                  ".valo .v-margin-left { " +
+                  "  padding-left: 20px " +
+                  "} " +
+                  ".redicon .v-icon { " +
+                  "     color: red; " +
+                  "} " +
+
+                  ".time-only .v-inline-datefield-calendarpanel-header," +
+                  ".time-only .v-inline-datefield-calendarpanel-body {" +
+                  "  display: none;" +
+                  "}"
+      );
    }
 
    void updateContainer(String text) {
