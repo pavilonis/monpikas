@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm;
+package lt.pavilonis.cmm.ui;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver;
@@ -8,9 +8,10 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
+import lt.pavilonis.cmm.UserRestRepository;
+import lt.pavilonis.cmm.representation.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.StringUtils;
-import org.vaadin.viritin.fields.MTable;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Collections;
@@ -24,9 +25,6 @@ public class VaadinUI extends UI {
 
    @Autowired
    private UserTable table;
-
-   @Autowired
-   private UserEditPopup editForm;
 
    @Autowired
    private ControlPanel controlPanel;
@@ -64,28 +62,13 @@ public class VaadinUI extends UI {
                   ".redicon .v-icon { " +
                   "     color: red; " +
                   "} " +
+                  ".gwt-FileUpload { display: none } " +
+                  ".user-photo { max-width: 230px; max-height: 300px; } " +
 
                   ".time-only .v-inline-datefield-calendarpanel-header," +
                   ".time-only .v-inline-datefield-calendarpanel-body {" +
                   "  display: none;" +
                   "}"
       );
-   }
-
-   void updateContainer(String text) {
-
-      BeanContainer<String, UserRepresentation> container = new BeanContainer<>(UserRepresentation.class);
-      container.setBeanIdResolver((BeanIdResolver<String, UserRepresentation>) UserRepresentation::getCardCode);
-      try {
-         container.addAll(
-               StringUtils.isEmpty(text)
-                     ? repo.loadAll()
-                     : Collections.singletonList(repo.load(text))
-         );
-      } catch (Exception e) {
-         Notification.show("Could not load data: " + e.getMessage(), Notification.Type.ERROR_MESSAGE);
-      }
-
-      table.setContainerDataSource(container);
    }
 }

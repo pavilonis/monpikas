@@ -1,12 +1,13 @@
-package lt.pavilonis.cmm;
+package lt.pavilonis.cmm.ui;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.TextField;
+import lt.pavilonis.cmm.UserRestRepository;
+import lt.pavilonis.cmm.representation.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
@@ -26,8 +27,8 @@ public class ControlPanel extends MHorizontalLayout {
             new MButton(FontAwesome.PLUS, "Add", event -> editPopup.edit(new UserRepresentation())),
             new MButton(FontAwesome.REMOVE, "Delete", event -> {
                if (table.getValue() != null) {
-                  Notification.show("Not implemented yet", Type.WARNING_MESSAGE);
-//                        userRepository.delete();
+                  userRepository.delete(table.getValue().getCardCode());
+                  Notification.show("Deleted", Notification.Type.TRAY_NOTIFICATION);
                }
             })
       ).withMargin(new MMarginInfo(false, false, false, true));

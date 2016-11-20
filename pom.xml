@@ -49,6 +49,12 @@
          <artifactId>jackson-datatype-jsr310</artifactId>
       </dependency>
 
+      <dependency>
+         <groupId>lt.pavilonis</groupId>
+         <artifactId>utils</artifactId>
+         <version>0.1-SNAPSHOT</version>
+      </dependency>
+
    </dependencies>
 
    <dependencyManagement>
@@ -70,6 +76,11 @@
             <artifactId>spring-boot-maven-plugin</artifactId>
          </plugin>
       </plugins>
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+         </resource>
+      </resources>
    </build>
 
    <repositories>
