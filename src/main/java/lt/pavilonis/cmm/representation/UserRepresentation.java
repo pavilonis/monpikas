@@ -1,13 +1,9 @@
 package lt.pavilonis.cmm.representation;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 
 public class UserRepresentation {
 
-   @NotNull
    private String cardCode;
 
    @NotNull
@@ -26,13 +22,8 @@ public class UserRepresentation {
 
    public UserRepresentation() {/**/}
 
-   public UserRepresentation(@JsonProperty("cardCode") String cardCode,
-                             @JsonProperty("firstName") String firstName,
-                             @JsonProperty("lastName") String lastName,
-                             @JsonProperty("group") String group,
-                             @JsonProperty("role") String role,
-                             @JsonProperty("base16photo") String base16photo,
-                             @JsonProperty("birthDate") String birthDate) {
+   public UserRepresentation(String cardCode, String firstName, String lastName, String group,
+                             String role, String base16photo, String birthDate) {
 
       this.cardCode = cardCode;
       this.firstName = firstName;
@@ -45,10 +36,6 @@ public class UserRepresentation {
 
    public String getCardCode() {
       return cardCode;
-   }
-
-   public void setCardCode(String cardCode) {
-      this.cardCode = cardCode;
    }
 
    public String getFirstName() {

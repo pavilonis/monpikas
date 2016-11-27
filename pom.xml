@@ -5,8 +5,8 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.springframework</groupId>
-   <artifactId>gs-crud-with-vaadin</artifactId>
-   <version>0.1.0</version>
+   <artifactId>cmm-user-management</artifactId>
+   <version>0.1-SNAPSHOT</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
@@ -74,6 +74,9 @@
          <plugin>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-maven-plugin</artifactId>
+            <configuration>
+               <executable>true</executable>
+            </configuration>
          </plugin>
       </plugins>
       <resources>

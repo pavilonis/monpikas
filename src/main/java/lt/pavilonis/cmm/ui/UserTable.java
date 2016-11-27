@@ -12,7 +12,7 @@ import org.vaadin.viritin.fields.MTable;
 public class UserTable extends MTable<UserRepresentation> {
 
    @Autowired
-   public UserTable(UserRestRepository userRepository, UserEditPopup editPopup) {
+   public UserTable(UserRestRepository userRepository, UserEditWindow editPopup) {
       addBeans(userRepository.loadAll());
       withProperties("cardCode", "firstName", "lastName", "role", "group");
       withColumnHeaders("Card", "First Name", "Last Name", "Role", "Group");

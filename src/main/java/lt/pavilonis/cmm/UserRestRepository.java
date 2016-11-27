@@ -2,6 +2,7 @@ package lt.pavilonis.cmm;
 
 import lt.pavilonis.TimeUtils;
 import lt.pavilonis.cmm.representation.UserRepresentation;
+import lt.pavilonis.cmm.ui.WorkTimeRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -92,5 +94,9 @@ public class UserRestRepository {
             .pathSegment(segments)
             .build()
             .toUri();
+   }
+
+   public List<WorkTimeRepresentation> loadWorkTime(String cardCode) {
+      return Collections.emptyList();
    }
 }

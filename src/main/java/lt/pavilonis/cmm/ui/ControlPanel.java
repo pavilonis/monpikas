@@ -19,7 +19,7 @@ import org.vaadin.viritin.layouts.MMarginInfo;
 public class ControlPanel extends MHorizontalLayout {
 
    @Autowired
-   public ControlPanel(UserTable table, UserRestRepository userRepository, UserEditPopup editPopup) {
+   public ControlPanel(UserTable table, UserRestRepository userRepository, UserEditWindow editPopup) {
 
       TextField textField = new MTextField();
 
