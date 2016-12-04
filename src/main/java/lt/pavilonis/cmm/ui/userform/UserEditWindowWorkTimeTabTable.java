@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.ui.userform;
 
 import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.ui.WorkTimeRepresentation;
+import lt.pavilonis.cmm.representation.WorkTimeRepresentation;
 import org.vaadin.viritin.fields.MTable;
 
 public class UserEditWindowWorkTimeTabTable extends MTable<WorkTimeRepresentation> {

@@ -19,6 +19,7 @@ public class UserTable extends MTable<UserRepresentation> {
       withColumnHeaders("Card", "First Name", "Last Name", "Role", "Group");
       setColumnCollapsingAllowed(true);
       setColumnReorderingAllowed(true);
+      setSortContainerPropertyId("lastName");
       setCacheRate(3);
       setColumnCollapsed("cardCode", true);
       withFullWidth();
@@ -28,6 +29,5 @@ public class UserTable extends MTable<UserRepresentation> {
             editPopup.edit(click.getRow());
          }
       });
-      editPopup.addSaveOrUpdateListener(() -> setBeans(userRepository.loadAll()));
    }
 }

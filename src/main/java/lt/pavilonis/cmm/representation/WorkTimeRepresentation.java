@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.representation;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
