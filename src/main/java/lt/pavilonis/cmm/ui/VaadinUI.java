@@ -1,20 +1,13 @@
 package lt.pavilonis.cmm.ui;
 
 import com.vaadin.annotations.Theme;
-import com.vaadin.data.util.AbstractBeanContainer.BeanIdResolver;
-import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.representation.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.util.StringUtils;
 import org.vaadin.viritin.layouts.MVerticalLayout;
-
-import java.util.Collections;
 
 @SpringUI
 @Theme("valo")
@@ -68,6 +61,9 @@ public class VaadinUI extends UI {
                   ".time-only .v-inline-datefield-calendarpanel-header," +
                   ".time-only .v-inline-datefield-calendarpanel-body {" +
                   "  display: none;" +
+                  "}" +
+                  ".table-border-less > div {" +
+                  "  border: 0 !important; " +
                   "}"
       );
    }

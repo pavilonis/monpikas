@@ -1,11 +1,13 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.ui.userform;
 
 import com.google.common.io.BaseEncoding;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import lt.pavilonis.cmm.converter.StringToDateConverter;
 import lt.pavilonis.cmm.representation.UserRepresentation;
@@ -21,7 +23,7 @@ import java.io.ByteArrayInputStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class UserDetailsForm extends MHorizontalLayout {
+public class UserEditWindowDetailsTab extends MHorizontalLayout {
 
    static final String CAPTION_PHOTO = "User Photo";
 
@@ -40,11 +42,13 @@ public class UserDetailsForm extends MHorizontalLayout {
    private final Consumer<UserRepresentation> saveAction;
    private final MBeanFieldGroup<UserRepresentation> binding;
 
-   public UserDetailsForm(UserRepresentation model, Consumer<UserRepresentation> saveAction) {
+   public UserEditWindowDetailsTab(UserRepresentation model, Consumer<UserRepresentation> saveAction,
+                                   Button saveButton) {
       this.model = model;
       this.saveAction = saveAction;
 
-      ImageUploader uploadReceiver = new ImageUploader(this::updateUserPhoto);
+      UserEditWindowDetailsTabImageUploader uploadReceiver =
+            new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);
       Upload imageUploader = new Upload(null, uploadReceiver);
       imageUploader.setImmediate(true);
       imageUploader.setButtonCaption("Select Image");
@@ -53,11 +57,8 @@ public class UserDetailsForm extends MHorizontalLayout {
       Stream.of(firstName, lastName, birthDate, role, group, cardCode)
             .forEach(field -> field.setWidth("250px"));
 
-
-      add(
-            new MVerticalLayout(firstName, lastName, birthDate, role, group, cardCode),
-            rightLayout.with(imageUploader)
-      );
+      MVerticalLayout fields = new MVerticalLayout(firstName, lastName, birthDate, role, group, cardCode);
+      add(fields, rightLayout.with(imageUploader));
 
       birthDate.setConverter(new StringToDateConverter());
       birthDate.setDateFormat("yyyy-MM-dd");
@@ -68,6 +69,20 @@ public class UserDetailsForm extends MHorizontalLayout {
       updateUserPhoto(imageResource(model.getBase16photo()));
 
       binding = BeanBinder.bind(model, this);
+
+      saveButton.addClickListener((click) -> {
+         if (binding.isValid()) {
+            byte[] bytes = uploadReceiver.getScaledImageBytes();
+            if (bytes != null && bytes.length > 0) {
+               this.model.setBase16photo(BaseEncoding.base16().encode(bytes));
+            }
+            saveAction.accept(this.model);
+            Notification.show("Saved", Notification.Type.HUMANIZED_MESSAGE);
+         } else {
+            Notification.show("Incorrectly filled fields", Notification.Type.WARNING_MESSAGE);
+         }
+      });
+      setHeight("481px");
    }
 
    private Resource imageResource(String base16photo) {

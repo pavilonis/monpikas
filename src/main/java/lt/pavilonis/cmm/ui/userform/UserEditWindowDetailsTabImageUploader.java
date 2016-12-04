@@ -1,23 +1,23 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.ui.userform;
 
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Upload;
 import lt.pavilonis.ImageUtils;
+import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.function.Consumer;
 
-public class ImageUploader implements Upload.Receiver, Upload.SucceededListener {
+public class UserEditWindowDetailsTabImageUploader implements Upload.Receiver, Upload.SucceededListener {
 
    Consumer<Resource> imageResourceConsumer;
    private ByteArrayOutputStream baos;
    private byte[] scaledImageBytes;
 
-   public ImageUploader(Consumer<Resource> imageResourceConsumer) {
+   public UserEditWindowDetailsTabImageUploader(Consumer<Resource> imageResourceConsumer) {
       this.imageResourceConsumer = imageResourceConsumer;
    }
 
@@ -33,16 +33,7 @@ public class ImageUploader implements Upload.Receiver, Upload.SucceededListener 
 
       StreamResource imageResource = new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
       imageResourceConsumer.accept(imageResource);
-      closeStream();
-   }
-
-   private void closeStream() {
-      try {
-         baos.flush();
-         baos.close();
-      } catch (IOException e) {
-         e.printStackTrace();
-      }
+      IOUtils.closeQuietly(baos);
    }
 
    public byte[] getScaledImageBytes() {

@@ -1,11 +1,12 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.ui.userform;
 
 import lt.pavilonis.cmm.UserRestRepository;
+import lt.pavilonis.cmm.ui.WorkTimeRepresentation;
 import org.vaadin.viritin.fields.MTable;
 
-public class UserWorkTimeTable extends MTable<WorkTimeRepresentation> {
+public class UserEditWindowWorkTimeTabTable extends MTable<WorkTimeRepresentation> {
 
-   public UserWorkTimeTable(UserRestRepository userRepository, String cardCode) {
+   public UserEditWindowWorkTimeTabTable(UserRestRepository userRepository, String cardCode) {
 
       addBeans(userRepository.loadWorkTime(cardCode));
 //      withProperties("date", "startTime", "endTime", "hourDifference");
@@ -14,8 +15,10 @@ public class UserWorkTimeTable extends MTable<WorkTimeRepresentation> {
       setColumnReorderingAllowed(true);
       setCacheRate(3);
       withFullWidth();
-      setHeight("550px");
+      setPageLength(12);
+//      setHeight("550px");
       setSelectable(true);
+      addStyleName("table-border-less");
 //      addRowClickListener(click -> {
 //         if (click.isDoubleClick()) {
 //            editPopup.edit(click.getRow());

@@ -8,6 +8,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.UserRestRepository;
 import lt.pavilonis.cmm.representation.UserRepresentation;
+import lt.pavilonis.cmm.ui.userform.UserEditWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
