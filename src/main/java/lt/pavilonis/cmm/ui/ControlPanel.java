@@ -36,15 +36,17 @@ public class ControlPanel extends MHorizontalLayout {
       @SuppressWarnings("unchecked")
       List<UserRepresentation> userData = (List<UserRepresentation>) container.getItemIds();
 
-      MHorizontalLayout controlsLayout = new MHorizontalLayout(
-            new MButton(FontAwesome.PLUS, "Add", event -> editPopup.edit(new UserRepresentation())),
-            new MButton(FontAwesome.REMOVE, "Delete", event -> {
-               if (table.getValue() != null) {
-                  userRepository.delete(table.getValue().getCardCode());
-                  Notification.show("Deleted", Notification.Type.TRAY_NOTIFICATION);
-               }
-            })
-      ).alignAll(Alignment.BOTTOM_RIGHT);
+      MButton deleteButton = new MButton(FontAwesome.REMOVE, "Delete", event -> {
+         if (table.getValue() != null) {
+            userRepository.delete(table.getValue().getCardCode());
+            Notification.show("Deleted", Notification.Type.TRAY_NOTIFICATION);
+         }
+      });
+      deleteButton.setEnabled(false);
+      MButton addButton = new MButton(FontAwesome.PLUS, "Add", event -> editPopup.edit(new UserRepresentation()));
+      addButton.setEnabled(false);
+      MHorizontalLayout controlsLayout = new MHorizontalLayout(addButton, deleteButton)
+            .alignAll(Alignment.BOTTOM_RIGHT);
 
       ComboBox groupCombo = propertyListCombo("Group", userData, UserRepresentation::getGroup);
       ComboBox roleCombo = propertyListCombo("Role", userData, UserRepresentation::getRole);

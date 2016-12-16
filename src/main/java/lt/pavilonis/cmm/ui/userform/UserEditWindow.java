@@ -50,9 +50,9 @@ public class UserEditWindow extends Window {
 
    public void edit(UserRepresentation user) {
 
-      boolean persistent = user.getCardCode() != null;
+//      boolean persistent = user.getCardCode() != null;
       sheet.removeAllComponents();
-      if (persistent) {
+//      if (persistent) {
          // Edit existing
          Consumer<UserRepresentation> updateAction = model -> {
             userRepository.update(model);
@@ -62,16 +62,16 @@ public class UserEditWindow extends Window {
          user = userRepository.load(user.getCardCode());
          sheet.addTab(new UserEditWindowWorkTimeTabTable(userRepository, user.getCardCode()), "Work Hours");
          sheet.addTab(new UserEditWindowDetailsTab(user, updateAction, saveButton), "Edit Details");
-      } else {
-         // Create new
-         Consumer<UserRepresentation> saveAction = model -> {
-            userRepository.save(model);
-            close();
-            postSaveUpdateAction.run();
-         };
-         UserEditWindowDetailsTab editForm = new UserEditWindowDetailsTab(user, saveAction, saveButton);
-         sheet.addTab(editForm);
-      }
+//      } else {
+//         // Create new
+//         Consumer<UserRepresentation> saveAction = model -> {
+//            userRepository.save(model);
+//            close();
+//            postSaveUpdateAction.run();
+//         };
+//         UserEditWindowDetailsTab editForm = new UserEditWindowDetailsTab(user, saveAction, saveButton);
+//         sheet.addTab(editForm);
+//      }
       VaadinUI.getCurrent().addWindow(this);
    }
 

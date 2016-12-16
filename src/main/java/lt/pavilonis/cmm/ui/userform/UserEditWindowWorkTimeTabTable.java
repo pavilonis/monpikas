@@ -8,10 +8,10 @@ public class UserEditWindowWorkTimeTabTable extends MTable<WorkTimeRepresentatio
 
    public UserEditWindowWorkTimeTabTable(UserRestRepository userRepository, String cardCode) {
 
+      withProperties("date", "startTime", "endTime", "hourDifference");
       addBeans(userRepository.loadWorkTime(cardCode));
-      setVisibleColumns("date", "startTime", "endTime", "hourDifference");
-//      withProperties("date", "startTime", "endTime", "hourDifference");
-      withColumnHeaders("Date", "Start Time", "End Time", "Hour Diff");
+//      setVisibleColumns("date", "startTime", "endTime", "hourDifference");
+//      withColumnHeaders("Date", "Start Time", "End Time", "Hour Diff");
       setColumnCollapsingAllowed(true);
       setColumnReorderingAllowed(true);
       setCacheRate(3);
