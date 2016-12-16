@@ -20,7 +20,6 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 @Repository
@@ -28,15 +27,13 @@ public class UserRestRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_USERS = "users";
-//   private static final String SEGMENT_GROUPS = "groups";
-//   private static final String SEGMENT_GROUP_TYPES = "/groupTypes";
+   private static final String SEGMENT_WORKTIME = "worktime";
 
    @Value("${api.path}")
    private String apiPath;
 
    @Autowired
    private RestTemplate restTemplate;
-
 
    public List<UserRepresentation> loadAll() {
       return loadAll(null, null, null);
@@ -96,17 +93,6 @@ public class UserRestRepository {
       return response.getBody();
    }
 
-//   public List<GroupRepresentation> loadGroups() {
-//      GroupRepresentation[] response = restTemplate.getForObject(uri(SEGMENT_GROUPS), GroupRepresentation[].class);
-//      return Arrays.asList(response);
-//   }
-//
-//   public List<GroupTypeRepresentation> loadGroupTypes() {
-//      GroupTypeRepresentation[] response =
-//            restTemplate.getForObject(uri(SEGMENT_GROUP_TYPES), GroupTypeRepresentation[].class);
-//      return Arrays.asList(response);
-//   }
-
    private URI uri(String... segments) {
       return uri(new LinkedMultiValueMap<>(0), segments);
    }
@@ -121,6 +107,8 @@ public class UserRestRepository {
    }
 
    public List<WorkTimeRepresentation> loadWorkTime(String cardCode) {
-      return Collections.emptyList();
+      WorkTimeRepresentation[] response = restTemplate
+            .getForObject(uri(SEGMENT_WORKTIME, cardCode), WorkTimeRepresentation[].class);
+      return Arrays.asList(response);
    }
 }

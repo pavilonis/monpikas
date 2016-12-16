@@ -39,13 +39,11 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
 
    private final UserRepresentation model;
    private Image currentUserImage;
-   private final Consumer<UserRepresentation> saveAction;
    private final MBeanFieldGroup<UserRepresentation> binding;
 
    public UserEditWindowDetailsTab(UserRepresentation model, Consumer<UserRepresentation> saveAction,
                                    Button saveButton) {
       this.model = model;
-      this.saveAction = saveAction;
 
       UserEditWindowDetailsTabImageUploader uploadReceiver =
             new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);

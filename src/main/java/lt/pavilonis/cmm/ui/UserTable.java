@@ -24,6 +24,7 @@ public class UserTable extends MTable<UserRepresentation> {
       setColumnCollapsed("cardCode", true);
       withFullWidth();
       setSelectable(true);
+      setNullSelectionAllowed(false);
       addRowClickListener(click -> {
          if (click.isDoubleClick()) {
             editPopup.edit(click.getRow());
