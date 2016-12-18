@@ -7,6 +7,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.UserRestRepository;
 import lt.pavilonis.cmm.representation.UserRepresentation;
 import lt.pavilonis.cmm.ui.VaadinUI;
@@ -21,20 +22,23 @@ import java.util.function.Consumer;
 @UIScope
 public class UserEditWindow extends Window {
 
-   private final Button saveButton = new Button("Save", FontAwesome.CHECK);
+   private final Button saveButton;
    private final TabSheet sheet = new TabSheet();
    private Runnable postSaveUpdateAction = () -> {/**/};
+   private MessageSourceAdapter messages;
 
    @Autowired
    private UserRestRepository userRepository;
 
-   public UserEditWindow() {
-      setCaption("User settings");
+   @Autowired
+   public UserEditWindow(MessageSourceAdapter messages) {
+      this.messages = messages;
+      setCaption(messages.get(this, "title"));
+      saveButton = new Button(messages.get(this, "save"), FontAwesome.CHECK);
       setResizable(false);
       setWidth("650px");
       setHeight("640px");
 
-//      sheet.setHeight(100.0f, Unit.PERCENTAGE);
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 
@@ -43,7 +47,9 @@ public class UserEditWindow extends Window {
             sheet,
             new MHorizontalLayout(
                   saveButton,
-                  new MButton(FontAwesome.REMOVE, "Close", (click) -> close())
+                  new MButton(FontAwesome.REMOVE,
+                        messages.get(this, "close"),
+                        (click) -> close())
             ).withSpacing(true)
       ));
    }
@@ -53,15 +59,21 @@ public class UserEditWindow extends Window {
 //      boolean persistent = user.getCardCode() != null;
       sheet.removeAllComponents();
 //      if (persistent) {
-         // Edit existing
-         Consumer<UserRepresentation> updateAction = model -> {
-            userRepository.update(model);
-            close();
-            postSaveUpdateAction.run();
-         };
-         user = userRepository.load(user.getCardCode());
-         sheet.addTab(new UserEditWindowWorkTimeTabTable(userRepository, user.getCardCode()), "Work Hours");
-         sheet.addTab(new UserEditWindowDetailsTab(user, updateAction, saveButton), "Edit Details");
+      // Edit existing
+      Consumer<UserRepresentation> updateAction = model -> {
+         userRepository.update(model);
+         close();
+         postSaveUpdateAction.run();
+      };
+      user = userRepository.load(user.getCardCode());
+      sheet.addTab(
+            new UserEditWindowPresenceTimeTabTable(userRepository, user.getCardCode(), messages),
+            messages.get(this, "hoursOfPresence")
+      );
+      sheet.addTab(
+            new UserEditWindowDetailsTab(user, updateAction, saveButton, messages),
+            messages.get(this, "editDetails")
+      );
 //      } else {
 //         // Create new
 //         Consumer<UserRepresentation> saveAction = model -> {

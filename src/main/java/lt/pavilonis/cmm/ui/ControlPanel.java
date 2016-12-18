@@ -8,6 +8,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.UserRestRepository;
 import lt.pavilonis.cmm.representation.UserRepresentation;
 import lt.pavilonis.cmm.ui.userform.UserEditWindow;
@@ -28,28 +29,39 @@ import java.util.stream.Collectors;
 public class ControlPanel extends MHorizontalLayout {
 
    @Autowired
-   public ControlPanel(UserTable table, UserRestRepository userRepository, UserEditWindow editPopup) {
+   public ControlPanel(UserTable table, UserRestRepository userRepository,
+                       UserEditWindow editPopup, MessageSourceAdapter messages) {
 
-      TextField textField = new MTextField("First / Last Name");
+      TextField textField = new MTextField(messages.get(this, "firstLastName"));
 
       ListContainer container = (ListContainer) table.getContainerDataSource();
       @SuppressWarnings("unchecked")
       List<UserRepresentation> userData = (List<UserRepresentation>) container.getItemIds();
 
-      MButton deleteButton = new MButton(FontAwesome.REMOVE, "Delete", event -> {
-         if (table.getValue() != null) {
-            userRepository.delete(table.getValue().getCardCode());
-            Notification.show("Deleted", Notification.Type.TRAY_NOTIFICATION);
-         }
-      });
+      MButton deleteButton = new MButton(
+            FontAwesome.REMOVE,
+            messages.get(this, "delete"),
+            event -> {
+               if (table.getValue() != null) {
+                  userRepository.delete(table.getValue().getCardCode());
+                  Notification.show(messages.get(this, "deleted"), Notification.Type.TRAY_NOTIFICATION);
+               }
+            }
+      );
       deleteButton.setEnabled(false);
-      MButton addButton = new MButton(FontAwesome.PLUS, "Add", event -> editPopup.edit(new UserRepresentation()));
-      addButton.setEnabled(false);
-      MHorizontalLayout controlsLayout = new MHorizontalLayout(addButton, deleteButton)
+      MHorizontalLayout controlsLayout = new MHorizontalLayout(deleteButton)
             .alignAll(Alignment.BOTTOM_RIGHT);
 
-      ComboBox groupCombo = propertyListCombo("Group", userData, UserRepresentation::getGroup);
-      ComboBox roleCombo = propertyListCombo("Role", userData, UserRepresentation::getRole);
+      ComboBox groupCombo = propertyListCombo(
+            messages.get(this, "group"),
+            userData,
+            UserRepresentation::getGroup
+      );
+      ComboBox roleCombo = propertyListCombo(
+            messages.get(this, "role"),
+            userData,
+            UserRepresentation::getRole
+      );
 
       Runnable containerUpdate = () -> {
          List<UserRepresentation> beans = userRepository
@@ -69,8 +81,16 @@ public class ControlPanel extends MHorizontalLayout {
             textField,
             roleCombo,
             groupCombo,
-            new MButton(FontAwesome.FILTER, "Filter", event -> containerUpdate.run()).withClickShortcut(KeyCode.ENTER),
-            new MButton(FontAwesome.REFRESH, "Reset", event -> resetFields.run()).withClickShortcut(KeyCode.ESCAPE)
+            new MButton(
+                  FontAwesome.FILTER,
+                  messages.get(this, "filter"),
+                  event -> containerUpdate.run()
+            ).withClickShortcut(KeyCode.ENTER),
+            new MButton(
+                  FontAwesome.REFRESH,
+                  messages.get(this, "reset"),
+                  event -> resetFields.run()
+            ).withClickShortcut(KeyCode.ESCAPE)
       ).alignAll(Alignment.BOTTOM_LEFT);
 
       addComponents(filterLayout, controlsLayout);

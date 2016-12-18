@@ -9,6 +9,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.converter.StringToDateConverter;
 import lt.pavilonis.cmm.representation.UserRepresentation;
 import org.apache.commons.lang3.StringUtils;
@@ -25,31 +26,39 @@ import java.util.stream.Stream;
 
 public class UserEditWindowDetailsTab extends MHorizontalLayout {
 
-   static final String CAPTION_PHOTO = "User Photo";
-
-   private final MTextField cardCode = new MTextField("Card Code");
-   private final MTextField firstName = new MTextField("First name");
-   private final MTextField lastName = new MTextField("Last name");
-   private final MTextField group = new MTextField("Group");
-   private final MTextField role = new MTextField("Role");
-   private final MDateField birthDate = new MDateField("Birth Date");
+   private final MTextField cardCode;
+   private final MTextField firstName;
+   private final MTextField lastName;
+   private final MTextField group;
+   private final MTextField role;
+   private final MDateField birthDate;
    private final MVerticalLayout rightLayout = new MVerticalLayout()
          .withSpacing(true)
          .alignAll(Alignment.MIDDLE_LEFT);
 
    private final UserRepresentation model;
+   private final MessageSourceAdapter messages;
    private Image currentUserImage;
    private final MBeanFieldGroup<UserRepresentation> binding;
 
-   public UserEditWindowDetailsTab(UserRepresentation model, Consumer<UserRepresentation> saveAction,
-                                   Button saveButton) {
+   public UserEditWindowDetailsTab(UserRepresentation model,
+                                   Consumer<UserRepresentation> saveAction,
+                                   Button saveButton,
+                                   MessageSourceAdapter messages) {
       this.model = model;
+      this.messages  = messages;
+      this.cardCode = new MTextField(messages.get(this, "cardCode"));
+      this.firstName = new MTextField(messages.get(this, "firstName"));
+      this.lastName = new MTextField(messages.get(this, "lastName"));
+      this.group = new MTextField(messages.get(this, "group"));
+      this.role = new MTextField(messages.get(this, "role"));
+      this.birthDate = new MDateField(messages.get(this, "birthDate"));
 
       UserEditWindowDetailsTabImageUploader uploadReceiver =
             new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);
       Upload imageUploader = new Upload(null, uploadReceiver);
       imageUploader.setImmediate(true);
-      imageUploader.setButtonCaption("Select Image");
+      imageUploader.setButtonCaption(messages.get(this, "selectImage"));
       imageUploader.addSucceededListener(uploadReceiver);
 
       Stream.of(firstName, lastName, birthDate, role, group, cardCode)
@@ -75,9 +84,9 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
                this.model.setBase16photo(BaseEncoding.base16().encode(bytes));
             }
             saveAction.accept(this.model);
-            Notification.show("Saved", Notification.Type.HUMANIZED_MESSAGE);
+            Notification.show(messages.get(this, "saved"), Notification.Type.HUMANIZED_MESSAGE);
          } else {
-            Notification.show("Incorrectly filled fields", Notification.Type.WARNING_MESSAGE);
+            Notification.show(messages.get(this, "incorrectlyFilledFields"), Notification.Type.WARNING_MESSAGE);
          }
       });
       setHeight("481px");
@@ -93,7 +102,7 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
       if (currentUserImage != null)
          rightLayout.removeComponent(currentUserImage);
 
-      Image image = new Image(CAPTION_PHOTO, imageResource);
+      Image image = new Image(messages.get(this, "userPhoto"), imageResource);
       image.addStyleName("user-photo");
       rightLayout.addComponentAsFirst(currentUserImage = image);
    }

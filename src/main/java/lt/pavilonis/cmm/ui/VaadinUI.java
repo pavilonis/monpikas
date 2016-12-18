@@ -14,9 +14,6 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 public class VaadinUI extends UI {
 
    @Autowired
-   private UserRestRepository repo;
-
-   @Autowired
    private UserTable table;
 
    @Autowired

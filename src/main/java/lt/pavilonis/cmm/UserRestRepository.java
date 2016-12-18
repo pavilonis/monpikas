@@ -2,7 +2,7 @@ package lt.pavilonis.cmm;
 
 import lt.pavilonis.TimeUtils;
 import lt.pavilonis.cmm.representation.UserRepresentation;
-import lt.pavilonis.cmm.representation.WorkTimeRepresentation;
+import lt.pavilonis.cmm.representation.PresenceTimeRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +27,7 @@ public class UserRestRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_USERS = "users";
-   private static final String SEGMENT_WORKTIME = "worktime";
+   private static final String SEGMENT_PRESENCE = "presence";
 
    @Value("${api.path}")
    private String apiPath;
@@ -69,16 +69,6 @@ public class UserRestRepository {
       return result;
    }
 
-   public UserRepresentation save(UserRepresentation userRepresentation) {
-      LocalDateTime opStart = LocalDateTime.now();
-
-      UserRepresentation response = restTemplate
-            .postForObject(uri(SEGMENT_USERS), userRepresentation, UserRepresentation.class);
-
-      LOG.info("User saved [duration={}]", TimeUtils.duration(opStart));
-      return response;
-   }
-
    public void delete(String cardCode) {
       restTemplate.delete(uri(SEGMENT_USERS, cardCode));
    }
@@ -106,9 +96,9 @@ public class UserRestRepository {
             .toUri();
    }
 
-   public List<WorkTimeRepresentation> loadWorkTime(String cardCode) {
-      WorkTimeRepresentation[] response = restTemplate
-            .getForObject(uri(SEGMENT_WORKTIME, cardCode), WorkTimeRepresentation[].class);
+   public List<PresenceTimeRepresentation> loadPresenceTime(String cardCode) {
+      PresenceTimeRepresentation[] response = restTemplate
+            .getForObject(uri(SEGMENT_PRESENCE, cardCode), PresenceTimeRepresentation[].class);
       return Arrays.asList(response);
    }
 }

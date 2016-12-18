@@ -5,16 +5,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class WorkTimeRepresentation {
+public class PresenceTimeRepresentation {
    private final LocalDate date;
    private final LocalTime startTime;
    private final LocalTime endTime;
    private final double hourDifference;
 
-   public WorkTimeRepresentation(@JsonProperty("date") LocalDate date,
-                                 @JsonProperty("startTime") LocalTime startTime,
-                                 @JsonProperty("endTime") LocalTime endTime,
-                                 @JsonProperty("hourDifference") double hourDifference) {
+   public PresenceTimeRepresentation(@JsonProperty("date") LocalDate date,
+                                     @JsonProperty("startTime") LocalTime startTime,
+                                     @JsonProperty("endTime") LocalTime endTime,
+                                     @JsonProperty("hourDifference") double hourDifference) {
       this.date = date;
       this.startTime = startTime;
       this.endTime = endTime;

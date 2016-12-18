@@ -1,15 +1,24 @@
 package lt.pavilonis.cmm.ui.userform;
 
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.representation.WorkTimeRepresentation;
+import lt.pavilonis.cmm.representation.PresenceTimeRepresentation;
 import org.vaadin.viritin.fields.MTable;
 
-public class UserEditWindowWorkTimeTabTable extends MTable<WorkTimeRepresentation> {
+public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {
 
-   public UserEditWindowWorkTimeTabTable(UserRestRepository userRepository, String cardCode) {
+   public UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository,
+                                             String cardCode,
+                                             MessageSourceAdapter messages) {
 
       withProperties("date", "startTime", "endTime", "hourDifference");
-      addBeans(userRepository.loadWorkTime(cardCode));
+      addBeans(userRepository.loadPresenceTime(cardCode));
+      setColumnHeaders(
+            messages.get(this, "date"),
+            messages.get(this, "startTime"),
+            messages.get(this, "endTime"),
+            messages.get(this, "hourDifference")
+      );
 //      setVisibleColumns("date", "startTime", "endTime", "hourDifference");
 //      withColumnHeaders("Date", "Start Time", "End Time", "Hour Diff");
       setColumnCollapsingAllowed(true);
