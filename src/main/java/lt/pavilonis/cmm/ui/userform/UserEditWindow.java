@@ -37,7 +37,7 @@ public class UserEditWindow extends Window {
       saveButton = new Button(messages.get(this, "save"), FontAwesome.CHECK);
       setResizable(false);
       setWidth("650px");
-      setHeight("640px");
+      setHeight("650px");
 
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);

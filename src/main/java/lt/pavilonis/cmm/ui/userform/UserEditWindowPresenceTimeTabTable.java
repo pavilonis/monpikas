@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.ui.userform;
 
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.UserRestRepository;
+import lt.pavilonis.cmm.converter.LocalTimeConverter;
 import lt.pavilonis.cmm.representation.PresenceTimeRepresentation;
 import org.vaadin.viritin.fields.MTable;
 
@@ -19,21 +20,18 @@ public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepre
             messages.get(this, "endTime"),
             messages.get(this, "hourDifference")
       );
-//      setVisibleColumns("date", "startTime", "endTime", "hourDifference");
-//      withColumnHeaders("Date", "Start Time", "End Time", "Hour Diff");
+
       setColumnCollapsingAllowed(true);
       setColumnReorderingAllowed(true);
       setCacheRate(3);
       withFullWidth();
-      setPageLength(12);
-//      setHeight("550px");
+      setHeight("481px");
       setSelectable(true);
       addStyleName("table-border-less");
       setNullSelectionAllowed(false);
-//      addRowClickListener(click -> {
-//         if (click.isDoubleClick()) {
-//            editPopup.edit(click.getRow());
-//         }
-//      });
+
+      LocalTimeConverter timeConverter = new LocalTimeConverter();
+      setConverter("startTime", timeConverter);
+      setConverter("endTime", timeConverter);
    }
 }
