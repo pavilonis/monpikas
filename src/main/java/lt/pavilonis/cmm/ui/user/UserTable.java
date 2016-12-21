@@ -1,11 +1,11 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.ui.user;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.representation.UserRepresentation;
-import lt.pavilonis.cmm.ui.userform.UserEditWindow;
+import lt.pavilonis.cmm.repository.UserRestRepository;
+import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 

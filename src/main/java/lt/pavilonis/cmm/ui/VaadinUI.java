@@ -5,25 +5,20 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
-import lt.pavilonis.cmm.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @SpringUI
 @Theme("valo")
 public class VaadinUI extends UI {
 
    @Autowired
-   private UserTable table;
-
-   @Autowired
-   private ControlPanel controlPanel;
+   private MainLayout mainLayout;
 
    @Override
    protected void init(VaadinRequest request) {
       addStyles();
-
-      setContent(new MVerticalLayout(controlPanel, table).withFullWidth().expand(table));
+      setContent(mainLayout);
+//      setContent(new MVerticalLayout(controlPanel, table).withFullWidth().expand(table));
    }
 
    private void addStyles() {

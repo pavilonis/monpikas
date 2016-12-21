@@ -1,9 +1,9 @@
-package lt.pavilonis.cmm.ui.userform;
+package lt.pavilonis.cmm.ui.user.form;
 
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.UserRestRepository;
+import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.converter.LocalTimeConverter;
-import lt.pavilonis.cmm.representation.PresenceTimeRepresentation;
+import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import org.vaadin.viritin.fields.MTable;
 
 public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {

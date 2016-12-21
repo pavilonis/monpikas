@@ -1,8 +1,8 @@
-package lt.pavilonis.cmm;
+package lt.pavilonis.cmm.repository;
 
 import lt.pavilonis.TimeUtils;
-import lt.pavilonis.cmm.representation.UserRepresentation;
-import lt.pavilonis.cmm.representation.PresenceTimeRepresentation;
+import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

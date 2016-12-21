@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.representation;
+package lt.pavilonis.cmm.domain;
 
 import javax.validation.constraints.NotNull;
 

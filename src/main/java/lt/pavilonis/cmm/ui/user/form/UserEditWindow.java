@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui.userform;
+package lt.pavilonis.cmm.ui.user.form;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
@@ -8,8 +8,8 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.representation.UserRepresentation;
+import lt.pavilonis.cmm.repository.UserRestRepository;
+import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.ui.VaadinUI;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;

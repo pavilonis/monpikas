@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui.userform;
+package lt.pavilonis.cmm.ui.user.form;
 
 import com.google.common.io.BaseEncoding;
 import com.vaadin.server.Resource;
@@ -11,7 +11,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.converter.StringToDateConverter;
-import lt.pavilonis.cmm.representation.UserRepresentation;
+import lt.pavilonis.cmm.domain.UserRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.vaadin.viritin.BeanBinder;
 import org.vaadin.viritin.MBeanFieldGroup;

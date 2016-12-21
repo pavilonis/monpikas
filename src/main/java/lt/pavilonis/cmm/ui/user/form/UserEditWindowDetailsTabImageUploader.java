@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui.userform;
+package lt.pavilonis.cmm.ui.user.form;
 
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;

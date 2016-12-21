@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui;
+package lt.pavilonis.cmm.ui.user;
 
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.FontAwesome;
@@ -9,9 +9,9 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.UserRestRepository;
-import lt.pavilonis.cmm.representation.UserRepresentation;
-import lt.pavilonis.cmm.ui.userform.UserEditWindow;
+import lt.pavilonis.cmm.repository.UserRestRepository;
+import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.ListContainer;
@@ -26,11 +26,11 @@ import java.util.stream.Collectors;
 
 @SpringComponent
 @UIScope
-public class ControlPanel extends MHorizontalLayout {
+public class UserListControlPanel extends MHorizontalLayout {
 
    @Autowired
-   public ControlPanel(UserTable table, UserRestRepository userRepository,
-                       UserEditWindow editPopup, MessageSourceAdapter messages) {
+   public UserListControlPanel(UserTable table, UserRestRepository userRepository,
+                               UserEditWindow editPopup, MessageSourceAdapter messages) {
 
       TextField textField = new MTextField(messages.get(this, "firstLastName"));
 
