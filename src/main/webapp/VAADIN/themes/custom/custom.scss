@@ -1,0 +1,57 @@
+@import "../valo/valo.scss";
+
+@mixin custom {
+  @include valo;
+  //.v-app {
+  //  background-color: black;
+  //}
+  //.v-button {
+  //  background-image: none;
+  //  background-color: green;
+  //}
+
+  .v-app, .v-app-loading {
+    font-family: sans-serif;
+    font-weight: 500
+  }
+
+   .v-margin-top {
+    padding-top: 20px
+  }
+
+   .v-margin-right {
+    padding-right: 20px
+  }
+
+   .v-margin-bottom {
+    padding-bottom: 20px
+  }
+
+   .v-margin-left {
+    padding-left: 20px
+  }
+  .redicon .v-icon {
+    color: red;
+  }
+  .gwt-FileUpload {
+    display: none
+  }
+  .user-photo {
+    max-width: 230px;
+    max-height: 300px;
+  }
+
+  .time-only .v-inline-datefield-calendarpanel-header,
+  .time-only .v-inline-datefield-calendarpanel-body {
+    display: none;
+  }
+  .table-border-less > div {
+    border: 0 !important;
+  }
+
+  .text-align-left {
+    text-align: left;
+  }
+}
+
+@include custom;

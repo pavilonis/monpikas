@@ -8,7 +8,7 @@ import com.vaadin.ui.UI;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringUI
-@Theme("valo")
+@Theme("custom")
 public class VaadinUI extends UI {
 
    @Autowired
@@ -16,47 +16,6 @@ public class VaadinUI extends UI {
 
    @Override
    protected void init(VaadinRequest request) {
-      addStyles();
       setContent(mainLayout);
-//      setContent(new MVerticalLayout(controlPanel, table).withFullWidth().expand(table));
-   }
-
-   private void addStyles() {
-      Page.Styles styles = Page.getCurrent().getStyles();
-      styles.add(
-            ".valo.v-app, .valo.v-app-loading { " +
-                  "  font-family: sans-serif; " +
-                  "  font-weight: 500 " +
-                  "} " +
-
-                  ".valo .v-margin-top { " +
-                  "  padding-top: 20px " +
-                  "} " +
-
-                  ".valo .v-margin-right { " +
-                  "  padding-right: 20px " +
-                  "} " +
-
-                  ".valo .v-margin-bottom { " +
-                  "  padding-bottom: 20px " +
-                  "} " +
-
-                  ".valo .v-margin-left { " +
-                  "  padding-left: 20px " +
-                  "} " +
-                  ".redicon .v-icon { " +
-                  "     color: red; " +
-                  "} " +
-                  ".gwt-FileUpload { display: none } " +
-                  ".user-photo { max-width: 230px; max-height: 300px; } " +
-
-                  ".time-only .v-inline-datefield-calendarpanel-header," +
-                  ".time-only .v-inline-datefield-calendarpanel-body {" +
-                  "  display: none;" +
-                  "}" +
-                  ".table-border-less > div {" +
-                  "  border: 0 !important; " +
-                  "}"
-      );
    }
 }

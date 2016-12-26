@@ -20,10 +20,13 @@ public class MainLayout extends MHorizontalLayout {
    public MainLayout(List<MenuItem> items) {
       setSizeFull();
       MVerticalLayout leftMenuBar = new MVerticalLayout()
-            .withWidth("220px")
+            .withWidth("180px")
             .alignAll(Alignment.TOP_CENTER);
 
-      items.forEach(leftMenuBar::add);
+      items
+            .stream()
+            .sorted((i1, i2) -> i1.getCaption().compareTo(i2.getCaption()))
+            .forEach(leftMenuBar::add);
 
       MVerticalLayout stage = new MVerticalLayout(
             new MLabel("<h1>V.L.A.D.I.K.</h1>")

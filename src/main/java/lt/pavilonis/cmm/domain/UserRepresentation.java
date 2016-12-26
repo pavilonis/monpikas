@@ -85,4 +85,8 @@ public class UserRepresentation {
    public void setBase16photo(String base16photo) {
       this.base16photo = base16photo;
    }
+
+   public String getName() {
+      return getFirstName() + " " + getLastName();
+   }
 }

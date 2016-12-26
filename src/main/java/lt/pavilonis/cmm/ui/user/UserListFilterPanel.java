@@ -6,11 +6,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +25,11 @@ import java.util.stream.Collectors;
 
 @SpringComponent
 @UIScope
-public class UserListControlPanel extends MHorizontalLayout {
+public class UserListFilterPanel extends MHorizontalLayout {
 
    @Autowired
-   public UserListControlPanel(UserTable table, UserRestRepository userRepository,
-                               UserEditWindow editPopup, MessageSourceAdapter messages) {
+   public UserListFilterPanel(UserTable table, UserRestRepository userRepository,
+                              UserEditWindow editPopup, MessageSourceAdapter messages) {
 
       TextField textField = new MTextField(messages.get(this, "firstLastName"));
 
@@ -38,19 +37,19 @@ public class UserListControlPanel extends MHorizontalLayout {
       @SuppressWarnings("unchecked")
       List<UserRepresentation> userData = (List<UserRepresentation>) container.getItemIds();
 
-      MButton deleteButton = new MButton(
-            FontAwesome.REMOVE,
-            messages.get(this, "delete"),
-            event -> {
-               if (table.getValue() != null) {
-                  userRepository.delete(table.getValue().getCardCode());
-                  Notification.show(messages.get(this, "deleted"), Notification.Type.TRAY_NOTIFICATION);
-               }
-            }
-      );
-      deleteButton.setEnabled(false);
-      MHorizontalLayout controlsLayout = new MHorizontalLayout(deleteButton)
-            .alignAll(Alignment.BOTTOM_RIGHT);
+//      MButton deleteButton = new MButton(
+//            FontAwesome.REMOVE,
+//            messages.get(this, "delete"),
+//            event -> {
+//               if (table.getValue() != null) {
+//                  userRepository.delete(table.getValue().getCardCode());
+//                  Notification.show(messages.get(this, "deleted"), Notification.Type.TRAY_NOTIFICATION);
+//               }
+//            }
+//      );
+//      deleteButton.setEnabled(false);
+//      MHorizontalLayout controlsLayout = new MHorizontalLayout(deleteButton)
+//            .alignAll(Alignment.BOTTOM_RIGHT);
 
       ComboBox groupCombo = propertyListCombo(
             messages.get(this, "group"),
@@ -77,7 +76,7 @@ public class UserListControlPanel extends MHorizontalLayout {
          containerUpdate.run();
       };
 
-      MHorizontalLayout filterLayout = new MHorizontalLayout(
+      addComponents(
             textField,
             roleCombo,
             groupCombo,
@@ -91,13 +90,8 @@ public class UserListControlPanel extends MHorizontalLayout {
                   messages.get(this, "reset"),
                   event -> resetFields.run()
             ).withClickShortcut(KeyCode.ESCAPE)
-      ).alignAll(Alignment.BOTTOM_LEFT);
-
-      addComponents(filterLayout, controlsLayout);
-
-      withAlign(controlsLayout, Alignment.BOTTOM_RIGHT);
-      withFullWidth();
-
+      );
+      alignAll(Alignment.BOTTOM_LEFT);
       editPopup.addSaveOrUpdateListener(containerUpdate);
    }
 
