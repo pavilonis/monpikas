@@ -1,11 +1,10 @@
-package lt.pavilonis.cmm.ui.menu;
+package lt.pavilonis.cmm.ui.user;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.Application;
-import lt.pavilonis.cmm.ui.user.UserListControlPanel;
-import lt.pavilonis.cmm.ui.user.UserTable;
+import lt.pavilonis.cmm.ui.MenuItem;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 @SpringComponent
@@ -17,7 +16,7 @@ public class MenuItemUsers extends MenuItem {
 
    public MenuItemUsers() {
       setCaption("Users");
-      setIcon(FontAwesome.USERS);
+      setIcon(FontAwesome.USER);
    }
 
    @Override

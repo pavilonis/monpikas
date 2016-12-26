@@ -4,7 +4,6 @@ import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
-import lt.pavilonis.cmm.ui.menu.MenuItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.label.MLabel;

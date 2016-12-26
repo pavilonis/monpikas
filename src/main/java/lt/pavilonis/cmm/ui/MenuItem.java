@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.ui.menu;
+package lt.pavilonis.cmm.ui;
 
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;

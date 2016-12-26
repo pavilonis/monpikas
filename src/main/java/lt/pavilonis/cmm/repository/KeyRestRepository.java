@@ -13,18 +13,20 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-import static java.util.Objects.isNull;
+import static com.google.common.collect.Lists.newArrayList;
 
 @Repository
 public class KeyRestRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(KeyRestRepository.class);
-   private static final String SEGMENT_KEYS = "users";
+   private static final String SEGMENT_KEYS = "keys";
+   private static final String SEGMENT_LOG = "log";
 
    @Value("${api.path}")
    private String apiPath;
@@ -32,25 +34,31 @@ public class KeyRestRepository {
    @Autowired
    private RestTemplate restTemplate;
 
-   public List<KeyRepresentation> load(Long scannerId, String keyNumber) {
+   public List<KeyRepresentation> load(Long scannerId, String keyNumber,
+                                       boolean isLog, LocalDate periodStart, LocalDate periodEnd) {
       LocalDateTime opStart = LocalDateTime.now();
 
-      MultiValueMap<String, String> params = new LinkedMultiValueMap<>(1);
+      List<Object> segments = newArrayList(SEGMENT_KEYS);
+      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+      if (scannerId != null) {
+         params.add("scannerId", scannerId.toString());
+      }
       if (StringUtils.isNotBlank(keyNumber)) {
          params.add("keyNumber", keyNumber);
       }
+      if (isLog) {
+         segments.add(SEGMENT_LOG);
+         params.add("periodStart", DateTimeFormatter.ISO_DATE.format(periodStart));
+         params.add("periodEnd", DateTimeFormatter.ISO_DATE.format(periodEnd));
+      }
 
-      URI uri = isNull(scannerId)
-            ? UriUtils.uri(apiPath, params, SEGMENT_KEYS)
-            : UriUtils.uri(apiPath, params, SEGMENT_KEYS, scannerId);
 
-      KeyRepresentation[] response = restTemplate.getForObject(uri, KeyRepresentation[].class);
+      KeyRepresentation[] response = restTemplate.getForObject(
+            UriUtils.uri(apiPath, params, segments.toArray()),
+            KeyRepresentation[].class
+      );
 
       LOG.info("Keys loaded [number={}, duration={}]", response.length, TimeUtils.duration(opStart));
       return Arrays.asList(response);
-   }
-
-   public List<KeyRepresentation> loadAll() {
-      return load(null, null);
    }
 }
