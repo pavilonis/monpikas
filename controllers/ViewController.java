@@ -283,13 +283,20 @@ public class ViewController {
             if (valid(cardCode, form.getDate(), type)) {
                Pupil pupil = pupilService.find(cardCode).get();
 
-               BigDecimal price = pupil.meals.stream()
+               BigDecimal price = pupil.getMeals().stream()
                      .filter(portion -> portion.getType() == type)
                      .findFirst()
                      .get()
                      .getPrice();
 
-               MealEventLog log = eventLogs.save(pupil.cardCode, pupil.name(), pupil.grade, price, type, pupil.type);
+               MealEventLog log = eventLogs.save(
+                     pupil.getCardCode(),
+                     pupil.name(),
+                     pupil.getGrade(),
+                     price,
+                     type,
+                     pupil.getType()
+               );
                listView.getContainer().addBean(log);
                form.close();
                show("Išsaugota", TRAY_NOTIFICATION);

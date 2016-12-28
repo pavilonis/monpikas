@@ -22,7 +22,7 @@ public class MealEventManualCreateForm extends Window {
 
    private final Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
    private final Button close = new Button("Uždaryti", FontAwesome.TIMES);
-   private final BeanContainer<Long, Pupil> container = new BeanContainer<>(Pupil.class);
+   private final BeanContainer<String, Pupil> container = new BeanContainer<>(Pupil.class);
    private final Table table = new PupilsTable("Pasirinkite mokinį", container);
    private final DateField dateField = new DateField("Pasirinkite data: ", new Date());
    private final ComboBox eventTypeCombo = new MealTypeComboBox();
@@ -60,7 +60,7 @@ public class MealEventManualCreateForm extends Window {
       close.addClickListener(listener);
    }
 
-   public BeanContainer<Long, Pupil> getContainer() {
+   public BeanContainer<String, Pupil> getContainer() {
       return container;
    }
 
@@ -77,9 +77,9 @@ public class MealEventManualCreateForm extends Window {
    }
 
    private class PupilsTable extends Table {
-      public PupilsTable(String caption, BeanContainer<Long, Pupil> container) {
+      public PupilsTable(String caption, BeanContainer<String, Pupil> container) {
          super(caption, container);
-         container.setBeanIdProperty("cardId");
+         container.setBeanIdProperty("cardCode");
          setSizeFull();
          setVisibleColumns(new String[]{"firstName", "lastName", "grade"});
          setColumnHeaders("Vardas", "Pavardė", "Klasė");

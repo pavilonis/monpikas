@@ -5,7 +5,6 @@ import lt.pavilonis.monpikas.server.domain.Pupil;
 import lt.pavilonis.monpikas.server.domain.PupilRepresentation;
 import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
 import lt.pavilonis.monpikas.server.repositories.MealRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
 import lt.pavilonis.monpikas.server.service.PupilService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,22 +50,22 @@ public class MealRestController {
 
       Pupil dto = pupilDto.get();
 
-      switch (dto.meals.size()) {
+      switch (dto.getMeals().size()) {
 
          case 0:
             LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", cardCode);
-            PupilRepresentation clientDto = new PupilRepresentation(cardCode, dto.name(), null, dto.grade, null);
+            PupilRepresentation clientDto = new PupilRepresentation(cardCode, dto.name(), null, dto.getGrade(), null);
             return new ResponseEntity<>(clientDto, HttpStatus.FORBIDDEN);
 
          case 1:
-            return getMealResponse(dto, dto.meals.iterator().next());
+            return getMealResponse(dto, dto.getMeals().iterator().next());
 
          default:
             LocalTime now = now();
             Optional<Meal> meal = mealRepository.loadAll().stream()
                   .filter(mt -> mt.getStartTime().isBefore(now) && mt.getEndTime().isAfter(now))
                   .filter(mealByTime ->
-                        dto.meals.stream().anyMatch(pupilMeal -> pupilMeal.getType() == mealByTime.getType()))
+                        dto.getMeals().stream().anyMatch(pupilMeal -> pupilMeal.getType() == mealByTime.getType()))
                   .findAny();
 
             return meal.isPresent()
@@ -75,24 +74,24 @@ public class MealRestController {
       }
    }
 
-   private ResponseEntity<PupilRepresentation> getMealResponse(Pupil dto, Meal meal) {
+   private ResponseEntity<PupilRepresentation> getMealResponse(Pupil pupil, Meal meal) {
 
-      if (pupils.canHaveMeal(dto.cardCode, new Date(), meal.getType())) {
+      if (pupils.canHaveMeal(pupil.getCardCode(), new Date(), meal.getType())) {
 
-         eventLogs.save(dto.cardCode, dto.name(), dto.grade, meal.getPrice(), meal.getType(), dto.type);
+         eventLogs.save(pupil.getCardCode(), pupil.name(), pupil.getGrade(), meal.getPrice(), meal.getType(), pupil.getType());
 
          LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
-               dto.name(), dto.cardCode, meal.getType().name(), meal.getPrice());
+               pupil.name(), pupil.getCardCode(), meal.getType().name(), meal.getPrice());
 
          return new ResponseEntity<>(
-               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.type),
+               new PupilRepresentation(pupil.getCardCode(), pupil.name(), meal, pupil.getGrade(), pupil.getType()),
                HttpStatus.ACCEPTED
          );
 
       } else {
-         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", dto.name(), dto.cardCode);
+         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", pupil.name(), pupil.getCardCode());
          return new ResponseEntity<>(
-               new PupilRepresentation(dto.cardCode, dto.name(), meal, dto.grade, dto.type),
+               new PupilRepresentation(pupil.getCardCode(), pupil.name(), meal, pupil.getGrade(), pupil.getType()),
                HttpStatus.ALREADY_REPORTED
          );
       }

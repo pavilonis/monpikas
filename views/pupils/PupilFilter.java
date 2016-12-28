@@ -27,18 +27,18 @@ public class PupilFilter implements Filter {
       Pupil pupil = ((BeanItem<Pupil>) item).getBean();
 
       Collection<Object> pupilData = asList(
-            pupil.firstName,
-            pupil.lastName,
-            pupil.birthDate == null ? "" : pupil.birthDate.toString(),
-            pupil.grade,
-            pupil.cardCode
+            pupil.getFirstName(),
+            pupil.getLastName(),
+            pupil.getBirthDate() == null ? "" : pupil.getBirthDate().toString(),
+            pupil.getGrade(),
+            pupil.getCardCode()
       );
 
       return pupilData.stream()
 
             .anyMatch(element -> containsIgnoreCase(String.valueOf(element), text))
 
-            && mealType == null || pupil.meals.stream().anyMatch(meal -> meal.getType() == mealType);
+            && mealType == null || pupil.getMeals().stream().anyMatch(meal -> meal.getType() == mealType);
    }
 
    @Override
