@@ -1,8 +1,8 @@
 package lt.pavilonis.cmm.repository;
 
 import lt.pavilonis.TimeUtils;
-import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
+import lt.pavilonis.cmm.domain.UserRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,9 +63,10 @@ public class UserRestRepository {
 
       LocalDateTime opStart = LocalDateTime.now();
 
-      UserRepresentation result = restTemplate.getForObject(uri(SEGMENT_USERS, cardCode), UserRepresentation.class);
-      LOG.info("User loaded by cardCode [duration={}]", TimeUtils.duration(opStart));
+      UserRepresentation result = restTemplate
+            .getForObject(uri(SEGMENT_USERS, cardCode), UserRepresentation.class);
 
+      LOG.info("User loaded [cardCode={}, duration={}]", cardCode, TimeUtils.duration(opStart));
       return result;
    }
 

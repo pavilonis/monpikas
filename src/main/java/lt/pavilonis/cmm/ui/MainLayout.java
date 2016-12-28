@@ -29,8 +29,8 @@ public class MainLayout extends MHorizontalLayout {
             .forEach(leftMenuBar::add);
 
       MVerticalLayout stage = new MVerticalLayout(
-            new MLabel("<h1>V.L.A.D.I.K.</h1>")
-                  .withSize(MSize.size("200px", "200px"))
+            new MLabel("<h2>V.O.B.L.A.</h2><h3>Vidinė Organizacijos Bendra Laiko Apskaita<h3>")
+                  .withSize(MSize.size("500px", "200px"))
                   .withContentMode(ContentMode.HTML)
       ).withSize(MSize.FULL_SIZE)
             .alignAll(Alignment.MIDDLE_CENTER)
