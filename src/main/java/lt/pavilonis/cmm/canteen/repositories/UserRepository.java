@@ -21,8 +21,9 @@ import static com.google.common.collect.Lists.newArrayList;
 public class UserRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRepository.class.getSimpleName());
+   private static final String SEGMENT_USERS = "users";
 
-   @Value(("${api.path.users}"))
+   @Value("${api.path}")
    private String apiUsersPath;
 
    @Autowired
@@ -60,6 +61,7 @@ public class UserRepository {
 
    private URI uri(String... segments) {
       return UriComponentsBuilder.fromUriString(apiUsersPath)
+            .pathSegment(SEGMENT_USERS)
             .pathSegment(segments)
             .build()
             .toUri();

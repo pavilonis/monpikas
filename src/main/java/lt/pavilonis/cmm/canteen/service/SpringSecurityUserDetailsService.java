@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.HashSet;
 import java.util.Set;
 
-@Service
 public class SpringSecurityUserDetailsService implements UserDetailsService {
 
    private static final ResultSetExtractor<SpringSecurityUser> RESULT_SET_EXTRACTOR = rs -> {

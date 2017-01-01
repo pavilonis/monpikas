@@ -1,10 +1,10 @@
-package lt.pavilonis.common;
+package lt.pavilonis.cmm.common;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
-import lt.pavilonis.cmm.Application;
+import lt.pavilonis.cmm.config.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
@@ -27,8 +27,8 @@ public abstract class AbstractController implements ListController {
    @Override
    public Layout getListLayout() {
 
-      Component filterPanel = Application.context.getBean(getFilterPanelClass());
-      Component table = Application.context.getBean(getTableClass());
+      Component filterPanel = App.context.getBean(getFilterPanelClass());
+      Component table = App.context.getBean(getTableClass());
 
       return new MVerticalLayout(filterPanel, table)
             .expand(table);

@@ -7,7 +7,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
-import lt.pavilonis.common.ListController;
+import lt.pavilonis.cmm.common.ListController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.label.MLabel;

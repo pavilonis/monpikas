@@ -1,4 +1,4 @@
-package lt.pavilonis.common;
+package lt.pavilonis.cmm.common;
 
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Layout;

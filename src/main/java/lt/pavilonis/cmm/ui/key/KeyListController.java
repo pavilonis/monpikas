@@ -4,7 +4,7 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
-import lt.pavilonis.common.AbstractController;
+import lt.pavilonis.cmm.common.AbstractController;
 
 @SpringComponent
 @UIScope
