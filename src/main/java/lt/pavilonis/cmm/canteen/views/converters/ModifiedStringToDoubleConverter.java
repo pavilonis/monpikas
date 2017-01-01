@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.converters;
+package lt.pavilonis.cmm.canteen.views.converters;
 
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 

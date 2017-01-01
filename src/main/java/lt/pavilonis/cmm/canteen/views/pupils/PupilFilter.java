@@ -1,10 +1,10 @@
-package lt.pavilonis.monpikas.server.views.pupils;
+package lt.pavilonis.cmm.canteen.views.pupils;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
 
 import java.util.Collection;
 

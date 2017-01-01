@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.domain;
+package lt.pavilonis.cmm.canteen.domain;
 
 import java.time.LocalDate;
 import java.util.Set;

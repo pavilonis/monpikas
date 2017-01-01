@@ -14,7 +14,7 @@ import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
-public class KeyTable extends MTable<KeyRepresentation> {
+class KeyTable extends MTable<KeyRepresentation> {
 
    @Autowired
    public KeyTable(KeyRestRepository keys, MessageSourceAdapter messages) {

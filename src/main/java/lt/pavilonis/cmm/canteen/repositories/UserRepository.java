@@ -1,6 +1,6 @@
-package lt.pavilonis.monpikas.server.repositories;
+package lt.pavilonis.cmm.canteen.repositories;
 
-import lt.pavilonis.monpikas.server.domain.UserRepresentation;
+import lt.pavilonis.cmm.canteen.domain.UserRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

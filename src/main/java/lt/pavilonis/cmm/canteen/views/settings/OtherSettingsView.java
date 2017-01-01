@@ -1,6 +1,5 @@
-package lt.pavilonis.monpikas.server.views.settings;
+package lt.pavilonis.cmm.canteen.views.settings;
 
-import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Label;

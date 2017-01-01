@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.pupils;
+package lt.pavilonis.cmm.canteen.views.pupils;
 
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
@@ -17,12 +17,12 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.domain.PupilLocalData;
-import lt.pavilonis.monpikas.server.domain.UserRepresentation;
-import lt.pavilonis.monpikas.server.views.components.PupilTypeComboBox;
-import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
-import lt.pavilonis.monpikas.server.views.settings.TableControlPanel;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
+import lt.pavilonis.cmm.canteen.domain.UserRepresentation;
+import lt.pavilonis.cmm.canteen.views.components.PupilTypeComboBox;
+import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
+import lt.pavilonis.cmm.canteen.views.settings.TableControlPanel;
 import org.slf4j.Logger;
 
 import java.io.File;
@@ -45,7 +45,7 @@ import static com.vaadin.ui.Alignment.BOTTOM_RIGHT;
 import static com.vaadin.ui.Button.ClickListener;
 import static java.net.HttpURLConnection.HTTP_OK;
 import static java.util.Objects.isNull;
-import static lt.pavilonis.monpikas.server.utils.Messages.label;
+import static lt.pavilonis.cmm.util.Messages.label;
 import static org.slf4j.LoggerFactory.getLogger;
 
 public class PupilEditWindow extends Window {

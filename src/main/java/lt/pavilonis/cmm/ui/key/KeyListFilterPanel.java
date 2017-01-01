@@ -29,7 +29,7 @@ import java.util.List;
 
 @SpringComponent
 @UIScope
-public class KeyListFilterPanel extends MHorizontalLayout {
+class KeyListFilterPanel extends MHorizontalLayout {
 
    private final TextField textField;
    private final ComboBox scannerCombo;
@@ -128,7 +128,6 @@ public class KeyListFilterPanel extends MHorizontalLayout {
             (LocalDate) periodEnd.getConvertedValue()
       );
       table.setBeans(beans);
-//      table.sort();
    }
 
    boolean isLogMode() {

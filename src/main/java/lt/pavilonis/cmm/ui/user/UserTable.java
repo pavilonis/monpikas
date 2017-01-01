@@ -11,7 +11,7 @@ import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
-public class UserTable extends MTable<UserRepresentation> {
+class UserTable extends MTable<UserRepresentation> {
 
    @Autowired
    public UserTable(UserRestRepository userRepository,

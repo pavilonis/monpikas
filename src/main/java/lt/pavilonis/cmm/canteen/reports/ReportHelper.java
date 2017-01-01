@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.reports;
+package lt.pavilonis.cmm.canteen.reports;
 
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
@@ -6,14 +6,13 @@ import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
 
 import java.util.Optional;
 import java.util.OptionalInt;
-
-import static org.apache.poi.hssf.usermodel.HSSFCellStyle.BORDER_THIN;
-import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_CENTER;
-import static org.apache.poi.ss.usermodel.CellStyle.VERTICAL_CENTER;
 
 public class ReportHelper {
 
@@ -31,7 +30,7 @@ public class ReportHelper {
       private int colNum;
       private int rowNum;
       private String value;
-      private short hAlign = ALIGN_CENTER;
+      private HorizontalAlignment hAlign = HorizontalAlignment.CENTER;
       private boolean bold;
       private boolean border = true;
       private Optional<Short> height = Optional.empty();
@@ -43,7 +42,7 @@ public class ReportHelper {
          this.value = String.valueOf(value);
       }
 
-      public CellBuilder align(short hAlign) {
+      public CellBuilder align(HorizontalAlignment hAlign) {
          this.hAlign = hAlign;
          return this;
       }
@@ -85,20 +84,20 @@ public class ReportHelper {
       }
 
 
-      public HSSFCellStyle style(HSSFWorkbook wb, int fontSize, boolean bold, boolean border, short hAlign) {
+      public HSSFCellStyle style(HSSFWorkbook wb, int fontSize, boolean bold, boolean border, HorizontalAlignment hAlign) {
          HSSFCellStyle style = wb.createCellStyle();
          HSSFFont font = wb.createFont();
          font.setFontHeightInPoints((short) fontSize);
-         style.setVerticalAlignment(VERTICAL_CENTER);
+         style.setVerticalAlignment(VerticalAlignment.CENTER);
          style.setAlignment(hAlign);
          if (border) {
-            style.setBorderBottom(BORDER_THIN);
-            style.setBorderRight(BORDER_THIN);
-            style.setBorderLeft(BORDER_THIN);
-            style.setBorderTop(BORDER_THIN);
+            style.setBorderBottom(BorderStyle.THIN);
+            style.setBorderRight(BorderStyle.THIN);
+            style.setBorderLeft(BorderStyle.THIN);
+            style.setBorderTop(BorderStyle.THIN);
          }
          if (bold) {
-            font.setBoldweight((short) 12700);
+            font.setBold(true);
          }
          style.setWrapText(true);
          style.setFont(font);

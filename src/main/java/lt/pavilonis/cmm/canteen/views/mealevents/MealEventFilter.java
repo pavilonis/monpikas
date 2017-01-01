@@ -1,29 +1,33 @@
-package lt.pavilonis.monpikas.server.views.mealevents;
+package lt.pavilonis.cmm.canteen.views.mealevents;
 
 import com.vaadin.data.Container.Filter;
 import com.vaadin.data.Item;
 import com.vaadin.data.util.BeanItem;
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.service.MealService;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.service.MealService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
-import static ru.xpoft.vaadin.SpringApplicationContext.getApplicationContext;
-
+@SpringComponent
+@UIScope
 public class MealEventFilter implements Filter {
+   private MealService service;
    private String text;
    private boolean hadDinnerToday;
-   private MealService service = getApplicationContext().getBean(MealService.class);
 
-   public MealEventFilter(String text, boolean hadDinnerToday) {
+   public MealEventFilter(MealService service, String text, boolean hadDinnerToday) {
+      this.service = service;
       this.text = text.toLowerCase();
       this.hadDinnerToday = hadDinnerToday;
    }
 
-   @SuppressWarnings("unchecked")
    @Override
    public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
 
+      @SuppressWarnings("unchecked")
       MealEventLog event = ((BeanItem<MealEventLog>) item).getBean();
 
       String s = event.getName() + event.getGrade() + event.getCardCode() + event.getDate() + event.getPrice();

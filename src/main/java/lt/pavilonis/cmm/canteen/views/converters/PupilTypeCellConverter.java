@@ -1,8 +1,8 @@
-package lt.pavilonis.monpikas.server.views.converters;
+package lt.pavilonis.cmm.canteen.views.converters;
 
 import com.vaadin.data.util.converter.Converter;
-import lt.pavilonis.monpikas.server.domain.PupilType;
-import lt.pavilonis.monpikas.server.utils.Messages;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
+import lt.pavilonis.cmm.util.Messages;
 
 import java.util.Locale;
 

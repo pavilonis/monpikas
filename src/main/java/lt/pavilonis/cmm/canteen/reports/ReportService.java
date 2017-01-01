@@ -1,9 +1,9 @@
-package lt.pavilonis.monpikas.server.reports;
+package lt.pavilonis.cmm.canteen.reports;
 
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.domain.PupilType;
-import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
-import lt.pavilonis.monpikas.server.service.PupilService;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
+import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.service.PupilService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;

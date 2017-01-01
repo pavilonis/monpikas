@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.domain;
+package lt.pavilonis.cmm.canteen.domain;
 
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;

@@ -1,13 +1,13 @@
-package lt.pavilonis.monpikas.server.service;
+package lt.pavilonis.cmm.canteen.service;
 
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.domain.Pupil;
-import lt.pavilonis.monpikas.server.domain.PupilLocalData;
-import lt.pavilonis.monpikas.server.domain.UserRepresentation;
-import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
-import lt.pavilonis.monpikas.server.repositories.PupilDataRepository;
-import lt.pavilonis.monpikas.server.repositories.UserRepository;
-import lt.pavilonis.monpikas.server.utils.DateTimeUtils;
+import lt.pavilonis.TimeUtils;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
+import lt.pavilonis.cmm.canteen.domain.UserRepresentation;
+import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.repositories.PupilDataRepository;
+import lt.pavilonis.cmm.canteen.repositories.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,11 +95,11 @@ public class PupilService {
    public Collection<Pupil> loadAll() {
       LocalDateTime opStart = LocalDateTime.now();
       Collection<PupilLocalData> pupilDataCollection = pupilDataRepository.loadAll(false);
-      LOG.info("Loaded pupil meal data [duration={}]", DateTimeUtils.duration(opStart));
+      LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
       List<UserRepresentation> users = usersRepository.loadAll();
-      LOG.info("Loaded user data [duration={}]", DateTimeUtils.duration(opStart));
+      LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
       List<Pupil> result = users.stream()
@@ -120,7 +120,7 @@ public class PupilService {
                );
             })
             .collect(toList());
-      LOG.info("Composed dtos [duration={}]", DateTimeUtils.duration(opStart));
+      LOG.info("Composed dtos [duration={}]", TimeUtils.duration(opStart));
 
       return result;
    }

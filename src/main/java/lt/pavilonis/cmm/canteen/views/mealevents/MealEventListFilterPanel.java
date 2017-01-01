@@ -1,22 +1,31 @@
-package lt.pavilonis.monpikas.server.views.mealevents;
+package lt.pavilonis.cmm.canteen.views.mealevents;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+import lt.pavilonis.cmm.canteen.service.MealService;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.vaadin.ui.Button.ClickListener;
 
+@SpringComponent
+@UIScope
 public class MealEventListFilterPanel extends HorizontalLayout {
 
    private TextField text = new TextField();
    private CheckBox hadDinnerToday = new CheckBox("Pietavo šiandien");
    private Button filterButton = new Button("Filtruoti", FontAwesome.FILTER);
    private Button cancelFilterButton = new Button("Valyti", FontAwesome.REFRESH);
+
+   @Autowired
+   private MealService service;
 
    public MealEventListFilterPanel() {
       addComponents(text, hadDinnerToday, filterButton, cancelFilterButton);
@@ -38,7 +47,7 @@ public class MealEventListFilterPanel extends HorizontalLayout {
    }
 
    public MealEventFilter getFilter() {
-      return new MealEventFilter(text.getValue(), hadDinnerToday.getValue());
+      return new MealEventFilter(service, text.getValue(), hadDinnerToday.getValue());
    }
 
    public void addCancelFilterButtonListener(ClickListener listener) {

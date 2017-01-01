@@ -1,6 +1,6 @@
-package lt.pavilonis.monpikas.server.service;
+package lt.pavilonis.cmm.canteen.service;
 
-import lt.pavilonis.monpikas.server.domain.SpringSecurityUser;
+import lt.pavilonis.cmm.canteen.domain.SpringSecurityUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.ResultSetExtractor;

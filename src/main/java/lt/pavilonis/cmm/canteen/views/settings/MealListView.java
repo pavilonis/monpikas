@@ -1,18 +1,13 @@
-package lt.pavilonis.monpikas.server.views.settings;
+package lt.pavilonis.cmm.canteen.views.settings;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
-import lt.pavilonis.monpikas.server.views.converters.ModifiedStringToDoubleConverter;
-
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.util.Locale;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
+import lt.pavilonis.cmm.canteen.views.converters.ModifiedStringToDoubleConverter;
 
 public class MealListView extends VerticalLayout {
 

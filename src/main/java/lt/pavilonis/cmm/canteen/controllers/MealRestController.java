@@ -1,11 +1,11 @@
-package lt.pavilonis.monpikas.server.controllers;
+package lt.pavilonis.cmm.canteen.controllers;
 
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.domain.Pupil;
-import lt.pavilonis.monpikas.server.domain.PupilRepresentation;
-import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
-import lt.pavilonis.monpikas.server.repositories.MealRepository;
-import lt.pavilonis.monpikas.server.service.PupilService;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.PupilRepresentation;
+import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.repositories.MealRepository;
+import lt.pavilonis.cmm.canteen.service.PupilService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

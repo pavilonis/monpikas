@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.utils;
+package lt.pavilonis.cmm.util;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

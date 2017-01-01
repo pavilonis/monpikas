@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.mealevents;
+package lt.pavilonis.cmm.canteen.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.FontAwesome;
@@ -9,9 +9,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.domain.Pupil;
-import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.views.components.MealTypeComboBox;
 
 import java.util.Date;
 

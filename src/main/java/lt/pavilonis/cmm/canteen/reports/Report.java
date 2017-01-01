@@ -1,11 +1,12 @@
-package lt.pavilonis.monpikas.server.reports;
+package lt.pavilonis.cmm.canteen.reports;
 
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.domain.PupilType;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Sheet;
 
 import java.math.BigDecimal;
@@ -17,10 +18,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.reverseOrder;
-import static lt.pavilonis.monpikas.server.utils.Messages.label;
+import static lt.pavilonis.cmm.util.Messages.label;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
-import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_LEFT;
-import static org.apache.poi.ss.usermodel.CellStyle.ALIGN_RIGHT;
 
 public class Report {
 
@@ -74,20 +73,19 @@ public class Report {
          }
       }
 
-
-      helper.cell(3, lastRow(2), "Viso panaudota lėšų:").align(ALIGN_RIGHT).noBorder().create();
+      helper.cell(3, lastRow(2), "Viso panaudota lėšų:").align(HorizontalAlignment.RIGHT).noBorder().create();
 
       sums.forEach((k, v) -> {
-         helper.cell(4, lastRow() + 1, label("MealType." + k)).mergeTo(5).align(ALIGN_RIGHT).noBorder().create();
+         helper.cell(4, lastRow() + 1, label("MealType." + k)).mergeTo(5).align(HorizontalAlignment.RIGHT).noBorder().create();
          helper.cell(6, lastRow(), v.toString()).noBorder().bold().create();
       });
 
       BigDecimal total = sums.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-      helper.cell(5, lastRow(1), "VISO").noBorder().align(ALIGN_RIGHT).create();
+      helper.cell(5, lastRow(1), "VISO").noBorder().align(HorizontalAlignment.RIGHT).create();
       helper.cell(6, lastRow(), total).noBorder().bold().create();
 
       helper.cell(1, lastRow(2), "Socialinis pedagogas").noBorder().create();
-      helper.cell(3, lastRow(), "Darius Jucys").align(ALIGN_RIGHT).noBorder().create();
+      helper.cell(3, lastRow(), "Darius Jucys").align(HorizontalAlignment.RIGHT).noBorder().create();
 
       return workbook;
    }
@@ -110,12 +108,12 @@ public class Report {
 
       int row = lastRow(1);
       helper.cell(0, row, index).create();
-      helper.cell(1, row, events.get(0).getName()).align(ALIGN_LEFT).create();
+      helper.cell(1, row, events.get(0).getName()).align(HorizontalAlignment.LEFT).create();
 
       String grade = StringUtils.substring(events.get(0).getGrade(), 0, 5);
       helper.cell(2, row, grade).create();
 
-      helper.cell(3, row, mealDaysString).align(ALIGN_LEFT).create();
+      helper.cell(3, row, mealDaysString).align(HorizontalAlignment.LEFT).create();
       helper.cell(4, row, mealDaysCount).create();
       helper.cell(5, row, events.get(0).getPrice()).create();
       helper.cell(6, row, priceSum).create();

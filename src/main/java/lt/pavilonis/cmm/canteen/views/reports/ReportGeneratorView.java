@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.reports;
+package lt.pavilonis.cmm.canteen.views.reports;
 
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
@@ -9,9 +9,9 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.PupilType;
-import lt.pavilonis.monpikas.server.reports.ReportService;
-import lt.pavilonis.monpikas.server.utils.DateUtils;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
+import lt.pavilonis.cmm.canteen.reports.ReportService;
+import lt.pavilonis.cmm.util.DateUtils;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -22,7 +22,7 @@ import java.util.Date;
 import static com.vaadin.shared.ui.label.ContentMode.HTML;
 import static com.vaadin.ui.Alignment.MIDDLE_CENTER;
 import static java.util.Arrays.asList;
-import static lt.pavilonis.monpikas.server.utils.Messages.label;
+import static lt.pavilonis.cmm.util.Messages.label;
 
 public class ReportGeneratorView extends VerticalLayout {
 

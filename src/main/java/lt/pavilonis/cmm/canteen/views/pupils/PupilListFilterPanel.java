@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.pupils;
+package lt.pavilonis.cmm.canteen.views.pupils;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.event.ShortcutListener;
@@ -8,8 +8,8 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.views.components.MealTypeComboBox;
 
 import static com.vaadin.ui.Button.ClickListener;
 

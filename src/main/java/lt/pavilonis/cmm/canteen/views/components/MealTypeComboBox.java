@@ -1,11 +1,11 @@
-package lt.pavilonis.monpikas.server.views.components;
+package lt.pavilonis.cmm.canteen.views.components;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
-import lt.pavilonis.monpikas.server.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.MealType;
 
 import static java.util.Arrays.asList;
-import static lt.pavilonis.monpikas.server.utils.Messages.label;
+import static lt.pavilonis.cmm.util.Messages.label;
 
 public class MealTypeComboBox extends ComboBox {
 

@@ -1,8 +1,9 @@
-package lt.pavilonis.monpikas.server.repositories;
+package lt.pavilonis.cmm.canteen.repositories;
 
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.domain.MealType;
-import lt.pavilonis.monpikas.server.domain.PupilType;
+
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.settings;
+package lt.pavilonis.cmm.canteen.views.settings;
 
 import com.vaadin.data.Item;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
@@ -14,9 +14,9 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.InlineDateField;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.views.components.MealTypeComboBox;
-import lt.pavilonis.monpikas.server.views.converters.LocalTimeToDateConverter;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.views.components.MealTypeComboBox;
+import lt.pavilonis.cmm.canteen.views.converters.LocalTimeToDateConverter;
 
 import java.time.LocalTime;
 import java.util.Date;

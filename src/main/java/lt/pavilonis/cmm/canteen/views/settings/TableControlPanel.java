@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.settings;
+package lt.pavilonis.cmm.canteen.views.settings;
 
 import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Alignment;

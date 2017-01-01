@@ -1,11 +1,11 @@
-package lt.pavilonis.monpikas.server.views.pupils;
+package lt.pavilonis.cmm.canteen.views.pupils;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.event.ItemClickEvent.ItemClickListener;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.Pupil;
-import lt.pavilonis.monpikas.server.views.converters.CollectionCellConverter;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.views.converters.CollectionCellConverter;
 
 import static com.vaadin.ui.Table.Align.CENTER;
 

@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.utils;
+package lt.pavilonis.cmm.util;
 
 import org.slf4j.Logger;
 import org.springframework.core.io.ClassPathResource;

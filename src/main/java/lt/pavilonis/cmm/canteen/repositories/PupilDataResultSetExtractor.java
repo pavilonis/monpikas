@@ -1,9 +1,9 @@
-package lt.pavilonis.monpikas.server.repositories;
+package lt.pavilonis.cmm.canteen.repositories;
 
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.domain.PupilLocalData;
-import lt.pavilonis.monpikas.server.domain.PupilType;
-import lt.pavilonis.monpikas.server.utils.DateTimeUtils;
+import lt.pavilonis.TimeUtils;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
@@ -48,7 +48,7 @@ public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<Strin
             pupilData.getMeals().add(meal);
          }
       }
-      LOG.info("RS extraction finished [duration={}]", DateTimeUtils.duration(opStart));
+      LOG.info("RS extraction finished [duration={}]", TimeUtils.duration(opStart));
       System.out.println("counter = " + counter);
       return result;
    }

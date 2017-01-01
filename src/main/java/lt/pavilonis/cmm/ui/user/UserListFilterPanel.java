@@ -25,7 +25,7 @@ import java.util.stream.Collectors;
 
 @SpringComponent
 @UIScope
-public class UserListFilterPanel extends MHorizontalLayout {
+class UserListFilterPanel extends MHorizontalLayout {
 
    @Autowired
    public UserListFilterPanel(UserTable table, UserRestRepository userRepository,

@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.domain;
+package lt.pavilonis.cmm.canteen.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;

@@ -1,6 +1,6 @@
-package lt.pavilonis.monpikas.server.repositories;
+package lt.pavilonis.cmm.canteen.repositories;
 
-import lt.pavilonis.monpikas.server.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.Meal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

@@ -1,4 +1,4 @@
-package lt.pavilonis.monpikas.server.views.pupils;
+package lt.pavilonis.cmm.canteen.views.pupils;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.server.FontAwesome;
@@ -7,13 +7,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import lt.pavilonis.monpikas.server.domain.Meal;
-import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
-import lt.pavilonis.monpikas.server.views.converters.ModifiedStringToDoubleConverter;
+import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
+import lt.pavilonis.cmm.canteen.views.converters.ModifiedStringToDoubleConverter;
 
 import static com.vaadin.ui.Alignment.BOTTOM_CENTER;
 import static com.vaadin.ui.Button.ClickListener;
-import static lt.pavilonis.monpikas.server.utils.Messages.label;
+import static lt.pavilonis.cmm.util.Messages.label;
 
 public class PupilEditMealSelectionWindow extends Window {
 

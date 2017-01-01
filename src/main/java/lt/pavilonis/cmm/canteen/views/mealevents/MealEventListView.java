@@ -1,13 +1,13 @@
-package lt.pavilonis.monpikas.server.views.mealevents;
+package lt.pavilonis.cmm.canteen.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
 import com.vaadin.data.util.converter.StringToDateConverter;
 import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.views.converters.MealTypeCellConverter;
-import lt.pavilonis.monpikas.server.views.converters.PupilTypeCellConverter;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
+import lt.pavilonis.cmm.canteen.views.converters.PupilTypeCellConverter;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;

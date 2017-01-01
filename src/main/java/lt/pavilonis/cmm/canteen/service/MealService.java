@@ -1,7 +1,7 @@
-package lt.pavilonis.monpikas.server.service;
+package lt.pavilonis.cmm.canteen.service;
 
-import lt.pavilonis.monpikas.server.domain.MealEventLog;
-import lt.pavilonis.monpikas.server.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
