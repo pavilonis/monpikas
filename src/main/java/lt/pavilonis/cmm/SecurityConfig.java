@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.config;
+package lt.pavilonis.cmm;
 
 import lt.pavilonis.cmm.canteen.service.SpringSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,15 +27,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    protected void configure(HttpSecurity http) throws Exception {
       http
             .authorizeRequests()
-//            .anyRequest().authenticated()
-            .anyRequest().permitAll()
+            .anyRequest().authenticated()
+//            .anyRequest().permitAll()
 //            .antMatchers("/**").authenticated()
-//            .antMatchers("/rest/**").hasRole("SCANNER")
+            .antMatchers("/rest/**").hasRole("SCANNER")
 //            .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
 
             .and()
-//            .httpBasic()
-//            .and()
+            .httpBasic()
+            .and()
 //            .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.NEVER)
 //            .and()
 

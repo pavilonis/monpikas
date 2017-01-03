@@ -4,11 +4,11 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
-import lt.pavilonis.cmm.common.AbstractController;
+import lt.pavilonis.cmm.common.AbstractViewController;
 
 @SpringComponent
 @UIScope
-public class KeyListController extends AbstractController {
+public class KeyListController extends AbstractViewController {
    @Override
    protected FontAwesome getMenuIcon() {
       return FontAwesome.KEY;
@@ -20,7 +20,7 @@ public class KeyListController extends AbstractController {
    }
 
    @Override
-   protected Class<? extends Component> getTableClass() {
+   protected Class<? extends Component> getMainLayoutClass() {
       return KeyTable.class;
    }
 }

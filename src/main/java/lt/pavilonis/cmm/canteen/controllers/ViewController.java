@@ -72,9 +72,6 @@ public class ViewController {
    private MealService mealService;
 
    @Autowired
-   private ReportService reportService;
-
-   @Autowired
    private MealEventLogRepository eventLogs;
 
    public void attachComponents(VerticalLayout base) {
@@ -90,14 +87,6 @@ public class ViewController {
          view.getContainer().addAll(mealService.getDinnerEventList());
          view.getControlPanel().addAddListener(mealAddEventListener(view));
          view.getControlPanel().addDeleteListener(mealDeleteEventListener(view));
-
-         content.removeAllComponents();
-         content.addComponent(view);
-      });
-
-      menu.addItem(" Ataskaitos", FontAwesome.FILE_EXCEL_O, selected -> {
-
-         ReportGeneratorView view = new ReportGeneratorView(reportService);
 
          content.removeAllComponents();
          content.addComponent(view);

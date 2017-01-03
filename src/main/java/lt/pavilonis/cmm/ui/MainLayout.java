@@ -25,18 +25,17 @@ public class MainLayout extends MHorizontalLayout {
          .withContentMode(ContentMode.HTML);
 
    private Component currentComponent = APP_LABEL;
+   private MVerticalLayout stage = new MVerticalLayout(currentComponent)
+         .withSize(MSize.FULL_SIZE)
+         .alignAll(Alignment.MIDDLE_CENTER);
 
    @Autowired
    public MainLayout(List<ListController> listControllers) {
       setSizeFull();
       MVerticalLayout menuBar = new MVerticalLayout()
-            .withWidth("180px")
+            .withWidth("210px")
             .alignAll(Alignment.TOP_CENTER);
 
-      MVerticalLayout stage = new MVerticalLayout(APP_LABEL).withSize(MSize.FULL_SIZE)
-            .alignAll(Alignment.MIDDLE_CENTER)
-            .withMargin(true)
-            .withSize(MSize.FULL_SIZE);
 
       add(menuBar, stage).expand(stage);
 
@@ -51,8 +50,9 @@ public class MainLayout extends MHorizontalLayout {
    }
 
    private void updateStage(ListController controller) {
-      removeComponent(currentComponent);
-      Layout layout = controller.getListLayout();
-      addComponent(currentComponent = layout);
+      Layout newComponent = controller.getListLayout();
+      stage.removeComponent(currentComponent);
+      stage.addComponent(newComponent);
+      currentComponent = newComponent;
    }
 }

@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.config;
+package lt.pavilonis.cmm;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

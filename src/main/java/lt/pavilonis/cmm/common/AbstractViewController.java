@@ -4,13 +4,13 @@ import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Layout;
-import lt.pavilonis.cmm.config.App;
+import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-public abstract class AbstractController implements ListController {
+public abstract class AbstractViewController implements ListController {
 
    @Autowired
    private MessageSourceAdapter messages;
@@ -18,7 +18,7 @@ public abstract class AbstractController implements ListController {
    @Override
    public Button getMenuButton() {
       return new MButton()
-            .withWidth("170px")
+            .withWidth("200px")
             .withIcon(getMenuIcon())
             .withCaption(getMenuButtonCaption())
             .withStyleName("text-align-left");
@@ -26,12 +26,18 @@ public abstract class AbstractController implements ListController {
 
    @Override
    public Layout getListLayout() {
+      MVerticalLayout layout = new MVerticalLayout()
+            .withMargin(false);
 
-      Component filterPanel = App.context.getBean(getFilterPanelClass());
-      Component table = App.context.getBean(getTableClass());
+      if (getFilterPanelClass() != null) {
+         layout.add(App.context.getBean(getFilterPanelClass()));
+      }
 
-      return new MVerticalLayout(filterPanel, table)
-            .expand(table);
+      Component main = App.context.getBean(getMainLayoutClass());
+
+      return layout
+            .add(main)
+            .expand(main);
    }
 
    @Override
@@ -41,7 +47,7 @@ public abstract class AbstractController implements ListController {
 
    protected abstract Class<? extends Component> getFilterPanelClass();
 
-   protected abstract Class<? extends Component> getTableClass();
+   protected abstract Class<? extends Component> getMainLayoutClass();
 
    protected abstract FontAwesome getMenuIcon();
 }

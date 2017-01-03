@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.config;
+package lt.pavilonis.cmm;
 
 import com.mysql.jdbc.Driver;
 import org.apache.tomcat.jdbc.pool.DataSource;
