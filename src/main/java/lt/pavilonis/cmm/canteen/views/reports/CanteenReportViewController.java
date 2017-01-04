@@ -10,12 +10,12 @@ import lt.pavilonis.cmm.common.AbstractViewController;
 @UIScope
 public class CanteenReportViewController extends AbstractViewController {
    @Override
-   protected Class<? extends Component> getFilterPanelClass() {
+   protected Class<? extends Component> getHeaderAreaClass() {
       return null;
    }
 
    @Override
-   protected Class<? extends Component> getMainLayoutClass() {
+   protected Class<? extends Component> getMainAreaClass() {
       return ReportGeneratorView.class;
    }
 

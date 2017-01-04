@@ -30,11 +30,12 @@ public abstract class AbstractViewController implements ListController {
       MVerticalLayout layout = new MVerticalLayout()
             .withMargin(false);
 
-      if (getFilterPanelClass() != null) {
-         layout.add(App.context.getBean(getFilterPanelClass()));
+      if (getHeaderAreaClass() != null) {
+         Component header = App.context.getBean(getHeaderAreaClass());
+         layout.add(header);
       }
 
-      Component main = App.context.getBean(getMainLayoutClass());
+      Component main = App.context.getBean(getMainAreaClass());
 
       return layout
             .add(main)
@@ -46,11 +47,11 @@ public abstract class AbstractViewController implements ListController {
       return messages.get(this, "caption");
    }
 
-   protected Class<? extends Component> getFilterPanelClass() {
+   protected Class<? extends Component> getHeaderAreaClass() {
       return null;
    }
 
-   protected abstract Class<? extends Component> getMainLayoutClass();
+   protected abstract Class<? extends Component> getMainAreaClass();
 
    protected abstract FontAwesome getMenuIcon();
 }

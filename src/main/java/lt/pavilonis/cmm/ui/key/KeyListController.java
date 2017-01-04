@@ -15,12 +15,12 @@ public class KeyListController extends AbstractViewController {
    }
 
    @Override
-   protected Class<? extends Component> getFilterPanelClass() {
+   protected Class<? extends Component> getHeaderAreaClass() {
       return KeyListFilterPanel.class;
    }
 
    @Override
-   protected Class<? extends Component> getMainLayoutClass() {
+   protected Class<? extends Component> getMainAreaClass() {
       return KeyTable.class;
    }
 }

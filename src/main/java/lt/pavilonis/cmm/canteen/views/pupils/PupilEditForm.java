@@ -3,40 +3,39 @@ package lt.pavilonis.cmm.canteen.views.pupils;
 import com.vaadin.data.fieldgroup.BeanFieldGroup;
 import com.vaadin.data.fieldgroup.FieldGroup;
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.Resource;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.Table;
 import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
-import lt.pavilonis.cmm.canteen.domain.UserRepresentation;
 import lt.pavilonis.cmm.canteen.views.components.PupilTypeComboBox;
-import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
+import lt.pavilonis.cmm.canteen.views.pupils.form.MealTable;
 import lt.pavilonis.cmm.canteen.views.settings.TableControlPanel;
 import org.slf4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.fields.MTable;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.File;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.DecimalFormat;
 import java.text.Format;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
-import java.util.Date;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.Collections;
 
 import static com.vaadin.server.VaadinService.getCurrent;
 import static com.vaadin.shared.ui.label.ContentMode.HTML;
@@ -48,9 +47,11 @@ import static java.util.Objects.isNull;
 import static lt.pavilonis.cmm.util.Messages.label;
 import static org.slf4j.LoggerFactory.getLogger;
 
-public class PupilEditWindow extends Window {
+@UIScope
+@SpringComponent
+public class PupilEditForm extends Window {
 
-   private static final Logger LOG = getLogger(PupilEditWindow.class.getSimpleName());
+   private static final Logger LOG = getLogger(PupilEditForm.class.getSimpleName());
    private final static Format DATE_TIME_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm");
    private static final String NO_PHOTO_PATH = "static/images/noPhoto.png";
    private final Button save = new Button("Saugoti");
@@ -58,35 +59,18 @@ public class PupilEditWindow extends Window {
    private final BeanFieldGroup<PupilLocalData> group = new BeanFieldGroup<>(PupilLocalData.class);
    private final TableControlPanel controlPanel = new TableControlPanel();
    private final BeanContainer<Long, Meal> container = new BeanContainer<>(Meal.class);
-   private final Table table = new Table(label("PupilEditWindow.PortionsTable.Caption"), container);
 
-   public PupilEditWindow(PupilLocalData pupilData, UserRepresentation user, Optional<Date> lastMealDate) {
+   @Autowired
+   public PupilEditForm(MessageSourceAdapter messages) {
 
       group.setItemDataSource(pupilData);
       group.setBuffered(true);
 
+      MTable<Meal> table = new MealTable(Collections.<Meal>emptyList())
+            .withCaption(messages.get(this, "portionsTable.caption"));
       table.setHeight("270px");
       table.setWidth("400px");
-      container.setBeanIdProperty("id");
       container.addAll(pupilData.getMeals());
-      container.sort(new Object[]{"id"}, new boolean[]{true});
-      table.setVisibleColumns("id", "name", "type", "price");
-      table.setColumnHeaders("Id", "Pavadinimas", "Tipas", "Kaina");
-
-      table.setConverter("type", new MealTypeCellConverter());
-      table.setConverter("price", new StringToDoubleConverter() {
-         @Override
-         protected NumberFormat getFormat(Locale locale) {
-            return new DecimalFormat("0.00");
-         }
-      });
-
-      table.setColumnCollapsingAllowed(true);
-      table.setColumnCollapsed("id", true);
-      table.setSelectable(true);
-      table.setMultiSelect(true);
-      table.setNullSelectionAllowed(false);
-      table.setCacheRate(5);
 
       setCaption("Mokinio nustatymai");
       setResizable(false);
@@ -112,22 +96,18 @@ public class PupilEditWindow extends Window {
       TextArea comment = group.buildAndBind("Komentaras", "comment", TextArea.class);
       comment.setNullRepresentation("");
 
-      HorizontalLayout buttons = new HorizontalLayout(save, close);
-      buttons.setSpacing(true);
-      buttons.setMargin(new MarginInfo(true, false, false, false));
-
-      VerticalLayout leftColumn = new VerticalLayout(name, date, last, table, controlPanel, buttons);
-      leftColumn.setSpacing(true);
-      leftColumn.setWidth("450px");
-      leftColumn.setMargin(true);
-      leftColumn.setComponentAlignment(buttons, BOTTOM_RIGHT);
+      HorizontalLayout buttons = new MHorizontalLayout(save, close)
+            .withMargin(new MarginInfo(true, false, false, false));
 
       Image image = image(user.photoUrl);
-      VerticalLayout rightColumn = new VerticalLayout(image, card, typeCombo, comment);
-      rightColumn.setComponentAlignment(image, BOTTOM_CENTER);
-      rightColumn.setSpacing(true);
-
-      setContent(new HorizontalLayout(leftColumn, rightColumn));
+      setContent(
+            new HorizontalLayout(
+                  new MVerticalLayout(name, date, last, table, controlPanel, buttons)
+                        .withWidth("450px")
+                        .withAlign(buttons, BOTTOM_RIGHT),
+                  new MVerticalLayout(image, card, typeCombo, comment)
+                        .withAlign(image, BOTTOM_CENTER))
+      );
       setModal(true);
    }
 
@@ -163,14 +143,6 @@ public class PupilEditWindow extends Window {
       ids.forEach(container::removeItem);
    }
 
-   public void addToContainer(Collection<Meal> meals) {
-      container.addAll(meals);
-   }
-
-   public Table getTable() {
-      return table;
-   }
-
    private Image image(String url) {
       Resource resource = remoteImageExists(url)
             ? new ExternalResource(url)
@@ -201,5 +173,11 @@ public class PupilEditWindow extends Window {
 
    public PupilLocalData getModel() {
       return group.getItemDataSource().getBean();
+   }
+
+   public void edit(String cardCode) {
+      pupilDataRepository.load(cardCode).orElse(new PupilLocalData(cardCode)),
+            userRepository.load(cardCode).get(),
+            mealService.lastMealEvent(cardCode)
    }
 }

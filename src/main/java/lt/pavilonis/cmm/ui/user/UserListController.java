@@ -16,12 +16,12 @@ public class UserListController extends AbstractViewController {
    }
 
    @Override
-   protected Class<? extends Component> getFilterPanelClass() {
+   protected Class<? extends Component> getHeaderAreaClass() {
       return UserListFilterPanel.class;
    }
 
    @Override
-   protected Class<? extends Component> getMainLayoutClass() {
+   protected Class<? extends Component> getMainAreaClass() {
       return UserTable.class;
    }
 }
