@@ -1,94 +1,129 @@
 package lt.pavilonis.cmm.canteen.views.mealevents;
 
 import com.vaadin.data.util.BeanContainer;
-import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.data.util.converter.StringToDoubleConverter;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.server.FontAwesome;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.UI;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
-import lt.pavilonis.cmm.canteen.views.converters.MealTypeCellConverter;
-import lt.pavilonis.cmm.canteen.views.converters.PupilTypeCellConverter;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.service.PupilService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
+import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.Locale;
+import java.math.BigDecimal;
+import java.util.Date;
 
-import static com.vaadin.ui.Table.Align.CENTER;
+import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
+import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
+import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
+import static com.vaadin.ui.Notification.show;
+import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
+import static org.springframework.security.core.context.SecurityContextHolder.getContext;
 
-public class MealEventListView extends VerticalLayout {
+@UIScope
+@SpringComponent
+public class MealEventListView extends MVerticalLayout {
 
    private final BeanContainer<Long, MealEventLog> container = new BeanContainer<>(MealEventLog.class);
-   private final Table table = new MealEventTable(container);
-   private final MealEventListFilterPanel filterPanel = new MealEventListFilterPanel();
-   private final MealEventListControlPanel controlPanel = new MealEventListControlPanel();
+   private final MealEventTable table;
 
-   public MealEventListView() {
-      setSizeFull();
-      addComponents(filterPanel, table, controlPanel);
-      setExpandRatio(table, 1f);
-      filterPanel.addFilterButtonListener(filterButtonClicked -> {
-         container.removeAllContainerFilters();
-         container.addContainerFilter(filterPanel.getFilter());
+   @Autowired
+   private PupilService pupilService;
+
+   @Autowired
+   private MealEventLogRepository eventLogs;
+
+   @Autowired
+   public MealEventListView(MessageSourceAdapter messages,
+                            MealEventListFilterPanel filterPanel, MealEventTable table) {
+      this.table = table;
+//      setSizeFull();
+      add(
+            filterPanel,
+            table,
+            new MHorizontalLayout(
+                  new MButton(FontAwesome.PLUS, messages.get(this, "buttonAdd"), click -> addAction()),
+                  new MButton(FontAwesome.WARNING, messages.get(this, "buttonDelete"), click -> deleteAction())
+                        .withStyleName("redicon")
+            ).withMargin(false)
+      );
+      expand(table);
+      setMargin(false);
+   }
+
+   private void deleteAction() {
+      if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
+         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
+         return;
+      }
+      MealEventLog value = table.getValue();
+      if (value == null) {
+         show("Niekas nepasirinkta", WARNING_MESSAGE);
+      } else {
+         eventLogs.delete(value.getId());
+         table.removeItem(value);
+         table.select(null);
+         show("Įrašas pašalintas", TRAY_NOTIFICATION);
+      }
+   }
+
+   private void addAction() {
+      if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
+         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
+         return;
+      }
+      MealEventManualCreateForm form = new MealEventManualCreateForm();
+      form.getContainer().addAll(pupilService.loadWithMealAssigned());
+      form.addCloseButtonListener(closeClick -> form.close());
+      form.addSaveButtonListener(saveClick -> {
+         String cardCode = (String) form.getTable().getValue();
+         MealType type = form.getEventType();
+         if (valid(cardCode, form.getDate(), type)) {
+            Pupil pupil = pupilService.find(cardCode).get();
+
+            BigDecimal price = pupil.getMeals().stream()
+                  .filter(portion -> portion.getType() == type)
+                  .findFirst()
+                  .get()
+                  .getPrice();
+
+            MealEventLog log = eventLogs.save(
+                  pupil.getCardCode(),
+                  pupil.name(),
+                  pupil.getGrade(),
+                  price,
+                  type,
+                  pupil.getType()
+            );
+            container.addBean(log);
+            form.close();
+            show("Išsaugota", TRAY_NOTIFICATION);
+         }
       });
-      filterPanel.addCancelFilterButtonListener(cancelFilterButtonClicked -> {
-         filterPanel.cleanFields();
-         container.removeAllContainerFilters();
-      });
+      UI.getCurrent().addWindow(form);
    }
 
-//   public void setTableClickListener(ItemClickListener listener) {
-//      table.addItemClickListener(listener);
-//   }
-
-   public BeanContainer<Long, MealEventLog> getContainer() {
-      return container;
-   }
-
-//   public MealEventListFilterPanel getFilterPanel() {
-//      return filterPanel;
-//   }
-
-   public MealEventListControlPanel getControlPanel() {
-      return controlPanel;
-   }
-
-   public Table getTable() {
-      return table;
-   }
-
-   private class MealEventTable extends Table {
-      public MealEventTable(BeanContainer<Long, MealEventLog> container) {
-         container.setBeanIdProperty("id");
-         setSizeFull();
-         setContainerDataSource(container);
-         setConverter("date", new StringToDateConverter() {
-            @Override
-            public DateFormat getFormat(Locale locale) {
-               return new SimpleDateFormat("yyyy-MM-dd  HH:mm");
-            }
-         });
-         setConverter("price", new StringToDoubleConverter() {
-            @Override
-            protected NumberFormat getFormat(Locale locale) {
-               return new DecimalFormat("0.00");
-            }
-         });
-         setConverter("mealType", new MealTypeCellConverter());
-         setConverter("pupilType", new PupilTypeCellConverter());
-         setVisibleColumns("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
-         setColumnHeaders("Id", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
-         setColumnWidth("cardCode", 100);
-         setColumnWidth("grade", 60);
-         setColumnAlignment("grade", CENTER);
-         setColumnWidth("birthDate", 130);
-         setColumnCollapsingAllowed(true);
-         setColumnCollapsed("id", true);
-         setColumnCollapsed("cardCode", true);
-         setSelectable(true);
-         setNullSelectionAllowed(false);
-         setCacheRate(5);
+   private boolean valid(String cardCode, Date date, MealType mealType) {
+      if (cardCode == null) {
+         show("Nepasirinktas mokinys", WARNING_MESSAGE);
+         return false;
+      } else if (date == null) {
+         show("Nenurodyta data", WARNING_MESSAGE);
+         return false;
+      } else if (!pupilService.portionAssigned(cardCode, mealType)) {
+         show("Mokinys neturi leidimo šio tipo maitinimuisi", ERROR_MESSAGE);
+         return false;
+      } else if (!pupilService.canHaveMeal(cardCode, date, mealType)) {
+         show("Viršijamas nurodytos dienos maitinimosi limitas", ERROR_MESSAGE);
+         return false;
+      } else {
+         return true;
       }
    }
 }

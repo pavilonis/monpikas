@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+//TODO rename class?
 public abstract class AbstractViewController implements ListController {
 
    @Autowired
@@ -45,7 +46,9 @@ public abstract class AbstractViewController implements ListController {
       return messages.get(this, "caption");
    }
 
-   protected abstract Class<? extends Component> getFilterPanelClass();
+   protected Class<? extends Component> getFilterPanelClass() {
+      return null;
+   }
 
    protected abstract Class<? extends Component> getMainLayoutClass();
 

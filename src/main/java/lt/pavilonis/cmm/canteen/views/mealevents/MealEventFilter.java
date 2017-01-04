@@ -11,8 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Date;
 
-@SpringComponent
-@UIScope
 public class MealEventFilter implements Filter {
    private MealService service;
    private String text;

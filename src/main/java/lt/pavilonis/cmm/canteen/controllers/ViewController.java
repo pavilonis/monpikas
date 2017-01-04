@@ -71,26 +71,12 @@ public class ViewController {
    @Autowired
    private MealService mealService;
 
-   @Autowired
-   private MealEventLogRepository eventLogs;
-
    public void attachComponents(VerticalLayout base) {
 
       VerticalLayout content = new VerticalLayout();
       content.setSizeFull();
 
       MenuBar menu = new MenuBar();
-
-      menu.addItem(" Žurnalas", FontAwesome.CUTLERY, selected -> {
-
-         MealEventListView view = new MealEventListView();
-         view.getContainer().addAll(mealService.getDinnerEventList());
-         view.getControlPanel().addAddListener(mealAddEventListener(view));
-         view.getControlPanel().addDeleteListener(mealDeleteEventListener(view));
-
-         content.removeAllComponents();
-         content.addComponent(view);
-      });
 
       if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
 
@@ -254,80 +240,6 @@ public class ViewController {
                });
 
          UI.getCurrent().addWindow(view);
-      };
-   }
-
-   private ClickListener mealAddEventListener(MealEventListView listView) {
-      return click -> {
-         if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
-            show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
-            return;
-         }
-         MealEventManualCreateForm form = new MealEventManualCreateForm();
-         form.getContainer().addAll(pupilService.loadWithMealAssigned());
-         form.addCloseButtonListener(closeClick -> form.close());
-         form.addSaveButtonListener(saveClick -> {
-            String cardCode = (String) form.getTable().getValue();
-            MealType type = form.getEventType();
-            if (valid(cardCode, form.getDate(), type)) {
-               Pupil pupil = pupilService.find(cardCode).get();
-
-               BigDecimal price = pupil.getMeals().stream()
-                     .filter(portion -> portion.getType() == type)
-                     .findFirst()
-                     .get()
-                     .getPrice();
-
-               MealEventLog log = eventLogs.save(
-                     pupil.getCardCode(),
-                     pupil.name(),
-                     pupil.getGrade(),
-                     price,
-                     type,
-                     pupil.getType()
-               );
-               listView.getContainer().addBean(log);
-               form.close();
-               show("Išsaugota", TRAY_NOTIFICATION);
-            }
-         });
-         UI.getCurrent().addWindow(form);
-      };
-   }
-
-   private boolean valid(String cardCode, Date date, MealType mealType) {
-      if (cardCode == null) {
-         show("Nepasirinktas mokinys", WARNING_MESSAGE);
-         return false;
-      } else if (date == null) {
-         show("Nenurodyta data", WARNING_MESSAGE);
-         return false;
-      } else if (!pupilService.portionAssigned(cardCode, mealType)) {
-         show("Mokinys neturi leidimo šio tipo maitinimuisi", ERROR_MESSAGE);
-         return false;
-      } else if (!pupilService.canHaveMeal(cardCode, date, mealType)) {
-         show("Viršijamas nurodytos dienos maitinimosi limitas", ERROR_MESSAGE);
-         return false;
-      } else {
-         return true;
-      }
-   }
-
-   private ClickListener mealDeleteEventListener(MealEventListView listView) {
-      return click -> {
-         if (!hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
-            show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
-            return;
-         }
-         Long id = (Long) listView.getTable().getValue();
-         if (id == null) {
-            show("Niekas nepasirinkta", WARNING_MESSAGE);
-         } else {
-            eventLogs.delete(id);
-            listView.getContainer().removeItem(id);
-            listView.getTable().select(null);
-            show("Įrašas pašalintas", TRAY_NOTIFICATION);
-         }
       };
    }
 }
