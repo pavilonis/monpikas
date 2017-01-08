@@ -1,11 +1,11 @@
 package lt.pavilonis.cmm.canteen.controllers;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.domain.PupilRepresentation;
 import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.repositories.MealRepository;
-import lt.pavilonis.cmm.canteen.service.PupilService;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -28,7 +28,7 @@ public class MealRestController {
    private static final Logger LOG = getLogger(MealRestController.class);
 
    @Autowired
-   private PupilService pupils;
+   private UserMealService pupils;
 
    @Autowired
    private MealRepository mealRepository;
@@ -41,14 +41,14 @@ public class MealRestController {
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
 
       LOG.info("Pupil meal request [cardCode={}]", cardCode);
-      Optional<Pupil> pupilDto = pupils.find(cardCode);
+      Optional<UserMeal> pupilDto = pupils.find(cardCode);
 
       if (!pupilDto.isPresent()) {
          LOG.info("User NOT found in DB [cardCode={}]", cardCode);
          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
-      Pupil dto = pupilDto.get();
+      UserMeal dto = pupilDto.get();
 
       switch (dto.getMeals().size()) {
 
@@ -74,24 +74,24 @@ public class MealRestController {
       }
    }
 
-   private ResponseEntity<PupilRepresentation> getMealResponse(Pupil pupil, Meal meal) {
+   private ResponseEntity<PupilRepresentation> getMealResponse(UserMeal userMeal, Meal meal) {
 
-      if (pupils.canHaveMeal(pupil.getCardCode(), new Date(), meal.getType())) {
+      if (pupils.canHaveMeal(userMeal.getCardCode(), new Date(), meal.getType())) {
 
-         eventLogs.save(pupil.getCardCode(), pupil.name(), pupil.getGrade(), meal.getPrice(), meal.getType(), pupil.getType());
+         eventLogs.save(userMeal.getCardCode(), userMeal.name(), userMeal.getGrade(), meal.getPrice(), meal.getType(), userMeal.getType());
 
          LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
-               pupil.name(), pupil.getCardCode(), meal.getType().name(), meal.getPrice());
+               userMeal.name(), userMeal.getCardCode(), meal.getType().name(), meal.getPrice());
 
          return new ResponseEntity<>(
-               new PupilRepresentation(pupil.getCardCode(), pupil.name(), meal, pupil.getGrade(), pupil.getType()),
+               new PupilRepresentation(userMeal.getCardCode(), userMeal.name(), meal, userMeal.getGrade(), userMeal.getType()),
                HttpStatus.ACCEPTED
          );
 
       } else {
-         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", pupil.name(), pupil.getCardCode());
+         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", userMeal.name(), userMeal.getCardCode());
          return new ResponseEntity<>(
-               new PupilRepresentation(pupil.getCardCode(), pupil.name(), meal, pupil.getGrade(), pupil.getType()),
+               new PupilRepresentation(userMeal.getCardCode(), userMeal.name(), meal, userMeal.getGrade(), userMeal.getType()),
                HttpStatus.ALREADY_REPORTED
          );
       }

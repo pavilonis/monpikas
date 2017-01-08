@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.canteen.reports;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
-import lt.pavilonis.cmm.canteen.service.PupilService;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +25,7 @@ public class ReportService {
    private MealEventLogRepository mealEventLogRepository;
 
    private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
-   private static final Logger LOG = getLogger(PupilService.class);
+   private static final Logger LOG = getLogger(UserMealService.class);
 
    public ByteArrayOutputStream generate(Date periodStart, Date periodEnd, PupilType pupilType) {
 

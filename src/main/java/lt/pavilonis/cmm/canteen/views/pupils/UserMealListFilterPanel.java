@@ -13,12 +13,12 @@ import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 @UIScope
 @SpringComponent
-public class PupilListFilterPanel extends MHorizontalLayout {
+public class UserMealListFilterPanel extends MHorizontalLayout {
 
    private final TextField textField = new TextField();
    private final ComboBox mealTypeCombo = new MealTypeComboBox();
 
-   public PupilListFilterPanel() {
+   public UserMealListFilterPanel() {
       mealTypeCombo.setCaption(null);
       mealTypeCombo.setNullSelectionAllowed(true);
       mealTypeCombo.setValue(null);
@@ -37,10 +37,7 @@ public class PupilListFilterPanel extends MHorizontalLayout {
    }
 
    private void filterAction() {
-   }
-
-   public PupilFilter getFilter() {
-      return new PupilFilter(textField.getValue(), (MealType) mealTypeCombo.getValue());
+      //TODO
    }
 
    public void cleanFields() {

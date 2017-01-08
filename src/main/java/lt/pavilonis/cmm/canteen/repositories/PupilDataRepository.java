@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repositories;
 
 import lt.pavilonis.TimeUtils;
-import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
+import lt.pavilonis.cmm.canteen.domain.MealData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,29 +31,29 @@ public class PupilDataRepository {
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
 
-   public Collection<PupilLocalData> loadByMeal(long mealId) {
-      Map<String, PupilLocalData> result = query(null, mealId, false);
+   public Collection<MealData> loadByMeal(long mealId) {
+      Map<String, MealData> result = query(null, mealId, false);
       return result.values();
    }
 
-   public Collection<PupilLocalData> loadAll(boolean withMealsAssigned) {
+   public Collection<MealData> loadAll(boolean withMealsAssigned) {
       return query(null, null, withMealsAssigned).values();
    }
 
-   public Optional<PupilLocalData> load(String cardCode) {
-      Map<String, PupilLocalData> result = query(cardCode, null, false);
+   public Optional<MealData> load(String cardCode) {
+      Map<String, MealData> result = query(cardCode, null, false);
       return result.isEmpty()
-            ? Optional.<PupilLocalData>empty()
+            ? Optional.<MealData>empty()
             : Optional.of(result.values().iterator().next());
    }
 
-   private Map<String, PupilLocalData> query(String cardCode, Long mealId, boolean withMealsAssigned) {
+   private Map<String, MealData> query(String cardCode, Long mealId, boolean withMealsAssigned) {
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", cardCode);
       args.put("mealId", mealId);
       args.put("withMealsAssigned", withMealsAssigned);
       LocalDateTime opStart = LocalDateTime.now();
-      Map<String, PupilLocalData> result = namedJdbc.query("" +
+      Map<String, MealData> result = namedJdbc.query("" +
                   "SELECT " +
                   "  p.cardCode, p.comment, p.type, " +
                   "  m.id, m.name, m.type, m.price, m.startTime, m.endTime " +
@@ -72,7 +72,7 @@ public class PupilDataRepository {
    }
 
    @Transactional
-   public PupilLocalData saveOrUpdate(PupilLocalData pupil) {
+   public MealData saveOrUpdate(MealData pupil) {
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", pupil.getCardCode());
       args.put("type", pupil.getType().name());

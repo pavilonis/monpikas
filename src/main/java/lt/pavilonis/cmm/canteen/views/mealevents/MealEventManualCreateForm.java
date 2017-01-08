@@ -10,7 +10,7 @@ import com.vaadin.ui.Table;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.views.components.MealTypeComboBox;
 
 import java.util.Date;
@@ -22,7 +22,7 @@ public class MealEventManualCreateForm extends Window {
 
    private final Button save = new Button("Pridėti pasirinktą", FontAwesome.PLUS);
    private final Button close = new Button("Uždaryti", FontAwesome.TIMES);
-   private final BeanContainer<String, Pupil> container = new BeanContainer<>(Pupil.class);
+   private final BeanContainer<String, UserMeal> container = new BeanContainer<>(UserMeal.class);
    private final Table table = new PupilsTable("Pasirinkite mokinį", container);
    private final DateField dateField = new DateField("Pasirinkite data: ", new Date());
    private final ComboBox eventTypeCombo = new MealTypeComboBox();
@@ -60,7 +60,7 @@ public class MealEventManualCreateForm extends Window {
       close.addClickListener(listener);
    }
 
-   public BeanContainer<String, Pupil> getContainer() {
+   public BeanContainer<String, UserMeal> getContainer() {
       return container;
    }
 
@@ -77,7 +77,7 @@ public class MealEventManualCreateForm extends Window {
    }
 
    private class PupilsTable extends Table {
-      public PupilsTable(String caption, BeanContainer<String, Pupil> container) {
+      public PupilsTable(String caption, BeanContainer<String, UserMeal> container) {
          super(caption, container);
          container.setBeanIdProperty("cardCode");
          setSizeFull();

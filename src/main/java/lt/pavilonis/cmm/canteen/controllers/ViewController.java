@@ -11,12 +11,12 @@ import com.vaadin.ui.MenuBar.MenuItem;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repositories.MealRepository;
 import lt.pavilonis.cmm.canteen.repositories.PupilDataRepository;
 import lt.pavilonis.cmm.canteen.repositories.UserRepository;
 import lt.pavilonis.cmm.canteen.service.MealService;
-import lt.pavilonis.cmm.canteen.service.PupilService;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.canteen.views.settings.MealFormWindow;
 import lt.pavilonis.cmm.canteen.views.settings.MealListView;
 import lt.pavilonis.cmm.canteen.views.settings.OtherSettingsView;
@@ -40,54 +40,20 @@ public class ViewController {
    private MealRepository mealRepository;
 
    @Autowired
-   private UserRepository userRepository;
-
-   @Autowired
-   private PupilService pupilService;
-
-   @Autowired
-   private PupilDataRepository pupilDataRepository;
-
-   @Autowired
-   private MealService mealService;
+   private UserMealService pupilService;
 
    public void attachComponents(VerticalLayout base) {
-
-      VerticalLayout content = new VerticalLayout();
-      content.setSizeFull();
-
-      MenuBar menu = new MenuBar();
 
       if (hasRole(getContext().getAuthentication(), "ROLE_ADMIN")) {
 
          menu.addItem(" Nustatymai", FontAwesome.WRENCH, selected -> {
-            HorizontalLayout hl = new HorizontalLayout();
-            hl.setSizeFull();
-
             MealListView view1 = new MealListView();
             view1.getContainer().addAll(mealRepository.loadAll());
             view1.setTableClickListener(portionListTableClickListener());
             view1.getControlPanel().addAddListener(portionAddListener(view1));
             view1.getControlPanel().addDeleteListener(portionDeleteListener(view1));
-
-            OtherSettingsView view2 = new OtherSettingsView();
-            view2.addSaveButtonClickListener(click -> show("Funkcionalumas nerealizuotas", WARNING_MESSAGE));
-            hl.addComponents(view1, view2);
-            content.removeAllComponents();
-            content.addComponent(hl);
          });
       }
-
-      MenuItem userItem = menu.addItem(" " + getContext().getAuthentication().getName(), FontAwesome.USER, null);
-      userItem.addItem(" Atsijungti", FontAwesome.POWER_OFF, selected -> {
-         content.removeAllComponents();
-         getContext().setAuthentication(null);
-         UI.getCurrent().close();
-         show("Atsijungta", HUMANIZED_MESSAGE);
-      });
-
-      base.addComponents(menu, content);
-      base.setExpandRatio(content, 1f);
    }
 
    private ClickListener portionDeleteListener(MealListView view) {
@@ -96,7 +62,7 @@ public class ViewController {
          if (mealId == null) {
             show("Niekas nepasirinkta", WARNING_MESSAGE);
          } else {
-            List<Pupil> portionUsers = pupilService.loadByMeal(mealId);
+            List<UserMeal> portionUsers = pupilService.loadByMeal(mealId);
             if (portionUsers.isEmpty()) {
                mealRepository.delete(mealId);
                view.getContainer().removeItem(mealId);

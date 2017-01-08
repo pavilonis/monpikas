@@ -2,8 +2,6 @@ package lt.pavilonis.cmm.ui.user.form;
 
 import com.google.common.io.BaseEncoding;
 import com.vaadin.server.Resource;
-import com.vaadin.server.StreamResource;
-import com.vaadin.server.ThemeResource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Image;
@@ -12,7 +10,6 @@ import com.vaadin.ui.Upload;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.converter.StringToDateConverter;
 import lt.pavilonis.cmm.domain.UserRepresentation;
-import org.apache.commons.lang3.StringUtils;
 import org.vaadin.viritin.BeanBinder;
 import org.vaadin.viritin.MBeanFieldGroup;
 import org.vaadin.viritin.fields.MDateField;
@@ -20,7 +17,6 @@ import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.io.ByteArrayInputStream;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -42,11 +38,12 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
    private final MBeanFieldGroup<UserRepresentation> binding;
 
    public UserEditWindowDetailsTab(UserRepresentation model,
+                                   Resource imageResource,
                                    Consumer<UserRepresentation> saveAction,
                                    Button saveButton,
                                    MessageSourceAdapter messages) {
       this.model = model;
-      this.messages  = messages;
+      this.messages = messages;
       this.cardCode = new MTextField(messages.get(this, "cardCode"));
       this.firstName = new MTextField(messages.get(this, "firstName"));
       this.lastName = new MTextField(messages.get(this, "lastName"));
@@ -73,7 +70,7 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
       cardCode.setEnabled(false);
       cardCode.setReadOnly(true);
 
-      updateUserPhoto(imageResource(model.getBase16photo()));
+      updateUserPhoto(imageResource);
 
       binding = BeanBinder.bind(model, this);
 
@@ -90,12 +87,6 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
          }
       });
       setHeight("481px");
-   }
-
-   private Resource imageResource(String base16photo) {
-      return StringUtils.isNoneBlank(base16photo) && BaseEncoding.base16().canDecode(base16photo)
-            ? new StreamResource(() -> new ByteArrayInputStream(BaseEncoding.base16().decode(base16photo)), "img.png")
-            : new ThemeResource("user_yellow_256.png");
    }
 
    private void updateUserPhoto(Resource imageResource) {

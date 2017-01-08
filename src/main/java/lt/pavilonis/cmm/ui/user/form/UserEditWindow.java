@@ -8,9 +8,10 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.VaadinUI;
+import lt.pavilonis.cmm.users.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
@@ -29,6 +30,9 @@ public class UserEditWindow extends Window {
 
    @Autowired
    private UserRestRepository userRepository;
+
+   @Autowired
+   private ImageService imageService;
 
    @Autowired
    public UserEditWindow(MessageSourceAdapter messages) {
@@ -71,7 +75,13 @@ public class UserEditWindow extends Window {
             messages.get(this, "hoursOfPresence")
       );
       sheet.addTab(
-            new UserEditWindowDetailsTab(user, updateAction, saveButton, messages),
+            new UserEditWindowDetailsTab(
+                  user,
+                  imageService.imageResource(user.getCardCode()),
+                  updateAction,
+                  saveButton,
+                  messages
+            ),
             messages.get(this, "editDetails")
       );
 //      } else {

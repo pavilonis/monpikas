@@ -8,9 +8,9 @@ import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.cmm.canteen.domain.Pupil;
+import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
-import lt.pavilonis.cmm.canteen.service.PupilService;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
@@ -34,7 +34,7 @@ public class MealEventListView extends MVerticalLayout {
    private final MealEventTable table;
 
    @Autowired
-   private PupilService pupilService;
+   private UserMealService pupilService;
 
    @Autowired
    private MealEventLogRepository eventLogs;
@@ -85,21 +85,24 @@ public class MealEventListView extends MVerticalLayout {
          String cardCode = (String) form.getTable().getValue();
          MealType type = form.getEventType();
          if (valid(cardCode, form.getDate(), type)) {
-            Pupil pupil = pupilService.find(cardCode).get();
+            UserMeal userMeal = pupilService.find(cardCode).get();
 
-            BigDecimal price = pupil.getMeals().stream()
+            BigDecimal price = userMeal
+                  .getMealData()
+                  .getMeals()
+                  .stream()
                   .filter(portion -> portion.getType() == type)
                   .findFirst()
                   .get()
                   .getPrice();
 
             MealEventLog log = eventLogs.save(
-                  pupil.getCardCode(),
-                  pupil.name(),
-                  pupil.getGrade(),
+                  userMeal.getUser().getCardCode(),
+                  userMeal.getUser().getName(),
+                  userMeal.getUser().getRole(),
                   price,
                   type,
-                  pupil.getType()
+                  userMeal.getMealData().getType()
             );
             container.addBean(log);
             form.close();

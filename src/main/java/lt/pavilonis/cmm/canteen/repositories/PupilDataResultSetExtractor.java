@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.canteen.repositories;
 
 import lt.pavilonis.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.canteen.domain.PupilLocalData;
+import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<String, PupilLocalData>> {
+public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<String, MealData>> {
 
    private static final Logger LOG = LoggerFactory.getLogger(PupilDataResultSetExtractor.class.getSimpleName());
    private final int ANY = 100500;
@@ -24,16 +24,16 @@ public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<Strin
    private int counter;
 
    @Override
-   public Map<String, PupilLocalData> extractData(ResultSet rs) throws SQLException, DataAccessException {
-      Map<String, PupilLocalData> result = new HashMap<>();
+   public Map<String, MealData> extractData(ResultSet rs) throws SQLException, DataAccessException {
+      Map<String, MealData> result = new HashMap<>();
       counter = 0;
       LocalDateTime opStart = LocalDateTime.now();
       while (rs.next()) {
          counter++;
          String cardCode = rs.getString("p.cardCode");
-         PupilLocalData pupilData = result.get(cardCode);
+         MealData pupilData = result.get(cardCode);
          if (pupilData == null) {
-            pupilData = new PupilLocalData(
+            pupilData = new MealData(
                   cardCode,
                   PupilType.valueOf(rs.getString("p.type")),
                   rs.getString("p.comment"),

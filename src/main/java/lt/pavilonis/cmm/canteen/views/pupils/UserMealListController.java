@@ -9,7 +9,7 @@ import lt.pavilonis.cmm.common.AbstractViewController;
 
 @UIScope
 @SpringComponent
-public class PupilListController extends AbstractViewController {
+public class UserMealListController extends AbstractViewController {
 
    @Override
    protected Class<? extends Component> getMainAreaClass() {
@@ -18,7 +18,7 @@ public class PupilListController extends AbstractViewController {
 
    @Override
    protected Class<? extends Component> getHeaderAreaClass() {
-      return PupilListFilterPanel.class;
+      return UserMealListFilterPanel.class;
    }
 
    @Override
