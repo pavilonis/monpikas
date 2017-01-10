@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
-import lt.pavilonis.cmm.canteen.repositories.MealEventLogRepository;
+import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -14,7 +14,7 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 public abstract class AbstractViewController implements ListController {
 
    @Autowired
-   private MessageSourceAdapter messages;
+   protected MessageSourceAdapter messages;
 
    @Override
    public Button getMenuButton() {
@@ -30,16 +30,20 @@ public abstract class AbstractViewController implements ListController {
       MVerticalLayout layout = new MVerticalLayout()
             .withMargin(false);
 
-      if (getHeaderAreaClass() != null) {
-         Component header = App.context.getBean(getHeaderAreaClass());
-         layout.add(header);
-      }
+      maybeAddHeader(layout);
 
       Component main = App.context.getBean(getMainAreaClass());
 
       return layout
             .add(main)
             .expand(main);
+   }
+
+   protected void maybeAddHeader(MVerticalLayout layout) {
+      if (getHeaderAreaClass() != null) {
+         Component header = App.context.getBean(getHeaderAreaClass());
+         layout.add(header);
+      }
    }
 
    @Override
