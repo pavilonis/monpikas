@@ -25,8 +25,6 @@ public class UserMealTable extends MTable<UserMeal> {
 
       this.pupilService = pupilService;
 
-      reload();
-
       setVisibleColumns("cardCode", "firstName", "lastName", "birthDate", "grade", "comment", "meals");
       setColumnHeaders("Kodas", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras", "Porcijos");
 

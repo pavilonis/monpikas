@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.controller;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.PupilRepresentation;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
@@ -41,7 +42,7 @@ public class MealRestController {
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
 
       LOG.info("Pupil meal request [cardCode={}]", cardCode);
-      Optional<UserMeal> pupilDto = pupils.find(cardCode);
+      Optional<UserMeal> pupilDto = pupils.load(cardCode);
 
       if (!pupilDto.isPresent()) {
          LOG.info("User NOT found in DB [cardCode={}]", cardCode);
@@ -86,13 +87,17 @@ public class MealRestController {
 
       if (pupils.canHaveMeal(userMeal.getUser().getCardCode(), new Date(), meal.getType())) {
 
-         eventLogs.save(
-               userMeal.getUser().getCardCode(),
-               userMeal.getUser().getName(),
-               userMeal.getUser().getGroup(),
-               meal.getPrice(),
-               meal.getType(),
-               userMeal.getMealData().getType()
+         eventLogs.saveOrUpdate(
+               new MealEventLog(
+                     null,
+                     userMeal.getUser().getCardCode(),
+                     userMeal.getUser().getName(),
+                     userMeal.getUser().getGroup(),
+                     null,
+                     meal.getPrice(),
+                     meal.getType(),
+                     userMeal.getMealData().getType()
+               )
          );
 
          LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",

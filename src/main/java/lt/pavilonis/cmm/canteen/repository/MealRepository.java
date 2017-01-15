@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,13 +16,14 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 
 @Repository
-public class MealRepository {
+public class MealRepository implements EntityRepository<Meal, Long> {
 
    private final MealMapper MAPPER = new MealMapper();
 
@@ -31,11 +33,14 @@ public class MealRepository {
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
 
+
+   @Override
    public List<Meal> loadAll() {
       return jdbc.query("SELECT m.* FROM Meal m", MAPPER);
    }
 
-   public void delete(long mealId) {
+   @Override
+   public void delete(Long mealId) {
       jdbc.update("DELETE FROM Meal WHERE id = ?", mealId);
    }
 
@@ -45,6 +50,16 @@ public class MealRepository {
             : namedJdbc.query("SELECT m.* FROM Meal m WHERE m.id IN (:ids)", singletonMap("ids", ids), MAPPER);
    }
 
+   @Override
+   public Optional<Meal> load(Long id) {
+      List<Meal> result = jdbc.query("SELECT m.* FROM Meal m WHERE m.id = ?", MAPPER, id);
+
+      return result.isEmpty()
+            ? Optional.<Meal>empty()
+            : Optional.of(result.get(0));
+   }
+
+   @Override
    public Meal saveOrUpdate(Meal meal) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", meal.getId());

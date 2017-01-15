@@ -1,22 +1,22 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
-import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
+import lt.pavilonis.cmm.common.AbstractListController;
+import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
+import org.vaadin.viritin.fields.MTable;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Optional;
 
 import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
@@ -26,9 +26,10 @@ import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
 
 @UIScope
 @SpringComponent
-public class MealEventListView extends MVerticalLayout {
+public class MealEventListView extends AbstractListController<MealEventLog, Long> {
 
-   private final MealEventTable table;
+   @Autowired
+   private MealEventTable table;
 
    @Autowired
    private UserMealService pupilService;
@@ -37,21 +38,24 @@ public class MealEventListView extends MVerticalLayout {
    private MealEventLogRepository eventLogs;
 
    @Autowired
-   public MealEventListView(MessageSourceAdapter messages,
-                            MealEventListFilterPanel filterPanel, MealEventTable table) {
-      this.table = table;
-      add(
-            filterPanel,
-            table,
-            new MHorizontalLayout(
-                  new MButton(FontAwesome.PLUS, messages.get(this, "buttonAdd"), click -> addAction()),
-                  new MButton(FontAwesome.WARNING, messages.get(this, "buttonDelete"), click -> deleteAction())
-                        .withStyleName("redicon")
-            ).withMargin(false)
-      );
-      expand(table);
-      setMargin(false);
-   }
+   private MealEventListFilterPanel filterPanel;
+
+//   @Autowired
+//   public MealEventListView(MessageSourceAdapter messages,
+//                            MealEventListFilterPanel filterPanel, MealEventTable table) {
+//      this.table = table;
+//      add(
+//            filterPanel,
+//            table,
+//            new MHorizontalLayout(
+//                  new MButton(FontAwesome.PLUS, messages.get(this, "buttonAdd"), click -> addAction()),
+//                  new MButton(FontAwesome.WARNING, messages.get(this, "buttonDelete"), click -> deleteAction())
+//                        .withStyleName("redicon")
+//            ).withMargin(false)
+//      );
+//      expand(table);
+//      setMargin(false);
+//   }
 
    private void deleteAction() {
       if (!hasRole("ROLE_ADMIN")) {
@@ -86,7 +90,7 @@ public class MealEventListView extends MVerticalLayout {
       String cardCode = (String) form.getTable().getValue();
       MealType type = form.getEventType();
       if (valid(cardCode, form.getDate(), type)) {
-         UserMeal userMeal = pupilService.find(cardCode).get();
+         UserMeal userMeal = pupilService.load(cardCode).get();
 
          BigDecimal price = userMeal
                .getMealData()
@@ -97,13 +101,18 @@ public class MealEventListView extends MVerticalLayout {
                .get()
                .getPrice();
 
-         MealEventLog log = eventLogs.save(
-               userMeal.getUser().getCardCode(),
-               userMeal.getUser().getName(),
-               userMeal.getUser().getRole(),
-               price,
-               type,
-               userMeal.getMealData().getType()
+         MealEventLog log = eventLogs.saveOrUpdate(
+               new MealEventLog(
+                     null,
+                     userMeal.getUser().getCardCode(),
+                     userMeal.getUser().getName(),
+                     userMeal.getUser().getGroup(),
+                     null,
+                     price,
+                     type,
+                     userMeal.getMealData().getType()
+
+               )
          );
          table.addBeans(log);
          form.close();
@@ -127,5 +136,21 @@ public class MealEventListView extends MVerticalLayout {
       } else {
          return true;
       }
+   }
+
+   @Override
+   protected MTable<MealEventLog> getTable() {
+      return table;
+   }
+
+
+   @Override
+   protected EntityRepository<MealEventLog, Long> getEntityRepository() {
+      return eventLogs;
+   }
+
+   @Override
+   protected Optional<Component> getHeader() {
+      return Optional.of(filterPanel);
    }
 }

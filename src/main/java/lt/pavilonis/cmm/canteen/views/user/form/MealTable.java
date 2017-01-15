@@ -8,10 +8,8 @@ import org.vaadin.viritin.fields.MTable;
 import java.util.List;
 
 public class MealTable extends MTable<Meal> {
-   public MealTable(List<Meal> meals) {
 
-      addBeans(meals);
-
+   public MealTable() {
       setVisibleColumns("id", "name", "type", "startTime", "endTime", "price");
       setColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
       setColumnCollapsingAllowed(true);
@@ -26,5 +24,10 @@ public class MealTable extends MTable<Meal> {
       setNullSelectionAllowed(false);
       setCacheRate(5);
       setHeight("370px");
+   }
+
+   public MealTable(List<Meal> meals) {
+      this();
+      addBeans(meals);
    }
 }

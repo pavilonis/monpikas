@@ -69,7 +69,9 @@ public class UserEditWindow extends Window {
          close();
          postSaveUpdateAction.run();
       };
-      user = userRepository.load(user.getCardCode());
+      user = userRepository.load(user.getCardCode())
+            .orElseThrow(() -> new RuntimeException("User not found"));
+
       sheet.addTab(
             new UserEditWindowPresenceTimeTabTable(userRepository, user.getCardCode(), messages),
             messages.get(this, "hoursOfPresence")

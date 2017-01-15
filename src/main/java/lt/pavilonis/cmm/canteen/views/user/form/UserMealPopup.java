@@ -137,7 +137,7 @@ public class UserMealPopup extends Window {
    }
 
    public void edit(String cardCode) {
-      UserMeal userMeal = pupilService.find(cardCode)
+      UserMeal userMeal = pupilService.load(cardCode)
             .orElseThrow(() -> new IllegalStateException("Could not find user by cardCode"));
 
       this.birthDateField.setValue(

@@ -1,28 +1,32 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Component;
-import lt.pavilonis.cmm.canteen.views.event.MealEventListView;
-import lt.pavilonis.cmm.common.AbstractViewController;
+import lt.pavilonis.cmm.canteen.domain.UserMeal;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
+import lt.pavilonis.cmm.common.AbstractFormController;
+import lt.pavilonis.cmm.common.AbstractListController;
+import lt.pavilonis.cmm.common.EntityRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.fields.MTable;
 
 @UIScope
 @SpringComponent
-public class UserMealListController extends AbstractViewController {
+public class UserMealListController extends AbstractListController<UserMeal, String> {
+
+   @Autowired
+   private UserMealTable table;
+
+   @Autowired
+   private UserMealService userMealService;
 
    @Override
-   protected Class<? extends Component> getMainAreaClass() {
-      return MealEventListView.class;
+   protected MTable<UserMeal> getTable() {
+      return table;
    }
 
    @Override
-   protected Class<? extends Component> getHeaderAreaClass() {
-      return UserMealListFilterPanel.class;
-   }
-
-   @Override
-   protected FontAwesome getMenuIcon() {
-      return FontAwesome.CHILD;
+   protected EntityRepository<UserMeal, String> getEntityRepository() {
+      return userMealService;
    }
 }

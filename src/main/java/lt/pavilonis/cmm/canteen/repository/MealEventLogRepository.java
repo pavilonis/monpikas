@@ -4,6 +4,7 @@ package lt.pavilonis.cmm.canteen.repository;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
+import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -13,14 +14,14 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Repository
-public class MealEventLogRepository {
+public class MealEventLogRepository implements EntityRepository<MealEventLog, Long> {
 
    private final RowMapper<MealEventLog> MAPPER = (rs, i) -> new MealEventLog(
          rs.getLong("id"),
@@ -38,10 +39,6 @@ public class MealEventLogRepository {
 
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
-
-   public MealEventLog load(long id) {
-      return jdbc.queryForObject("SELECT * FROM MealEventLog WHERE id = ?", MAPPER, id);
-   }
 
    public Date lastMealEventDate(String cardCode) {
       return jdbc.queryForObject("SELECT max(date) FROM MealEventLog WHERE cardCode = ?", Date.class, cardCode);
@@ -67,19 +64,16 @@ public class MealEventLogRepository {
       );
    }
 
-   public void delete(long id) {
-      jdbc.update("DELETE FROM MealEventLog WHERE id = ?", id);
-   }
-
-   public MealEventLog save(String cardCode, String name, String grade,
-                            BigDecimal price, MealType mealType, PupilType pupilType) {
+   @Override
+   public MealEventLog saveOrUpdate(MealEventLog entity) {
       Map<String, Object> args = new HashMap<>();
-      args.put("cardCode", cardCode);
-      args.put("name", name);
-      args.put("price", price);
-      args.put("mealType", mealType.name());
-      args.put("grade", grade);
-      args.put("pupilType", pupilType.name());
+      args.put("cardCode", entity.getCardCode());
+      args.put("name", entity.getName());
+      args.put("price", entity.getPrice());
+      args.put("mealType", entity.getMealType().name());
+      args.put("grade", entity.getGrade());
+      args.put("pupilType", entity.getPupilType().name());
+
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       namedJdbc.update(
@@ -89,6 +83,23 @@ public class MealEventLogRepository {
             keyHolder
       );
 
-      return load(keyHolder.getKey().longValue());
+      return load(keyHolder.getKey().longValue())
+            .orElseThrow(() -> new RuntimeException("could not saved mealEventLog"));
+   }
+
+   @Override
+   public List<MealEventLog> loadAll() {
+      return null;
+   }
+
+   @Override
+   public Optional<MealEventLog> load(Long id) {
+      MealEventLog result = jdbc.queryForObject("SELECT * FROM MealEventLog WHERE id = ?", MAPPER, id);
+      return Optional.of(result);
+   }
+
+   @Override
+   public void delete(Long id) {
+      jdbc.update("DELETE FROM MealEventLog WHERE id = ?", id);
    }
 }

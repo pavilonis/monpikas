@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.repository;
 
 import lt.pavilonis.TimeUtils;
+import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +23,10 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public class UserRestRepository {
+public class UserRestRepository implements EntityRepository<UserRepresentation, String> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_USERS = "users";
@@ -59,7 +62,8 @@ public class UserRestRepository {
       }
    }
 
-   public UserRepresentation load(String cardCode) {
+   @Override
+   public Optional<UserRepresentation> load(String cardCode) {
 
       LocalDateTime opStart = LocalDateTime.now();
 
@@ -67,7 +71,7 @@ public class UserRestRepository {
             .getForObject(uri(SEGMENT_USERS, cardCode), UserRepresentation.class);
 
       LOG.info("User loaded [cardCode={}, duration={}]", cardCode, TimeUtils.duration(opStart));
-      return result;
+      return Optional.ofNullable(result);
    }
 
    public void delete(String cardCode) {
@@ -101,5 +105,10 @@ public class UserRestRepository {
       PresenceTimeRepresentation[] response = restTemplate
             .getForObject(uri(SEGMENT_PRESENCE, cardCode), PresenceTimeRepresentation[].class);
       return Arrays.asList(response);
+   }
+
+   @Override
+   public UserRepresentation saveOrUpdate(UserRepresentation entity) {
+      throw new NotImplementedException("Not needed yet");
    }
 }

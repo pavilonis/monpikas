@@ -1,52 +1,61 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.server.FontAwesome;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
-import lt.pavilonis.cmm.App;
+import com.vaadin.ui.Notification;
 import org.vaadin.viritin.fields.MTable;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
-public abstract class AbstractListController extends AbstractViewController {
+import java.util.List;
+import java.util.Optional;
+
+import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
+import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
+
+public abstract class AbstractListController<T, ID> extends AbstractViewController {
 
    @Override
-   public Layout getListLayout() {
-      MVerticalLayout layout = new MVerticalLayout()
-            .withMargin(false);
-
-      maybeAddHeader(layout);
-
-      MTable main = configureTable();
-
-      return layout
-            .add(main)
-            .expand(main);
-   }
-
-   protected MTable configureTable() {
-      Class<? extends Component> mainAreaClass = getMainAreaClass();
-      if (!mainAreaClass.isAssignableFrom(MTable.class)) {
-         throw new IllegalArgumentException(
-               "Not suitable main area class. Should extend " + MTable.class.getSimpleName());
-      }
-
-      MTable<?> table = (MTable<?>) App.context.getBean(mainAreaClass);
-      table.addRowClickListener(click -> {
-
-      });
+   protected Component getMainArea() {
+      MTable<T> table = getTable();
+      addTableListener(table);
+      loadTableData(table);
       return table;
    }
 
-   @Override
-   public String getMenuButtonCaption() {
-      return messages.get(this, "caption");
+   protected void loadTableData(MTable<T> table) {
+      List<T> beans = getEntityRepository().loadAll();
+      table.addBeans(beans);
    }
 
-   protected Class<? extends Component> getHeaderAreaClass() {
-      return null;
+   protected void addTableListener(MTable<T> table) {
+
+      getFormController().ifPresent(
+            controller -> table.addRowClickListener(
+                  click -> controller.edit(click.getRow())
+            ));
    }
 
-   protected abstract Class<? extends Component> getMainAreaClass();
+   protected abstract MTable<T> getTable();
 
-   protected abstract FontAwesome getMenuIcon();
+   //TODO translate
+   protected void actionDelete(MTable<T> table) {
+      T selected = table.getValue();
+      if (selected == null) {
+         Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
+      } else {
+         table.removeItem(selected);
+         table.select(null);
+         Notification.show("Įrašas pašalintas", TRAY_NOTIFICATION);
+//         List<UserMeal> portionUsers = userMealService.loadByMeal(selected.getId());
+//         if (portionUsers.isEmpty()) {
+//            mealRepository.delete(selected.getId());
+//         } else {
+//            Notification.show("Porciją priskirta šioms kortelėms:", portionUsers.toString(), ERROR_MESSAGE);
+//         }
+      }
+   }
+
+   protected Optional<AbstractFormController<T, ID>> getFormController() {
+      return Optional.empty();
+   }
+
+   protected abstract EntityRepository<T, ID> getEntityRepository();
 }

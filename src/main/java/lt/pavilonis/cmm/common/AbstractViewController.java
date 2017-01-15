@@ -1,61 +1,39 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.ui.Button;
+import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
-import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-//TODO rename class?
-public abstract class AbstractViewController implements ListController {
+import java.util.Optional;
+
+public abstract class AbstractViewController {
 
    @Autowired
    protected MessageSourceAdapter messages;
 
-   @Override
-   public Button getMenuButton() {
-      return new MButton()
-            .withWidth("200px")
-            .withIcon(getMenuIcon())
-            .withCaption(getMenuButtonCaption())
-            .withStyleName("text-align-left");
+   public Component getView() {
+      AbstractOrderedLayout layout = getRootLayout();
+
+      getHeader()
+            .ifPresent(layout::addComponent);
+
+      Component mainArea = getMainArea();
+
+      layout.addComponent(mainArea);
+      layout.setExpandRatio(mainArea, 1f);
+
+      return layout;
    }
 
-   @Override
-   public Layout getListLayout() {
-      MVerticalLayout layout = new MVerticalLayout()
-            .withMargin(false);
-
-      maybeAddHeader(layout);
-
-      Component main = App.context.getBean(getMainAreaClass());
-
-      return layout
-            .add(main)
-            .expand(main);
+   protected Optional<Component> getHeader() {
+      return Optional.empty();
    }
 
-   protected void maybeAddHeader(MVerticalLayout layout) {
-      if (getHeaderAreaClass() != null) {
-         Component header = App.context.getBean(getHeaderAreaClass());
-         layout.add(header);
-      }
+   protected abstract Component getMainArea();
+
+   protected AbstractOrderedLayout getRootLayout() {
+      return new MVerticalLayout();
    }
-
-   @Override
-   public String getMenuButtonCaption() {
-      return messages.get(this, "caption");
-   }
-
-   protected Class<? extends Component> getHeaderAreaClass() {
-      return null;
-   }
-
-   protected abstract Class<? extends Component> getMainAreaClass();
-
-   protected abstract FontAwesome getMenuIcon();
 }

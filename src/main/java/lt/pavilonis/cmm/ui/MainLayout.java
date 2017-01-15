@@ -1,26 +1,34 @@
 package lt.pavilonis.cmm.ui;
 
+import com.vaadin.server.FontAwesome;
 import com.vaadin.shared.ui.label.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Layout;
-import lt.pavilonis.cmm.common.ListController;
+import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.canteen.views.event.MealEventListView;
+import lt.pavilonis.cmm.canteen.views.report.CanteenReportGeneratorView;
+import lt.pavilonis.cmm.canteen.views.setting.MealListView;
+import lt.pavilonis.cmm.canteen.views.user.UserMealListController;
+import lt.pavilonis.cmm.common.AbstractViewController;
+import lt.pavilonis.cmm.common.MenuButton;
+import lt.pavilonis.cmm.ui.key.KeyListController;
+import lt.pavilonis.cmm.ui.user.UserListController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.List;
+import java.util.stream.Stream;
 
 @SpringComponent
 @UIScope
 public class MainLayout extends MHorizontalLayout {
 
-   private static final MLabel APP_LABEL = new MLabel("<h2>V.O.B.L.A.</h2><h3>Vidinė Organizacijos Bendra Laiko Apskaita<h3>")
+   private static final MLabel APP_LABEL = new MLabel("<h2>ČMM</h2><h3><h3>")
          .withSize(MSize.size("500px", "200px"))
          .withContentMode(ContentMode.HTML);
 
@@ -30,7 +38,7 @@ public class MainLayout extends MHorizontalLayout {
          .alignAll(Alignment.MIDDLE_CENTER);
 
    @Autowired
-   public MainLayout(List<ListController> listControllers) {
+   public MainLayout(MessageSourceAdapter messages) {
       setSizeFull();
       MVerticalLayout menuBar = new MVerticalLayout()
             .withWidth("210px")
@@ -39,18 +47,30 @@ public class MainLayout extends MHorizontalLayout {
 
       add(menuBar, stage).expand(stage);
 
-      listControllers
-            .stream()
-            .sorted((i1, i2) -> i1.getMenuButtonCaption().compareTo(i2.getMenuButtonCaption()))
-            .forEach(controller -> {
-               Button menuButton = controller.getMenuButton();
-               menuButton.addClickListener(click -> updateStage(controller));
-               menuBar.add(menuButton);
-            });
+      Stream.of(
+            new MenuButton(CanteenReportGeneratorView.class, FontAwesome.FILE_EXCEL_O),
+            new MenuButton(MealListView.class, FontAwesome.WRENCH),
+            new MenuButton(MealEventListView.class, FontAwesome.CUTLERY),
+            new MenuButton(UserMealListController.class, FontAwesome.CHILD),
+            new MenuButton(UserListController.class, FontAwesome.USER),
+            new MenuButton(KeyListController.class, FontAwesome.KEY)
+      ).forEach(
+            button -> {
+               // TODO add role check here
+               Class<? extends AbstractViewController> clazz = button.getControllerClass();
+
+               button.setCaption(messages.get(clazz, "caption"));
+               button.addClickListener(click -> updateStage(clazz));
+
+               menuBar.add(button);
+            }
+      );
    }
 
-   private void updateStage(ListController controller) {
-      Layout newComponent = controller.getListLayout();
+   // TODO not always "list" controller here?
+   private void updateStage(Class<? extends AbstractViewController> viewControllerClass) {
+      AbstractViewController controller = App.context.getBean(viewControllerClass);
+      Component newComponent = controller.getView();
       stage.removeComponent(currentComponent);
       stage.addComponent(newComponent);
       currentComponent = newComponent;

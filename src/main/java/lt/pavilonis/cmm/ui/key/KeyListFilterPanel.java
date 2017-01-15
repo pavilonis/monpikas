@@ -119,7 +119,7 @@ class KeyListFilterPanel extends MHorizontalLayout {
       periodEnd.setValue(new Date());
    }
 
-   private void reload() {
+   void reload() {
       List<KeyRepresentation> beans = keys.load(
             scannerCombo.getValue() == null ? null : ((ScannerRepresentation) scannerCombo.getValue()).getId(),
             textField.getValue(),

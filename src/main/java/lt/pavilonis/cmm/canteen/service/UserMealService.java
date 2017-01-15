@@ -7,7 +7,9 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.repository.PupilDataRepository;
 import lt.pavilonis.cmm.canteen.repository.UserRepository;
+import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +25,7 @@ import java.util.Optional;
 import static java.util.stream.Collectors.toList;
 
 @Service
-public class UserMealService {
+public class UserMealService implements EntityRepository<UserMeal, String> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserMealService.class.getSimpleName());
 
@@ -36,7 +38,8 @@ public class UserMealService {
    @Autowired
    private MealEventLogRepository eventsRepository;
 
-   public Optional<UserMeal> find(String cardCode) {
+   @Override
+   public Optional<UserMeal> load(String cardCode) {
       Optional<UserRepresentation> optionalUser = usersRepository.load(cardCode);
       if (!optionalUser.isPresent()) {
          return Optional.empty();
@@ -83,7 +86,8 @@ public class UserMealService {
       return c.getTime();
    }
 
-   public Collection<UserMeal> loadAll() {
+   @Override
+   public List<UserMeal> loadAll() {
       LocalDateTime opStart = LocalDateTime.now();
       Collection<MealData> pupilDataCollection = pupilDataRepository.loadAll(false);
       LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
@@ -139,5 +143,15 @@ public class UserMealService {
             .filter(Optional::isPresent)
             .map(Optional::get)
             .collect(toList());
+   }
+
+   @Override
+   public UserMeal saveOrUpdate(UserMeal entity) {
+      throw new NotImplementedException("not needed");
+   }
+
+   @Override
+   public void delete(String cardCode) {
+      throw new NotImplementedException("not needed");
    }
 }

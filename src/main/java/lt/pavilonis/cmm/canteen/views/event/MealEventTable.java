@@ -29,7 +29,6 @@ public class MealEventTable extends MTable<MealEventLog> {
    @Autowired
    public MealEventTable(MealService mealService, MessageSourceAdapter messages) {
       this.mealService = mealService;
-      reload();
       setSizeFull();
       setConverter("date", new StringToDateConverter() {
          @Override
