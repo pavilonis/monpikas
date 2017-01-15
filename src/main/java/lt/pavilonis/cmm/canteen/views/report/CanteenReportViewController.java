@@ -29,7 +29,7 @@ import static com.vaadin.ui.Alignment.TOP_CENTER;
 
 @SpringComponent
 @UIScope
-public class CanteenReportGeneratorView extends AbstractViewController {
+public class CanteenReportViewController extends AbstractViewController {
 
    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private final ComboBox pupilTypeCombo = pupilTypeCombo();

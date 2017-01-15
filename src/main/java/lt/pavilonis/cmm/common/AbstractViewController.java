@@ -4,6 +4,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Optional;
@@ -16,14 +17,12 @@ public abstract class AbstractViewController {
    public Component getView() {
       AbstractOrderedLayout layout = getRootLayout();
 
-      getHeader()
-            .ifPresent(layout::addComponent);
-
       Component mainArea = getMainArea();
 
+      getHeader().ifPresent(layout::addComponent);
       layout.addComponent(mainArea);
-      layout.setExpandRatio(mainArea, 1f);
 
+      layout.setExpandRatio(mainArea, 1f);
       return layout;
    }
 
@@ -34,6 +33,8 @@ public abstract class AbstractViewController {
    protected abstract Component getMainArea();
 
    protected AbstractOrderedLayout getRootLayout() {
-      return new MVerticalLayout();
+      return new MVerticalLayout()
+            .withSize(MSize.FULL_SIZE)
+            .withMargin(false);
    }
 }

@@ -25,19 +25,20 @@ public class UserMealTable extends MTable<UserMeal> {
 
       this.pupilService = pupilService;
 
-      setVisibleColumns("cardCode", "firstName", "lastName", "birthDate", "grade", "comment", "meals");
-      setColumnHeaders("Kodas", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras", "Porcijos");
+      withProperties("user.cardCode", "user.firstName", "user.lastName",
+            "user.birthDate", "user.group", "mealData.comment", "mealData.meals");
+      withColumnHeaders("Kodas", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras", "Porcijos");
 
-      setColumnWidth("grade", 85);
-      setColumnWidth("birthDate", 130);
-      setColumnWidth("cardCode", 90);
+      setColumnWidth("user.group", 85);
+      setColumnWidth("user.birthDate", 130);
+      setColumnWidth("user.cardCode", 90);
 
-      setConverter("meals", new CollectionCellConverter());
+      setConverter("mealData.meals", new CollectionCellConverter());
 
-      setColumnAlignment("birthDate", CENTER);
+      setColumnAlignment("user.birthDate", CENTER);
 
       setColumnCollapsingAllowed(true);
-      setColumnCollapsed("cardCode", true);
+      setColumnCollapsed("user.cardCode", true);
       setSelectable(true);
       setNullSelectionAllowed(false);
       setCacheRate(5);

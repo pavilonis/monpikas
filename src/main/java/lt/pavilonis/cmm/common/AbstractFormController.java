@@ -14,23 +14,19 @@ import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
 
-public abstract class AbstractFormController<T, ID> extends Window implements FormController {
+public abstract class AbstractFormController<T, ID> implements FormController {
 
    private T model;
    private MBeanFieldGroup<T> binding;
+   private Window window;
 
    @Autowired
    protected MessageSourceAdapter messageSourceAdapter;
 
-   public AbstractFormController() {
-      setCaption(messageSourceAdapter.get(this, "caption"));
-      setContent(composeLayout());
-   }
-
    @Override
    public void actionSave() {
       if (!binding.isValid()) {
-         setComponentError(new UserError("Invalid field values"));
+         window.setComponentError(new UserError("Invalid field values"));
 //         Notification.show("Invalid field values", Notification.Type.WARNING_MESSAGE);
          return;
       }
@@ -41,16 +37,7 @@ public abstract class AbstractFormController<T, ID> extends Window implements Fo
 
    @Override
    public void actionClose() {
-      close();
-   }
-
-   public Component composeLayout() {
-      Component fieldLayout = createFieldLayout();
-      Component controlLayout = createControlLayout();
-      return new MVerticalLayout(
-            fieldLayout,
-            controlLayout
-      );
+      window.close();
    }
 
    private Component createControlLayout() {
@@ -63,9 +50,20 @@ public abstract class AbstractFormController<T, ID> extends Window implements Fo
    protected abstract Component createFieldLayout();
 
    public void edit(T entity) {
+      Component fieldLayout = createFieldLayout();
+      Component controlLayout = createControlLayout();
+      window = new Window(
+            messageSourceAdapter.get(this, "caption"),
+            new MVerticalLayout(
+                  fieldLayout,
+                  controlLayout
+            )
+      );
+
       this.model = entity;
-      this.binding = BeanBinder.bind(model, this);
-      UI.getCurrent().addWindow(this);
+      this.binding = BeanBinder.bind(model, fieldLayout);
+
+      UI.getCurrent().addWindow(window);
    }
 
    protected abstract EntityRepository<T, ID> getEntityRepository();

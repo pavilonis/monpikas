@@ -18,9 +18,9 @@ class UserTable extends MTable<UserRepresentation> {
                     UserEditWindow editPopup,
                     MessageSourceAdapter messages) {
 
-      addBeans(userRepository.loadAll());
-      setVisibleColumns("cardCode", "firstName", "lastName", "role", "group");
-      setColumnHeaders(
+//      addBeans(userRepository.loadAll());
+      withProperties("cardCode", "firstName", "lastName", "role", "group");
+      withColumnHeaders(
             messages.get(this, "cardCode"),
             messages.get(this, "firstName"),
             messages.get(this, "lastName"),

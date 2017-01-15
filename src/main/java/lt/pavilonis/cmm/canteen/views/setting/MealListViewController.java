@@ -15,7 +15,7 @@ import java.util.Optional;
 
 @SpringComponent
 @UIScope
-public class MealListView extends AbstractListController<Meal, Long> {
+public class MealListViewController extends AbstractListController<Meal, Long> {
 
    @Autowired
    private MealRepository mealRepository;

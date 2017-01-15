@@ -13,7 +13,6 @@ import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.ListContainer;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
@@ -33,53 +32,40 @@ class UserListFilterPanel extends MHorizontalLayout {
 
       TextField textField = new MTextField(messages.get(this, "firstLastName"));
 
-      ListContainer container = (ListContainer) table.getContainerDataSource();
-      @SuppressWarnings("unchecked")
-      List<UserRepresentation> userData = (List<UserRepresentation>) container.getItemIds();
-
-//      MButton deleteButton = new MButton(
-//            FontAwesome.REMOVE,
-//            messages.get(this, "delete"),
-//            event -> {
-//               if (table.getValue() != null) {
-//                  userRepository.delete(table.getValue().getCardCode());
-//                  Notification.show(messages.get(this, "deleted"), Notification.Type.TRAY_NOTIFICATION);
-//               }
-//            }
+//      ListContainer container = (ListContainer) table.getContainerDataSource();
+//      @SuppressWarnings("unchecked")
+//      List<UserRepresentation> userData = (List<UserRepresentation>) container.getItemIds();
+//
+//
+//      ComboBox groupCombo = propertyListCombo(
+//            messages.get(this, "group"),
+//            userData,
+//            UserRepresentation::getGroup
 //      );
-//      deleteButton.setEnabled(false);
-//      MHorizontalLayout controlsLayout = new MHorizontalLayout(deleteButton)
-//            .alignAll(Alignment.BOTTOM_RIGHT);
-
-      ComboBox groupCombo = propertyListCombo(
-            messages.get(this, "group"),
-            userData,
-            UserRepresentation::getGroup
-      );
-      ComboBox roleCombo = propertyListCombo(
-            messages.get(this, "role"),
-            userData,
-            UserRepresentation::getRole
-      );
+//      ComboBox roleCombo = propertyListCombo(
+//            messages.get(this, "role"),
+//            userData,
+//            UserRepresentation::getRole
+//      );
 
       Runnable containerUpdate = () -> {
          List<UserRepresentation> beans = userRepository
-               .loadAll(textField.getValue(), (String) roleCombo.getValue(), (String) groupCombo.getValue());
+               .loadAll(textField.getValue(), null, null);//(String) roleCombo.getValue(), (String) groupCombo.getValue());
          table.setBeans(beans);
          table.sort();
       };
 
       Runnable resetFields = () -> {
-         roleCombo.setValue(null);
-         groupCombo.setValue(null);
+//         roleCombo.setValue(null);
+//         groupCombo.setValue(null);
          textField.setValue(null);
          containerUpdate.run();
       };
 
       addComponents(
             textField,
-            roleCombo,
-            groupCombo,
+//            roleCombo,
+//            groupCombo,
             new MButton(
                   FontAwesome.FILTER,
                   messages.get(this, "filter"),

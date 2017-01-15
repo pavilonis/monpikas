@@ -10,8 +10,8 @@ import java.util.List;
 public class MealTable extends MTable<Meal> {
 
    public MealTable() {
-      setVisibleColumns("id", "name", "type", "startTime", "endTime", "price");
-      setColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
+      withProperties("id", "name", "type", "startTime", "endTime", "price");
+      withColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
       setColumnCollapsingAllowed(true);
       setColumnCollapsed("id", true);
 

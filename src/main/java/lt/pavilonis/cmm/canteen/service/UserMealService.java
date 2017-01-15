@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.service;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;

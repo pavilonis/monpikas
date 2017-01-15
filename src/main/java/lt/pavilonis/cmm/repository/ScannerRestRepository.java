@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.repository;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

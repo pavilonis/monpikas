@@ -29,7 +29,10 @@ public class MealEventTable extends MTable<MealEventLog> {
    @Autowired
    public MealEventTable(MealService mealService, MessageSourceAdapter messages) {
       this.mealService = mealService;
-      setSizeFull();
+
+      withProperties("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
+      withColumnHeaders("Id", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
+
       setConverter("date", new StringToDateConverter() {
          @Override
          public DateFormat getFormat(Locale locale) {
@@ -44,8 +47,6 @@ public class MealEventTable extends MTable<MealEventLog> {
       });
       setConverter("mealType", new MealTypeCellConverter());
       setConverter("pupilType", new PupilTypeCellConverter());
-      setVisibleColumns("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
-      setColumnHeaders("Id", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
       setColumnWidth("cardCode", 100);
       setColumnWidth("grade", 60);
       setColumnAlignment("grade", CENTER);

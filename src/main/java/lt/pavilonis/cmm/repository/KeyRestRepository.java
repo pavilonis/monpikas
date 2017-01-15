@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.repository;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
 import lt.pavilonis.cmm.util.UriUtils;
 import org.apache.commons.lang3.StringUtils;

@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.ui.user.form;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Upload;
-import lt.pavilonis.ImageUtils;
+import lt.pavilonis.util.ImageUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;

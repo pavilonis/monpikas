@@ -5,6 +5,7 @@ import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.common.EntityRepository;
+import org.joda.time.LocalDate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -89,7 +90,7 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
 
    @Override
    public List<MealEventLog> loadAll() {
-      return null;
+      return loadAfter(LocalDate.now().minusMonths(1).toDate());
    }
 
    @Override

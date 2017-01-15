@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.repository;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.domain.UserRepresentation;

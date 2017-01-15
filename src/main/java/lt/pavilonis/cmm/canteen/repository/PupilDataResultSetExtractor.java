@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.PupilType;

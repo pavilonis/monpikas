@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.common;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
+import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.fields.MTable;
 
 import java.util.List;
@@ -14,7 +15,9 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
 
    @Override
    protected Component getMainArea() {
-      MTable<T> table = getTable();
+      MTable<T> table = getTable()
+            .withSize(MSize.FULL_SIZE);
+
       addTableListener(table);
       loadTableData(table);
       return table;

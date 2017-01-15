@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.TimeUtils;
+import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

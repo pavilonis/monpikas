@@ -26,7 +26,7 @@ import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
 
 @UIScope
 @SpringComponent
-public class MealEventListView extends AbstractListController<MealEventLog, Long> {
+public class MealEventListViewController extends AbstractListController<MealEventLog, Long> {
 
    @Autowired
    private MealEventTable table;

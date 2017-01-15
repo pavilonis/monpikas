@@ -8,9 +8,9 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.canteen.views.event.MealEventListView;
-import lt.pavilonis.cmm.canteen.views.report.CanteenReportGeneratorView;
-import lt.pavilonis.cmm.canteen.views.setting.MealListView;
+import lt.pavilonis.cmm.canteen.views.event.MealEventListViewController;
+import lt.pavilonis.cmm.canteen.views.report.CanteenReportViewController;
+import lt.pavilonis.cmm.canteen.views.setting.MealListViewController;
 import lt.pavilonis.cmm.canteen.views.user.UserMealListController;
 import lt.pavilonis.cmm.common.AbstractViewController;
 import lt.pavilonis.cmm.common.MenuButton;
@@ -48,9 +48,9 @@ public class MainLayout extends MHorizontalLayout {
       add(menuBar, stage).expand(stage);
 
       Stream.of(
-            new MenuButton(CanteenReportGeneratorView.class, FontAwesome.FILE_EXCEL_O),
-            new MenuButton(MealListView.class, FontAwesome.WRENCH),
-            new MenuButton(MealEventListView.class, FontAwesome.CUTLERY),
+            new MenuButton(CanteenReportViewController.class, FontAwesome.FILE_EXCEL_O),
+            new MenuButton(MealListViewController.class, FontAwesome.WRENCH),
+            new MenuButton(MealEventListViewController.class, FontAwesome.CUTLERY),
             new MenuButton(UserMealListController.class, FontAwesome.CHILD),
             new MenuButton(UserListController.class, FontAwesome.USER),
             new MenuButton(KeyListController.class, FontAwesome.KEY)
