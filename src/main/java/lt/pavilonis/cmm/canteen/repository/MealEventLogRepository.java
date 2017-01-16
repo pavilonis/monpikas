@@ -78,8 +78,8 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       namedJdbc.update(
-            "INSERT INTO MealEventLog (cardCode, `name`, price, mealType, grade, pupilType) " +
-                  "VALUES (:cardCode, :name, :price, :mealType, :grade, :pupilType)",
+            "INSERT INTO MealEventLog (cardCode, `name`, price, mealType, grade, pupilType, date) " +
+                  "VALUES (:cardCode, :name, :price, :mealType, :grade, :pupilType, NOW())",
             new MapSqlParameterSource(args),
             keyHolder
       );

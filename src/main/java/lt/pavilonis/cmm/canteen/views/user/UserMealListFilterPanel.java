@@ -15,6 +15,7 @@ import org.vaadin.viritin.layouts.MHorizontalLayout;
 public class UserMealListFilterPanel extends MHorizontalLayout {
 
    public UserMealListFilterPanel() {
+
       TextField textField = new TextField();
       EnumComboBox<MealType> mealTypeComboBox = new EnumComboBox<>(MealType.class);
       mealTypeComboBox.setCaption(null);
@@ -32,7 +33,7 @@ public class UserMealListFilterPanel extends MHorizontalLayout {
             }).withClickShortcut(KeyCode.ESCAPE)
       );
       setSpacing(true);
-      setMargin(true);
+      setMargin(false);
       textField.focus();
    }
 

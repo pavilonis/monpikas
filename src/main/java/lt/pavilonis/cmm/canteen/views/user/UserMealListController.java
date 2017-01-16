@@ -2,13 +2,15 @@ package lt.pavilonis.cmm.canteen.views.user;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
-import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
+
+import java.util.Optional;
 
 @UIScope
 @SpringComponent
@@ -20,6 +22,9 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    @Autowired
    private UserMealService userMealService;
 
+   @Autowired
+   private UserMealListFilterPanel filterPanel;
+
    @Override
    protected MTable<UserMeal> getTable() {
       return table;
@@ -28,5 +33,10 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    @Override
    protected EntityRepository<UserMeal, String> getEntityRepository() {
       return userMealService;
+   }
+
+   @Override
+   protected Optional<Component> getHeader() {
+      return Optional.of(filterPanel);
    }
 }

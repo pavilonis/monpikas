@@ -25,7 +25,7 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
 
    protected void loadTableData(MTable<T> table) {
       List<T> beans = getEntityRepository().loadAll();
-      table.addBeans(beans);
+      table.setBeans(beans);
    }
 
    protected void addTableListener(MTable<T> table) {
