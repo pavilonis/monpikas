@@ -5,7 +5,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
-import lt.pavilonis.cmm.canteen.views.converter.CollectionCellConverter;
+import lt.pavilonis.cmm.converter.CollectionCellConverter;
 import lt.pavilonis.cmm.canteen.views.user.form.UserMealPopup;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
@@ -27,8 +27,10 @@ public class UserMealTable extends MTable<UserMeal> {
 
       withProperties("user.cardCode", "user.firstName", "user.lastName",
             "user.birthDate", "user.group", "mealData.comment", "mealData.meals");
+
       withColumnHeaders("Kodas", "Vardas", "Pavardė", "Gimimo data", "Klasė", "Komentaras", "Porcijos");
 
+      setVisibleColumns();
       setColumnWidth("user.group", 85);
       setColumnWidth("user.birthDate", 130);
       setColumnWidth("user.cardCode", 90);

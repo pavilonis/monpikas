@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.report;
 
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
@@ -18,11 +19,11 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import static java.util.Collections.reverseOrder;
-import static lt.pavilonis.cmm.util.Messages.label;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
 
 public class Report {
 
+   private final MessageSourceAdapter messages;
    private final ReportHelper helper;
    private final HSSFSheet sheet;
    private final HSSFWorkbook workbook;
@@ -30,7 +31,8 @@ public class Report {
    private final List<MealEventLog> events;
    private final Map<MealType, BigDecimal> sums = new HashMap<>();
 
-   public Report(String periodTitle, List<MealEventLog> events) {
+   public Report(MessageSourceAdapter messages, String periodTitle, List<MealEventLog> events) {
+      this.messages = messages;
       this.workbook = new HSSFWorkbook();
       this.sheet = workbook.createSheet("Ataskaita");
       this.helper = new ReportHelper(sheet);
@@ -43,19 +45,24 @@ public class Report {
       formatPage();
       setColumnWidths();
 
-      helper.cell(0, 0, label("Report.Title")).bold().mergeTo(6).create();
+      helper.cell(0, 0, messages.get(this, "title")).bold().mergeTo(6).create();
       helper.cell(0, 1, periodTitle).bold().mergeTo(6).create();
-      helper.cell(0, 3, label("PupilType." + pupilType)).mergeTo(6).create();
+      helper.cell(0, 3, messages.get(PupilType.class, pupilType.name())).mergeTo(6).create();
 
-      for (MealType type : MealType.values()) {
+      for (MealType mealType : MealType.values()) {
 
          Map<String, List<MealEventLog>> pupilMealsMap = events.stream()
-               .filter(event -> event.getMealType() == type)
+               .filter(event -> event.getMealType() == mealType)
                .collect(Collectors.groupingBy(MealEventLog::getCardCode));
 
          if (!pupilMealsMap.isEmpty()) {
             int rowNum = lastRow(2);
-            helper.cell(0, rowNum++, label("MealType." + type)).mergeTo(6).bold().heigth(500).create();
+            helper.cell(0, rowNum++, messages.get(MealType.class, mealType.name()))
+                  .mergeTo(6)
+                  .bold()
+                  .heigth(500)
+                  .create();
+
             helper.cell(0, rowNum, "Eil.\nnr.").bold().heigth(900).create();
             helper.cell(1, rowNum, "Vardas Pavardė").bold().create();
             helper.cell(2, rowNum, "Kl.").bold().create();
@@ -64,28 +71,51 @@ public class Report {
             helper.cell(5, rowNum, "Skirta\nlėšų\ndienai").bold().create();
             helper.cell(6, rowNum, "Viso\npanaudota\nlėšų").bold().create();
 
-            sums.put(type, BigDecimal.ZERO);
+            sums.put(mealType, BigDecimal.ZERO);
 
             int index = 1;
             for (List<MealEventLog> events : pupilMealsMap.values()) {
-               sums.put(type, sums.get(type).add(printCalculate(index++, events)));
+               sums.put(mealType, sums.get(mealType).add(printCalculate(index++, events)));
             }
          }
       }
 
-      helper.cell(3, lastRow(2), "Viso panaudota lėšų:").align(HorizontalAlignment.RIGHT).noBorder().create();
+      helper.cell(3, lastRow(2), "Viso panaudota lėšų:")
+            .align(HorizontalAlignment.RIGHT)
+            .noBorder()
+            .create();
 
-      sums.forEach((k, v) -> {
-         helper.cell(4, lastRow() + 1, label("MealType." + k)).mergeTo(5).align(HorizontalAlignment.RIGHT).noBorder().create();
-         helper.cell(6, lastRow(), v.toString()).noBorder().bold().create();
+      sums.forEach((mealType, amount) -> {
+         helper.cell(4, lastRow() + 1, messages.get(MealType.class, mealType.name()))
+               .mergeTo(5)
+               .align(HorizontalAlignment.RIGHT)
+               .noBorder()
+               .create();
+
+         helper.cell(6, lastRow(), amount.toString())
+               .noBorder()
+               .bold()
+               .create();
       });
 
-      BigDecimal total = sums.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-      helper.cell(5, lastRow(1), "VISO").noBorder().align(HorizontalAlignment.RIGHT).create();
+      BigDecimal total = sums.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+      helper.cell(5, lastRow(1), "VISO")
+            .noBorder()
+            .align(HorizontalAlignment.RIGHT)
+            .create();
+
       helper.cell(6, lastRow(), total).noBorder().bold().create();
 
-      helper.cell(1, lastRow(2), "Socialinis pedagogas").noBorder().create();
-      helper.cell(3, lastRow(), "Darius Jucys").align(HorizontalAlignment.RIGHT).noBorder().create();
+      helper.cell(1, lastRow(2), "Socialinis pedagogas")
+            .noBorder()
+            .create();
+
+      helper.cell(3, lastRow(), "Darius Jucys")
+            .align(HorizontalAlignment.RIGHT)
+            .noBorder()
+            .create();
 
       return workbook;
    }

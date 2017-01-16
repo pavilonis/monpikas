@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.report;
 
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
@@ -24,6 +25,9 @@ public class ReportService {
    @Autowired
    private MealEventLogRepository mealEventLogRepository;
 
+   @Autowired
+   private MessageSourceAdapter messages;
+
    private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private static final Logger LOG = getLogger(UserMealService.class);
 
@@ -32,7 +36,9 @@ public class ReportService {
       List<MealEventLog> events = mealEventLogRepository.load(pupilType, periodStart, periodEnd);
 
       String reportPeriod = DATE_FORMAT.format(periodStart) + "  -  " + DATE_FORMAT.format(periodEnd);
-      HSSFWorkbook wb = new Report(reportPeriod, events).create(pupilType);
+
+      HSSFWorkbook wb = new Report(messages, reportPeriod, events)
+            .create(pupilType);
 
       try (ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
          wb.write(baos);

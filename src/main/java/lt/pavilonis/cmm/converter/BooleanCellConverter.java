@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.views.converter;
+package lt.pavilonis.cmm.converter;
 
 import com.vaadin.data.util.converter.StringToBooleanConverter;
 

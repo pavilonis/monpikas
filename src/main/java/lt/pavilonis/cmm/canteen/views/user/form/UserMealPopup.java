@@ -47,7 +47,7 @@ public class UserMealPopup extends Window {
    private static final String NO_PHOTO_PATH = "static/images/noPhoto.png";
 
    private final BeanFieldGroup<MealData> group = new BeanFieldGroup<>(MealData.class);
-   private final MealTable mealTable = new MealTable(Collections.<Meal>emptyList());
+   private final MealTable mealTable;
    private final MTextField nameField;
    private final MTextField birthDateField;
    private final MTextField lastMealField;
@@ -64,6 +64,7 @@ public class UserMealPopup extends Window {
                         MealService mealService, ImageService imageService,
                         MealRepository mealRepository) {
       this.messages = messages;
+      this.mealTable = new MealTable(messages, Collections.<Meal>emptyList());
       this.pupilService = pupilService;
       this.mealService = mealService;
       this.imageService = imageService;

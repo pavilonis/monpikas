@@ -30,7 +30,7 @@ public class MealListViewController extends AbstractListController<Meal, Long> {
 
    @Override
    protected MTable<Meal> getTable() {
-      return new MealTable();
+      return new MealTable(messages);
    }
 
    @Override

@@ -10,7 +10,7 @@ import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.repository.MealRepository;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
-import lt.pavilonis.cmm.canteen.views.converter.LocalTimeToDateConverter;
+import lt.pavilonis.cmm.converter.LocalTimeToDateConverter;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;

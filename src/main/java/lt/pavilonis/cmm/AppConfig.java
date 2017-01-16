@@ -76,7 +76,7 @@ public class AppConfig {
    }
 
    @Bean
-   public Flyway flywayApi() {
+   public Flyway flyway() {
       Flyway flyway = new Flyway();
       flyway.setDataSource(dataSource());
       flyway.setLocations("classpath:migration");

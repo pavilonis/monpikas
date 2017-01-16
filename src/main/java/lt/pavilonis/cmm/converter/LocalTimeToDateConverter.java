@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.views.converter;
+package lt.pavilonis.cmm.converter;
 
 import com.vaadin.data.util.converter.Converter;
 
@@ -15,7 +15,10 @@ import static java.time.LocalDate.now;
 public class LocalTimeToDateConverter implements Converter<Date, LocalTime> {
    @Override
    public LocalTime convertToModel(Date value, Class<? extends LocalTime> targetType, Locale locale) throws ConversionException {
-      return LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()).toLocalTime();
+
+      return value == null
+            ? null
+            : LocalDateTime.ofInstant(value.toInstant(), ZoneId.systemDefault()).toLocalTime();
    }
 
    @Override

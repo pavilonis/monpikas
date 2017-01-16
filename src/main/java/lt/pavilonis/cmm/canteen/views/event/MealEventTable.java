@@ -1,20 +1,19 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
 import com.vaadin.data.util.converter.StringToDateConverter;
-import com.vaadin.data.util.converter.StringToDoubleConverter;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.service.MealService;
-import lt.pavilonis.cmm.canteen.views.converter.MealTypeCellConverter;
-import lt.pavilonis.cmm.canteen.views.converter.PupilTypeCellConverter;
+import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
+import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
@@ -39,14 +38,19 @@ public class MealEventTable extends MTable<MealEventLog> {
             return new SimpleDateFormat("yyyy-MM-dd  HH:mm");
          }
       });
-      setConverter("price", new StringToDoubleConverter() {
+      setConverter("price", new ModifiedStringToDoubleConverter());
+      setConverter("mealType", new ToStringConverterAdapter<MealType>(MealType.class) {
          @Override
-         protected NumberFormat getFormat(Locale locale) {
-            return new DecimalFormat("0.00");
+         protected String toPresentation(MealType model) {
+            return messages.get(MealType.class, model.name());
          }
       });
-      setConverter("mealType", new MealTypeCellConverter());
-      setConverter("pupilType", new PupilTypeCellConverter());
+      setConverter("pupilType", new ToStringConverterAdapter<PupilType>(PupilType.class) {
+         @Override
+         protected String toPresentation(PupilType model) {
+            return messages.get(PupilType.class, model.name());
+         }
+      });
       setColumnWidth("cardCode", 100);
       setColumnWidth("grade", 60);
       setColumnAlignment("grade", CENTER);

@@ -22,8 +22,9 @@ public class UserMealSelectionPopup extends Window {
       setHeight("540px");
 
 //      vl.setComponentAlignment(buttons, BOTTOM_CENTER);
-      MTable<Meal> table = new MealTable(mealsToSelectFrom)
+      MTable<Meal> table = new MealTable(messages, mealsToSelectFrom)
             .withCaption(messages.get(this, "mealSelectionPopup.tableCaption"));
+
       setContent(
             new MVerticalLayout(
                   table,
