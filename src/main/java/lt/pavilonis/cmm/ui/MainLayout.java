@@ -22,17 +22,21 @@ import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Stream;
 
 @SpringComponent
 @UIScope
 public class MainLayout extends MHorizontalLayout {
 
-   private static final MLabel APP_LABEL = new MLabel("<h2>ČMM</h2><h3><h3>")
+   private final Map<Class<?>, Component> scopeComponents = new HashMap<>();
+
+   private final MLabel appLabel = new MLabel("<h2>ČMM</h2><h3><h3>")
          .withSize(MSize.size("500px", "200px"))
          .withContentMode(ContentMode.HTML);
 
-   private Component currentComponent = APP_LABEL;
+   private Component currentComponent = appLabel;
    private MVerticalLayout stage = new MVerticalLayout(currentComponent)
          .withSize(MSize.FULL_SIZE)
          .alignAll(Alignment.MIDDLE_CENTER);
@@ -67,10 +71,15 @@ public class MainLayout extends MHorizontalLayout {
       );
    }
 
-   // TODO not always "list" controller here?
    private void updateStage(Class<? extends AbstractViewController> viewControllerClass) {
-      AbstractViewController controller = App.context.getBean(viewControllerClass);
-      Component newComponent = controller.getView();
+
+      Component newComponent = scopeComponents.get(viewControllerClass);
+
+      if (newComponent == null) {
+         AbstractViewController controller = App.context.getBean(viewControllerClass);
+         scopeComponents.put(viewControllerClass, newComponent = controller.getView());
+      }
+
       stage.removeComponent(currentComponent);
       stage.addComponent(newComponent);
       currentComponent = newComponent;
