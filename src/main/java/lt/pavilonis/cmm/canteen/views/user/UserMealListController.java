@@ -10,8 +10,6 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
-import java.util.Optional;
-
 @UIScope
 @SpringComponent
 public class UserMealListController extends AbstractListController<UserMeal, String> {
@@ -36,7 +34,12 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    }
 
    @Override
-   protected Optional<Component> getHeader() {
-      return Optional.of(filterPanel);
+   protected Component getHeader() {
+      return filterPanel;
+   }
+
+   @Override
+   protected Class<UserMeal> getEntityClass() {
+      return UserMeal.class;
    }
 }

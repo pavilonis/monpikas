@@ -8,12 +8,12 @@ import lt.pavilonis.cmm.canteen.service.MealService;
 
 import java.util.Date;
 
-public class MealEventFilter implements Filter {
+final class MealEventFilter implements Filter {
    private MealService service;
    private String text;
    private boolean hadDinnerToday;
 
-   public MealEventFilter(MealService service, String text, boolean hadDinnerToday) {
+   MealEventFilter(MealService service, String text, boolean hadDinnerToday) {
       this.service = service;
       this.text = text.toLowerCase();
       this.hadDinnerToday = hadDinnerToday;

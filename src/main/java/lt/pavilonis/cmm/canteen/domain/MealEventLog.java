@@ -23,14 +23,17 @@ public final class MealEventLog implements Comparable {
       this.pupilType = pupilType;
    }
 
-   private final Long id;
-   private final String cardCode;
-   private final String name;
-   private final String grade;
-   private final Date date;
-   private final BigDecimal price;
-   private final MealType mealType;
-   private final PupilType pupilType;
+   public MealEventLog() {
+   }
+
+   private Long id;
+   private String cardCode;
+   private String name;
+   private String grade;
+   private Date date;
+   private BigDecimal price;
+   private MealType mealType;
+   private PupilType pupilType;
 
    public Long getId() {
       return id;
@@ -62,6 +65,38 @@ public final class MealEventLog implements Comparable {
 
    public PupilType getPupilType() {
       return pupilType;
+   }
+
+   public void setId(Long id) {
+      this.id = id;
+   }
+
+   public void setCardCode(String cardCode) {
+      this.cardCode = cardCode;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public void setGrade(String grade) {
+      this.grade = grade;
+   }
+
+   public void setDate(Date date) {
+      this.date = date;
+   }
+
+   public void setPrice(BigDecimal price) {
+      this.price = price;
+   }
+
+   public void setMealType(MealType mealType) {
+      this.mealType = mealType;
+   }
+
+   public void setPupilType(PupilType pupilType) {
+      this.pupilType = pupilType;
    }
 
    @Override

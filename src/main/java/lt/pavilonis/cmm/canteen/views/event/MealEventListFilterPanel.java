@@ -12,12 +12,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 
-@SpringComponent
 @UIScope
+@SpringComponent
 public class MealEventListFilterPanel extends MHorizontalLayout {
 
-   private TextField text = new TextField();
-   private CheckBox hadDinnerToday = new CheckBox("Pietavo šiandien");
+   private final TextField text = new TextField();
+   private final CheckBox hadDinnerToday = new CheckBox("Pietavo šiandien");
 
    @Autowired
    private MealService service;

@@ -8,7 +8,7 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.canteen.views.event.MealEventListViewController;
+import lt.pavilonis.cmm.canteen.views.event.MealEventListController;
 import lt.pavilonis.cmm.canteen.views.report.CanteenReportViewController;
 import lt.pavilonis.cmm.canteen.views.setting.MealListViewController;
 import lt.pavilonis.cmm.canteen.views.user.UserMealListController;
@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 @UIScope
 public class MainLayout extends MHorizontalLayout {
 
-   private final Map<Class<?>, Component> scopeComponents = new HashMap<>();
+   private final Map<Class<? extends AbstractViewController>, Component> scopeComponents = new HashMap<>();
 
    private final MLabel appLabel = new MLabel("<h2>ČMM</h2><h3><h3>")
          .withSize(MSize.size("500px", "200px"))
@@ -54,7 +54,7 @@ public class MainLayout extends MHorizontalLayout {
       Stream.of(
             new MenuButton(CanteenReportViewController.class, FontAwesome.FILE_EXCEL_O),
             new MenuButton(MealListViewController.class, FontAwesome.WRENCH),
-            new MenuButton(MealEventListViewController.class, FontAwesome.CUTLERY),
+            new MenuButton(MealEventListController.class, FontAwesome.CUTLERY),
             new MenuButton(UserMealListController.class, FontAwesome.CHILD),
             new MenuButton(UserListController.class, FontAwesome.USER),
             new MenuButton(KeyListController.class, FontAwesome.KEY)

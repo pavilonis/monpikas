@@ -6,7 +6,6 @@ import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.fields.MTable;
 
 import java.util.List;
-import java.util.Optional;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
@@ -18,9 +17,22 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       MTable<T> table = getTable()
             .withSize(MSize.FULL_SIZE);
 
-      addTableListener(table);
+      addTableClickListener(table);
       loadTableData(table);
       return table;
+   }
+
+   @Override
+   protected Component getFooter() {
+      return getControlPanel();
+   }
+
+   protected Component getControlPanel() {
+      return new ControlPanel(
+            messages,
+            click -> actionCreate(getTable()),
+            click -> actionDelete(getTable())
+      );
    }
 
    protected void loadTableData(MTable<T> table) {
@@ -28,15 +40,33 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       table.setBeans(beans);
    }
 
-   protected void addTableListener(MTable<T> table) {
+   protected void addTableClickListener(MTable<T> table) {
 
-      getFormController().ifPresent(
-            controller -> table.addRowClickListener(
-                  click -> controller.edit(click.getRow())
-            ));
+      AbstractFormController<T, ID> formController = getFormController();
+
+      if (formController != null) {
+         table.addRowClickListener(click -> {
+            if (click.isDoubleClick()) {
+               formController.edit(click.getRow(), table);
+            }
+         });
+      }
    }
 
    protected abstract MTable<T> getTable();
+
+   protected void actionCreate(MTable<T> table) {
+      T entity = createNewInstance();
+      getFormController().edit(entity, table);
+   }
+
+   protected T createNewInstance() {
+      try {
+         return getEntityClass().newInstance();
+      } catch (InstantiationException | IllegalAccessException e) {
+         throw new RuntimeException("Can not instantiate " + getEntityClass().getSimpleName() + ". " + e);
+      }
+   }
 
    //TODO translate
    protected void actionDelete(MTable<T> table) {
@@ -56,9 +86,11 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       }
    }
 
-   protected Optional<AbstractFormController<T, ID>> getFormController() {
-      return Optional.empty();
+   protected AbstractFormController<T, ID> getFormController() {
+      return null;
    }
 
    protected abstract EntityRepository<T, ID> getEntityRepository();
+
+   protected abstract Class<T> getEntityClass();
 }

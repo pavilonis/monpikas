@@ -9,10 +9,8 @@ import lt.pavilonis.cmm.domain.KeyRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
-import java.util.Optional;
-
-@SpringComponent
 @UIScope
+@SpringComponent
 public class KeyListController extends AbstractListController<KeyRepresentation, String> {
 
    @Autowired
@@ -27,8 +25,8 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    }
 
    @Override
-   protected Optional<Component> getHeader() {
-      return Optional.of(keyListFilterPanel);
+   protected Component getHeader() {
+      return keyListFilterPanel;
    }
 
    @Override
@@ -39,5 +37,10 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    @Override
    protected void loadTableData(MTable<KeyRepresentation> table) {
       keyListFilterPanel.reload();
+   }
+
+   @Override
+   protected Class<KeyRepresentation> getEntityClass() {
+      return KeyRepresentation.class;
    }
 }

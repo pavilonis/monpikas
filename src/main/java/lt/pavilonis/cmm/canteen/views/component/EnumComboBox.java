@@ -16,7 +16,7 @@ public class EnumComboBox<T extends Enum<T>> extends ComboBox {
       List<T> enums = Arrays.asList(clazz.getEnumConstants());
       setContainerDataSource(new BeanItemContainer<>(clazz, enums));
       setValue(enums.get(0));
-      setCaption(messages.get(this, "caption"));
+      setCaption(messages.get(clazz, "name"));
    }
 
    @Override

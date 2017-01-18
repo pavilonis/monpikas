@@ -29,8 +29,8 @@ public class MealEventTable extends MTable<MealEventLog> {
    public MealEventTable(MealService mealService, MessageSourceAdapter messages) {
       this.mealService = mealService;
 
-      withProperties("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
-      withColumnHeaders("Id", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
+      withProperties("cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
+      withColumnHeaders("Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
 
       setConverter("date", new StringToDateConverter() {
          @Override
@@ -51,15 +51,16 @@ public class MealEventTable extends MTable<MealEventLog> {
             return messages.get(PupilType.class, model.name());
          }
       });
-      setColumnWidth("cardCode", 100);
+      setColumnWidth("cardCode", 180);
       setColumnWidth("grade", 60);
       setColumnAlignment("grade", CENTER);
       setColumnWidth("birthDate", 130);
       setColumnCollapsingAllowed(true);
-      setColumnCollapsed("id", true);
       setColumnCollapsed("cardCode", true);
       setSelectable(true);
       setNullSelectionAllowed(false);
+      setSortContainerPropertyId("date");
+      setSortAscending(false);
       setCacheRate(5);
    }
 

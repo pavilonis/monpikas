@@ -10,8 +10,6 @@ import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
-import java.util.Optional;
-
 @SpringComponent
 @UIScope
 public class UserListController extends AbstractListController<UserRepresentation, String> {
@@ -31,12 +29,17 @@ public class UserListController extends AbstractListController<UserRepresentatio
    }
 
    @Override
-   protected Optional<Component> getHeader() {
-      return Optional.of(userListFilterPanel);
+   protected Component getHeader() {
+      return userListFilterPanel;
    }
 
    @Override
    protected EntityRepository<UserRepresentation, String> getEntityRepository() {
       return userRepository;
+   }
+
+   @Override
+   protected Class<UserRepresentation> getEntityClass() {
+      return UserRepresentation.class;
    }
 }

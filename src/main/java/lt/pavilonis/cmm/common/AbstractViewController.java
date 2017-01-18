@@ -7,27 +7,38 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
-import java.util.Optional;
-
 public abstract class AbstractViewController {
 
    @Autowired
    protected MessageSourceAdapter messages;
 
    public Component getView() {
+
       AbstractOrderedLayout layout = getRootLayout();
 
-      Component mainArea = getMainArea();
+      Component header = getHeader();
+      if (header != null) {
+         layout.addComponent(header);
+      }
 
-      getHeader().ifPresent(layout::addComponent);
+      Component mainArea = getMainArea();
       layout.addComponent(mainArea);
+
+      Component footer = getFooter();
+      if (footer != null) {
+         layout.addComponent(footer);
+      }
 
       layout.setExpandRatio(mainArea, 1f);
       return layout;
    }
 
-   protected Optional<Component> getHeader() {
-      return Optional.empty();
+   protected Component getFooter() {
+      return null;
+   }
+
+   protected Component getHeader() {
+      return null;
    }
 
    protected abstract Component getMainArea();

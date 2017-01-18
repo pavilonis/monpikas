@@ -3,6 +3,8 @@ package lt.pavilonis.cmm.common;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.MessageSourceAdapter;
@@ -10,61 +12,105 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.BeanBinder;
 import org.vaadin.viritin.MBeanFieldGroup;
 import org.vaadin.viritin.button.MButton;
+import org.vaadin.viritin.fields.MTable;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Consumer;
 
-public abstract class AbstractFormController<T, ID> implements FormController {
+
+public abstract class AbstractFormController<T, ID> {
 
    private T model;
    private MBeanFieldGroup<T> binding;
    private Window window;
 
    @Autowired
-   protected MessageSourceAdapter messageSourceAdapter;
+   protected MessageSourceAdapter messages;
 
-   @Override
-   public void actionSave() {
+   protected T actionSave() {
+      beforeSave(model);
+
       if (!binding.isValid()) {
+         //TODO not visible!
          window.setComponentError(new UserError("Invalid field values"));
 //         Notification.show("Invalid field values", Notification.Type.WARNING_MESSAGE);
-         return;
+         return null;
       }
 
       EntityRepository<T, ID> entityRepository = getEntityRepository();
-      entityRepository.saveOrUpdate(model);
+      return entityRepository.saveOrUpdate(model);
    }
 
-   @Override
-   public void actionClose() {
+   protected void beforeSave(T model) {/*hook*/}
+
+   protected void actionClose() {
       window.close();
    }
 
-   private Component createControlLayout() {
+   private Component createControlLayout(Consumer<T> persistedEntityConsumer) {
       return new MHorizontalLayout(
-            new MButton(FontAwesome.CHECK, messageSourceAdapter.get(this, "buttonSave"), click -> actionSave()),
-            new MButton(FontAwesome.REMOVE, messageSourceAdapter.get(this, "buttonClose"), click -> actionClose())
+            new MButton(
+                  FontAwesome.CHECK,
+                  messages.get(AbstractFormController.class, "buttonSave"),
+                  click -> {
+                     T entity = actionSave();
+                     persistedEntityConsumer.accept(entity);
+                     actionClose();
+                     Notification.show(messages.get(AbstractFormController.class, "saved"), Type.TRAY_NOTIFICATION);
+                  }
+            ),
+            new MButton(
+                  FontAwesome.REMOVE,
+                  messages.get(AbstractFormController.class, "buttonClose"),
+                  click -> actionClose()
+            )
       );
    }
 
-   protected abstract Component createFieldLayout();
+   protected void edit(T entity, MTable<T> listTable) {
 
-   public void edit(T entity) {
+      Consumer<T> persistedEntityConsumer = persistentEntity -> {
+         if (listTable.containsId(persistentEntity)) {
+            listTable.refreshRows();
+         } else {
+            listTable.addBeans(persistentEntity);
+            listTable.sort();
+         }
+      };
+
       Component fieldLayout = createFieldLayout();
-      Component controlLayout = createControlLayout();
+      Component controlLayout = createControlLayout(persistedEntityConsumer);
+
       window = new Window(
-            messageSourceAdapter.get(this, "caption"),
-            new MVerticalLayout(
-                  fieldLayout,
-                  controlLayout
-            )
+            getFormCaption(),
+            new MVerticalLayout(fieldLayout, controlLayout)
       );
 
       this.model = entity;
       this.binding = BeanBinder.bind(model, fieldLayout);
 
+      getValidators()
+            .forEach(binding::addValidator);
+
+      customizeWindow(window);
+      window.center();
       UI.getCurrent().addWindow(window);
    }
 
+   protected Collection<MBeanFieldGroup.MValidator<T>> getValidators() {
+      return Collections.emptyList();
+   }
+
+   protected void customizeWindow(Window window) {/*hook*/}
+
+   protected String getFormCaption() {
+      return messages.get(this, "caption");
+   }
+
    protected abstract EntityRepository<T, ID> getEntityRepository();
+
+   protected abstract Component createFieldLayout();
 }

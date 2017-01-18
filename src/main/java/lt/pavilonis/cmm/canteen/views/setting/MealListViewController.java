@@ -11,8 +11,6 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
-import java.util.Optional;
-
 @SpringComponent
 @UIScope
 public class MealListViewController extends AbstractListController<Meal, Long> {
@@ -24,8 +22,8 @@ public class MealListViewController extends AbstractListController<Meal, Long> {
    private MealForm mealForm;
 
    @Override
-   protected Optional<AbstractFormController<Meal, Long>> getFormController() {
-      return Optional.of(mealForm);
+   protected AbstractFormController<Meal, Long> getFormController() {
+      return mealForm;
    }
 
    @Override
@@ -36,5 +34,10 @@ public class MealListViewController extends AbstractListController<Meal, Long> {
    @Override
    protected EntityRepository<Meal, Long> getEntityRepository() {
       return mealRepository;
+   }
+
+   @Override
+   protected Class<Meal> getEntityClass() {
+      return Meal.class;
    }
 }

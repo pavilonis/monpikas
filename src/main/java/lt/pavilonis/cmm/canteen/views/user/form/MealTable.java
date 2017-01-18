@@ -12,6 +12,7 @@ import java.util.List;
 public class MealTable extends MTable<Meal> {
 
    public MealTable(MessageSourceAdapter messages) {
+      //TODO translate
       withProperties("id", "name", "type", "startTime", "endTime", "price");
       withColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
       setColumnCollapsingAllowed(true);
