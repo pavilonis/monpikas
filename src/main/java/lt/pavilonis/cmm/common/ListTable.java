@@ -7,8 +7,17 @@ import java.util.List;
 
 public class ListTable<T> extends MTable<T> {
 
+   public ListTable(Class<T> type) {
+      super(type);
+      customize();
+   }
+
    //TODO try to pass class to super constructor
    public ListTable() {
+      customize();
+   }
+
+   protected void customize() {
       setColumnCollapsingAllowed(true);
       setColumnReorderingAllowed(true);
       setSelectable(true);
@@ -21,4 +30,9 @@ public class ListTable<T> extends MTable<T> {
       return Collections.emptyList();
    }
 
+   public void collapseColumns() {
+      columnsToCollapse().forEach(
+            columnId -> setColumnCollapsed(columnId, true)
+      );
+   }
 }

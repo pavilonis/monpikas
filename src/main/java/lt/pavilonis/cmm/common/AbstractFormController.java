@@ -73,6 +73,16 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    protected void edit(T entity, MTable<T> listTable) {
 
+      ID id = entity.getId();
+      T editEntity;
+      if (id == null) {
+         editEntity = entity;
+      } else {
+         editEntity = getEntityRepository().load(id)
+               .orElseThrow(() -> new RuntimeException("Could not load entity selected for edition: "
+                     + entity.getClass().getSimpleName() + ". id: " + id));
+      }
+
       Consumer<T> persistedEntityConsumer = persistedEntity -> {
          if (entity.getId() != null) {
             listTable.getContainerDataSource().removeItem(entity);
@@ -81,22 +91,27 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
          listTable.sort();
       };
 
-      Component fieldLayout = createFieldLayout();
+      FormView<T> formView = getFormView();
       Component controlLayout = createControlLayout(persistedEntityConsumer);
 
       window = new Window(
             getFormCaption(),
-            new MVerticalLayout(fieldLayout, controlLayout)
+            new MVerticalLayout(formView, controlLayout)
       );
 
-      this.model = entity;
-      this.binding = BeanBinder.bind(model, fieldLayout);
+      this.model = editEntity;
+      this.binding = BeanBinder.bind(model, formView);
+
+      formView.manualBinding(binding);
+      formView.initCustomFieldValues(model);
+
+      customizeWindow(window);
 
       getValidators()
             .forEach(binding::addValidator);
 
-      customizeWindow(window);
       window.center();
+      window.setModal(true);
       UI.getCurrent().addWindow(window);
    }
 
@@ -118,5 +133,5 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    protected abstract EntityRepository<T, ID> getEntityRepository();
 
-   protected abstract Component createFieldLayout();
+   protected abstract FormView<T> getFormView();
 }

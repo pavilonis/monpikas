@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
-public class KeyListController extends AbstractListController<KeyRepresentation, String> {
+public class KeyListController extends AbstractListController<KeyRepresentation, String, KeyFilter> {
 
    @Autowired
    private KeyListFilterPanel keyListFilterPanel;

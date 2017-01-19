@@ -20,7 +20,7 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-public class UserEditWindowDetailsTab extends MHorizontalLayout {
+final class UserEditWindowDetailsTab extends MHorizontalLayout {
 
    private final MTextField cardCode;
    private final MTextField firstName;
@@ -37,7 +37,7 @@ public class UserEditWindowDetailsTab extends MHorizontalLayout {
    private Image currentUserImage;
    private final MBeanFieldGroup<UserRepresentation> binding;
 
-   public UserEditWindowDetailsTab(UserRepresentation model,
+    UserEditWindowDetailsTab(UserRepresentation model,
                                    Resource imageResource,
                                    Consumer<UserRepresentation> saveAction,
                                    Button saveButton,

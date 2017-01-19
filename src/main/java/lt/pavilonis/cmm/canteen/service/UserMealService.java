@@ -147,7 +147,12 @@ public class UserMealService implements EntityRepository<UserMeal, String> {
 
    @Override
    public UserMeal saveOrUpdate(UserMeal entity) {
-      throw new NotImplementedException("not needed");
+      // Here, only meal data is managed.
+      // User representation is only used for viewing.
+      // So, only mealData is saved.
+      MealData mealData = pupilDataRepository.saveOrUpdate(entity.getMealData());
+      return this.load(mealData.getCardCode())
+            .orElseThrow(() -> new RuntimeException("Could not load recently saved mealData for user"));
    }
 
    @Override

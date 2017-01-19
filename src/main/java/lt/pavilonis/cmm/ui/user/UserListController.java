@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringComponent
 @UIScope
-public class UserListController extends AbstractListController<UserRepresentation, String> {
+public class UserListController extends AbstractListController<UserRepresentation, String, UserFilter> {
 
    @Autowired
    private UserTable userTable;

@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.views.user.form;
+package lt.pavilonis.cmm.canteen.views.user;
 
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.Meal;
@@ -10,9 +10,15 @@ import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import java.util.Collections;
 import java.util.List;
 
-public class MealTable extends ListTable<Meal> {
+public final class MealTable extends ListTable<Meal> {
+
+   MealTable(MessageSourceAdapter messages, List<Meal> meals) {
+      this(messages);
+      addBeans(meals);
+   }
 
    public MealTable(MessageSourceAdapter messages) {
+      super(Meal.class);
       //TODO translate
       withProperties("id", "name", "type", "startTime", "endTime", "price");
       withColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
@@ -25,13 +31,7 @@ public class MealTable extends ListTable<Meal> {
       });
       setConverter("price", new ModifiedStringToDoubleConverter());
 
-      setHeight("370px");
       setSortContainerPropertyId("name");
-   }
-
-   public MealTable(MessageSourceAdapter messages, List<Meal> meals) {
-      this(messages);
-      addBeans(meals);
    }
 
    @Override

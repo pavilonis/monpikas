@@ -6,7 +6,6 @@ import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
-import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
@@ -24,7 +23,7 @@ import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
 
 @UIScope
 @SpringComponent
-public class MealEventListController extends AbstractListController<MealEventLog, Long> {
+public class MealEventListController extends AbstractListController<MealEventLog, Long, EventFilter> {
 
    @Autowired
    private MealEventTable table;

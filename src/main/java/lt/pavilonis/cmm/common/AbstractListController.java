@@ -9,7 +9,7 @@ import java.util.List;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
-public abstract class AbstractListController<T extends Identifiable<ID>, ID> extends AbstractViewController {
+public abstract class AbstractListController<T extends Identifiable<ID>, ID, F> extends AbstractViewController {
 
    ListTable<T> table;
 
@@ -21,6 +21,11 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID> ext
       addTableClickListener(table);
       loadTableData(table);
       return table;
+   }
+
+   @Override
+   protected Component getHeader() {
+      return getFilterPanel();
    }
 
    @Override
@@ -39,8 +44,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID> ext
    protected void loadTableData(ListTable<T> table) {
       List<T> beans = getEntityRepository().loadAll();
       table.addBeans(beans);
-      table.columnsToCollapse()
-            .forEach(columnId -> table.setColumnCollapsed(columnId, true));
+      table.collapseColumns();
       table.sort();
    }
 
@@ -78,19 +82,18 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID> ext
       if (selected == null) {
          Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
       } else {
+         getEntityRepository().delete(selected.getId());
          table.removeItem(selected);
          table.select(null);
          Notification.show("Įrašas pašalintas", TRAY_NOTIFICATION);
-//         List<UserMeal> portionUsers = userMealService.loadByMeal(selected.getId());
-//         if (portionUsers.isEmpty()) {
-//            mealRepository.delete(selected.getId());
-//         } else {
-//            Notification.show("Porciją priskirta šioms kortelėms:", portionUsers.toString(), ERROR_MESSAGE);
-//         }
       }
    }
 
    protected AbstractFormController<T, ID> getFormController() {
+      return null;
+   }
+
+   protected FilterPanel<F> getFilterPanel() {
       return null;
    }
 

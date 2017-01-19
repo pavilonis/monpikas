@@ -5,7 +5,7 @@ import java.util.Set;
 
 public final class MealData {
    private String cardCode;
-   private PupilType type;
+   private PupilType type = PupilType.SOCIAL;
    private String comment;
    private Set<Meal> meals = new HashSet<>();
 

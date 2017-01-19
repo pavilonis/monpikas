@@ -79,23 +79,13 @@ public class UserEditWindow extends Window {
       sheet.addTab(
             new UserEditWindowDetailsTab(
                   user,
-                  imageService.imageResource(user.getCardCode()),
+                  imageService.imageResource(user.getBase16photo()),
                   updateAction,
                   saveButton,
                   messages
             ),
             messages.get(this, "editDetails")
       );
-//      } else {
-//         // Create new
-//         Consumer<UserRepresentation> saveAction = model -> {
-//            userRepository.save(model);
-//            close();
-//            postSaveUpdateAction.run();
-//         };
-//         UserEditWindowDetailsTab editForm = new UserEditWindowDetailsTab(user, saveAction, saveButton);
-//         sheet.addTab(editForm);
-//      }
       VaadinUI.getCurrent().addWindow(this);
    }
 

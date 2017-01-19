@@ -2,31 +2,31 @@ package lt.pavilonis.cmm.canteen.views.event;
 
 
 import com.vaadin.ui.ComboBox;
+import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
+import lt.pavilonis.cmm.common.FormView;
 import org.vaadin.viritin.fields.MDateField;
 import org.vaadin.viritin.fields.MTable;
-import org.vaadin.viritin.layouts.MGridLayout;
+import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.util.Date;
 import java.util.List;
 
-final class MealEventFormView extends MGridLayout {
+final class MealEventFormView extends FormView<MealEventLog> {
 
    private final UserMealTable table;
-   private final MDateField date = new MDateField("Pasirinkite data: ", new Date());
-   private final ComboBox mealType = new EnumComboBox<>(MealType.class);
+   private final MDateField date = new MDateField("Pasirinkite data: ", new Date())
+         .withRequired(true);
+   private final ComboBox mealType = new EnumComboBox<>(MealType.class)
+         .withRequired(true);
 
    MealEventFormView(List<UserMeal> userMeals) {
-      super(2, 2);
-      this.table = new UserMealTable("Pasirinkite mokinį", userMeals);
+      table = new UserMealTable("Pasirinkite mokinį", userMeals);
       date.setDateFormat("yyyy-MM-dd");
-      add(date, mealType);
-      addComponent(table, 0, 1, 1, 1);
-      setMargin(false);
-      date.setRequired(true);
-      mealType.setRequired(true);
+
+      add(new MHorizontalLayout(date, mealType).withMargin(false), table);
    }
 
    UserMeal getTableValue() {
