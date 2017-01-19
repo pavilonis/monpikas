@@ -60,7 +60,7 @@ public class MealRestController {
                         cardCode,
                         dto.getUser().getName(),
                         null,
-                        dto.getUser().getRole(),
+                        dto.getUser().getGroup(),
                         null
                   ),
                   HttpStatus.FORBIDDEN
@@ -90,6 +90,7 @@ public class MealRestController {
          eventLogs.saveOrUpdate(
                new MealEventLog(
                      null,
+                     //TODO create constructor which accepts userMeal, ...
                      userMeal.getUser().getCardCode(),
                      userMeal.getUser().getName(),
                      userMeal.getUser().getGroup(),
