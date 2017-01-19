@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.domain;
 
+import lt.pavilonis.cmm.common.Identifiable;
+
 import javax.validation.constraints.NotNull;
 
-public class UserRepresentation {
+public class UserRepresentation implements Identifiable<String> {
 
    private String cardCode;
 
@@ -88,5 +90,10 @@ public class UserRepresentation {
 
    public String getName() {
       return getFirstName() + " " + getLastName();
+   }
+
+   @Override
+   public String getId() {
+      return cardCode;
    }
 }

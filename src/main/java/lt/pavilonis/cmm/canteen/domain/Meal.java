@@ -1,10 +1,12 @@
 package lt.pavilonis.cmm.canteen.domain;
 
+import lt.pavilonis.cmm.common.Identifiable;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
 
-public final class Meal {
+public final class Meal implements Identifiable<Long> {
 
    private Long id;
    private String name;
@@ -25,6 +27,7 @@ public final class Meal {
       this.endTime = endTime;
    }
 
+   @Override
    public Long getId() {
       return id;
    }

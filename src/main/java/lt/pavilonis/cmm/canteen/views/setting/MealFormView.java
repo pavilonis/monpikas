@@ -20,9 +20,16 @@ public class MealFormView extends MGridLayout {
    private final InlineDateField startTime = dateField("Periodo pradžia: ");
    private final InlineDateField endTime = dateField("Periodo pabaiga: ");
 
-   private final MTextField price = new MTextField("Kaina").withNullRepresentation("");
-   private final MTextField name = new MTextField("Pavadinimas").withNullRepresentation("");
-   private final ComboBox type = new EnumComboBox<>(MealType.class);
+   private final MTextField price = new MTextField("Kaina")
+         .withNullRepresentation("")
+         .withRequired(true);
+
+   private final MTextField name = new MTextField("Pavadinimas")
+         .withNullRepresentation("")
+         .withRequired(true);
+
+   private final ComboBox type = new EnumComboBox<>(MealType.class)
+         .withRequired(true);
 
    public MealFormView() {
       super(2, 3);
@@ -37,6 +44,7 @@ public class MealFormView extends MGridLayout {
       dateField.addStyleName("time-only");
       dateField.setConverter(TIME_CONVERTER);
       dateField.setCaption(caption);
+      dateField.setRequired(true);
       return dateField;
    }
 }

@@ -26,6 +26,7 @@ public class MealTable extends ListTable<Meal> {
       setConverter("price", new ModifiedStringToDoubleConverter());
 
       setHeight("370px");
+      setSortContainerPropertyId("name");
    }
 
    public MealTable(MessageSourceAdapter messages, List<Meal> meals) {

@@ -38,6 +38,11 @@ public class MealListController extends AbstractListController<Meal, Long> {
          protected MessageSourceAdapter getMessageSource() {
             return MealListController.this.messages;
          }
+
+         @Override
+         protected String getFormCaption() {
+            return getMessageSource().get(MealFormView.class, "caption");
+         }
       };
    }
 

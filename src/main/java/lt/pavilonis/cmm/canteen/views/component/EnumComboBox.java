@@ -29,4 +29,8 @@ public class EnumComboBox<T extends Enum<T>> extends ComboBox {
       return false;
    }
 
+   public EnumComboBox<T> withRequired(boolean value) {
+      this.setRequired(value);
+      return this;
+   }
 }

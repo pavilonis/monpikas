@@ -9,11 +9,13 @@ import java.util.List;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
-public abstract class AbstractListController<T, ID> extends AbstractViewController {
+public abstract class AbstractListController<T extends Identifiable<ID>, ID> extends AbstractViewController {
+
+   ListTable<T> table;
 
    @Override
    protected Component getMainArea() {
-      ListTable<T> table = getTable();
+      table = getTable();
       table.setSizeFull();
 
       addTableClickListener(table);
@@ -29,8 +31,8 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
    protected Component getControlPanel() {
       return new ControlPanel(
             messages,
-            click -> actionCreate(getTable()),
-            click -> actionDelete(getTable())
+            click -> actionCreate(),
+            click -> actionDelete()
       );
    }
 
@@ -39,6 +41,7 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       table.addBeans(beans);
       table.columnsToCollapse()
             .forEach(columnId -> table.setColumnCollapsed(columnId, true));
+      table.sort();
    }
 
    protected void addTableClickListener(MTable<T> table) {
@@ -56,7 +59,7 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
 
    protected abstract ListTable<T> getTable();
 
-   protected void actionCreate(MTable<T> table) {
+   protected void actionCreate() {
       T entity = createNewInstance();
       getFormController().edit(entity, table);
    }
@@ -70,7 +73,7 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
    }
 
    //TODO translate
-   protected void actionDelete(MTable<T> table) {
+   protected void actionDelete() {
       T selected = table.getValue();
       if (selected == null) {
          Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);

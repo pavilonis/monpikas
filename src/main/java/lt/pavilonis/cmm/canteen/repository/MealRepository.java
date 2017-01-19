@@ -65,7 +65,7 @@ public class MealRepository implements EntityRepository<Meal, Long> {
    public Meal saveOrUpdate(Meal meal) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", meal.getId());
-      args.put("name", meal.getName());
+      args.put("mealName", meal.getName());
       args.put("type", meal.getType().name());
       args.put("price", meal.getPrice());
       args.put("startTime", minutes(meal.getStartTime()));
@@ -77,14 +77,16 @@ public class MealRepository implements EntityRepository<Meal, Long> {
    }
 
    protected long minutes(LocalTime localTime) {
-      return ChronoUnit.MINUTES.between(LocalTime.MIN, localTime);
+      return localTime == null
+            ? 0
+            : ChronoUnit.MINUTES.between(LocalTime.MIN, localTime);
    }
 
    private Meal save(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       namedJdbc.update(
             "INSERT INTO Meal (name, type, price, startTime, endTime) " +
-                  "VALUES (:name, :type, :price, :startTime, :endTime)",
+                  "VALUES (:mealName, :type, :price, :startTime, :endTime)",
             new MapSqlParameterSource(args),
             keyHolder
       );
@@ -93,16 +95,17 @@ public class MealRepository implements EntityRepository<Meal, Long> {
    }
 
    private Meal update(Map<String, Object> args) {
-      jdbc.update("" +
+      namedJdbc.update("" +
                   "UPDATE " +
                   "  Meal " +
                   "SET " +
-                  "  name = :name, " +
-                  "  type = :type, " +
-                  "  price = :price, " +
-                  "  startTime = :startTime, " +
-                  "  endTime = :endTime " +
-                  "WHERE id = :id"
+                  "  `name` = :mealName, " +
+                  "  `type` = :type, " +
+                  "  `price` = :price, " +
+                  "  `startTime` = :startTime, " +
+                  "  `endTime` = :endTime " +
+                  "WHERE id = :id ",
+            args
       );
       long mealId = (long) args.get("id");
       return load(Collections.singleton(mealId)).get(0);

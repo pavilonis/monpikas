@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.Validator;
 import com.vaadin.server.FontAwesome;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
@@ -21,7 +22,7 @@ import java.util.Collections;
 import java.util.function.Consumer;
 
 
-public abstract class AbstractFormController<T, ID> {
+public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    private T model;
    private MBeanFieldGroup<T> binding;
@@ -37,7 +38,7 @@ public abstract class AbstractFormController<T, ID> {
          //TODO not visible!
          window.setComponentError(new UserError("Invalid field values"));
 //         Notification.show("Invalid field values", Notification.Type.WARNING_MESSAGE);
-         return null;
+         throw new Validator.InvalidValueException("Invalid field values");
       }
 
       EntityRepository<T, ID> entityRepository = getEntityRepository();
@@ -72,13 +73,12 @@ public abstract class AbstractFormController<T, ID> {
 
    protected void edit(T entity, MTable<T> listTable) {
 
-      Consumer<T> persistedEntityConsumer = persistentEntity -> {
-         if (listTable.containsId(persistentEntity)) {
-            listTable.refreshRows();
-         } else {
-            listTable.addBeans(persistentEntity);
-            listTable.sort();
+      Consumer<T> persistedEntityConsumer = persistedEntity -> {
+         if (entity.getId() != null) {
+            listTable.getContainerDataSource().removeItem(entity);
          }
+         listTable.addItem(persistedEntity);
+         listTable.sort();
       };
 
       Component fieldLayout = createFieldLayout();
@@ -111,6 +111,7 @@ public abstract class AbstractFormController<T, ID> {
 
    protected void customizeWindow(Window window) {/*hook*/}
 
+   //TODO move to FormView ?
    protected String getFormCaption() {
       return getMessageSource().get(this, "caption");
    }

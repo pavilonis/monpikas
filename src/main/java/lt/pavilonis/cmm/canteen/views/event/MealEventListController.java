@@ -30,9 +30,6 @@ public class MealEventListController extends AbstractListController<MealEventLog
    private MealEventTable table;
 
    @Autowired
-   private UserMealService pupilService;
-
-   @Autowired
    private MealEventLogRepository eventLogs;
 
    @Autowired

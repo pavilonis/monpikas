@@ -1,9 +1,11 @@
 package lt.pavilonis.cmm.canteen.domain;
 
+import lt.pavilonis.cmm.common.Identifiable;
+
 import java.math.BigDecimal;
 import java.util.Date;
 
-public final class MealEventLog implements Comparable {
+public final class MealEventLog implements Comparable, Identifiable<Long> {
 
    public MealEventLog(Long id,
                        String cardCode,
@@ -35,6 +37,7 @@ public final class MealEventLog implements Comparable {
    private MealType mealType;
    private PupilType pupilType;
 
+   @Override
    public Long getId() {
       return id;
    }

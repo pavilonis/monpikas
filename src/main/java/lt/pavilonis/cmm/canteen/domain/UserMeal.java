@@ -1,8 +1,9 @@
 package lt.pavilonis.cmm.canteen.domain;
 
+import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 
-public final class UserMeal {
+public final class UserMeal implements Identifiable<String> {
    private final UserRepresentation user;
    private final MealData mealData;
 
@@ -17,5 +18,10 @@ public final class UserMeal {
 
    public MealData getMealData() {
       return mealData;
+   }
+
+   @Override
+   public String getId() {
+      return this.mealData.getCardCode();
    }
 }
