@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.canteen.service;
 
-import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
@@ -9,6 +8,7 @@ import lt.pavilonis.cmm.canteen.repository.PupilDataRepository;
 import lt.pavilonis.cmm.canteen.repository.UserRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +93,7 @@ public class UserMealService implements EntityRepository<UserMeal, String> {
       LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
-      List<UserRepresentation> users = usersRepository.loadAll();
+      List<UserRepresentation> users = usersRepository.loadAllPupils();
       LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();

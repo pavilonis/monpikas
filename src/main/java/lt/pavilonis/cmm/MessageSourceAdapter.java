@@ -11,9 +11,18 @@ public class MessageSourceAdapter {
    private MessageSource messageSource;
 
    public String get(Object object, String propertyName) {
-      String className = object instanceof Class
-            ? ((Class) object).getSimpleName()
-            : object.getClass().getSimpleName();
+      String className;
+
+      if (object instanceof Class) {
+         Class clazz = (Class) object;
+
+         className = clazz.isAnonymousClass()
+               ? "ANONYMOUS"
+               : clazz.getSimpleName();
+
+      } else {
+         className = object.getClass().getSimpleName();
+      }
       return messageSource.getMessage(className + "." + propertyName, null, null);
    }
 }

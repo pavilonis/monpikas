@@ -54,17 +54,17 @@ public abstract class AbstractFormController<T, ID> {
       return new MHorizontalLayout(
             new MButton(
                   FontAwesome.CHECK,
-                  messages.get(AbstractFormController.class, "buttonSave"),
+                  getMessageSource().get(AbstractFormController.class, "buttonSave"),
                   click -> {
                      T entity = actionSave();
                      persistedEntityConsumer.accept(entity);
                      actionClose();
-                     Notification.show(messages.get(AbstractFormController.class, "saved"), Type.TRAY_NOTIFICATION);
+                     Notification.show(getMessageSource().get(AbstractFormController.class, "saved"), Type.TRAY_NOTIFICATION);
                   }
             ),
             new MButton(
                   FontAwesome.REMOVE,
-                  messages.get(AbstractFormController.class, "buttonClose"),
+                  getMessageSource().get(AbstractFormController.class, "buttonClose"),
                   click -> actionClose()
             )
       );
@@ -100,6 +100,11 @@ public abstract class AbstractFormController<T, ID> {
       UI.getCurrent().addWindow(window);
    }
 
+
+   protected MessageSourceAdapter getMessageSource() {
+      return messages;
+   }
+
    protected Collection<MBeanFieldGroup.MValidator<T>> getValidators() {
       return Collections.emptyList();
    }
@@ -107,7 +112,7 @@ public abstract class AbstractFormController<T, ID> {
    protected void customizeWindow(Window window) {/*hook*/}
 
    protected String getFormCaption() {
-      return messages.get(this, "caption");
+      return getMessageSource().get(this, "caption");
    }
 
    protected abstract EntityRepository<T, ID> getEntityRepository();

@@ -31,12 +31,7 @@ class KeyTable extends ListTable<KeyRepresentation> {
             messages.get(this, "user.role"),
             messages.get(this, "keyAction")
       );
-      setColumnCollapsingAllowed(true);
-      setColumnReorderingAllowed(true);
-      setCacheRate(3);
-      withFullWidth();
-      setSelectable(true);
-      setNullSelectionAllowed(false);
+
       setConverter("dateTime", new LocalDateTimeConverter());
       setConverter("keyAction", new ToStringConverterAdapter<KeyAction>(KeyAction.class) {
          @Override

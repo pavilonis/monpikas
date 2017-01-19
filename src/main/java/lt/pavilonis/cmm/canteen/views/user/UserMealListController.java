@@ -43,4 +43,9 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    protected Class<UserMeal> getEntityClass() {
       return UserMeal.class;
    }
+
+   @Override
+   protected Component getControlPanel() {
+      return null;
+   }
 }

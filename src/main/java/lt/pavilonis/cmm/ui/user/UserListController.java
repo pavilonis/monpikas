@@ -9,7 +9,6 @@ import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
@@ -42,5 +41,10 @@ public class UserListController extends AbstractListController<UserRepresentatio
    @Override
    protected Class<UserRepresentation> getEntityClass() {
       return UserRepresentation.class;
+   }
+
+   @Override
+   protected Component getControlPanel() {
+      return null;
    }
 }

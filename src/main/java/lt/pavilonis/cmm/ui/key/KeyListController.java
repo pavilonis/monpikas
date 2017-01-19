@@ -43,4 +43,9 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    protected Class<KeyRepresentation> getEntityClass() {
       return KeyRepresentation.class;
    }
+
+   @Override
+   protected Component getControlPanel() {
+      return null;
+   }
 }

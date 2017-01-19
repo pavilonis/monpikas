@@ -9,6 +9,9 @@ import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
+import java.util.List;
+
 @SpringComponent
 @UIScope
 class UserTable extends ListTable<UserRepresentation> {
@@ -27,18 +30,18 @@ class UserTable extends ListTable<UserRepresentation> {
             messages.get(this, "role"),
             messages.get(this, "group")
       );
-      setColumnCollapsingAllowed(true);
-      setColumnReorderingAllowed(true);
+
       setSortContainerPropertyId("lastName");
-      setCacheRate(3);
-      setColumnCollapsed("cardCode", true);
-      withFullWidth();
-      setSelectable(true);
-      setNullSelectionAllowed(false);
+
       addRowClickListener(click -> {
          if (click.isDoubleClick()) {
             editPopup.edit(click.getRow());
          }
       });
+   }
+
+   @Override
+   protected List<String> columnsToCollapse() {
+      return Collections.singletonList("cardCode");
    }
 }

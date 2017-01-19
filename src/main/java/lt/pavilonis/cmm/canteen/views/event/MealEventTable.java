@@ -53,17 +53,15 @@ public class MealEventTable extends ListTable<MealEventLog> {
             return messages.get(PupilType.class, model.name());
          }
       });
+
       setColumnWidth("cardCode", 180);
       setColumnWidth("grade", 60);
-      setColumnAlignment("grade", CENTER);
       setColumnWidth("birthDate", 130);
-      setColumnCollapsingAllowed(true);
-      setColumnCollapsed("cardCode", true);
-      setSelectable(true);
-      setNullSelectionAllowed(false);
+
+      setColumnAlignment("grade", CENTER);
+
       setSortContainerPropertyId("date");
       setSortAscending(false);
-      setCacheRate(5);
    }
 
    void updateContainer(String searchString, boolean hadMealTodayOnly) {

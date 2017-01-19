@@ -10,7 +10,7 @@ import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.views.event.MealEventListController;
 import lt.pavilonis.cmm.canteen.views.report.CanteenReportViewController;
-import lt.pavilonis.cmm.canteen.views.setting.MealListViewController;
+import lt.pavilonis.cmm.canteen.views.setting.MealListController;
 import lt.pavilonis.cmm.canteen.views.user.UserMealListController;
 import lt.pavilonis.cmm.common.AbstractViewController;
 import lt.pavilonis.cmm.common.MenuButton;
@@ -53,7 +53,7 @@ public class MainLayout extends MHorizontalLayout {
 
       Stream.of(
             new MenuButton(CanteenReportViewController.class, FontAwesome.FILE_EXCEL_O),
-            new MenuButton(MealListViewController.class, FontAwesome.WRENCH),
+            new MenuButton(MealListController.class, FontAwesome.WRENCH),
             new MenuButton(MealEventListController.class, FontAwesome.CUTLERY),
             new MenuButton(UserMealListController.class, FontAwesome.CHILD),
             new MenuButton(UserListController.class, FontAwesome.USER),

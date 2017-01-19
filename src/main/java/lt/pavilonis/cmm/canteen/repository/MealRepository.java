@@ -11,6 +11,8 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.CollectionUtils;
 
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -66,12 +68,16 @@ public class MealRepository implements EntityRepository<Meal, Long> {
       args.put("name", meal.getName());
       args.put("type", meal.getType().name());
       args.put("price", meal.getPrice());
-      args.put("startTime", meal.getStartTime());
-      args.put("endTime", meal.getEndTime());
+      args.put("startTime", minutes(meal.getStartTime()));
+      args.put("endTime", minutes(meal.getEndTime()));
 
       return isNull(meal.getId())
             ? save(args)
             : update(args);
+   }
+
+   protected long minutes(LocalTime localTime) {
+      return ChronoUnit.MINUTES.between(LocalTime.MIN, localTime);
    }
 
    private Meal save(Map<String, Object> args) {

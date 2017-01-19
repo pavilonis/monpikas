@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalTime;
 
 public class MealMapper implements RowMapper<Meal> {
    @Override
@@ -15,8 +16,8 @@ public class MealMapper implements RowMapper<Meal> {
             rs.getString("m.name"),
             MealType.valueOf(rs.getString("m.type")),
             rs.getBigDecimal("m.price"),
-            rs.getTimestamp("m.startTime").toLocalDateTime().toLocalTime(),
-            rs.getTimestamp("m.endTime").toLocalDateTime().toLocalTime()
+            LocalTime.MIN.plusMinutes(rs.getInt("m.startTime")),
+            LocalTime.MIN.plusMinutes(rs.getInt("m.endTime"))
       );
    }
 }

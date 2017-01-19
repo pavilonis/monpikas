@@ -6,8 +6,8 @@ import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
-import org.vaadin.viritin.fields.MTable;
 
+import java.util.Collections;
 import java.util.List;
 
 public class MealTable extends ListTable<Meal> {
@@ -16,8 +16,6 @@ public class MealTable extends ListTable<Meal> {
       //TODO translate
       withProperties("id", "name", "type", "startTime", "endTime", "price");
       withColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
-      setColumnCollapsingAllowed(true);
-      setColumnCollapsed("id", true);
 
       setConverter("type", new ToStringConverterAdapter<MealType>(MealType.class) {
          @Override
@@ -27,14 +25,16 @@ public class MealTable extends ListTable<Meal> {
       });
       setConverter("price", new ModifiedStringToDoubleConverter());
 
-      setSelectable(true);
-      setNullSelectionAllowed(false);
-      setCacheRate(5);
       setHeight("370px");
    }
 
    public MealTable(MessageSourceAdapter messages, List<Meal> meals) {
       this(messages);
       addBeans(meals);
+   }
+
+   @Override
+   protected List<String> columnsToCollapse() {
+      return Collections.singletonList("id");
    }
 }
