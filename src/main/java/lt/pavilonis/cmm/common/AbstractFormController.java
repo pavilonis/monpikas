@@ -89,6 +89,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
          }
          listTable.addItem(persistedEntity);
          listTable.sort();
+         listTable.select(persistedEntity);
       };
 
       FormView<T> formView = getFormView();
