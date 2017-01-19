@@ -3,6 +3,7 @@ package lt.pavilonis.cmm.ui.key;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.LocalDateTimeConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import lt.pavilonis.cmm.domain.KeyAction;
@@ -14,7 +15,7 @@ import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
-class KeyTable extends MTable<KeyRepresentation> {
+class KeyTable extends ListTable<KeyRepresentation> {
 
    @Autowired
    public KeyTable(KeyRestRepository keys, MessageSourceAdapter messages) {

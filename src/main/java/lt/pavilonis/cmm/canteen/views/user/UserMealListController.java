@@ -7,6 +7,7 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
@@ -24,7 +25,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    private UserMealListFilterPanel filterPanel;
 
    @Override
-   protected MTable<UserMeal> getTable() {
+   protected ListTable<UserMeal> getTable() {
       return table;
    }
 

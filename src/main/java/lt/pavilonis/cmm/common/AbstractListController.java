@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.common;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
-import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.fields.MTable;
 
 import java.util.List;
@@ -14,8 +13,8 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
 
    @Override
    protected Component getMainArea() {
-      MTable<T> table = getTable()
-            .withSize(MSize.FULL_SIZE);
+      ListTable<T> table = getTable();
+      table.setSizeFull();
 
       addTableClickListener(table);
       loadTableData(table);
@@ -35,9 +34,11 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       );
    }
 
-   protected void loadTableData(MTable<T> table) {
+   protected void loadTableData(ListTable<T> table) {
       List<T> beans = getEntityRepository().loadAll();
-      table.setBeans(beans);
+      table.addBeans(beans);
+      table.columnsToCollapse()
+            .forEach(columnId -> table.setColumnCollapsed(columnId, true));
    }
 
    protected void addTableClickListener(MTable<T> table) {
@@ -53,7 +54,7 @@ public abstract class AbstractListController<T, ID> extends AbstractViewControll
       }
    }
 
-   protected abstract MTable<T> getTable();
+   protected abstract ListTable<T> getTable();
 
    protected void actionCreate(MTable<T> table) {
       T entity = createNewInstance();

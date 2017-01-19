@@ -8,6 +8,7 @@ import lt.pavilonis.cmm.canteen.views.user.form.MealTable;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
@@ -27,7 +28,7 @@ public class MealListViewController extends AbstractListController<Meal, Long> {
    }
 
    @Override
-   protected MTable<Meal> getTable() {
+   protected ListTable<Meal> getTable() {
       return new MealTable(messages);
    }
 

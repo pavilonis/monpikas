@@ -5,6 +5,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.CollectionCellConverter;
 import lt.pavilonis.cmm.canteen.views.user.form.UserMealPopup;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +17,7 @@ import static com.vaadin.ui.Table.Align.CENTER;
 
 @UIScope
 @SpringComponent
-public class UserMealTable extends MTable<UserMeal> {
+public class UserMealTable extends ListTable<UserMeal> {
 
    private final UserMealService pupilService;
 

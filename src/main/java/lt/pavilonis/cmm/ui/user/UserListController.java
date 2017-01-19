@@ -5,6 +5,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class UserListController extends AbstractListController<UserRepresentatio
    private UserListFilterPanel userListFilterPanel;
 
    @Override
-   protected MTable<UserRepresentation> getTable() {
+   protected ListTable<UserRepresentation> getTable() {
       return userTable;
    }
 

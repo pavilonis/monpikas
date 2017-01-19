@@ -3,15 +3,15 @@ package lt.pavilonis.cmm.ui.user;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
-class UserTable extends MTable<UserRepresentation> {
+class UserTable extends ListTable<UserRepresentation> {
 
    @Autowired
    public UserTable(UserRestRepository userRepository,

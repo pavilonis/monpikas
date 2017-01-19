@@ -8,20 +8,22 @@ import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.service.MealService;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import static com.vaadin.ui.Table.Align.CENTER;
 
 @UIScope
 @SpringComponent
-public class MealEventTable extends MTable<MealEventLog> {
+public class MealEventTable extends ListTable<MealEventLog> {
 
    private final MealService mealService;
 
@@ -29,8 +31,8 @@ public class MealEventTable extends MTable<MealEventLog> {
    public MealEventTable(MealService mealService, MessageSourceAdapter messages) {
       this.mealService = mealService;
 
-      withProperties("cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
-      withColumnHeaders("Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
+      withProperties("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
+      withColumnHeaders("ID", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
 
       setConverter("date", new StringToDateConverter() {
          @Override
@@ -71,5 +73,10 @@ public class MealEventTable extends MTable<MealEventLog> {
 
    void reload() {
       updateContainer(null, false);
+   }
+
+   @Override
+   protected List<String> columnsToCollapse() {
+      return Arrays.asList("id", "cardCode");
    }
 }

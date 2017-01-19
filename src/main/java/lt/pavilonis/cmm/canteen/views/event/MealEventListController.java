@@ -10,6 +10,7 @@ import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
 
@@ -101,7 +102,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
    protected void addTableClickListener(MTable<MealEventLog> table) {/*do nothing*/}
 
    @Override
-   protected MTable<MealEventLog> getTable() {
+   protected ListTable<MealEventLog> getTable() {
       return table;
    }
 

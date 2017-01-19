@@ -3,13 +3,14 @@ package lt.pavilonis.cmm.canteen.views.user.form;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import org.vaadin.viritin.fields.MTable;
 
 import java.util.List;
 
-public class MealTable extends MTable<Meal> {
+public class MealTable extends ListTable<Meal> {
 
    public MealTable(MessageSourceAdapter messages) {
       //TODO translate

@@ -5,9 +5,9 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 @UIScope
 @SpringComponent
@@ -20,7 +20,7 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    private KeyTable keyTable;
 
    @Override
-   protected MTable<KeyRepresentation> getTable() {
+   protected ListTable<KeyRepresentation> getTable() {
       return keyTable;
    }
 
@@ -35,7 +35,7 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    }
 
    @Override
-   protected void loadTableData(MTable<KeyRepresentation> table) {
+   protected void loadTableData(ListTable<KeyRepresentation> table) {
       keyListFilterPanel.reload();
    }
 
