@@ -9,7 +9,7 @@ import java.util.List;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
-public abstract class AbstractListController<T extends Identifiable<ID>, ID, F> extends AbstractViewController {
+public abstract class AbstractListController<T extends Identifiable<ID>, ID, FILTER> extends AbstractViewController {
 
    ListTable<T> table;
 
@@ -24,12 +24,23 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, F> 
    }
 
    @Override
-   protected Component getHeader() {
-      return getFilterPanel();
+   final protected Component getHeader() {
+      FilterPanel<FILTER> filterPanel = getFilterPanel();
+
+      filterPanel.addSearchClickListener(click -> {
+         loadTableData(table);
+      });
+
+      filterPanel.addResetClickListener(click -> {
+         filterPanel.fieldReset();
+         loadTableData(table);
+      });
+
+      return filterPanel;
    }
 
    @Override
-   protected Component getFooter() {
+   final protected Component getFooter() {
       return getControlPanel();
    }
 
@@ -41,9 +52,12 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, F> 
       );
    }
 
-   protected void loadTableData(ListTable<T> table) {
-      List<T> beans = getEntityRepository().loadAll();
-      table.addBeans(beans);
+   private void loadTableData(ListTable<T> table) {
+      FILTER filter = getFilterPanel().getFilter();
+      EntityRepository<T, ID, FILTER> repository = getEntityRepository();
+
+      List<T> beans = repository.loadAll(filter);
+      table.setBeans(beans);
       table.collapseColumns();
       table.sort();
    }
@@ -93,11 +107,9 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, F> 
       return null;
    }
 
-   protected FilterPanel<F> getFilterPanel() {
-      return null;
-   }
+   protected abstract FilterPanel<FILTER> getFilterPanel();
 
-   protected abstract EntityRepository<T, ID> getEntityRepository();
+   protected abstract EntityRepository<T, ID, FILTER> getEntityRepository();
 
    protected abstract Class<T> getEntityClass();
 }

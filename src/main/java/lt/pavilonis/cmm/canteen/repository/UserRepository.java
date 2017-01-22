@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.net.URI;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -26,7 +27,8 @@ public class UserRepository {
    private static final Logger LOG = LoggerFactory.getLogger(UserRepository.class.getSimpleName());
    private static final String SEGMENT_USERS = "users";
    private static final String ROLE_PUPIL = "Mokinys";
-   private static final String PARAM_ROLE = "role";
+   private static final String ARG_ROLE = "role";
+   private static final String ARG_NAME = "name";
 
    @Value("${api.path}")
    private String apiUsersPath;
@@ -80,10 +82,15 @@ public class UserRepository {
       return uri(Collections.emptyMap(), segments);
    }
 
-   public List<UserRepresentation> loadAllPupils() {
+   public List<UserRepresentation> loadAllPupils(String name) {
+      Map<String, Object> args = new HashMap<>();
+      args.put(ARG_ROLE, ROLE_PUPIL);
+      if (StringUtils.isNoneBlank(name)) {
+         args.put(ARG_NAME, name);
+      }
       try {
          UserRepresentation[] response = rest
-               .getForObject(uri(ImmutableMap.of(PARAM_ROLE, ROLE_PUPIL)), UserRepresentation[].class);
+               .getForObject(uri(args), UserRepresentation[].class);
 
          return newArrayList(response);
 

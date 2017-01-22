@@ -33,4 +33,10 @@ public class EnumComboBox<T extends Enum<T>> extends ComboBox {
       this.setRequired(value);
       return this;
    }
+
+   @Override
+   @SuppressWarnings("unchecked")
+   public T getValue() {
+      return (T) super.getValue();
+   }
 }

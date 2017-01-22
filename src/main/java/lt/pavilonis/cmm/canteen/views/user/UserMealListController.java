@@ -10,6 +10,7 @@ import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.FormView;
 import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    private UserMealFormView formView;
 
    @Override
-   protected EntityRepository<UserMeal, String> getEntityRepository() {
+   protected EntityRepository<UserMeal, String, UserMealFilter> getEntityRepository() {
       return userMealService;
    }
 
@@ -44,7 +45,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    protected AbstractFormController<UserMeal, String> getFormController() {
       return new AbstractFormController<UserMeal, String>() {
          @Override
-         protected EntityRepository<UserMeal, String> getEntityRepository() {
+         protected EntityRepository<UserMeal, String, UserMealFilter> getEntityRepository() {
             return userMealService;
          }
 
@@ -72,7 +73,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    }
 
    @Override
-   protected Component getHeader() {
+   protected FilterPanel<UserMealFilter> getFilterPanel() {
       return filterPanel;
    }
 

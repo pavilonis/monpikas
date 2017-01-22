@@ -1,44 +1,45 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import lt.pavilonis.cmm.common.FilterPanel;
+
+import java.util.Arrays;
+import java.util.List;
 
 @UIScope
 @SpringComponent
-public class UserMealListFilterPanel extends MHorizontalLayout {
+public class UserMealListFilterPanel extends FilterPanel<UserMealFilter> {
 
-   public UserMealListFilterPanel() {
+   private TextField textField;
+   private EnumComboBox<MealType> mealTypeComboBox;
 
-      TextField textField = new TextField();
-      EnumComboBox<MealType> mealTypeComboBox = new EnumComboBox<>(MealType.class);
-      mealTypeComboBox.setCaption(null);
-      mealTypeComboBox.setNullSelectionAllowed(true);
-      mealTypeComboBox.setValue(null);
-      add(
-            textField,
-            mealTypeComboBox,
-            new MButton(FontAwesome.FILTER, "Filtruoti", click -> filterAction(textField.getValue()))
-                  .withClickShortcut(KeyCode.ENTER),
-
-            new MButton(FontAwesome.REFRESH, "Valyti", click -> {
-               textField.clear();
-               mealTypeComboBox.clear();
-            }).withClickShortcut(KeyCode.ESCAPE)
+   @Override
+   protected List<Field> getFields() {
+      List<Field> fields = Arrays.asList(
+            mealTypeComboBox = new EnumComboBox<>(MealType.class),
+            textField = new TextField(messages.get(this, "name"))
       );
-      setSpacing(true);
-      setMargin(false);
-      textField.focus();
+      mealTypeComboBox.setValue(null);
+      textField.setImmediate(true);
+      return fields;
    }
 
-   private void filterAction(String value) {
-      //TODO
+   @Override
+   public UserMealFilter getFilter() {
+      return new UserMealFilter(
+            mealTypeComboBox.getValue(),
+            textField.getValue()
+      );
+   }
+
+   @Override
+   protected Field getFieldToFocus() {
+      return textField;
    }
 }
 

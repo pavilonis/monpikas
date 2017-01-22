@@ -9,7 +9,9 @@ import lt.pavilonis.cmm.canteen.views.user.MealTable;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.HiddenFilterPanel;
 import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -25,7 +27,7 @@ public class MealListController extends AbstractListController<Meal, Long, MealF
       return new AbstractFormController<Meal, Long>() {
 
          @Override
-         protected EntityRepository<Meal, Long> getEntityRepository() {
+         protected EntityRepository<Meal, Long, ?> getEntityRepository() {
             return mealRepository;
          }
 
@@ -52,7 +54,12 @@ public class MealListController extends AbstractListController<Meal, Long, MealF
    }
 
    @Override
-   protected EntityRepository<Meal, Long> getEntityRepository() {
+   protected FilterPanel<MealFilter> getFilterPanel() {
+      return new HiddenFilterPanel<>();
+   }
+
+   @Override
+   protected EntityRepository<Meal, Long, MealFilter> getEntityRepository() {
       return mealRepository;
    }
 

@@ -26,7 +26,11 @@ final class MealEventFormView extends FormView<MealEventLog> {
       table = new UserMealTable("Pasirinkite mokinį", userMeals);
       date.setDateFormat("yyyy-MM-dd");
 
-      add(new MHorizontalLayout(date, mealType).withMargin(false), table);
+      add(
+            new MHorizontalLayout(date, mealType)
+                  .withMargin(false),
+            table
+      );
    }
 
    UserMeal getTableValue() {
@@ -46,6 +50,8 @@ final class MealEventFormView extends FormView<MealEventLog> {
          setCacheRate(5);
          setHeight(370, Unit.PIXELS);
          setWidth(100, Unit.PERCENTAGE);
+         setSortContainerPropertyId("user.name");
+         sort();
       }
    }
 }

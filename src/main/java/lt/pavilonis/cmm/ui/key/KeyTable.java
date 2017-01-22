@@ -9,19 +9,18 @@ import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import lt.pavilonis.cmm.domain.KeyAction;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
-import lt.pavilonis.cmm.repository.KeyRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 @SpringComponent
 @UIScope
 class KeyTable extends ListTable<KeyRepresentation> {
 
-   @Autowired
-   public KeyTable(KeyRestRepository keys, MessageSourceAdapter messages) {
+   @Autowired //TODO move message somewhere super
+   public KeyTable(MessageSourceAdapter messages) {
 
       withProperties("scanner", "keyNumber", "dateTime", "user.name",
             "user.group", "user.role", "keyAction");
+
       setColumnHeaders(
             messages.get(this, "scanner"),
             messages.get(this, "keyNumber"),
@@ -45,6 +44,5 @@ class KeyTable extends ListTable<KeyRepresentation> {
             return messages.get(model, model.getName());
          }
       });
-      addBeans(keys.load(null, null, false, null, null));
    }
 }

@@ -41,7 +41,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
          throw new Validator.InvalidValueException("Invalid field values");
       }
 
-      EntityRepository<T, ID> entityRepository = getEntityRepository();
+      EntityRepository<T, ID, ?> entityRepository = getEntityRepository();
       return entityRepository.saveOrUpdate(model);
    }
 
@@ -132,7 +132,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       return getMessageSource().get(this, "caption");
    }
 
-   protected abstract EntityRepository<T, ID> getEntityRepository();
+   protected abstract EntityRepository<T, ID, ?> getEntityRepository();
 
    protected abstract FormView<T> getFormView();
 }

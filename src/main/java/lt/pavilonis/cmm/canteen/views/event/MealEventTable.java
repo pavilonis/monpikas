@@ -7,7 +7,6 @@ import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
-import lt.pavilonis.cmm.canteen.service.MealService;
 import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
@@ -25,11 +24,8 @@ import static com.vaadin.ui.Table.Align.CENTER;
 @SpringComponent
 public class MealEventTable extends ListTable<MealEventLog> {
 
-   private final MealService mealService;
-
    @Autowired
-   public MealEventTable(MealService mealService, MessageSourceAdapter messages) {
-      this.mealService = mealService;
+   public MealEventTable(MessageSourceAdapter messages) {
 
       withProperties("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
       withColumnHeaders("ID", "Kodas", "Klasė", "Vardas", "Data", "Maitinimo tipas", "Mokinio tipas", "Kaina");
@@ -62,15 +58,6 @@ public class MealEventTable extends ListTable<MealEventLog> {
 
       setSortContainerPropertyId("date");
       setSortAscending(false);
-   }
-
-   void updateContainer(String searchString, boolean hadMealTodayOnly) {
-      removeAllItems();
-      addBeans(mealService.getDinnerEventList());
-   }
-
-   void reload() {
-      updateContainer(null, false);
    }
 
    @Override

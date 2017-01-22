@@ -9,6 +9,7 @@ import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.fields.MTable;
@@ -23,7 +24,7 @@ import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
 
 @UIScope
 @SpringComponent
-public class MealEventListController extends AbstractListController<MealEventLog, Long, EventFilter> {
+public class MealEventListController extends AbstractListController<MealEventLog, Long, MealEventFilter> {
 
    @Autowired
    private MealEventTable table;
@@ -32,7 +33,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
    private MealEventLogRepository eventLogs;
 
    @Autowired
-   private MealEventListFilterPanel filterPanel;
+   private MealEventFilterPanel filterPanel;
 
    @Autowired
    private MealEventFormController mealEventFormController;
@@ -103,12 +104,12 @@ public class MealEventListController extends AbstractListController<MealEventLog
    }
 
    @Override
-   protected EntityRepository<MealEventLog, Long> getEntityRepository() {
+   protected EntityRepository<MealEventLog, Long, MealEventFilter> getEntityRepository() {
       return eventLogs;
    }
 
    @Override
-   protected Component getHeader() {
+   protected FilterPanel<MealEventFilter> getFilterPanel() {
       return filterPanel;
    }
 

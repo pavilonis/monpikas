@@ -87,7 +87,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
    }
 
    @Override
-   protected EntityRepository<MealEventLog, Long> getEntityRepository() {
+   protected EntityRepository<MealEventLog, Long, ?> getEntityRepository() {
       return eventLogRepository;
    }
 

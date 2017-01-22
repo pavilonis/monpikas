@@ -11,6 +11,7 @@ import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealRepository;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
+import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
 import lt.pavilonis.cmm.canteen.views.setting.TableControlPanel;
 import lt.pavilonis.cmm.common.FormView;
 import lt.pavilonis.cmm.users.service.ImageService;
@@ -35,7 +36,7 @@ public class UserMealFormView extends FormView<UserMeal> {
    private final MTextField birthDate = new MTextField();
    private final MTextField cardCodeField = new MTextField();
    private final MCssLayout photoLayout = new MCssLayout();
-   private final MTextArea comment = new MTextArea().withNullRepresentation("").withRows(2);
+   private final MTextArea comment = new MTextArea().withNullRepresentation("").withRows(1);
    private final EnumComboBox<PupilType> type = new EnumComboBox<>(PupilType.class).withRequired(true);
    private final MealTable mealTable;
 
@@ -70,7 +71,7 @@ public class UserMealFormView extends FormView<UserMeal> {
 
       TableControlPanel controls = new TableControlPanel(
             click -> new UserMealSelectionPopup(
-                  mealRepository.loadAll(),
+                  mealRepository.loadAll(new MealFilter()),
                   mealSelectionConsumer,
                   messages
             ),

@@ -1,38 +1,34 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
-import com.vaadin.data.Container.Filter;
-import com.vaadin.data.Item;
-import com.vaadin.data.util.BeanItem;
-import lt.pavilonis.cmm.canteen.domain.MealEventLog;
-import lt.pavilonis.cmm.canteen.service.MealService;
+import org.joda.time.LocalDateTime;
 
 import java.util.Date;
 
-final class MealEventFilter implements Filter {
-   private MealService service;
-   private String text;
-   private boolean hadDinnerToday;
+public final class MealEventFilter {
+   private final String text;
+   private final Date periodStart;
+   private final Date periodEnd;
 
-   MealEventFilter(MealService service, String text, boolean hadDinnerToday) {
-      this.service = service;
-      this.text = text.toLowerCase();
-      this.hadDinnerToday = hadDinnerToday;
+   public MealEventFilter(String text, Date periodStart, Date periodEnd) {
+      this.text = text;
+      this.periodStart = periodStart == null
+            ? null :
+            LocalDateTime.fromDateFields(periodStart).withTime(0, 0, 0, 0).toDate();
+      this.periodEnd = periodEnd == null
+            ? null
+            : LocalDateTime.fromDateFields(periodEnd).withTime(23, 59, 59, 999).toDate();
+
    }
 
-   @Override
-   public boolean passesFilter(Object itemId, Item item) throws UnsupportedOperationException {
-
-      @SuppressWarnings("unchecked")
-      MealEventLog event = ((BeanItem<MealEventLog>) item).getBean();
-
-      String s = event.getName() + event.getGrade() + event.getCardCode() + event.getDate() + event.getPrice();
-
-      return s.toLowerCase().contains(text)
-            && (!hadDinnerToday || service.sameDay(event.getDate(), new Date()));
+   public String getText() {
+      return text;
    }
 
-   @Override
-   public boolean appliesToProperty(Object propertyId) {
-      return true;
+   public Date getPeriodStart() {
+      return periodStart;
+   }
+
+   public Date getPeriodEnd() {
+      return periodEnd;
    }
 }

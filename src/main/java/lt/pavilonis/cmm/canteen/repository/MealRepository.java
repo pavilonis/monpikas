@@ -1,6 +1,8 @@
 package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
+import lt.pavilonis.cmm.canteen.views.user.UserMealFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -25,7 +27,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 
 @Repository
-public class MealRepository implements EntityRepository<Meal, Long> {
+public class MealRepository implements EntityRepository<Meal, Long, MealFilter> {
 
    private final MealMapper MAPPER = new MealMapper();
 
@@ -37,7 +39,7 @@ public class MealRepository implements EntityRepository<Meal, Long> {
 
 
    @Override
-   public List<Meal> loadAll() {
+   public List<Meal> loadAll(MealFilter filter) {
       return jdbc.query("SELECT m.* FROM Meal m", MAPPER);
    }
 

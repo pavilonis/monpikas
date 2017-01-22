@@ -1,112 +1,37 @@
 package lt.pavilonis.cmm.ui.key;
 
-import com.vaadin.event.ShortcutAction.KeyCode;
-import com.vaadin.server.FontAwesome;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Notification;
+import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.components.ADateField;
 import lt.pavilonis.cmm.converter.LocalDateConverter;
-import lt.pavilonis.cmm.domain.KeyRepresentation;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
-import lt.pavilonis.cmm.repository.KeyRestRepository;
 import lt.pavilonis.cmm.repository.ScannerRestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.button.MButton;
 import org.vaadin.viritin.fields.MCheckBox;
-import org.vaadin.viritin.fields.MDateField;
 import org.vaadin.viritin.fields.MTextField;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 @SpringComponent
 @UIScope
-class KeyListFilterPanel extends MHorizontalLayout {
+class KeyListFilterPanel extends FilterPanel<KeyFilter> {
 
-   private final TextField textField;
-   private final ComboBox scannerCombo;
-   private final CheckBox activeKeysCheckBox;
-   private final DateField periodStart;
-   private final DateField periodEnd;
-
-   @Autowired
-   private KeyRestRepository keys;
-
-   @Autowired
-   private KeyTable table;
-
-   @Autowired
-   public KeyListFilterPanel(ScannerRestRepository scanners, MessageSourceAdapter messages) {
-
-      activeKeysCheckBox = new MCheckBox(messages.get(this, "active"), true);
-      activeKeysCheckBox.addValueChangeListener(value -> togglePeriodStartEnd());
-      activeKeysCheckBox.setImmediate(true);
-
-      periodStart = new MDateField(messages.get(this, "periodStart"));
-      periodStart.setDateFormat("yyyy-MM-dd");
-      periodStart.setRequired(true);
-      periodStart.setConverter(new LocalDateConverter());
-
-      periodEnd = new MDateField(messages.get(this, "periodEnd"));
-      periodEnd.setDateFormat("yyyy-MM-dd");
-      periodEnd.setRequired(true);
-      periodEnd.setConverter(new LocalDateConverter());
-      defaultDateValues();
-      togglePeriodStartEnd();
-
-      textField = new MTextField(messages.get(this, "keyNumber"));
-      scannerCombo = new ComboBox(messages.get(this, "scanner"), scanners.loadAll()) {
-         @Override
-         public String getItemCaption(Object itemId) {
-            ScannerRepresentation scanner = (ScannerRepresentation) itemId;
-            return messages.get(scanner, scanner.getName());
-         }
-      };
-
-      Runnable resetFields = () -> {
-         scannerCombo.setValue(null);
-         textField.setValue(null);
-         defaultDateValues();
-         reload();
-      };
-
-      addComponents(
-            periodStart,
-            periodEnd,
-            scannerCombo,
-            textField,
-            activeKeysCheckBox,
-            new MButton(
-                  FontAwesome.FILTER,
-                  messages.get(this, "filter"),
-                  event -> {
-                     if (!periodStart.isEmpty() && !periodEnd.isEmpty()) {
-                        reload();
-                     } else {
-                        Notification.show(
-                              messages.get(this, "emptyFilterDates"),
-                              Notification.Type.WARNING_MESSAGE
-                        );
-                     }
-                  }
-            ).withClickShortcut(KeyCode.ENTER),
-            new MButton(
-                  FontAwesome.REFRESH,
-                  messages.get(this, "reset"),
-                  event -> resetFields.run()
-            ).withClickShortcut(KeyCode.ESCAPE)
-      );
-
-      alignAll(Alignment.BOTTOM_LEFT);
-   }
+   private TextField textField;
+   private ComboBox scannerCombo;
+   private CheckBox activeKeysCheckBox;
+   private DateField periodStart;
+   private DateField periodEnd;
 
    private void togglePeriodStartEnd() {
       boolean mode = isLogMode();
@@ -114,23 +39,79 @@ class KeyListFilterPanel extends MHorizontalLayout {
       periodEnd.setEnabled(mode);
    }
 
-   private void defaultDateValues() {
+   boolean isLogMode() {
+      return activeKeysCheckBox.getValue() != Boolean.TRUE;
+   }
+
+   @Override
+   public KeyFilter getFilter() {
+      return new KeyFilter(
+            (LocalDate) periodStart.getConvertedValue(),
+            (LocalDate) periodEnd.getConvertedValue(),
+            scannerCombo.getValue() == null ? null : ((ScannerRepresentation) scannerCombo.getValue()).getId(),
+            textField.getValue(),
+            isLogMode()
+      );
+   }
+
+   @Override
+   protected List<Field> getFields() {
+      List<Field> fields = Arrays.asList(
+            periodStart = new ADateField(this.getClass(), "periodStart")
+                  .withRequired(true)
+                  .withConverter(new LocalDateConverter()),
+            periodEnd = new ADateField(this.getClass(), "periodEnd")
+                  .withRequired(true)
+                  .withConverter(new LocalDateConverter()),
+            scannerCombo = scannerCombo(),
+            textField = new MTextField(messages.get(this, "keyNumber")),
+            activeKeysCheckBox = new MCheckBox(messages.get(this, "active"), true)
+                  .withValueChangeListener(value -> togglePeriodStartEnd())
+      );
+
+      activeKeysCheckBox.setImmediate(true);
+      togglePeriodStartEnd();
+      return fields;
+   }
+
+   private ComboBox scannerCombo() {
+      ScannerRestRepository scannerRepo = App.context.getBean(ScannerRestRepository.class);
+      return new ComboBox(messages.get(this, "scanner"), scannerRepo.loadAll()) {
+         @Override
+         public String getItemCaption(Object itemId) {
+            ScannerRepresentation scanner = (ScannerRepresentation) itemId;
+            return messages.get(scanner, scanner.getName());
+         }
+      };
+   }
+
+   @Override
+   protected void setDefaultValues() {
       periodStart.setConvertedValue(LocalDate.now().minusWeeks(1));
       periodEnd.setValue(new Date());
    }
 
-   void reload() {
-      List<KeyRepresentation> beans = keys.load(
-            scannerCombo.getValue() == null ? null : ((ScannerRepresentation) scannerCombo.getValue()).getId(),
-            textField.getValue(),
-            isLogMode(),
-            (LocalDate) periodStart.getConvertedValue(),
-            (LocalDate) periodEnd.getConvertedValue()
+   @Override
+   public void addSearchClickListener(Button.ClickListener clickListener) {
+      super.addSearchClickListener(clickListener);
+      activeKeysCheckBox.addValueChangeListener(
+            change -> clickListener.buttonClick(new ClickEvent(activeKeysCheckBox))
       );
-      table.setBeans(beans);
    }
 
-   boolean isLogMode() {
-      return activeKeysCheckBox.getValue() != Boolean.TRUE;
+
+   //   if (!periodStart.isEmpty() && !periodEnd.isEmpty()) {
+//      reload();
+//   } else {
+//      Notification.show(
+//            messages.get(this, "emptyFilterDates"),
+//            Notification.Type.WARNING_MESSAGE
+//      );
+//   }
+
+
+   @Override
+   protected Field getFieldToFocus() {
+      return textField;
    }
 }

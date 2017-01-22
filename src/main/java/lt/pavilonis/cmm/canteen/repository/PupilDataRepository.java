@@ -1,7 +1,8 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.canteen.domain.MealData;
+import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.util.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,13 +32,8 @@ public class PupilDataRepository {
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
 
-   public Collection<MealData> loadByMeal(long mealId) {
-      Map<String, MealData> result = query(null, mealId, false);
-      return result.values();
-   }
-
-   public Collection<MealData> loadAll(boolean withMealsAssigned) {
-      return query(null, null, withMealsAssigned).values();
+   public Collection<MealData> loadAll(boolean withMealsAssignedOnly, MealType mealType) {
+      return query(null, mealType, withMealsAssignedOnly).values();
    }
 
    public Optional<MealData> load(String cardCode) {
@@ -47,11 +43,11 @@ public class PupilDataRepository {
             : Optional.of(result.values().iterator().next());
    }
 
-   private Map<String, MealData> query(String cardCode, Long mealId, boolean withMealsAssigned) {
+   private Map<String, MealData> query(String cardCode, MealType mealType, boolean withMealsAssigned) {
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", cardCode);
-      args.put("mealId", mealId);
       args.put("withMealsAssigned", withMealsAssigned);
+      args.put("mealType", mealType == null ? null : mealType.name());
       LocalDateTime opStart = LocalDateTime.now();
       Map<String, MealData> result = namedJdbc.query("" +
                   "SELECT " +
@@ -61,7 +57,7 @@ public class PupilDataRepository {
                   "  LEFT JOIN PupilMeal pm ON pm.pupil_cardCode = p.cardCode " +
                   "  LEFT JOIN Meal m ON m.id = pm.meal_id " +
                   "WHERE (:cardCode IS NULL OR :cardCode = p.cardCode)" +
-                  "  AND (:mealId IS NULL OR :mealId = m.id) " +
+                  "  AND (:mealType IS NULL OR m.type = :mealType)" +
                   "  AND (:withMealsAssigned IS FALSE OR m.id IS NOT NULL)",
             args,
             PUPIL_DATA_EXTRACTOR

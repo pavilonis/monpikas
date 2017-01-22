@@ -1,9 +1,10 @@
 package lt.pavilonis.cmm.repository;
 
-import lt.pavilonis.util.TimeUtils;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.ui.user.UserFilter;
+import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -26,7 +27,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserRestRepository implements EntityRepository<UserRepresentation, String> {
+public class UserRestRepository implements EntityRepository<UserRepresentation, String, UserFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_USERS = "users";
@@ -38,7 +39,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    @Autowired
    private RestTemplate restTemplate;
 
-   public List<UserRepresentation> loadAll() {
+   public List<UserRepresentation> loadAll(UserFilter filter) {
       return loadAll(null, null, null);
    }
 

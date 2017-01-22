@@ -7,6 +7,7 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.repository.MealRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
+import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -71,7 +72,7 @@ public class MealRestController {
 
          default:
             LocalTime now = now();
-            Optional<Meal> meal = mealRepository.loadAll().stream()
+            Optional<Meal> meal = mealRepository.loadAll(new MealFilter()).stream()
                   .filter(mt -> mt.getStartTime().isBefore(now) && mt.getEndTime().isAfter(now))
                   .filter(mealByTime ->
                         dto.getMealData().getMeals().stream().anyMatch(pupilMeal -> pupilMeal.getType() == mealByTime.getType()))
@@ -94,7 +95,7 @@ public class MealRestController {
                      userMeal.getUser().getCardCode(),
                      userMeal.getUser().getName(),
                      userMeal.getUser().getGroup(),
-                     null,
+                     new Date(),
                      meal.getPrice(),
                      meal.getType(),
                      userMeal.getMealData().getType()

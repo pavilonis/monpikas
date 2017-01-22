@@ -4,8 +4,9 @@ package lt.pavilonis.cmm.canteen.repository;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
+import lt.pavilonis.cmm.canteen.views.event.MealEventFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
-import org.joda.time.LocalDate;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,7 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class MealEventLogRepository implements EntityRepository<MealEventLog, Long> {
+public class MealEventLogRepository implements EntityRepository<MealEventLog, Long, MealEventFilter> {
 
    private final RowMapper<MealEventLog> MAPPER = (rs, i) -> new MealEventLog(
          rs.getLong("id"),
@@ -53,15 +54,30 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
       );
    }
 
-   public List<MealEventLog> loadAfter(Date periodStart) {
-      return jdbc.query("SELECT * FROM MealEventLog WHERE `date` > ? ORDER BY `date` DESC", MAPPER, periodStart);
-   }
-
    public List<MealEventLog> load(PupilType pupilType, Date periodStart, Date periodEnd) {
       return jdbc.query(
             "SELECT * FROM MealEventLog WHERE pupilType = ? AND `date` BETWEEN ? AND ?",
             MAPPER,
             pupilType.name(), periodStart, periodEnd
+      );
+   }
+
+   @Override
+   public List<MealEventLog> loadAll(MealEventFilter filter) {
+      Map<String, Object> params = new HashMap<>();
+      params.put("periodStart", filter.getPeriodStart());
+      params.put("periodEnd", filter.getPeriodEnd());
+      params.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
+
+      return namedJdbc.query("" +
+                  "SELECT * " +
+                  "FROM MealEventLog " +
+                  "WHERE " +
+                  "  (:periodStart IS NULL OR :periodStart <= date) " +
+                  "  AND (:periodEnd IS NULL OR :periodEnd >= date) " +
+                  "  AND (:text IS NULL OR name LIKE :text)",
+            params,
+            MAPPER
       );
    }
 
@@ -74,23 +90,19 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
       args.put("mealType", entity.getMealType().name());
       args.put("grade", entity.getGrade());
       args.put("pupilType", entity.getPupilType().name());
+      args.put("date", entity.getDate());
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       namedJdbc.update(
             "INSERT INTO MealEventLog (cardCode, `name`, price, mealType, grade, pupilType, date) " +
-                  "VALUES (:cardCode, :name, :price, :mealType, :grade, :pupilType, NOW())",
+                  "VALUES (:cardCode, :name, :price, :mealType, :grade, :pupilType, :date)",
             new MapSqlParameterSource(args),
             keyHolder
       );
 
       return load(keyHolder.getKey().longValue())
             .orElseThrow(() -> new RuntimeException("could not saved mealEventLog"));
-   }
-
-   @Override
-   public List<MealEventLog> loadAll() {
-      return loadAfter(LocalDate.now().minusMonths(1).toDate());
    }
 
    @Override
