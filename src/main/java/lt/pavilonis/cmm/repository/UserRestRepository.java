@@ -31,6 +31,8 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_USERS = "users";
+   private static final String SEGMENT_SCANLOG = "scanlog";
+   private static final String SCANNER_ID_CANTEEN = "6";
    private static final String SEGMENT_PRESENCE = "presence";
 
    @Value("${api.path}")
@@ -106,6 +108,11 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
       PresenceTimeRepresentation[] response = restTemplate
             .getForObject(uri(SEGMENT_PRESENCE, cardCode), PresenceTimeRepresentation[].class);
       return Arrays.asList(response);
+   }
+
+   //TODO not suitable here?
+   public void logUserScan(String cardCode) {
+      restTemplate.postForObject(uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode), null, Void.class);
    }
 
    @Override

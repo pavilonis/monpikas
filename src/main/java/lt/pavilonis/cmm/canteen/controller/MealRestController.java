@@ -9,6 +9,7 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -37,12 +38,18 @@ public class MealRestController {
    @Autowired
    private MealEventLogRepository eventLogs;
 
+   @Autowired
+   private UserRestRepository userRestRepository;
+
    @ResponseBody
-   @RequestMapping("mealRequest/{cardCode}")
+   @RequestMapping("mealRequest/{cardCode}") //TODO change method name to meal or (rest/meal)
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
+
+      userRestRepository.logUserScan(cardCode);
 
       LOG.info("Pupil meal request [cardCode={}]", cardCode);
       Optional<UserMeal> optionalUserMeal = userMealService.load(cardCode);
+
 
       if (!optionalUserMeal.isPresent()) {
          LOG.info("User NOT found in DB [cardCode={}]", cardCode);
