@@ -2,13 +2,18 @@ package lt.pavilonis.cmm.canteen.views.event;
 
 
 import com.vaadin.ui.ComboBox;
+import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
+import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
+import lt.pavilonis.cmm.canteen.views.user.UserMealFilter;
 import lt.pavilonis.cmm.common.FormView;
+import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.fields.MDateField;
 import org.vaadin.viritin.fields.MTable;
+import org.vaadin.viritin.fields.MTextField;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 
 import java.util.Date;
@@ -22,13 +27,23 @@ final class MealEventFormView extends FormView<MealEventLog> {
    private final ComboBox mealType = new EnumComboBox<>(MealType.class)
          .withRequired(true);
 
-   MealEventFormView(List<UserMeal> userMeals) {
-      table = new UserMealTable("Pasirinkite mokinį", userMeals);
+   MealEventFormView(UserMealService userMeals, MessageSourceAdapter messages) {
+
+      table = new UserMealTable("Pasirinkite mokinį", userMeals.loadAll(new UserMealFilter(null, null, true)));
+
+      MTextField textFilter = new MTextField(messages.get(this, "name")).withTextChangeListener(
+            change -> {
+               table.select(null);
+               table.setBeans(userMeals.loadAll(new UserMealFilter(null, change.getText(), true)));
+            }
+      );
+
       date.setDateFormat("yyyy-MM-dd");
 
       add(
             new MHorizontalLayout(date, mealType)
                   .withMargin(false),
+            textFilter,
             table
       );
    }
@@ -48,8 +63,9 @@ final class MealEventFormView extends FormView<MealEventLog> {
          setSelectable(true);
          setNullSelectionAllowed(false);
          setCacheRate(5);
-         setHeight(370, Unit.PIXELS);
-         setWidth(100, Unit.PERCENTAGE);
+         setPageLength(7);
+         setWidth("100%");
+//         withSize(MSize.size("360px", "290px"));
          setSortContainerPropertyId("user.name");
          sort();
       }

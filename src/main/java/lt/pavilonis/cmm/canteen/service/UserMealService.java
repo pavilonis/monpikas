@@ -79,13 +79,23 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
    @Override
    public List<UserMeal> loadAll(UserMealFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
-      Collection<MealData> pupilDataCollection = pupilDataRepository.loadAll(false, filter.getMealType());
+      Collection<MealData> pupilDataCollection = pupilDataRepository.loadAll(
+            filter.isWithMealAssigned(),
+            filter.getMealType()
+      );
       LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
       List<UserRepresentation> users = usersRepository.loadAllPupils(filter.getText());
       LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
 
+      return filter.isWithMealAssigned()
+            ? mergeByMeals(pupilDataCollection, users)
+            : mergeByUsers(pupilDataCollection, users);
+   }
+
+   private List<UserMeal> mergeByUsers(Collection<MealData> pupilDataCollection, List<UserRepresentation> users) {
+      LocalDateTime opStart;
       opStart = LocalDateTime.now();
       List<UserMeal> result = users.stream()
             .map(user -> {
@@ -100,17 +110,11 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
             })
             .collect(toList());
       LOG.info("Composed dtos [duration={}]", TimeUtils.duration(opStart));
-
       return result;
    }
 
-   public List<UserMeal> loadWithMealAssigned() {
-      Collection<MealData> pupilData = pupilDataRepository.loadAll(true, null);
-      return loadAndMerge(pupilData);
-   }
-
-   private List<UserMeal> loadAndMerge(Collection<MealData> pupilData) {
-      List<UserRepresentation> users = usersRepository.loadAll();
+   //TODO check
+   private List<UserMeal> mergeByMeals(Collection<MealData> pupilData, List<UserRepresentation> users) {
       return pupilData.stream()
             .map(data -> {
                Optional<UserRepresentation> correspondingUser = users.stream()

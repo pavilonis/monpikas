@@ -34,9 +34,8 @@ public class UserMealFormView extends FormView<UserMeal> {
 
    private final MTextField name = new MTextField();
    private final MTextField birthDate = new MTextField();
-   private final MTextField cardCodeField = new MTextField();
    private final MCssLayout photoLayout = new MCssLayout();
-   private final MTextArea comment = new MTextArea().withNullRepresentation("").withRows(1);
+   private final MTextArea comment = new MTextArea().withNullRepresentation("").withRows(2);
    private final EnumComboBox<PupilType> type = new EnumComboBox<>(PupilType.class).withRequired(true);
    private final MealTable mealTable;
 
@@ -48,19 +47,18 @@ public class UserMealFormView extends FormView<UserMeal> {
 
       name.setCaption(messages.get(this, "name"));
       birthDate.setCaption(messages.get(this, "birthDate"));
-      cardCodeField.setCaption(messages.get(this, "cardCode"));
 
       //TODO make this as many to many custom field
       mealTable = new MealTable(messages);
       comment.setCaption(messages.get(this, "comment"));
 
-      withSize(MSize.size("774px", "486px"));
-      mealTable.withSize(MSize.size("512px", "270px"));
+      withSize(MSize.size("774px", "460px"));
+      mealTable.withSize(MSize.size("512px", "250px"));
 
-      Stream.of(name, birthDate, cardCodeField, type)
+      Stream.of(name, birthDate, type)
             .forEach(field -> field.setWidth("250px"));
 
-      Stream.of(name, birthDate, cardCodeField)
+      Stream.of(name, birthDate)
             .forEach(field -> field.setEnabled(false));
 
       Consumer<Meal> mealSelectionConsumer = meal -> {
@@ -84,9 +82,9 @@ public class UserMealFormView extends FormView<UserMeal> {
       MGridLayout grid = new MGridLayout(3, 3)
             .withMargin(false)
             .withDefaultComponentAlignment(Alignment.TOP_LEFT);
-      grid.add(name, birthDate, cardCodeField);
+      grid.add(name, birthDate, type);
       grid.addComponent(new MVerticalLayout(mealTable, controls).withMargin(false), 0, 1, 1, 1);
-      grid.addComponent(new MVerticalLayout(type, photoLayout).withMargin(false), 2, 1);
+      grid.addComponent(photoLayout, 2, 1);
       grid.addComponent(comment, 0, 2, 2, 2);
 
       add(grid);
@@ -102,7 +100,6 @@ public class UserMealFormView extends FormView<UserMeal> {
    public void initCustomFieldValues(UserMeal entity) {
       name.setValue(entity.getUser().getName());
       birthDate.setValue(entity.getUser().getBirthDate());
-      cardCodeField.setValue(entity.getUser().getCardCode());
       mealTable.removeAllItems();
       mealTable.addBeans(entity.getMealData().getMeals());
       mealTable.collapseColumns();

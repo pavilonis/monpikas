@@ -19,7 +19,6 @@ import org.vaadin.viritin.MBeanFieldGroup;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @UIScope
 @SpringComponent
@@ -35,8 +34,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected FormView<MealEventLog> getFormView() {
-      List<UserMeal> selectionOptions = mealService.loadWithMealAssigned();
-      return formView = new MealEventFormView(selectionOptions);
+      return formView = new MealEventFormView(mealService, messages);
    }
 
    @Override
@@ -94,6 +92,6 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
    @Override
    protected void customizeWindow(Window window) {
       window.setWidth(406, Unit.PIXELS);
-      window.setHeight(580, Unit.PIXELS);
+      window.setHeight(600, Unit.PIXELS);
    }
 }
