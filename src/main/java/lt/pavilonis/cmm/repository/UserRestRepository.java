@@ -42,16 +42,12 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    private RestTemplate restTemplate;
 
    public List<UserRepresentation> loadAll(UserFilter filter) {
-      return loadAll(null, null, null);
-   }
-
-   public List<UserRepresentation> loadAll(String name, String role, String group) {
       LocalDateTime opStart = LocalDateTime.now();
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>(3);
 
-      addParam(params, "name", name);
-      addParam(params, "role", role);
-      addParam(params, "group", group);
+      addParam(params, "name", filter.getName());
+      addParam(params, "role", filter.getRole());
+      addParam(params, "group", filter.getGroup());
 
       UserRepresentation[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), UserRepresentation[].class);
 

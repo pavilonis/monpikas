@@ -21,22 +21,25 @@ class UserListFilterPanel extends FilterPanel<UserFilter> {
    private ComboBox groupCombo;
    private ComboBox roleCombo;
 
-   @Autowired
-   public UserListFilterPanel(UserRestRepository userRepository) {
-   }
-
    @Override
    public UserFilter getFilter() {
-      return new UserFilter();
+      return new UserFilter(
+            textField.getValue(),
+            (String) roleCombo.getValue(),
+            (String) groupCombo.getValue()
+      );
    }
 
    @Override
    protected List<Field> getFields() {
-      return Arrays.asList(
+      List<Field> fields = Arrays.asList(
             textField = new MTextField(messages.get(this, "firstLastName")),
             groupCombo = new ComboBox(messages.get(this, "group")),
             roleCombo = new ComboBox(messages.get(this, "role"))
       );
+      groupCombo.setVisible(false);
+      roleCombo.setVisible(false);
+      return fields;
    }
 
    @Override
