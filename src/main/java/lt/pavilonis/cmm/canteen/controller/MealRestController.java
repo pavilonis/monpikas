@@ -2,12 +2,13 @@ package lt.pavilonis.cmm.canteen.controller;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
+import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilRepresentation;
+import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
-import lt.pavilonis.cmm.canteen.repository.MealRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
-import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
+import lt.pavilonis.cmm.domain.UserRepresentation;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.Optional;
+import java.util.Set;
 
 import static java.time.LocalTime.now;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -30,10 +32,7 @@ public class MealRestController {
    private static final Logger LOG = getLogger(MealRestController.class);
 
    @Autowired
-   private UserMealService pupils;
-
-   @Autowired
-   private MealRepository mealRepository;
+   private UserMealService userMealService;
 
    @Autowired
    private MealEventLogRepository eventLogs;
@@ -43,94 +42,66 @@ public class MealRestController {
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
 
       LOG.info("Pupil meal request [cardCode={}]", cardCode);
-      Optional<UserMeal> pupilDto = pupils.load(cardCode);
+      Optional<UserMeal> optionalUserMeal = userMealService.load(cardCode);
 
-      if (!pupilDto.isPresent()) {
+      if (!optionalUserMeal.isPresent()) {
          LOG.info("User NOT found in DB [cardCode={}]", cardCode);
          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
-      UserMeal dto = pupilDto.get();
+      UserMeal userMeal = optionalUserMeal.get();
+      Set<Meal> meals = userMeal.getMealData().getMeals();
 
-      switch (dto.getMealData().getMeals().size()) {
+      if (meals.isEmpty()) {
+         return forbidden(userMeal);
 
-         case 0:
-            LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", cardCode);
-            return new ResponseEntity<>(
-                  new PupilRepresentation(
-                        cardCode,
-                        dto.getUser().getName(),
-                        null,
-                        dto.getUser().getGroup(),
-                        null
-                  ),
-                  HttpStatus.FORBIDDEN
-            );
+      } else if (meals.size() == 1) {
+         return successIfFirstTimePerDay(userMeal, meals.iterator().next());
 
-         case 1:
-            return getMealResponse(dto, dto.getMealData().getMeals().iterator().next());
-
-         default:
-            LocalTime now = now();
-            Optional<Meal> meal = mealRepository.loadAll(new MealFilter()).stream()
-                  .filter(mt -> mt.getStartTime().isBefore(now) && mt.getEndTime().isAfter(now))
-                  .filter(mealByTime ->
-                        dto.getMealData().getMeals().stream().anyMatch(pupilMeal -> pupilMeal.getType() == mealByTime.getType()))
-                  .findAny();
-
-            return meal.isPresent()
-                  ? getMealResponse(dto, meal.get())
-                  : new ResponseEntity<>(HttpStatus.MULTIPLE_CHOICES);
+      } else {
+         LocalTime now = now();
+         return meals.stream()
+               .filter(m -> m.getStartTime().isBefore(now))
+               .filter(m -> m.getEndTime().isAfter(now))
+               .map(m -> successIfFirstTimePerDay(userMeal, m))
+               .findFirst()
+               .orElseGet(() -> new ResponseEntity<>(HttpStatus.MULTIPLE_CHOICES)); // TODO bad return status?
       }
    }
 
-   private ResponseEntity<PupilRepresentation> getMealResponse(UserMeal userMeal, Meal meal) {
+   private ResponseEntity<PupilRepresentation> forbidden(UserMeal userMeal) {
+      UserRepresentation user = userMeal.getUser();
+      LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", user.getCardCode());
 
-      if (pupils.canHaveMeal(userMeal.getUser().getCardCode(), new Date(), meal.getType())) {
+      PupilRepresentation response =
+            new PupilRepresentation(user.getCardCode(), user.getName(), null, user.getGroup(), null);
+      return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
+   }
 
-         eventLogs.saveOrUpdate(
-               new MealEventLog(
-                     null,
-                     //TODO create constructor which accepts userMeal, ...
-                     userMeal.getUser().getCardCode(),
-                     userMeal.getUser().getName(),
-                     userMeal.getUser().getGroup(),
-                     new Date(),
-                     meal.getPrice(),
-                     meal.getType(),
-                     userMeal.getMealData().getType()
-               )
-         );
+   private ResponseEntity<PupilRepresentation> successIfFirstTimePerDay(UserMeal userMeal, Meal meal) {
 
-         LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
-               userMeal.getUser().getName(), userMeal.getUser().getCardCode(), meal.getType().name(), meal.getPrice());
+      UserRepresentation user = userMeal.getUser();
+      PupilType pupilType = userMeal.getMealData().getType();
+      String cardCode = user.getCardCode();
+      String name = user.getName();
+      MealType mealType = meal.getType();
 
-         return new ResponseEntity<>(
-               new PupilRepresentation(
-                     userMeal.getUser().getCardCode(),
-                     userMeal.getUser().getName(),
-                     meal,
-                     userMeal.getUser().getGroup(),
-                     userMeal.getMealData().getType()
-               ),
-               HttpStatus.ACCEPTED
-         );
+      PupilRepresentation response =
+            new PupilRepresentation(cardCode, name, meal, user.getGroup(), pupilType);
 
-      } else {
-         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]",
-               userMeal.getUser().getName(), userMeal.getUser().getCardCode());
-
-         return new ResponseEntity<>(
-               new PupilRepresentation(
-                     userMeal.getUser().getCardCode(),
-                     userMeal.getUser().getName(),
-                     meal,
-                     userMeal.getUser().getGroup(),
-                     userMeal.getMealData().getType()
-               ),
-               HttpStatus.ALREADY_REPORTED
-         );
+      if (!userMealService.canHaveMeal(cardCode, new Date(), mealType)) {
+         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", name, cardCode);
+         return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
       }
+
+      eventLogs.saveOrUpdate(new MealEventLog(
+            null, cardCode, name, user.getGroup(), new Date(), meal.getPrice(), mealType, pupilType
+      ));
+
+      LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
+            name, cardCode, mealType.name(), meal.getPrice());
+
+      return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
    }
 }
 

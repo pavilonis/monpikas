@@ -55,16 +55,14 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
    }
 
    public boolean canHaveMeal(String cardCode, Date day, MealType type) {
-      int mealsThatDay = eventsRepository.numOfMealEvents(
-            cardCode,
-            LocalDate.fromDateFields(day)
-                  .toDateTimeAtStartOfDay()
-                  .toDate(),
-            org.joda.time.LocalDateTime.fromDateFields(day)
-                  .withTime(23, 59, 59, 999)
-                  .toDate(),
-            type
-      );
+      Date dayStart = LocalDate.fromDateFields(day)
+            .toDateTimeAtStartOfDay()
+            .toDate();
+      Date dayEnd = org.joda.time.LocalDateTime.fromDateFields(day)
+            .withTime(23, 59, 59, 999)
+            .toDate();
+
+      int mealsThatDay = eventsRepository.numOfMealEvents(cardCode, dayStart, dayEnd, type);
       return mealsThatDay == 0;
    }
 

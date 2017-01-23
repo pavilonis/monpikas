@@ -42,21 +42,24 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
 
-   public Date lastMealEventDate(String cardCode) {
-      return jdbc.queryForObject("SELECT max(date) FROM MealEventLog WHERE cardCode = ?", Date.class, cardCode);
-   }
-
    public int numOfMealEvents(String cardCode, Date periodStart, Date periodEnd, MealType mealType) {
-      return jdbc.queryForObject(
-            "SELECT count(*) FROM MealEventLog WHERE `date` BETWEEN ? AND ? AND cardCode = ? AND mealType= ?",
+      return jdbc.queryForObject("" +
+                  "SELECT count(*) " +
+                  "FROM MealEventLog " +
+                  "WHERE `date` BETWEEN ? AND ? " +
+                  "  AND cardCode = ? " +
+                  "  AND mealType = ?",
             Integer.class,
-            periodStart, periodEnd, cardCode, mealType
+            periodStart, periodEnd, cardCode, mealType.name()
       );
    }
 
    public List<MealEventLog> load(PupilType pupilType, Date periodStart, Date periodEnd) {
-      return jdbc.query(
-            "SELECT * FROM MealEventLog WHERE pupilType = ? AND `date` BETWEEN ? AND ?",
+      return jdbc.query("" +
+                  "SELECT * " +
+                  "FROM MealEventLog " +
+                  "WHERE pupilType = ? " +
+                  "  AND `date` BETWEEN ? AND ?",
             MAPPER,
             pupilType.name(), periodStart, periodEnd
       );
