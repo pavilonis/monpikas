@@ -80,8 +80,14 @@ public class MealRestController {
       UserRepresentation user = userMeal.getUser();
       LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", user.getCardCode());
 
-      PupilRepresentation response =
-            new PupilRepresentation(user.getCardCode(), user.getName(), null, user.getGroup(), null);
+      PupilRepresentation response = new PupilRepresentation(
+            user.getCardCode(),
+            user.getName(),
+            null,
+            user.getGroup(),
+            null,
+            user.getBase16photo()
+      );
       return new ResponseEntity<>(response, HttpStatus.FORBIDDEN);
    }
 
@@ -94,7 +100,7 @@ public class MealRestController {
       MealType mealType = meal.getType();
 
       PupilRepresentation response =
-            new PupilRepresentation(cardCode, name, meal, user.getGroup(), pupilType);
+            new PupilRepresentation(cardCode, name, meal, user.getGroup(), pupilType, user.getBase16photo());
 
       if (!userMealService.canHaveMeal(cardCode, new Date(), mealType)) {
          LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", name, cardCode);

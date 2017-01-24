@@ -17,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -106,9 +107,12 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
       return Arrays.asList(response);
    }
 
-   //TODO not suitable here?
    public void logUserScan(String cardCode) {
-      restTemplate.postForObject(uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode), null, Void.class);
+      try {
+         restTemplate.postForObject(uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode), null, Void.class);
+      } catch (HttpClientErrorException e) {
+         LOG.error("Error writing log for user with card: " + cardCode + ". Http status: " + e.getStatusCode());
+      }
    }
 
    @Override

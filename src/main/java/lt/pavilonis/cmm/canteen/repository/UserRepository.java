@@ -41,11 +41,11 @@ public class UserRepository {
          UserRepresentation response = rest.getForObject(uri(cardCode), UserRepresentation.class);
          return Optional.of(response);
       } catch (HttpClientErrorException e) {
-         e.printStackTrace();
          LOG.error(e.getMessage());
          if (e.getStatusCode() == HttpStatus.NOT_FOUND) {
             return Optional.empty();
          } else {
+            e.printStackTrace();
             throw e;
          }
       } catch (Exception e) {
