@@ -11,7 +11,9 @@ public class LocalDateConverter implements Converter<Date, LocalDate> {
 
    @Override
    public LocalDate convertToModel(Date value, Class<? extends LocalDate> targetType, Locale locale) throws ConversionException {
-      return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+      return value == null
+            ? null
+            : value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
    }
 
    @Override
