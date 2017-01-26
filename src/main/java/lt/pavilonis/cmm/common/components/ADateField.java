@@ -17,13 +17,23 @@ public class ADateField extends MDateField {
       this.setDateFormat("yyyy-MM-dd");
    }
 
-   public ADateField withRequired(boolean required) {
+   public ADateField withRequired() {
       this.setRequired(true);
       return this;
    }
 
    public ADateField withConverter(Converter<Date, ?> converter) {
       this.setConverter(converter);
+      return this;
+   }
+
+   public ADateField withValue(Date value) {
+      this.setValue(value);
+      return this;
+   }
+
+   public ADateField withImmediate() {
+      this.setImmediate(true);
       return this;
    }
 }

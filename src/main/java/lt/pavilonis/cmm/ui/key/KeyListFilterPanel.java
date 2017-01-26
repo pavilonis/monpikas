@@ -58,10 +58,10 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
    protected List<Field> getFields() {
       List<Field> fields = Arrays.asList(
             periodStart = new ADateField(this.getClass(), "periodStart")
-                  .withRequired(true)
+                  .withRequired()
                   .withConverter(new LocalDateConverter()),
             periodEnd = new ADateField(this.getClass(), "periodEnd")
-                  .withRequired(true)
+                  .withRequired()
                   .withConverter(new LocalDateConverter()),
             scannerCombo = scannerCombo(),
             textField = new MTextField(messages.get(this, "keyNumber")),
@@ -98,17 +98,6 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
             change -> clickListener.buttonClick(new ClickEvent(activeKeysCheckBox))
       );
    }
-
-
-   //   if (!periodStart.isEmpty() && !periodEnd.isEmpty()) {
-//      reload();
-//   } else {
-//      Notification.show(
-//            messages.get(this, "emptyFilterDates"),
-//            Notification.Type.WARNING_MESSAGE
-//      );
-//   }
-
 
    @Override
    protected Field getFieldToFocus() {

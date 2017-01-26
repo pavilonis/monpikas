@@ -13,7 +13,9 @@ import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.report.ReportService;
 import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
 import lt.pavilonis.cmm.common.AbstractViewController;
+import lt.pavilonis.cmm.common.components.ADateField;
 import lt.pavilonis.cmm.util.DateUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
@@ -21,7 +23,6 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 
 import static com.vaadin.shared.ui.label.ContentMode.HTML;
@@ -33,41 +34,20 @@ public class CanteenReportViewController extends AbstractViewController {
 
    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private final ComboBox pupilTypeCombo = pupilTypeCombo();
-   private final DateField periodStartField = periodStartField();
-   private final DateField periodEndField = periodEndField();
+   private final DateField periodStartField = new ADateField(this.getClass(), "periodStart")
+         .withValue(LocalDateTime.now().withDayOfMonth(1).withTime(0, 0, 0, 0).toDate())
+         .withRequired()
+         .withImmediate();
+
+   private final DateField periodEndField = new ADateField(this.getClass(), "periodEnd")
+         .withValue(LocalDateTime.now().dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toDate())
+         .withRequired()
+         .withImmediate();
+
    private StreamResource streamResource;
 
    @Autowired
    private ReportService service;
-
-   private DateField periodStartField() {
-      Calendar cal = calendar();
-      cal.set(Calendar.DAY_OF_MONTH, 1);
-      Date firstDayOfLastMonth = cal.getTime();
-
-      return dateField(firstDayOfLastMonth, "Nuo");
-   }
-
-   private DateField periodEndField() {
-      Calendar cal = calendar();
-      cal.set(Calendar.DAY_OF_MONTH, cal.getActualMaximum(Calendar.DAY_OF_MONTH));
-      Date lastDayOfLastMonth = cal.getTime();
-
-      return dateField(lastDayOfLastMonth, "Iki");
-   }
-
-   private Calendar calendar() {
-      Calendar cal = Calendar.getInstance();
-      cal.setTime(new Date());
-      return cal;
-   }
-
-   private DateField dateField(Date initialValue, String caption) {
-      DateField field = new DateField(caption, initialValue);
-      field.setDateFormat("yyyy-MM-dd");
-      field.setImmediate(true);
-      return field;
-   }
 
    private StreamResource getStream(ReportService service) {
 
