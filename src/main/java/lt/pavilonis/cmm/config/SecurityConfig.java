@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm;
+package lt.pavilonis.cmm.config;
 
 import lt.pavilonis.cmm.canteen.service.SpringSecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +21,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
       DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
       authenticationProvider.setUserDetailsService(springSecurityUserDetailsService());
+      authenticationProvider.setPasswordEncoder(passwordEncoder());
 
       auth.authenticationProvider(authenticationProvider);
    }
@@ -54,5 +57,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    @Bean
    public SpringSecurityUserDetailsService springSecurityUserDetailsService() {
       return new SpringSecurityUserDetailsService();
+   }
+
+   @Bean
+   public PasswordEncoder passwordEncoder() {
+      return new BCryptPasswordEncoder();
    }
 }
