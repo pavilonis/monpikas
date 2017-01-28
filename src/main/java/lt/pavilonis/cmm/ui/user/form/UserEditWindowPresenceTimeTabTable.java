@@ -1,12 +1,14 @@
 package lt.pavilonis.cmm.ui.user.form;
 
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.converter.LocalTimeConverter;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
+import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.vaadin.viritin.fields.MTable;
 
 public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {
+
+   private static final LocalTimeConverter TIME_CONVERTER = new LocalTimeConverter();
 
    public UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository,
                                              String cardCode,
@@ -30,8 +32,9 @@ public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepre
       addStyleName("table-border-less");
       setNullSelectionAllowed(false);
 
-      LocalTimeConverter timeConverter = new LocalTimeConverter();
-      setConverter("startTime", timeConverter);
-      setConverter("endTime", timeConverter);
+      setConverter("startTime", TIME_CONVERTER);
+      setConverter("endTime", TIME_CONVERTER);
+
+      setCellStyleGenerator(new PresenceTimeCellStyleGenerator());
    }
 }
