@@ -5,6 +5,7 @@ import lt.pavilonis.cmm.common.Identifiable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
+import java.util.Objects;
 
 public final class Meal implements Identifiable<Long> {
 
@@ -84,5 +85,14 @@ public final class Meal implements Identifiable<Long> {
    @Override
    public int hashCode() {
       return Math.toIntExact(id);
+   }
+
+   @Override
+   public boolean equals(Object obj) {
+      if (obj instanceof Meal) {
+         Meal meal = (Meal) obj;
+         return Objects.equals(meal.hashCode(), this.hashCode());
+      }
+      return false;
    }
 }

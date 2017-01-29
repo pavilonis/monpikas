@@ -31,7 +31,7 @@ public class UserMealTable extends ListTable<UserMeal> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> getProperties(Class<UserMeal> type) {
       return Arrays.asList("user.cardCode", "user.name",
             "user.birthDate", "user.group", "mealData.meals", "mealData.comment");
    }

@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.views.component;
+package lt.pavilonis.cmm.common.field;
 
 import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;

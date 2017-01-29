@@ -11,7 +11,7 @@ import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.components.ADateField;
+import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.converter.LocalDateConverter;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
 import lt.pavilonis.cmm.repository.ScannerRestRepository;

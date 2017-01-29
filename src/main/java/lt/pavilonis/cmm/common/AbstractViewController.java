@@ -10,7 +10,7 @@ import org.vaadin.viritin.layouts.MVerticalLayout;
 public abstract class AbstractViewController {
 
    @Autowired
-   protected MessageSourceAdapter messages;
+   protected MessageSourceAdapter messageSource;
 
    public Component getView() {
 

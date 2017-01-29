@@ -6,21 +6,24 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public final class SecurityUser implements UserDetails, Identifiable<String> {
 
-   private final String name;
-   private final String username;
-   private final String password;
-   private final boolean enabled;
-   private final Set<String> roles;
+   private String name;
+   private String username;
+   private String password;
+   private String email;
+   private boolean enabled;
+   private List<String> roles;
 
-   public SecurityUser(String name, String username, String password, boolean enabled, Set<String> roles) {
+   public SecurityUser(String name, String username, String password, String email,
+                       boolean enabled, List<String> roles) {
       this.name = name;
       this.username = username;
       this.password = password;
+      this.email = email;
       this.enabled = enabled;
       this.roles = roles;
    }
@@ -39,12 +42,40 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
       return password;
    }
 
+   public String getEmail() {
+      return email;
+   }
+
    public boolean getEnabled() {
       return enabled;
    }
 
-   public Set<String> getRoles() {
+   public List<String> getRoles() {
       return roles;
+   }
+
+   public void setName(String name) {
+      this.name = name;
+   }
+
+   public void setUsername(String username) {
+      this.username = username;
+   }
+
+   public void setPassword(String password) {
+      this.password = password;
+   }
+
+   public void setEmail(String email) {
+      this.email = email;
+   }
+
+   public void setEnabled(boolean enabled) {
+      this.enabled = enabled;
+   }
+
+   public void setRoles(List<String> roles) {
+      this.roles = roles;
    }
 
    @Override

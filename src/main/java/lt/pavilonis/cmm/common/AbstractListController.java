@@ -48,7 +48,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
    protected Component getControlPanel() {
       return new ControlPanel(
-            messages,
+            messageSource,
             click -> actionCreate(),
             click -> actionDelete()
       );

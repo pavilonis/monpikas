@@ -78,6 +78,11 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
       restTemplate.delete(uri(SEGMENT_USERS, cardCode));
    }
 
+   @Override
+   public Class<UserRepresentation> getEntityClass() {
+      return UserRepresentation.class;
+   }
+
    public UserRepresentation update(UserRepresentation userRepresentation) {
       ResponseEntity<UserRepresentation> response = restTemplate.exchange(
             uri(SEGMENT_USERS),

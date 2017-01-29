@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.common.components;
+package lt.pavilonis.cmm.common.field;
 
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;

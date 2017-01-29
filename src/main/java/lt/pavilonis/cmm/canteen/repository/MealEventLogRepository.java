@@ -118,4 +118,9 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
    public void delete(Long id) {
       jdbc.update("DELETE FROM MealEventLog WHERE id = ?", id);
    }
+
+   @Override
+   public Class<MealEventLog> getEntityClass() {
+      return MealEventLog.class;
+   }
 }

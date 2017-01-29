@@ -8,7 +8,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -26,13 +25,18 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
                   rs.getString("u.name"),
                   username,
                   rs.getString("u.password"),
+                  rs.getString("u.email"),
                   rs.getBoolean("u.enabled"),
-                  new HashSet<>()
+                  new ArrayList<>()
             );
             result.put(username, user);
          }
 
-         user.getRoles().add(rs.getString("r.name"));
+         String role = rs.getString("r.name");
+         if (!user.getRoles().contains(role)) {
+            user.getRoles().add(role);
+         }
+
       }
 
       return new ArrayList<>(result.values());

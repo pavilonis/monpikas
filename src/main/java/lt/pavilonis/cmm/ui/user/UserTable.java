@@ -28,7 +28,7 @@ class UserTable extends ListTable<UserRepresentation> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> getProperties(Class<UserRepresentation> type) {
       return Arrays.asList("cardCode", "firstName", "lastName", "role", "group");
    }
 

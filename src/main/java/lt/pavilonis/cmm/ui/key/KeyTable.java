@@ -22,7 +22,7 @@ class KeyTable extends ListTable<KeyRepresentation> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> getProperties(Class<KeyRepresentation> type) {
       return Arrays.asList("scanner", "keyNumber", "dateTime",
             "user.name", "user.group", "user.role", "keyAction");
    }

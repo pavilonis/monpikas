@@ -11,9 +11,9 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.report.ReportService;
-import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.AbstractViewController;
-import lt.pavilonis.cmm.common.components.ADateField;
+import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.util.DateUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,10 +75,10 @@ public class CanteenReportViewController extends AbstractViewController {
    @Override
    protected Component getMainArea() {
 
-      Button generateButton = new Button(messages.get(this, "buttonGenerate"));
+      Button generateButton = new Button(messageSource.get(this, "buttonGenerate"));
 
       MVerticalLayout layout = new MVerticalLayout(
-            new Label(messages.get(this, "title"), HTML),
+            new Label(messageSource.get(this, "title"), HTML),
             new MHorizontalLayout(periodStartField, periodEndField),
             pupilTypeCombo,
             generateButton

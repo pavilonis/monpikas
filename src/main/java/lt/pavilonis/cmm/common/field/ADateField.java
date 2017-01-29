@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.common.components;
+package lt.pavilonis.cmm.common.field;
 
 import com.vaadin.data.util.converter.Converter;
 import lt.pavilonis.cmm.App;

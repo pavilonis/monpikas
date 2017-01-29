@@ -78,4 +78,9 @@ public class KeyRestRepository implements EntityRepository<KeyRepresentation, St
    public void delete(String s) {
       throw new NotImplementedException("Not needed");
    }
+
+   @Override
+   public Class<KeyRepresentation> getEntityClass() {
+      return KeyRepresentation.class;
+   }
 }

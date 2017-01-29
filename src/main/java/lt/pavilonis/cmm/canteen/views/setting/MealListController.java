@@ -34,18 +34,13 @@ public class MealListController extends AbstractListController<Meal, Long, MealF
          }
 
          @Override
-         protected FormView<Meal> getFormView() {
+         protected FormView<Meal> createFormView() {
             return new MealFormView();
          }
 
          @Override
          protected MessageSourceAdapter getMessageSource() {
-            return MealListController.this.messages;
-         }
-
-         @Override
-         protected String getFormCaption() {
-            return getMessageSource().get(MealFormView.class, "caption");
+            return MealListController.this.messageSource;
          }
       };
    }

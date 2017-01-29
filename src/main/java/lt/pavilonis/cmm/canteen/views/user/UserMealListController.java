@@ -50,18 +50,13 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
          }
 
          @Override
-         protected FormView<UserMeal> getFormView() {
+         protected FormView<UserMeal> createFormView() {
             return formView;
          }
 
          @Override
          protected MessageSourceAdapter getMessageSource() {
-            return UserMealListController.this.messages;
-         }
-
-         @Override
-         protected String getFormCaption() {
-            return getMessageSource().get(UserMealFormView.class, "caption");
+            return UserMealListController.this.messageSource;
          }
 
          @Override

@@ -22,7 +22,7 @@ public class MealEventTable extends ListTable<MealEventLog> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> getProperties(Class<MealEventLog> type) {
       return Arrays.asList("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
    }
 

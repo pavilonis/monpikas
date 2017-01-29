@@ -92,11 +92,11 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
          listTable.select(persistedEntity);
       };
 
-      FormView<T> formView = getFormView();
+      FormView<T> formView = createFormView();
       Component controlLayout = createControlLayout(persistedEntityConsumer);
 
       window = new Window(
-            getFormCaption(),
+            formView.getFormCaption(),
             new MVerticalLayout(formView, controlLayout)
       );
 
@@ -127,12 +127,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    protected void customizeWindow(Window window) {/*hook*/}
 
-   //TODO move to FormView ?
-   protected String getFormCaption() {
-      return getMessageSource().get(this, "caption");
-   }
-
    protected abstract EntityRepository<T, ID, ?> getEntityRepository();
 
-   protected abstract FormView<T> getFormView();
+   protected abstract FormView<T> createFormView();
 }

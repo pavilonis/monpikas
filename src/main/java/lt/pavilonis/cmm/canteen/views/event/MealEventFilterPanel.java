@@ -6,7 +6,7 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.components.ADateField;
+import lt.pavilonis.cmm.common.field.ADateField;
 import org.joda.time.LocalDateTime;
 
 import java.util.Arrays;

@@ -146,4 +146,9 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
    public void delete(String cardCode) {
       throw new NotImplementedException("not needed");
    }
+
+   @Override
+   public Class<UserMeal> getEntityClass() {
+      return UserMeal.class;
+   }
 }

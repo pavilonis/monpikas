@@ -66,4 +66,9 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    public void delete(String s) {
       throw new NotImplementedException("not needed yet");
    }
+
+   @Override
+   public Class<SecurityUser> getEntityClass() {
+      return SecurityUser.class;
+   }
 }

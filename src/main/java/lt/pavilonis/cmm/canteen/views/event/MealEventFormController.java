@@ -33,7 +33,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
    private MealEventFormView formView;
 
    @Override
-   protected FormView<MealEventLog> getFormView() {
+   protected FormView<MealEventLog> createFormView() {
       return formView = new MealEventFormView(mealService, messages);
    }
 

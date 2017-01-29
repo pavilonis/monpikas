@@ -44,4 +44,9 @@ public class App {
    public static void main(String[] args) {
       context = SpringApplication.run(App.class);
    }
+
+   public static String translate(Object objectOrClass, String property) {
+      MessageSourceAdapter messageSource = context.getBean(MessageSourceAdapter.class);
+      return messageSource.get(objectOrClass, property);
+   }
 }

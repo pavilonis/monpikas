@@ -12,4 +12,6 @@ public interface EntityRepository<T, ID, FILTER> {
    Optional<T> load(ID id);
 
    void delete(ID id);
+
+   Class<T> getEntityClass();
 }

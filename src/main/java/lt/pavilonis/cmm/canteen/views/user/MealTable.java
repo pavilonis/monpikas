@@ -33,7 +33,7 @@ public final class MealTable extends ListTable<Meal> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> getProperties(Class<Meal> type) {
       return Arrays.asList("id", "name", "type", "startTime", "endTime", "price");
    }
 

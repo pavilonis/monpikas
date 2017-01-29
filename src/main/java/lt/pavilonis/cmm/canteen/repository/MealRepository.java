@@ -48,6 +48,11 @@ public class MealRepository implements EntityRepository<Meal, Long, MealFilter> 
       jdbc.update("DELETE FROM Meal WHERE id = ?", mealId);
    }
 
+   @Override
+   public Class<Meal> getEntityClass() {
+      return Meal.class;
+   }
+
    public List<Meal> load(Collection ids) {
       return CollectionUtils.isEmpty(ids)
             ? Collections.emptyList()

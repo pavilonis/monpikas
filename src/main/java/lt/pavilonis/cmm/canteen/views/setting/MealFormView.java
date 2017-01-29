@@ -6,7 +6,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.InlineDateField;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.cmm.canteen.views.component.EnumComboBox;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.FormView;
 import lt.pavilonis.cmm.converter.LocalTimeToDateConverter;
 import org.vaadin.viritin.fields.MTextField;
