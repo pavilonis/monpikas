@@ -15,6 +15,7 @@ import lt.pavilonis.cmm.canteen.views.user.UserMealListController;
 import lt.pavilonis.cmm.common.AbstractViewController;
 import lt.pavilonis.cmm.common.MenuButton;
 import lt.pavilonis.cmm.ui.key.KeyListController;
+import lt.pavilonis.cmm.ui.security.UserRolesListController;
 import lt.pavilonis.cmm.ui.user.UserListController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MSize;
@@ -57,7 +58,8 @@ public class MainLayout extends MHorizontalLayout {
             new MenuButton(MealEventListController.class, FontAwesome.CUTLERY),
             new MenuButton(UserMealListController.class, FontAwesome.CHILD),
             new MenuButton(UserListController.class, FontAwesome.USER),
-            new MenuButton(KeyListController.class, FontAwesome.KEY)
+            new MenuButton(KeyListController.class, FontAwesome.KEY),
+            new MenuButton(UserRolesListController.class, FontAwesome.SITEMAP)
       ).forEach(
             button -> {
                // TODO add role check here

@@ -6,11 +6,11 @@ import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.vaadin.viritin.fields.MTable;
 
-public class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {
+final class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {
 
    private static final LocalTimeConverter TIME_CONVERTER = new LocalTimeConverter();
 
-   public UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository,
+   UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository,
                                              String cardCode,
                                              MessageSourceAdapter messages) {
 

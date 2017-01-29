@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.config;
 
-import lt.pavilonis.cmm.canteen.service.SpringSecurityUserDetailsService;
+import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -55,8 +55,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    }
 
    @Bean
-   public SpringSecurityUserDetailsService springSecurityUserDetailsService() {
-      return new SpringSecurityUserDetailsService();
+   public SecurityUserDetailsService springSecurityUserDetailsService() {
+      return new SecurityUserDetailsService();
    }
 
    @Bean

@@ -24,6 +24,7 @@ import org.vaadin.viritin.layouts.MCssLayout;
 import org.vaadin.viritin.layouts.MGridLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -49,7 +50,7 @@ public class UserMealFormView extends FormView<UserMeal> {
       birthDate.setCaption(messages.get(this, "birthDate"));
 
       //TODO make this as many to many custom field
-      mealTable = new MealTable(messages);
+      mealTable = new MealTable(Collections.<Meal>emptyList());
       comment.setCaption(messages.get(this, "comment"));
 
       withSize(MSize.size("774px", "460px"));

@@ -25,12 +25,12 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    private KeyRestRepository repository;
 
    @Override
-   protected ListTable<KeyRepresentation> getTable() {
+   protected ListTable<KeyRepresentation> createTable() {
       return keyTable;
    }
 
    @Override
-   protected FilterPanel<KeyFilter> getFilterPanel() {
+   protected FilterPanel<KeyFilter> createFilterPanel() {
       return keyListFilterPanel;
    }
 

@@ -15,6 +15,8 @@ import lt.pavilonis.cmm.common.HiddenFilterPanel;
 import lt.pavilonis.cmm.common.ListTable;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Collections;
+
 @SpringComponent
 @UIScope
 public class MealListController extends AbstractListController<Meal, Long, MealFilter> {
@@ -49,12 +51,12 @@ public class MealListController extends AbstractListController<Meal, Long, MealF
    }
 
    @Override
-   protected ListTable<Meal> getTable() {
-      return new MealTable(messages);
+   protected ListTable<Meal> createTable() {
+      return new MealTable(Collections.emptyList());
    }
 
    @Override
-   protected FilterPanel<MealFilter> getFilterPanel() {
+   protected FilterPanel<MealFilter> createFilterPanel() {
       return new HiddenFilterPanel<>();
    }
 

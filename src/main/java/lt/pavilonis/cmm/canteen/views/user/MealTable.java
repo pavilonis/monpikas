@@ -7,31 +7,34 @@ import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.ModifiedStringToDoubleConverter;
 import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
 public final class MealTable extends ListTable<Meal> {
 
-   MealTable(MessageSourceAdapter messages, List<Meal> meals) {
-      this(messages);
+   public MealTable(List<Meal> meals) {
+      super(Meal.class);
       addBeans(meals);
    }
 
-   public MealTable(MessageSourceAdapter messages) {
-      super(Meal.class);
-      //TODO translate
-      withProperties("id", "name", "type", "startTime", "endTime", "price");
-      withColumnHeaders("Id", "Pavadinimas", "Tipas", "Nuo", "Iki", "Kaina");
-
+   @Override
+   protected void customize(MessageSourceAdapter messageSource) {
       setConverter("type", new ToStringConverterAdapter<MealType>(MealType.class) {
          @Override
          protected String toPresentation(MealType model) {
-            return messages.get(MealType.class, model.name());
+            return messageSource.get(MealType.class, model.name());
          }
       });
+
       setConverter("price", new ModifiedStringToDoubleConverter());
 
       setSortContainerPropertyId("name");
+   }
+
+   @Override
+   protected List<String> getProperties() {
+      return Arrays.asList("id", "name", "type", "startTime", "endTime", "price");
    }
 
    @Override

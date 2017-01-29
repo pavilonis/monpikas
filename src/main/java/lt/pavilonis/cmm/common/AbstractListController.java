@@ -12,10 +12,11 @@ import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 public abstract class AbstractListController<T extends Identifiable<ID>, ID, FILTER> extends AbstractViewController {
 
    ListTable<T> table;
+   FilterPanel<FILTER> filterPanel;
 
    @Override
    protected Component getMainArea() {
-      table = getTable();
+      table = createTable();
       table.setSizeFull();
 
       addTableClickListener(table);
@@ -25,7 +26,8 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
    @Override
    final protected Component getHeader() {
-      FilterPanel<FILTER> filterPanel = getFilterPanel();
+
+      filterPanel = createFilterPanel();
 
       filterPanel.addSearchClickListener(click -> {
          loadTableData(table);
@@ -53,7 +55,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
    }
 
    private void loadTableData(ListTable<T> table) {
-      FILTER filter = getFilterPanel().getFilter();
+      FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
 
       List<T> beans = repository.loadAll(filter);
@@ -75,7 +77,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       }
    }
 
-   protected abstract ListTable<T> getTable();
+   protected abstract ListTable<T> createTable();
 
    protected void actionCreate() {
       T entity = createNewInstance();
@@ -107,7 +109,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       return null;
    }
 
-   protected abstract FilterPanel<FILTER> getFilterPanel();
+   protected abstract FilterPanel<FILTER> createFilterPanel();
 
    protected abstract EntityRepository<T, ID, FILTER> getEntityRepository();
 

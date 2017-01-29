@@ -29,7 +29,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    private UserMealListFilterPanel filterPanel;
 
    @Override
-   protected ListTable<UserMeal> getTable() {
+   protected ListTable<UserMeal> createTable() {
       return new UserMealTable();
    }
 
@@ -73,7 +73,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    }
 
    @Override
-   protected FilterPanel<UserMealFilter> getFilterPanel() {
+   protected FilterPanel<UserMealFilter> createFilterPanel() {
       return filterPanel;
    }
 

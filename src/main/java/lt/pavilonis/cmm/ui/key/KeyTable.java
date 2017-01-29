@@ -9,39 +9,37 @@ import lt.pavilonis.cmm.converter.ToStringConverterAdapter;
 import lt.pavilonis.cmm.domain.KeyAction;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
-import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SpringComponent
 @UIScope
 class KeyTable extends ListTable<KeyRepresentation> {
 
-   @Autowired //TODO move message somewhere super
-   public KeyTable(MessageSourceAdapter messages) {
+   public KeyTable() {
+      super(KeyRepresentation.class);
+   }
 
-      withProperties("scanner", "keyNumber", "dateTime", "user.name",
-            "user.group", "user.role", "keyAction");
+   @Override
+   protected List<String> getProperties() {
+      return Arrays.asList("scanner", "keyNumber", "dateTime",
+            "user.name", "user.group", "user.role", "keyAction");
+   }
 
-      setColumnHeaders(
-            messages.get(this, "scanner"),
-            messages.get(this, "keyNumber"),
-            messages.get(this, "dateTime"),
-            messages.get(this, "user.name"),
-            messages.get(this, "user.group"),
-            messages.get(this, "user.role"),
-            messages.get(this, "keyAction")
-      );
-
+   @Override
+   protected void customize(MessageSourceAdapter messageSource) {
       setConverter("dateTime", new LocalDateTimeConverter());
       setConverter("keyAction", new ToStringConverterAdapter<KeyAction>(KeyAction.class) {
          @Override
          protected String toPresentation(KeyAction model) {
-            return messages.get(model, model.name());
+            return messageSource.get(model, model.name());
          }
       });
       setConverter("scanner", new ToStringConverterAdapter<ScannerRepresentation>(ScannerRepresentation.class) {
          @Override
          protected String toPresentation(ScannerRepresentation model) {
-            return messages.get(model, model.getName());
+            return messageSource.get(model, model.getName());
          }
       });
    }

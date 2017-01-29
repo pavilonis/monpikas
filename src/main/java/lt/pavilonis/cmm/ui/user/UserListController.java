@@ -25,12 +25,12 @@ public class UserListController extends AbstractListController<UserRepresentatio
    private UserListFilterPanel userListFilterPanel;
 
    @Override
-   protected ListTable<UserRepresentation> getTable() {
+   protected ListTable<UserRepresentation> createTable() {
       return userTable;
    }
 
    @Override
-   protected FilterPanel<UserFilter> getFilterPanel() {
+   protected FilterPanel<UserFilter> createFilterPanel() {
       return userListFilterPanel;
    }
 

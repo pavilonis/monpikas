@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.domain;
 
+import lt.pavilonis.cmm.common.Identifiable;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -8,7 +9,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public final class SpringSecurityUser implements UserDetails {
+public final class SecurityUser implements UserDetails, Identifiable<String> {
 
    private final String name;
    private final String username;
@@ -16,12 +17,17 @@ public final class SpringSecurityUser implements UserDetails {
    private final boolean enabled;
    private final Set<String> roles;
 
-   public SpringSecurityUser(String name, String username, String password, boolean enabled, Set<String> roles) {
+   public SecurityUser(String name, String username, String password, boolean enabled, Set<String> roles) {
       this.name = name;
       this.username = username;
       this.password = password;
       this.enabled = enabled;
       this.roles = roles;
+   }
+
+   @Override
+   public String getId() {
+      return getUsername();
    }
 
    public String getName() {

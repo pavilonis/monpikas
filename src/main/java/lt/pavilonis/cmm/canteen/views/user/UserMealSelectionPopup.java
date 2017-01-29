@@ -22,7 +22,7 @@ public class UserMealSelectionPopup extends MWindow {
       setCaption(messages.get(this, "caption"));
       withSize(MSize.size("700px", "490px"));
 
-      MealTable selectionTable = new MealTable(messages, mealsToSelectFrom);
+      MealTable selectionTable = new MealTable(mealsToSelectFrom);
       selectionTable.collapseColumns();
       selectionTable.addRowClickListener(click -> {
          if (click.isDoubleClick()) {

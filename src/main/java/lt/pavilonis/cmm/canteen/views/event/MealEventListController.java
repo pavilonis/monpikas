@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.canteen.views.event;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
@@ -16,18 +15,9 @@ import org.vaadin.viritin.fields.MTable;
 
 import java.util.Date;
 
-import static com.vaadin.ui.Notification.Type.ERROR_MESSAGE;
-import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
-import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
-import static com.vaadin.ui.Notification.show;
-import static lt.pavilonis.cmm.util.SecurityCheckUtils.hasRole;
-
 @UIScope
 @SpringComponent
 public class MealEventListController extends AbstractListController<MealEventLog, Long, MealEventFilter> {
-
-   @Autowired
-   private MealEventTable table;
 
    @Autowired
    private MealEventLogRepository eventLogs;
@@ -38,21 +28,21 @@ public class MealEventListController extends AbstractListController<MealEventLog
    @Autowired
    private MealEventFormController mealEventFormController;
 
-   private void deleteAction() {
-      if (!hasRole("ROLE_ADMIN")) {
-         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
-         return;
-      }
-      MealEventLog value = table.getValue();
-      if (value == null) {
-         show("Niekas nepasirinkta", WARNING_MESSAGE);
-      } else {
-         eventLogs.delete(value.getId());
-         table.removeItem(value);
-         table.select(null);
-         show("Įrašas pašalintas", TRAY_NOTIFICATION);
-      }
-   }
+//   private void deleteAction() {
+//      if (!hasRole("ROLE_ADMIN")) {
+//         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
+//         return;
+//      }
+//      MealEventLog value = table.getValue();
+//      if (value == null) {
+//         show("Niekas nepasirinkta", WARNING_MESSAGE);
+//      } else {
+//         eventLogs.delete(value.getId());
+//         table.removeItem(value);
+//         table.select(null);
+//         show("Įrašas pašalintas", TRAY_NOTIFICATION);
+//      }
+//   }
 
 //   private void addAction() {
 //      if (!hasRole("ROLE_ADMIN")) {
@@ -62,7 +52,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
 //   }
 //
 //   private void saveAction(MealEventManualCreateForm form) {
-//      String cardCode = (String) form.getTable().getValue();
+//      String cardCode = (String) form.createTable().getValue();
 //      MealType type = form.getEventType();
 //      if (valid(cardCode, form.getDate(), type)) {
 //         UserMeal userMeal = pupilService.load(cardCode).get();
@@ -99,8 +89,8 @@ public class MealEventListController extends AbstractListController<MealEventLog
    protected void addTableClickListener(MTable<MealEventLog> table) {/*do nothing*/}
 
    @Override
-   protected ListTable<MealEventLog> getTable() {
-      return table;
+   protected ListTable<MealEventLog> createTable() {
+      return new MealEventTable();
    }
 
    @Override
@@ -109,7 +99,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
    }
 
    @Override
-   protected FilterPanel<MealEventFilter> getFilterPanel() {
+   protected FilterPanel<MealEventFilter> createFilterPanel() {
       return filterPanel;
    }
 
