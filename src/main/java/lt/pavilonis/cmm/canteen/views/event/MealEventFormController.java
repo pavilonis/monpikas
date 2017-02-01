@@ -6,6 +6,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
+import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
@@ -14,11 +15,13 @@ import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FormView;
 import org.apache.commons.lang3.StringUtils;
+import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.MBeanFieldGroup;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 
 @UIScope
 @SpringComponent
@@ -34,30 +37,36 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected FormView<MealEventLog> createFormView() {
-      return formView = new MealEventFormView(mealService, messages);
+      return formView = new MealEventFormView(mealService);
    }
 
    @Override
    protected void beforeSave(MealEventLog model) {
       UserMeal value = formView.getTableValue();
       if (value != null && model.getMealType() != null) {
+
+         Meal meal = value.getMealData()
+               .getMeals()
+               .stream()
+               .filter(portion -> portion.getType() == model.getMealType())
+               .findFirst()
+               .orElseThrow(() -> new RuntimeException("User does not have required meal assigned"));
+
+         model.setDate(correctMealEventTime(model.getDate(), meal));
          model.setName(value.getUser().getName());
          model.setCardCode(value.getUser().getCardCode());
          model.setGrade(value.getUser().getGroup());
          model.setPupilType(value.getMealData().getType());
-         // TODO update (filter) pupil table values by selected meal type
-         model.setPrice(
-               value.getMealData()
-                     .getMeals()
-                     .stream()
-                     .filter(portion -> portion.getType() == model.getMealType())
-                     .findFirst()
-                     .orElseThrow(() -> new RuntimeException("User does not have required meal assigned"))
-                     .getPrice()
-         );
+         model.setPrice(meal.getPrice());
       }
    }
 
+   private Date correctMealEventTime(Date date, Meal meal) {
+      return LocalDateTime.fromDateFields(date)
+            .withTime(0, 0, 0, 0)
+            .plusSeconds(meal.getStartTime().toSecondOfDay())
+            .toDate();
+   }
 
    @Override
    protected Collection<MBeanFieldGroup.MValidator<MealEventLog>> getValidators() {

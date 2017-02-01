@@ -11,10 +11,10 @@ import com.vaadin.ui.DateField;
 import com.vaadin.ui.Label;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.report.ReportService;
-import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.AbstractViewController;
 import lt.pavilonis.cmm.common.field.ADateField;
-import lt.pavilonis.cmm.util.DateUtils;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
@@ -35,12 +35,12 @@ public class CanteenReportViewController extends AbstractViewController {
    private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private final ComboBox pupilTypeCombo = pupilTypeCombo();
    private final DateField periodStartField = new ADateField(this.getClass(), "periodStart")
-         .withValue(LocalDateTime.now().withDayOfMonth(1).withTime(0, 0, 0, 0).toDate())
+         .withValue(LocalDate.now().withDayOfMonth(1).toDate())
          .withRequired()
          .withImmediate();
 
    private final DateField periodEndField = new ADateField(this.getClass(), "periodEnd")
-         .withValue(LocalDateTime.now().dayOfMonth().withMaximumValue().withTime(23, 59, 59, 999).toDate())
+         .withValue(LocalDate.now().dayOfMonth().withMaximumValue().toDate())
          .withRequired()
          .withImmediate();
 
@@ -53,8 +53,14 @@ public class CanteenReportViewController extends AbstractViewController {
 
       StreamResource.StreamSource source = () -> {
          PupilType type = (PupilType) pupilTypeCombo.getValue();
-         Date periodStart = DateUtils.startOfDay(periodStartField.getValue());
-         Date periodEnd = DateUtils.endOfDay(periodEndField.getValue());
+
+         Date periodStart = LocalDateTime.fromDateFields(periodStartField.getValue())
+               .withTime(0, 0, 0, 0)
+               .toDate();
+
+         Date periodEnd = LocalDateTime.fromDateFields(periodEndField.getValue())
+               .withTime(23, 59, 59, 999)
+               .toDate();
 
          ByteArrayOutputStream stream = service.generate(periodStart, periodEnd, type);
          streamResource.setFilename(

@@ -8,6 +8,7 @@ import org.vaadin.viritin.fields.MDateField;
 import java.util.Date;
 
 public class ADateField extends MDateField {
+
    public ADateField(Class clazz, String code) {
 
       String caption = App.context.getBean(MessageSourceAdapter.class)

@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+//TODO add validator to ensure that user has no more than one meal for each type
 @UIScope
 @SpringComponent
 public class UserMealFormView extends FormView<UserMeal> {
