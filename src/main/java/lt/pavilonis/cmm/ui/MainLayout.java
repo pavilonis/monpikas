@@ -18,13 +18,20 @@ import lt.pavilonis.cmm.ui.key.KeyListController;
 import lt.pavilonis.cmm.ui.security.UserRolesListController;
 import lt.pavilonis.cmm.ui.user.UserListController;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.label.MLabel;
 import org.vaadin.viritin.layouts.MHorizontalLayout;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @SpringComponent
@@ -52,25 +59,36 @@ public class MainLayout extends MHorizontalLayout {
 
       add(menuBar, stage).expand(stage);
 
+      Set<String> userRoles = currentUserRoles();
+
       Stream.of(
-            new MenuButton(CanteenReportViewController.class, FontAwesome.FILE_EXCEL_O),
-            new MenuButton(MealListController.class, FontAwesome.WRENCH),
-            new MenuButton(MealEventListController.class, FontAwesome.CUTLERY),
-            new MenuButton(UserMealListController.class, FontAwesome.CHILD),
-            new MenuButton(UserListController.class, FontAwesome.USER),
-            new MenuButton(KeyListController.class, FontAwesome.KEY),
-            new MenuButton(UserRolesListController.class, FontAwesome.SITEMAP)
-      ).forEach(
-            button -> {
-               // TODO add role check here
+            //TODO move icon and role data somewere
+            new MenuButton(CanteenReportViewController.class, "ROLE_MEAL_REPORT", FontAwesome.FILE_EXCEL_O),
+            new MenuButton(MealListController.class, "ROLE_MEAL_CONFIG", FontAwesome.WRENCH),
+            new MenuButton(MealEventListController.class, "ROLE_MEAL_EVENTS", FontAwesome.CUTLERY),
+            new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", FontAwesome.CHILD),
+            new MenuButton(UserListController.class, "ROLE_USERS", FontAwesome.USER),
+            new MenuButton(KeyListController.class, "ROLE_KEYS", FontAwesome.KEY),
+            new MenuButton(UserRolesListController.class, "ROLE_ROLES", FontAwesome.SITEMAP)
+      )
+            .filter(button -> userRoles.contains(button.getRoleName()))
+            .forEach(button -> {
                Class<? extends AbstractViewController> clazz = button.getControllerClass();
 
                button.setCaption(messages.get(clazz, "caption"));
                button.addClickListener(click -> updateStage(clazz));
 
                menuBar.add(button);
-            }
-      );
+            });
+   }
+
+   private Set<String> currentUserRoles() {
+      SecurityContext context = SecurityContextHolder.getContext();
+      Authentication authentication = context.getAuthentication();
+      Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+      return authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toSet());
    }
 
    private void updateStage(Class<? extends AbstractViewController> viewControllerClass) {
