@@ -47,12 +47,12 @@ public class MealRestController {
 
       userRestRepository.logUserScan(cardCode);
 
-      LOG.info("Pupil meal request [cardCode={}]", cardCode);
+      LOG.info("Processing meal request STARTING [cardCode={}]", cardCode);
       Optional<UserMeal> optionalUserMeal = userMealService.load(cardCode);
 
 
       if (!optionalUserMeal.isPresent()) {
-         LOG.info("User NOT found in DB [cardCode={}]", cardCode);
+         LOG.info("Processing meal request FINISHED: User NOT found in DB [cardCode={}]", cardCode);
          return new ResponseEntity<>(HttpStatus.NOT_FOUND);
       }
 
@@ -78,7 +78,7 @@ public class MealRestController {
 
    private ResponseEntity<PupilRepresentation> forbidden(UserMeal userMeal) {
       UserRepresentation user = userMeal.getUser();
-      LOG.info("Pupil has NO PERMISSION to have a meal [cardCode={}]", user.getCardCode());
+      LOG.info("Processing meal request FINISHED: NO PERMISSION to have a meal [cardCode={}]", user.getCardCode());
 
       PupilRepresentation response = new PupilRepresentation(
             user.getCardCode(),
@@ -103,7 +103,8 @@ public class MealRestController {
             new PupilRepresentation(cardCode, name, meal, user.getGroup(), pupilType, user.getBase16photo());
 
       if (!userMealService.canHaveMeal(cardCode, new Date(), mealType)) {
-         LOG.info("REJECT - Pupil already had his meal [name={}, cardCode={}]", name, cardCode);
+         LOG.info("Processing meal request FINISHED: REJECT - user already had his meal [name={}, cardCode={}]",
+               name, cardCode);
          return new ResponseEntity<>(response, HttpStatus.ALREADY_REPORTED);
       }
 
@@ -111,7 +112,7 @@ public class MealRestController {
             null, cardCode, name, user.getGroup(), new Date(), meal.getPrice(), mealType, pupilType
       ));
 
-      LOG.info("OK - Pupil is getting meal [name={}, cardCode={}, mealType={}, price={}]",
+      LOG.info("Processing meal request FINISHED: OK [name={}, cardCode={}, mealType={}, price={}]",
             name, cardCode, mealType.name(), meal.getPrice());
 
       return new ResponseEntity<>(response, HttpStatus.ACCEPTED);

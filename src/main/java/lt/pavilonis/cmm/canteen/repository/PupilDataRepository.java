@@ -2,16 +2,12 @@ package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.util.TimeUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -23,7 +19,6 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class PupilDataRepository {
 
-   private static final Logger LOG = LoggerFactory.getLogger(PupilDataRepository.class.getSimpleName());
    private static final PupilDataResultSetExtractor PUPIL_DATA_EXTRACTOR = new PupilDataResultSetExtractor();
 
    @Autowired
@@ -48,8 +43,7 @@ public class PupilDataRepository {
       args.put("cardCode", cardCode);
       args.put("withMealsAssigned", withMealsAssigned);
       args.put("mealType", mealType == null ? null : mealType.name());
-      LocalDateTime opStart = LocalDateTime.now();
-      Map<String, MealData> result = namedJdbc.query("" +
+      return namedJdbc.query("" +
                   "SELECT " +
                   "  p.cardCode, p.comment, p.type, " +
                   "  m.id, m.name, m.type, m.price, m.startTime, m.endTime " +
@@ -62,9 +56,6 @@ public class PupilDataRepository {
             args,
             PUPIL_DATA_EXTRACTOR
       );
-      LOG.info("Query completed [duration={}]", TimeUtils.duration(opStart));
-
-      return result;
    }
 
    @Transactional
