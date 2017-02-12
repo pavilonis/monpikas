@@ -34,6 +34,7 @@ public class SecurityUserFormView extends FormView<SecurityUser> {
 
       Stream.of(username, name, email)
             .forEach(field -> field.setWidth("268px"));
+      authorities.setTableHeight(256, Unit.PIXELS);
       withMargin(new MMarginInfo(false, false, true, false));
    }
 }

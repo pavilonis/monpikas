@@ -156,4 +156,8 @@ public class OneToManyField<T> extends CustomField<List> {
          close();
       }
    }
+
+   public void setTableHeight(float value, Unit unit) {
+      table.setHeight(value, unit);
+   }
 }
