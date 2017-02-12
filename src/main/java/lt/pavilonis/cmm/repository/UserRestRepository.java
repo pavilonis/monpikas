@@ -113,6 +113,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    public void logUserScan(String cardCode) {
+      LOG.info("Sending scanLog post request");
       try {
          restTemplate.postForObject(uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode), null, Void.class);
       } catch (HttpClientErrorException e) {

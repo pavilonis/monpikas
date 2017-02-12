@@ -1,8 +1,11 @@
 package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -26,19 +29,26 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
                   username,
                   rs.getString("u.password"),
                   rs.getString("u.email"),
-                  rs.getBoolean("u.enabled"),
-                  new ArrayList<>()
+                  rs.getBoolean("u.enabled")
             );
             result.put(username, user);
          }
 
-         String role = rs.getString("r.name");
-         if (!user.getRoles().contains(role)) {
-            user.getRoles().add(role);
-         }
-
+         maybeAddAuthority(
+               user,
+               rs.getString("r.name")
+         );
       }
 
       return new ArrayList<>(result.values());
+   }
+
+   protected void maybeAddAuthority(SecurityUser user, String roleName) {
+      if (StringUtils.isNoneBlank(roleName)) {
+         GrantedAuthority authority = new SimpleGrantedAuthority(roleName);
+         if (!user.getAuthorities().contains(authority)) {
+            user.getAuthorities().add(authority);
+         }
+      }
    }
 }

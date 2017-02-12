@@ -2,12 +2,11 @@ package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public final class SecurityUser implements UserDetails, Identifiable<String> {
 
@@ -16,16 +15,17 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
    private String password;
    private String email;
    private boolean enabled;
-   private List<String> roles;
+   private List<GrantedAuthority> authorities = new ArrayList<>();
 
-   public SecurityUser(String name, String username, String password, String email,
-                       boolean enabled, List<String> roles) {
+   public SecurityUser() {
+   }
+
+   public SecurityUser(String name, String username, String password, String email, boolean enabled) {
       this.name = name;
       this.username = username;
       this.password = password;
       this.email = email;
       this.enabled = enabled;
-      this.roles = roles;
    }
 
    @Override
@@ -50,10 +50,6 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
       return enabled;
    }
 
-   public List<String> getRoles() {
-      return roles;
-   }
-
    public void setName(String name) {
       this.name = name;
    }
@@ -74,15 +70,13 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
       this.enabled = enabled;
    }
 
-   public void setRoles(List<String> roles) {
-      this.roles = roles;
+   @Override
+   public Collection<GrantedAuthority> getAuthorities() {
+      return this.authorities;
    }
 
-   @Override
-   public Collection<? extends GrantedAuthority> getAuthorities() {
-      return this.roles.stream()
-            .map(SimpleGrantedAuthority::new)
-            .collect(Collectors.toList());
+   public void setAuthorities(List<GrantedAuthority> authorities) {
+      this.authorities = authorities;
    }
 
    @Override

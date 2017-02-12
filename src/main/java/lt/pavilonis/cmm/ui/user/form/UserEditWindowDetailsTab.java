@@ -8,6 +8,7 @@ import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Upload;
 import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.converter.StringToDateConverter;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import org.vaadin.viritin.BeanBinder;
@@ -37,11 +38,11 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
    private Image currentUserImage;
    private final MBeanFieldGroup<UserRepresentation> binding;
 
-    UserEditWindowDetailsTab(UserRepresentation model,
-                                   Resource imageResource,
-                                   Consumer<UserRepresentation> saveAction,
-                                   Button saveButton,
-                                   MessageSourceAdapter messages) {
+   UserEditWindowDetailsTab(UserRepresentation model,
+                            Resource imageResource,
+                            Consumer<UserRepresentation> saveAction,
+                            Button saveButton,
+                            MessageSourceAdapter messages) {
       this.model = model;
       this.messages = messages;
       this.cardCode = new MTextField(messages.get(this, "cardCode"));
@@ -49,7 +50,8 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
       this.lastName = new MTextField(messages.get(this, "lastName"));
       this.group = new MTextField(messages.get(this, "group"));
       this.role = new MTextField(messages.get(this, "role"));
-      this.birthDate = new MDateField(messages.get(this, "birthDate"));
+      this.birthDate = new ADateField(this.getClass(), "birthDate")
+            .withConverter(new StringToDateConverter());
 
       UserEditWindowDetailsTabImageUploader uploadReceiver =
             new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);
@@ -61,11 +63,8 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
       Stream.of(firstName, lastName, birthDate, role, group, cardCode)
             .forEach(field -> field.setWidth("250px"));
 
-      MVerticalLayout fields = new MVerticalLayout(firstName, lastName, birthDate, role, group, cardCode);
-      add(fields, rightLayout.with(imageUploader));
-
-      birthDate.setConverter(new StringToDateConverter());
-      birthDate.setDateFormat("yyyy-MM-dd");
+      MVerticalLayout fields = new MVerticalLayout(firstName, lastName, birthDate, role, group);
+      add(fields, rightLayout.with(cardCode, imageUploader));
 
       cardCode.setEnabled(false);
       cardCode.setReadOnly(true);
@@ -86,7 +85,7 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
             Notification.show(messages.get(this, "incorrectlyFilledFields"), Notification.Type.WARNING_MESSAGE);
          }
       });
-      setHeight("481px");
+      setHeight(430, Unit.PIXELS);
    }
 
    private void updateUserPhoto(Resource imageResource) {
@@ -95,6 +94,6 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
 
       Image image = new Image(messages.get(this, "userPhoto"), imageResource);
       image.addStyleName("user-photo");
-      rightLayout.addComponentAsFirst(currentUserImage = image);
+      rightLayout.addComponent(currentUserImage = image, 1);
    }
 }

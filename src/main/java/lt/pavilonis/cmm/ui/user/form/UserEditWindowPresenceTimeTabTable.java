@@ -1,40 +1,32 @@
 package lt.pavilonis.cmm.ui.user.form;
 
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.converter.LocalTimeConverter;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
-import org.vaadin.viritin.fields.MTable;
 
-final class UserEditWindowPresenceTimeTabTable extends MTable<PresenceTimeRepresentation> {
+import java.util.Arrays;
+import java.util.List;
+
+final class UserEditWindowPresenceTimeTabTable extends ListTable<PresenceTimeRepresentation> {
 
    private static final LocalTimeConverter TIME_CONVERTER = new LocalTimeConverter();
 
-   UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository,
-                                             String cardCode,
-                                             MessageSourceAdapter messages) {
+   UserEditWindowPresenceTimeTabTable(UserRestRepository userRepository, String cardCode) {
+      super(PresenceTimeRepresentation.class);
 
-      withProperties("date", "startTime", "endTime", "hourDifference");
       addBeans(userRepository.loadPresenceTime(cardCode));
-      setColumnHeaders(
-            messages.get(this, "date"),
-            messages.get(this, "startTime"),
-            messages.get(this, "endTime"),
-            messages.get(this, "hourDifference")
-      );
 
-      setColumnCollapsingAllowed(true);
-      setColumnReorderingAllowed(true);
-      setCacheRate(3);
-      withFullWidth();
-      setHeight("481px");
-      setSelectable(true);
+      setHeight(430, Unit.PIXELS);
       addStyleName("table-border-less");
-      setNullSelectionAllowed(false);
 
       setConverter("startTime", TIME_CONVERTER);
       setConverter("endTime", TIME_CONVERTER);
-
       setCellStyleGenerator(new PresenceTimeCellStyleGenerator());
+   }
+
+   @Override
+   protected List<String> getProperties(Class<PresenceTimeRepresentation> type) {
+      return Arrays.asList("date", "startTime", "endTime", "hourDifference");
    }
 }

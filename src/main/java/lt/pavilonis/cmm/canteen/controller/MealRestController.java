@@ -42,12 +42,12 @@ public class MealRestController {
    private UserRestRepository userRestRepository;
 
    @ResponseBody
-   @RequestMapping("mealRequest/{cardCode}") //TODO change method name to meal or (rest/meal)
+   @RequestMapping("mealRequest/{cardCode}") //TODO change endpoint name to meal or (rest/meal)
    public ResponseEntity<PupilRepresentation> dinnerRequest(@PathVariable String cardCode) {
+      LOG.info("Processing meal request STARTING [cardCode={}]", cardCode);
 
       userRestRepository.logUserScan(cardCode);
 
-      LOG.info("Processing meal request STARTING [cardCode={}]", cardCode);
       Optional<UserMeal> optionalUserMeal = userMealService.load(cardCode);
 
 

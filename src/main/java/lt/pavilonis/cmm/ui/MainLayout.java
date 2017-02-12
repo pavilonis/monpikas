@@ -69,7 +69,7 @@ public class MainLayout extends MHorizontalLayout {
             new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", FontAwesome.CHILD),
             new MenuButton(UserListController.class, "ROLE_USERS", FontAwesome.USER),
             new MenuButton(KeyListController.class, "ROLE_KEYS", FontAwesome.KEY),
-            new MenuButton(UserRolesListController.class, "ROLE_ROLES", FontAwesome.SITEMAP)
+            new MenuButton(UserRolesListController.class, "ROLE_ROLES", FontAwesome.USER_SECRET)
       )
             .filter(button -> userRoles.contains(button.getRoleName()))
             .forEach(button -> {

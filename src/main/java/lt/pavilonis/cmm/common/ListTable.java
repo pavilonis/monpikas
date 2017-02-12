@@ -56,6 +56,7 @@ public class ListTable<T> extends MTable<T> {
       );
    }
 
+   //TODO use method as in OneToManyField?
    protected List<String> collectProperties(Class<T> type) {
       Field[] fields = type.getFields();
       return Stream.of(fields)

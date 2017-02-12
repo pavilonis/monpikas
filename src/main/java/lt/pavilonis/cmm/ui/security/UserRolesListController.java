@@ -28,12 +28,12 @@ public class UserRolesListController extends AbstractListController<SecurityUser
       return new ListTable<SecurityUser>(SecurityUser.class) {
          @Override
          protected List<String> getProperties(Class<SecurityUser> type) {
-            return Arrays.asList("name", "username", "email", "roles", "enabled");
+            return Arrays.asList("name", "username", "email", "authorities", "enabled");
          }
 
          @Override
          protected void customize(MessageSourceAdapter messageSource) {
-            setConverter("roles", new CollectionCellConverter());
+            setConverter("authorities", new CollectionCellConverter());
             setConverter("enabled", new BooleanCellConverter());
          }
       };
@@ -71,6 +71,8 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          protected MessageSourceAdapter getMessageSource() {
             return UserRolesListController.this.messageSource;
          }
+
+
       };
    }
 }
