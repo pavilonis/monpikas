@@ -32,6 +32,9 @@ public class SecurityUserFormView extends FormView<SecurityUser> {
             authorities
       );
 
+      username.setEnabled(false);
+      username.setReadOnly(true);
+
       Stream.of(username, name, email)
             .forEach(field -> field.setWidth("268px"));
       authorities.setTableHeight(256, Unit.PIXELS);
