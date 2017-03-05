@@ -1,7 +1,5 @@
 package lt.pavilonis.cmm.common.field;
 
-import com.vaadin.data.Property;
-import com.vaadin.data.util.converter.Converter;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Notification;
@@ -12,45 +10,44 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ListTable;
 import lt.pavilonis.cmm.common.component.TableControlPanel;
 import lt.pavilonis.cmm.repository.RepositoryFinder;
+import org.apache.commons.collections4.CollectionUtils;
 import org.vaadin.viritin.MSize;
 import org.vaadin.viritin.layouts.MVerticalLayout;
 import org.vaadin.viritin.layouts.MWindow;
 
-import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public class OneToManyField<T> extends CustomField<List> {
 
    private final ListTable<T> table;
+   private final List<T> value = new ArrayList<>();
    private final Class<T> type;
 
    public OneToManyField(Class<T> type) {
       this.table = createTable(type);
+      this.table.setDataProvider(
+            (sortOrder, offset, limit) -> value.stream(),
+            value::size
+      );
       this.type = type;
+   }
+
+   @Override
+   protected void doSetValue(List value) {
+
    }
 
    protected ListTable<T> createTable(Class<T> type) {
       ListTable<T> table = new ListTable<>(type);
-
-      List<String> properties = collectProperties(type);
-
-      table.withProperties(properties);
-      table.withSize(MSize.size("550px", "350px"));
+      setWidth(550, Unit.PIXELS);
+      setHeight(350, Unit.PIXELS);
       return table;
    }
 
-   private List<String> collectProperties(Class<T> type) {
-      return Stream.of(type.getMethods())
-            .map(Method::getName)
-            .filter(name -> name.startsWith("get") || name.startsWith("is"))
-            .map(name -> name.startsWith("is") ? name.substring(2) : name.substring(3))
-            .map(String::toLowerCase)
-            .collect(Collectors.toList());
-   }
 
    @Override
    protected Component initContent() {
@@ -64,11 +61,17 @@ public class OneToManyField<T> extends CustomField<List> {
    }
 
    private void actionAdd() {
-      Consumer<T> selectionConsumer = t -> {
-         if (table.getItemIds().contains(t)) {
-            Notification.show("Already in the list!", Type.WARNING_MESSAGE);
-         } else {
-            table.addBeans(Collections.singletonList(t));
+      Consumer<Set<T>> selectionConsumer = items -> {
+         boolean duplicatesFound = false;
+         for (T item : items) {
+            if (value.contains(items)) {
+               duplicatesFound = true;
+            } else {
+               value.add(item);
+            }
+         }
+         if (duplicatesFound) {
+            Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
          }
       };
 
@@ -76,12 +79,12 @@ public class OneToManyField<T> extends CustomField<List> {
    }
 
    private void actionRemove() {
-      T selected = table.getValue();
-      if (selected == null) {
+      Set<T> selectedItems = table.getSelectedItems();
+      if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
-         table.getItemIds().remove(selected);
-         table.refreshRows();
+         value.removeAll(selectedItems);
+         table.getDataProvider().refreshAll();
       }
    }
 
@@ -91,44 +94,25 @@ public class OneToManyField<T> extends CustomField<List> {
    }
 
    @Override
-   protected void setInternalValue(List newValue) {
-      super.setInternalValue(newValue);
-      table.setBeans(newValue);
-   }
-
-   @Override
-   public void setValue(List newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-      super.setValue(newFieldValue);
-   }
-
-   @Override
    public List<T> getValue() {
-      return (List) table.getItemIds();
-   }
-
-   @Override
-   public Property getPropertyDataSource() {
-      return super.getPropertyDataSource();
-   }
-
-   @Override
-   public Class<? extends List> getType() {
-      return List.class;
+      return value;
    }
 
    private class SelectionPopup extends MWindow {
 
-      public SelectionPopup(Consumer<T> selectionConsumer) {
+      private SelectionPopup(Consumer<Set<T>> selectionConsumer) {
 
          setCaption(App.translate(SelectionPopup.class, "caption"));
          withSize(MSize.size("700px", "490px"));
 
          ListTable<T> selectionTable = new ListTable<>(type);
-         selectionTable.setBeans(getSelectionElements());
-         selectionTable.withProperties(collectProperties(type));
-         selectionTable.addRowClickListener(click -> {
-            if (click.isDoubleClick()) {
-               selectAction(selectionConsumer, click.getRow());
+         selectionTable.setDataProvider(
+               (sortOrder, offset, limit) -> getSelectionElements().stream(),
+               () -> getSelectionElements().size()
+         );
+         selectionTable.addItemClickListener(click -> {
+            if (click.getMouseEventDetails().isDoubleClick()) {
+               selectAction(selectionConsumer, Collections.singleton(click.getItem()));
             }
          });
 
@@ -137,7 +121,7 @@ public class OneToManyField<T> extends CustomField<List> {
                      selectionTable,
                      new TableControlPanel(
                            "addSelected", "close",
-                           click -> selectAction(selectionConsumer, selectionTable.getValue()),
+                           click -> selectAction(selectionConsumer, selectionTable.getSelectedItems()),
                            click -> close()
                      )
                )
@@ -149,9 +133,9 @@ public class OneToManyField<T> extends CustomField<List> {
          UI.getCurrent().addWindow(this);
       }
 
-      protected void selectAction(Consumer<T> selectionConsumer, T selectedValue) {
-         if (selectedValue != null) {
-            selectionConsumer.accept(selectedValue);
+      protected void selectAction(Consumer<Set<T>> selectionConsumer, Set<T> selected) {
+         if (CollectionUtils.isNotEmpty(selected)) {
+            selectionConsumer.accept(selected);
          }
          close();
       }

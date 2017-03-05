@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.common;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.server.FontAwesome;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
@@ -46,17 +47,17 @@ public abstract class FilterPanel<FILTER> extends MHorizontalLayout {
       }
    }
 
-   protected Field getFieldToFocus() {
+   protected AbstractField<?> getFieldToFocus() {
       return null;
    }
 
    protected Component getFieldLayout() {
-      return new MHorizontalLayout(fields.toArray(new Field[fields.size()]))
+      return new MHorizontalLayout(fields.toArray(new AbstractField[fields.size()]))
             .withMargin(false)
             .alignAll(Alignment.BOTTOM_LEFT);
    }
 
-   protected abstract List<Field> getFields();
+   protected abstract List<AbstractField<?>> getFields();
 
    public abstract FILTER getFilter();
 

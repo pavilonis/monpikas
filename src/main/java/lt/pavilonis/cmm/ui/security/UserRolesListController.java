@@ -28,7 +28,7 @@ public class UserRolesListController extends AbstractListController<SecurityUser
       return new ListTable<SecurityUser>(SecurityUser.class) {
          @Override
          protected List<String> getProperties(Class<SecurityUser> type) {
-            return Arrays.asList("name", "username", "email", "authorities", "enabled");
+            return Arrays.asList("username", "name", "email", "authorities", "enabled");
          }
 
          @Override

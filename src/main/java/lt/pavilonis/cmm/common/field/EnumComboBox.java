@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.common.field;
 
-import com.vaadin.data.util.BeanItemContainer;
 import com.vaadin.ui.ComboBox;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
@@ -8,35 +7,23 @@ import lt.pavilonis.cmm.MessageSourceAdapter;
 import java.util.Arrays;
 import java.util.List;
 
-public class EnumComboBox<T extends Enum<T>> extends ComboBox {
+public class EnumComboBox<T extends Enum<T>> extends ComboBox<T> {
 
    private final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
 
    public EnumComboBox(Class<T> clazz) {
+      super();
       List<T> enums = Arrays.asList(clazz.getEnumConstants());
-      setContainerDataSource(new BeanItemContainer<>(clazz, enums));
+
+      setItems(enums);
       setValue(enums.get(0));
       setCaption(messages.get(clazz, "name"));
-   }
-
-   @Override
-   public String getItemCaption(Object itemId) {
-      return messages.get(itemId, itemId.toString());
-   }
-
-   @Override
-   public boolean isNullSelectionAllowed() {
-      return false;
+      setItemCaptionGenerator(item -> messages.get(item, item.toString()));
+      setEmptySelectionAllowed(false);
    }
 
    public EnumComboBox<T> withRequired(boolean value) {
-      this.setRequired(value);
+      this.setRequiredIndicatorVisible(value);
       return this;
-   }
-
-   @Override
-   @SuppressWarnings("unchecked")
-   public T getValue() {
-      return (T) super.getValue();
    }
 }

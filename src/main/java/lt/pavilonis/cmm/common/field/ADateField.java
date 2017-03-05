@@ -1,13 +1,12 @@
 package lt.pavilonis.cmm.common.field;
 
-import com.vaadin.data.util.converter.Converter;
+import com.vaadin.ui.DateField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import org.vaadin.viritin.fields.MDateField;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-public class ADateField extends MDateField {
+public class ADateField extends DateField {
 
    public ADateField(Class clazz, String code) {
 
@@ -19,22 +18,12 @@ public class ADateField extends MDateField {
    }
 
    public ADateField withRequired() {
-      this.setRequired(true);
+      this.setRequiredIndicatorVisible(true);
       return this;
    }
 
-   public ADateField withConverter(Converter<Date, ?> converter) {
-      this.setConverter(converter);
-      return this;
-   }
-
-   public ADateField withValue(Date value) {
+   public ADateField withValue(LocalDate value) {
       this.setValue(value);
-      return this;
-   }
-
-   public ADateField withImmediate() {
-      this.setImmediate(true);
       return this;
    }
 }

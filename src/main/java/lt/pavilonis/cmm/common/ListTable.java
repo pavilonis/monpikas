@@ -1,16 +1,17 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.ui.Grid;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import org.vaadin.viritin.fields.MTable;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class ListTable<T> extends MTable<T> {
+public class ListTable<T> extends Grid<T> {
 
    private MessageSourceAdapter messageSource = App.context.getBean(MessageSourceAdapter.class);
 
@@ -19,13 +20,16 @@ public class ListTable<T> extends MTable<T> {
       super(type);
 
       List<String> properties = getProperties(type);
-      withProperties(properties);
+      properties.forEach(
+            this::addColumn
+      );
 
       String[] translatedPropertyArray = properties.stream()
             .map(property -> messageSource.get(type, property))
             .toArray(String[]::new);
 
-      withColumnHeaders(translatedPropertyArray);
+//      header
+//      withColumnHeaders(translatedPropertyArray);
 
       defaultConfiguration();
       customize(messageSource);
@@ -38,11 +42,11 @@ public class ListTable<T> extends MTable<T> {
    protected void customize(MessageSourceAdapter messageSource) {/*hook*/}
 
    private void defaultConfiguration() {
-      setColumnCollapsingAllowed(true);
+//      collap(true);
       setColumnReorderingAllowed(true);
-      setSelectable(true);
-      setNullSelectionAllowed(false);
-      setCacheRate(5);
+//      setSelectable(true);
+//      setNullSelectionAllowed(false);
+//      setCacheRate(5);
       setSizeFull();
    }
 
@@ -51,16 +55,17 @@ public class ListTable<T> extends MTable<T> {
    }
 
    public void collapseColumns() {
-      columnsToCollapse().forEach(
-            columnId -> setColumnCollapsed(columnId, true)
-      );
+//      columnsToCollapse().forEach(
+//            columnId -> setColumnCollapsed(columnId, true)
+//      );
    }
 
-   //TODO use method as in OneToManyField?
-   protected List<String> collectProperties(Class<T> type) {
-      Field[] fields = type.getFields();
-      return Stream.of(fields)
-            .map(Field::getName)
+   private List<String> collectProperties(Class<T> type) {
+      return Stream.of(type.getMethods())
+            .map(Method::getName)
+            .filter(name -> name.startsWith("get") || name.startsWith("is"))
+            .map(name -> name.startsWith("is") ? name.substring(2) : name.substring(3))
+            .map(String::toLowerCase)
             .collect(Collectors.toList());
    }
 }

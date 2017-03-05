@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.ui.security;
 
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FilterPanel;
@@ -12,7 +13,7 @@ public class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
    private TextField text;
 
    @Override
-   protected List<Field> getFields() {
+   protected List<AbstractField<?>> getFields() {
       text = new TextField();
       return Collections.singletonList(text);
    }

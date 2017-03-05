@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.common.component;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FontAwesome;
 import lt.pavilonis.cmm.App;
 import org.vaadin.viritin.button.MButton;
@@ -22,13 +23,13 @@ public class TableControlPanel extends MHorizontalLayout {
 
       add(
             new MButton(
-                  FontAwesome.PLUS,
+                  VaadinIcons.PLUS,
                   App.translate(this, buttonCaptionPositive),
                   listenerPositive
             ),
 
             new MButton(
-                  FontAwesome.WARNING,
+                  VaadinIcons.WARNING,
                   App.translate(this, buttonCaptionNegative),
                   listenerNegative
             ).withStyleName("redicon")
