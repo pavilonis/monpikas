@@ -1,88 +1,79 @@
 package lt.pavilonis.cmm.ui.user.form;
 
 import com.google.common.io.BaseEncoding;
+import com.vaadin.data.Binder;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.Upload;
+import com.vaadin.ui.VerticalLayout;
+import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.common.field.ADateField;
-import lt.pavilonis.cmm.converter.StringToDateConverter;
+import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.domain.UserRepresentation;
-import org.vaadin.viritin.BeanBinder;
-import org.vaadin.viritin.MBeanFieldGroup;
-import org.vaadin.viritin.fields.MDateField;
-import org.vaadin.viritin.fields.MTextField;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-final class UserEditWindowDetailsTab extends MHorizontalLayout {
+final class UserEditWindowDetailsTab extends HorizontalLayout {
 
-   private final MTextField cardCode;
-   private final MTextField firstName;
-   private final MTextField lastName;
-   private final MTextField group;
-   private final MTextField role;
-   private final MDateField birthDate;
-   private final MVerticalLayout rightLayout = new MVerticalLayout()
-         .withSpacing(true)
-         .alignAll(Alignment.MIDDLE_LEFT);
+   private final TextField cardCode = new ATextField(this.getClass(), "cardCode");
+   private final TextField firstName = new ATextField(this.getClass(), "firstName");
+   private final TextField lastName = new ATextField(this.getClass(), "lastName");
+   private final TextField group = new ATextField(this.getClass(), "group");
+   private final TextField role = new ATextField(this.getClass(), "role");
+   private final ADateField birthDate = new ADateField(this.getClass(), "birthDate");
+   //            .withConverter(new StringToDateConverter());
+   private final VerticalLayout rightLayout = new VerticalLayout();
 
    private final UserRepresentation model;
-   private final MessageSourceAdapter messages;
    private Image currentUserImage;
-   private final MBeanFieldGroup<UserRepresentation> binding;
+   private final Binder<UserRepresentation> binder = new Binder<>(UserRepresentation.class);
 
-   UserEditWindowDetailsTab(UserRepresentation model,
-                            Resource imageResource,
-                            Consumer<UserRepresentation> saveAction,
-                            Button saveButton,
-                            MessageSourceAdapter messages) {
+   UserEditWindowDetailsTab(UserRepresentation model, Resource imageResource,
+                            Consumer<UserRepresentation> saveAction, Button saveButton) {
       this.model = model;
-      this.messages = messages;
-      this.cardCode = new MTextField(messages.get(this, "cardCode"));
-      this.firstName = new MTextField(messages.get(this, "firstName"));
-      this.lastName = new MTextField(messages.get(this, "lastName"));
-      this.group = new MTextField(messages.get(this, "group"));
-      this.role = new MTextField(messages.get(this, "role"));
-      this.birthDate = new ADateField(this.getClass(), "birthDate")
-            .withConverter(new StringToDateConverter());
 
       UserEditWindowDetailsTabImageUploader uploadReceiver =
             new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);
       Upload imageUploader = new Upload(null, uploadReceiver);
-      imageUploader.setImmediate(true);
-      imageUploader.setButtonCaption(messages.get(this, "selectImage"));
+      imageUploader.setImmediateMode(true);
+      imageUploader.setButtonCaption(App.translate(this, "selectImage"));
       imageUploader.addSucceededListener(uploadReceiver);
 
       Stream.of(firstName, lastName, birthDate, role, group, cardCode)
             .forEach(field -> field.setWidth("250px"));
 
-      MVerticalLayout fields = new MVerticalLayout(firstName, lastName, birthDate, role, group);
-      add(fields, rightLayout.with(cardCode, imageUploader));
+      VerticalLayout fields = new VerticalLayout(firstName, lastName, birthDate, role, group);
+
+      rightLayout.setSpacing(true);
+      rightLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+      rightLayout.addComponents(cardCode, imageUploader);
+      addComponents(fields, rightLayout);
 
       cardCode.setEnabled(false);
       cardCode.setReadOnly(true);
 
       updateUserPhoto(imageResource);
 
-      binding = BeanBinder.bind(model, this);
+      binder.setBean(model);
+      binder.bindInstanceFields(this);
 
       saveButton.addClickListener((click) -> {
-         if (binding.isValid()) {
+         if (binder.isValid()) {
             byte[] bytes = uploadReceiver.getScaledImageBytes();
             if (bytes != null && bytes.length > 0) {
                this.model.setBase16photo(BaseEncoding.base16().encode(bytes));
             }
             saveAction.accept(this.model);
-            Notification.show(messages.get(this, "saved"), Notification.Type.HUMANIZED_MESSAGE);
+            Notification.show(App.translate(this, "saved"), Notification.Type.HUMANIZED_MESSAGE);
          } else {
-            Notification.show(messages.get(this, "incorrectlyFilledFields"), Notification.Type.WARNING_MESSAGE);
+            Notification.show(App.translate(this, "incorrectlyFilledFields"), Notification.Type.WARNING_MESSAGE);
          }
       });
       setHeight(430, Unit.PIXELS);
@@ -91,8 +82,7 @@ final class UserEditWindowDetailsTab extends MHorizontalLayout {
    private void updateUserPhoto(Resource imageResource) {
       if (currentUserImage != null)
          rightLayout.removeComponent(currentUserImage);
-
-      Image image = new Image(messages.get(this, "userPhoto"), imageResource);
+      Image image = new Image(App.translate(this, "userPhoto"), imageResource);
       image.addStyleName("user-photo");
       rightLayout.addComponent(currentUserImage = image, 1);
    }

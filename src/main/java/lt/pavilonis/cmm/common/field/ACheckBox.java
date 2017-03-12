@@ -11,4 +11,9 @@ public class ACheckBox extends CheckBox {
 
       this.setCaption(caption);
    }
+
+   public ACheckBox withValue(boolean initialValue) {
+      this.setValue(initialValue);
+      return this;
+   }
 }

@@ -6,7 +6,7 @@ import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserListController extends AbstractListController<UserRepresentation, String, UserFilter> {
 
    @Autowired
-   private UserTable userTable;
+   private UserGrid userTable;
 
    @Autowired
    private UserRestRepository userRepository;
@@ -25,7 +25,7 @@ public class UserListController extends AbstractListController<UserRepresentatio
    private UserListFilterPanel userListFilterPanel;
 
    @Override
-   protected ListTable<UserRepresentation> createTable() {
+   protected ListGrid<UserRepresentation> createGrid() {
       return userTable;
    }
 

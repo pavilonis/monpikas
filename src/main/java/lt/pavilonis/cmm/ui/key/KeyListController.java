@@ -6,7 +6,7 @@ import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
 import lt.pavilonis.cmm.repository.KeyRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +19,13 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    private KeyListFilterPanel keyListFilterPanel;
 
    @Autowired
-   private KeyTable keyTable;
+   private KeyGrid keyTable;
 
    @Autowired
    private KeyRestRepository repository;
 
    @Override
-   protected ListTable<KeyRepresentation> createTable() {
+   protected ListGrid<KeyRepresentation> createGrid() {
       return keyTable;
    }
 

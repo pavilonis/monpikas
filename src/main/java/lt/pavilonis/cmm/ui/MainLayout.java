@@ -1,11 +1,14 @@
 package lt.pavilonis.cmm.ui;
 
-import com.vaadin.server.FontAwesome;
-import com.vaadin.shared.ui.label.ContentMode;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.views.event.MealEventListController;
@@ -22,10 +25,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.vaadin.viritin.MSize;
-import org.vaadin.viritin.label.MLabel;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -36,40 +35,39 @@ import java.util.stream.Stream;
 
 @SpringComponent
 @UIScope
-public class MainLayout extends MHorizontalLayout {
+public class MainLayout extends HorizontalLayout {
 
    private final Map<Class<? extends AbstractViewController>, Component> scopeComponents = new HashMap<>();
-
-   private final MLabel appLabel = new MLabel("<h2>ČMM</h2><h3><h3>")
-         .withSize(MSize.size("500px", "200px"))
-         .withContentMode(ContentMode.HTML);
-
+   private final Label appLabel = new Label("<h2>ČMM</h2><h3><h3>", ContentMode.HTML);
    private Component currentComponent = appLabel;
-   private MVerticalLayout stage = new MVerticalLayout(currentComponent)
-         .withSize(MSize.FULL_SIZE)
-         .alignAll(Alignment.MIDDLE_CENTER);
+   private final VerticalLayout stage = new VerticalLayout(currentComponent);
 
    @Autowired
    public MainLayout(MessageSourceAdapter messages) {
       setSizeFull();
-      MVerticalLayout menuBar = new MVerticalLayout()
-            .withWidth("210px")
-            .alignAll(Alignment.TOP_CENTER);
+      stage.setSizeFull();
+      stage.setDefaultComponentAlignment(Alignment.MIDDLE_CENTER);
+      appLabel.setWidth(500, Unit.PIXELS);
+      appLabel.setHeight(200, Unit.PIXELS);
 
+      VerticalLayout menuBar = new VerticalLayout();
+      menuBar.setWidth(210, Unit.PIXELS);
+      menuBar.setDefaultComponentAlignment(Alignment.TOP_CENTER);
 
-      add(menuBar, stage).expand(stage);
+      addComponents(menuBar, stage);
+      setExpandRatio(stage, 1);
 
       Set<String> userRoles = currentUserRoles();
 
       Stream.of(
             //TODO move icon and role data somewere
-            new MenuButton(CanteenReportViewController.class, "ROLE_MEAL_REPORT", FontAwesome.FILE_EXCEL_O),
-            new MenuButton(MealListController.class, "ROLE_MEAL_CONFIG", FontAwesome.WRENCH),
-            new MenuButton(MealEventListController.class, "ROLE_MEAL_EVENTS", FontAwesome.CUTLERY),
-            new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", FontAwesome.CHILD),
-            new MenuButton(UserListController.class, "ROLE_USERS", FontAwesome.USER),
-            new MenuButton(KeyListController.class, "ROLE_KEYS", FontAwesome.KEY),
-            new MenuButton(UserRolesListController.class, "ROLE_ROLES", FontAwesome.USER_SECRET)
+            new MenuButton(CanteenReportViewController.class, "ROLE_MEAL_REPORT", VaadinIcons.EXCHANGE),
+            new MenuButton(MealListController.class, "ROLE_MEAL_CONFIG", VaadinIcons.WRENCH),
+            new MenuButton(MealEventListController.class, "ROLE_MEAL_EVENTS", VaadinIcons.CUTLERY),
+            new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", VaadinIcons.CHILD),
+            new MenuButton(UserListController.class, "ROLE_USERS", VaadinIcons.USER),
+            new MenuButton(KeyListController.class, "ROLE_KEYS", VaadinIcons.KEY),
+            new MenuButton(UserRolesListController.class, "ROLE_ROLES", VaadinIcons.USER_STAR)
       )
             .filter(button -> userRoles.contains(button.getRoleName()))
             .forEach(button -> {
@@ -78,7 +76,7 @@ public class MainLayout extends MHorizontalLayout {
                button.setCaption(messages.get(clazz, "caption"));
                button.addClickListener(click -> updateStage(clazz));
 
-               menuBar.add(button);
+               menuBar.addComponent(button);
             });
    }
 

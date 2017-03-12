@@ -1,39 +1,39 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.event.ShortcutAction;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.Field;
+import com.vaadin.ui.HorizontalLayout;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import lt.pavilonis.cmm.common.field.AButton;
 
 import java.util.List;
 
-public abstract class FilterPanel<FILTER> extends MHorizontalLayout {
+public abstract class FilterPanel<FILTER> extends HorizontalLayout {
 
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
-   private final List<Field> fields = getFields();
+   private final List<HasValue<?>> fields = getFields();
 
-   private final MButton buttonFilter = new MButton(messages.get(FilterPanel.class, "filter"))
-         .withIcon(FontAwesome.FILTER)
+   private final AButton buttonFilter = new AButton(FilterPanel.class.getSimpleName() + ".filter")
+         .withIcon(VaadinIcons.FILTER)
          .withClickShortcut(ShortcutAction.KeyCode.ENTER);
 
-   private final MButton buttonReset = new MButton(messages.get(FilterPanel.class, "reset"))
-         .withIcon(FontAwesome.REFRESH)
+   private final AButton buttonReset = new AButton(FilterPanel.class.getSimpleName() + ".reset")
+         .withIcon(VaadinIcons.REFRESH)
          .withClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 
    public FilterPanel() {
-      add(
+      addComponents(
             getFieldLayout(),
             getButtonLayout()
       );
 
-      alignAll(Alignment.BOTTOM_LEFT);
+      setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
       setMargin(false);
       setDefaultValues();
 
@@ -41,7 +41,7 @@ public abstract class FilterPanel<FILTER> extends MHorizontalLayout {
    }
 
    private void maybeFocus() {
-      Field field = getFieldToFocus();
+      AbstractField<?> field = getFieldToFocus();
       if (field != null) {
          field.focus();
       }
@@ -52,22 +52,21 @@ public abstract class FilterPanel<FILTER> extends MHorizontalLayout {
    }
 
    protected Component getFieldLayout() {
-      return new MHorizontalLayout(fields.toArray(new AbstractField[fields.size()]))
-            .withMargin(false)
-            .alignAll(Alignment.BOTTOM_LEFT);
+      HorizontalLayout components = new HorizontalLayout(fields.toArray(new AbstractField[fields.size()]));
+      components.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+      return components;
    }
 
-   protected abstract List<AbstractField<?>> getFields();
+   protected abstract List<HasValue<?>> getFields();
 
    public abstract FILTER getFilter();
 
-   protected MHorizontalLayout getButtonLayout() {
-      return new MHorizontalLayout(buttonFilter, buttonReset)
-            .withMargin(false);
+   protected HorizontalLayout getButtonLayout() {
+      return new HorizontalLayout(buttonFilter, buttonReset);
    }
 
    protected void fieldReset() {
-      fields.forEach(Field::clear);
+      fields.forEach(HasValue::clear);
       setDefaultValues();
    }
 

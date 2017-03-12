@@ -1,26 +1,25 @@
 package lt.pavilonis.cmm.ui.key;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.field.ACheckBox;
 import lt.pavilonis.cmm.common.field.ADateField;
-import lt.pavilonis.cmm.converter.LocalDateConverter;
+import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.domain.ScannerRepresentation;
 import lt.pavilonis.cmm.repository.ScannerRestRepository;
-import org.vaadin.viritin.fields.MCheckBox;
-import org.vaadin.viritin.fields.MTextField;
 
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 
 @SpringComponent
@@ -46,8 +45,8 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
    @Override
    public KeyFilter getFilter() {
       return new KeyFilter(
-            (LocalDate) periodStart.getConvertedValue(),
-            (LocalDate) periodEnd.getConvertedValue(),
+            periodStart.getValue(),
+            periodEnd.getValue(),
             scannerCombo.getValue() == null ? null : ((ScannerRepresentation) scannerCombo.getValue()).getId(),
             textField.getValue(),
             isLogMode()
@@ -55,40 +54,36 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
    }
 
    @Override
-   protected List<Field> getFields() {
-      List<Field> fields = Arrays.asList(
-            periodStart = new ADateField(this.getClass(), "periodStart")
-                  .withRequired()
-                  .withConverter(new LocalDateConverter()),
-            periodEnd = new ADateField(this.getClass(), "periodEnd")
-                  .withRequired()
-                  .withConverter(new LocalDateConverter()),
+   protected List<HasValue<?>> getFields() {
+
+      List<HasValue<?>> fields = Arrays.asList(
+            periodStart = new ADateField(this.getClass(), "periodStart").withRequired(),
+            periodEnd = new ADateField(this.getClass(), "periodEnd").withRequired(),
             scannerCombo = scannerCombo(),
-            textField = new MTextField(messages.get(this, "keyNumber")),
-            activeKeysCheckBox = new MCheckBox(messages.get(this, "active"), true)
-                  .withValueChangeListener(value -> togglePeriodStartEnd())
+            textField = new ATextField(this.getClass(), "keyNumber"),
+            activeKeysCheckBox = new ACheckBox(this.getClass(), "active")
       );
 
-      activeKeysCheckBox.setImmediate(true);
+      activeKeysCheckBox.addValueChangeListener(value -> togglePeriodStartEnd());
+
       togglePeriodStartEnd();
       return fields;
    }
 
    private ComboBox scannerCombo() {
       ScannerRestRepository scannerRepo = App.context.getBean(ScannerRestRepository.class);
-      return new ComboBox(messages.get(this, "scanner"), scannerRepo.loadAll()) {
-         @Override
-         public String getItemCaption(Object itemId) {
-            ScannerRepresentation scanner = (ScannerRepresentation) itemId;
-            return messages.get(scanner, scanner.getName());
-         }
-      };
+      ComboBox<ScannerRepresentation> combo = new ComboBox<>(
+            messages.get(this, "scanner"),
+            scannerRepo.loadAll()
+      );
+      combo.setItemCaptionGenerator(item -> messages.get(item, item.getName()));
+      return combo;
    }
 
    @Override
    protected void setDefaultValues() {
-      periodStart.setConvertedValue(LocalDate.now().minusWeeks(1));
-      periodEnd.setValue(new Date());
+      periodStart.setValue(LocalDate.now().minusWeeks(1));
+      periodEnd.setValue(LocalDate.now());
    }
 
    @Override
@@ -100,7 +95,7 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
    }
 
    @Override
-   protected Field getFieldToFocus() {
+   protected AbstractField<?> getFieldToFocus() {
       return textField;
    }
 }

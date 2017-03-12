@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.ui.Field;
+import com.vaadin.data.HasValue;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,7 +18,7 @@ public final class HiddenFilterPanel<F> extends FilterPanel<F> {
    }
 
    @Override
-   protected List<Field> getFields() {
+   protected List<HasValue<?>> getFields() {
       return Collections.emptyList();
    }
 }

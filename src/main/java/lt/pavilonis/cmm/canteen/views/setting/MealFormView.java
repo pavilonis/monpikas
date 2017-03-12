@@ -1,55 +1,47 @@
 package lt.pavilonis.cmm.canteen.views.setting;
 
-import com.vaadin.data.util.converter.Converter;
-import com.vaadin.shared.ui.datefield.Resolution;
+import com.vaadin.shared.ui.datefield.DateTimeResolution;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.InlineDateField;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.InlineDateTimeField;
+import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.FormView;
-import lt.pavilonis.cmm.converter.LocalTimeToDateConverter;
-import org.vaadin.viritin.fields.MTextField;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import lt.pavilonis.cmm.common.field.ATextField;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
 
-import java.time.LocalTime;
-import java.util.Date;
 import java.util.Locale;
 
 public class MealFormView extends FormView<Meal> {
 
-   private static final Converter<Date, LocalTime> TIME_CONVERTER = new LocalTimeToDateConverter();
-   private final InlineDateField startTime = dateField("Periodo pradžia: ");
-   private final InlineDateField endTime = dateField("Periodo pabaiga: ");
+   //   private static final Converter<Date, LocalTime> TIME_CONVERTER = new LocalTimeToDateConverter();
+   private final InlineDateTimeField startTime = dateField("Periodo pradžia: ");
+   private final InlineDateTimeField endTime = dateField("Periodo pabaiga: ");
 
-   private final MTextField price = new MTextField("Kaina")
-         .withNullRepresentation("")
-         .withRequired(true);
-
-   private final MTextField name = new MTextField("Pavadinimas")
-         .withNullRepresentation("")
-         .withRequired(true);
+   private final TextField price = new ATextField(this.getClass(), "price").withRequired();
+   private final TextField name = new ATextField(this.getClass(), "name").withRequired();
 
    private final ComboBox type = new EnumComboBox<>(MealType.class)
          .withRequired(true);
 
    public MealFormView() {
 //      super(2, 3);
-      add(
-            new MHorizontalLayout(name, type).withMargin(false),
-            new MHorizontalLayout(startTime, endTime).withMargin(false),
+      addComponents(
+            new HorizontalLayout(name, type),
+            new HorizontalLayout(startTime, endTime),
             price
       );
    }
 
-   private InlineDateField dateField(String caption) {
-      InlineDateField dateField = new InlineDateField();
-      dateField.setResolution(Resolution.MINUTE);
-      dateField.setLocale(new Locale("lt", "LT"));
-      dateField.addStyleName("time-only");
-      dateField.setConverter(TIME_CONVERTER);
-      dateField.setCaption(caption);
-      dateField.setRequired(true);
-      return dateField;
+   private InlineDateTimeField dateField(String caption) {
+      InlineDateTimeField dateTimeField = new InlineDateTimeField();
+      dateTimeField.setResolution(DateTimeResolution.MINUTE);
+      dateTimeField.setLocale(new Locale("lt", "LT"));
+      dateTimeField.addStyleName("time-only");
+//      dateTimeField.setConverter(TIME_CONVERTER);
+      dateTimeField.setCaption(caption);
+      dateTimeField.setRequiredIndicatorVisible(true);
+      return dateTimeField;
    }
 }

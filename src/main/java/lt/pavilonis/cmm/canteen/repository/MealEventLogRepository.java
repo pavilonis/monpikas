@@ -16,6 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -54,14 +55,14 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
       );
    }
 
-   public List<MealEventLog> load(PupilType pupilType, Date periodStart, Date periodEnd) {
+   public List<MealEventLog> load(PupilType pupilType, LocalDate periodStart, LocalDate periodEnd) {
       return jdbc.query("" +
                   "SELECT * " +
                   "FROM MealEventLog " +
                   "WHERE pupilType = ? " +
                   "  AND `date` BETWEEN ? AND ?",
             MAPPER,
-            pupilType.name(), periodStart, periodEnd
+            pupilType.name(), periodStart.atTime(0, 0, 0), periodEnd.atTime(23, 59, 59)
       );
    }
 

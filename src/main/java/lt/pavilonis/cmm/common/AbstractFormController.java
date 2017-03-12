@@ -1,31 +1,28 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.Binder;
 import com.vaadin.data.Validator;
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.UserError;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.field.AButton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.BeanBinder;
-import org.vaadin.viritin.MBeanFieldGroup;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.fields.MTable;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-
 public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    private T model;
-   private MBeanFieldGroup<T> binding;
+   private final Binder<T> binder = new Binder<>();
    private Window window;
 
    @Autowired
@@ -34,11 +31,11 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
    protected T actionSave() {
       beforeSave(model);
 
-      if (!binding.isValid()) {
+      if (!binder.isValid()) {
          //TODO not visible!
          window.setComponentError(new UserError("Invalid field values"));
 //         Notification.show("Invalid field values", Notification.Type.WARNING_MESSAGE);
-         throw new Validator.InvalidValueException("Invalid field values");
+//         throw new Validator.InvalidValueException("Invalid field values");
       }
 
       EntityRepository<T, ID, ?> entityRepository = getEntityRepository();
@@ -52,26 +49,26 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
    }
 
    private Component createControlLayout(Consumer<T> persistedEntityConsumer) {
-      return new MHorizontalLayout(
-            new MButton(
-                  FontAwesome.CHECK,
-                  getMessageSource().get(AbstractFormController.class, "buttonSave"),
-                  click -> {
-                     T entity = actionSave();
-                     persistedEntityConsumer.accept(entity);
-                     actionClose();
-                     Notification.show(getMessageSource().get(AbstractFormController.class, "saved"), Type.TRAY_NOTIFICATION);
-                  }
-            ),
-            new MButton(
-                  FontAwesome.REMOVE,
-                  getMessageSource().get(AbstractFormController.class, "buttonClose"),
-                  click -> actionClose()
-            )
+      return new HorizontalLayout(
+            new AButton(AbstractFormController.class.getSimpleName() + ".buttonSave")
+                  .withIcon(VaadinIcons.CHECK)
+                  .withClickListener(click -> {
+                           T entity = actionSave();
+                           persistedEntityConsumer.accept(entity);
+                           actionClose();
+                           Notification.show(
+                                 getMessageSource().get(AbstractFormController.class, "saved"),
+                                 Type.TRAY_NOTIFICATION
+                           );
+                        }
+                  ),
+            new AButton(AbstractFormController.class.getSimpleName() + ".buttonClose")
+                  .withIcon(VaadinIcons.FILE_REMOVE)
+                  .withClickListener(click -> actionClose())
       );
    }
 
-   protected void edit(T entity, MTable<T> listTable) {
+   protected void edit(T entity, ListGrid<T> listGrid) {
 
       ID id = entity.getId();
       T editEntity;
@@ -85,11 +82,11 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
       Consumer<T> persistedEntityConsumer = persistedEntity -> {
          if (entity.getId() != null) {
-            listTable.getContainerDataSource().removeItem(entity);
+            listGrid.removeItem(entity);
          }
-         listTable.addItem(persistedEntity);
-         listTable.sort();
-         listTable.select(persistedEntity);
+         listGrid.addItem(persistedEntity);
+//         listGrid.sort();
+         listGrid.select(persistedEntity);
       };
 
       FormView<T> formView = createFormView();
@@ -97,19 +94,21 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
       window = new Window(
             formView.getFormCaption(),
-            new MVerticalLayout(formView, controlLayout)
+            new VerticalLayout(formView, controlLayout)
       );
 
-      this.model = editEntity;
-      this.binding = BeanBinder.bind(model, formView);
 
-      formView.manualBinding(binding);
+      model = editEntity;
+      binder.setBean(model);
+      binder.bindInstanceFields(formView);
+
+      formView.manualBinding(binder);
       formView.initCustomFieldValues(model);
 
       customizeWindow(window);
 
-      getValidators()
-            .forEach(binding::addValidator);
+//      getValidators()
+//            .forEach(binder::addValidator);
 
       window.center();
       window.setModal(true);
@@ -121,7 +120,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       return messages;
    }
 
-   protected Collection<MBeanFieldGroup.MValidator<T>> getValidators() {
+   protected Collection<Validator<T>> getValidators() {
       return Collections.emptyList();
    }
 

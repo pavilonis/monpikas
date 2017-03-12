@@ -1,23 +1,24 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
-import lt.pavilonis.cmm.MessageSourceAdapter;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import lt.pavilonis.cmm.common.field.AButton;
 
-public class ControlPanel extends MHorizontalLayout {
+public class ControlPanel extends HorizontalLayout {
 
-   public ControlPanel(MessageSourceAdapter messages,
-                       Button.ClickListener actionCreate,
-                       Button.ClickListener actionDelete) {
+   public ControlPanel(Button.ClickListener actionCreate, Button.ClickListener actionDelete) {
 
-      MButton buttonCreate = new MButton(FontAwesome.PLUS, messages.get(this, "buttonCreate"), actionCreate);
-      MButton buttonDelete = new MButton(FontAwesome.WARNING, messages.get(this, "buttonDelete"), actionDelete)
+      Button buttonCreate = new AButton(this, "buttonCreate")
+            .withIcon(VaadinIcons.PLUS)
+            .withClickListener(actionCreate);
+
+      Button buttonDelete = new AButton(this, "buttonDelete")
+            .withIcon(VaadinIcons.WARNING)
+            .withClickListener(actionDelete)
             .withStyleName("redicon");
 
-      this.add(buttonCreate, buttonDelete);
-
+      this.addComponents(buttonCreate, buttonDelete);
       this.setMargin(false);
    }
 }

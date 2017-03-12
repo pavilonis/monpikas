@@ -1,0 +1,111 @@
+package lt.pavilonis.cmm.common;
+
+import com.vaadin.ui.Grid;
+import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.MessageSourceAdapter;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+public class ListGrid<T> extends Grid<T> {
+
+   protected final MessageSourceAdapter messageSource = App.context.getBean(MessageSourceAdapter.class);
+   private Collection<T> items;
+
+   public ListGrid(Class<T> type) {
+//      super(type);
+
+      List<String> properties = getProperties(type);
+      addCustomColumns();
+      addColumns(properties);
+
+      String[] headers = properties.stream()
+            .map(property -> messageSource.get(type, property))
+            .toArray(String[]::new);
+
+      setHeaders(headers);
+
+      setColumnOrder(properties.toArray(new String[properties.size()]));
+
+      defaultConfiguration();
+      customize();
+   }
+
+   protected List<String> getProperties(Class<T> type) {
+      return PropertyCollector.collect(type);
+   }
+
+   protected void customize() {/*hook*/}
+
+   private void defaultConfiguration() {
+//      collap(true);
+      setColumnReorderingAllowed(true);
+//      setSelectable(true);
+//      setNullSelectionAllowed(false);
+//      setCacheRate(5);
+      setSizeFull();
+   }
+
+   protected List<String> columnsToCollapse() {
+      return Collections.emptyList();
+   }
+
+   public void collapseColumns() {
+//      columnsToCollapse().forEach(
+//            columnId -> setColumnCollapsed(columnId, true)
+//      );
+   }
+
+   @Override
+   public void setItems(Collection<T> items) {
+      this.items = items;
+      super.setItems(items);
+   }
+
+   public void removeItem(T item) {
+      this.items.remove(item);
+//      setItems(this.items);
+   }
+
+   public void addItem(T item) {
+      this.items.add(item);
+//      setItems(this.items);
+      getDataProvider().refreshAll();
+   }
+
+   protected void addCustomColumns() {
+   }
+
+   public void addColumns(List<String> properties) {
+
+      List<String> existingColumns = getColumns().stream()
+            .map(Column::getId)
+            .collect(Collectors.toList());
+
+      properties.stream()
+            .filter(property -> !existingColumns.contains(property))
+            .forEach(this::addColumn);
+   }
+
+   public void addColumns(String... properties) {
+      addColumns(Arrays.asList(properties));
+   }
+
+   public void setHeaders(String... headers) {
+      List<Column<T, ?>> columns = getColumns();
+      if (headers.length != columns.size()) {
+         throw new IllegalArgumentException("Number of headers must match number or columns");
+      }
+
+      for (int i = 0; i < columns.size(); i++) {
+         columns.get(i).setCaption(headers[i]);
+      }
+   }
+
+   public boolean hasItem(T item) {
+      return this.items.contains(item);
+   }
+}

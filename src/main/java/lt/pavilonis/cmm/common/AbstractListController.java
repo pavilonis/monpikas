@@ -2,26 +2,27 @@ package lt.pavilonis.cmm.common;
 
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
-import org.vaadin.viritin.fields.MTable;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Set;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
 public abstract class AbstractListController<T extends Identifiable<ID>, ID, FILTER> extends AbstractViewController {
 
-   ListTable<T> table;
-   FilterPanel<FILTER> filterPanel;
+   protected ListGrid<T> grid;
+   protected FilterPanel<FILTER> filterPanel;
 
    @Override
    protected Component getMainArea() {
-      table = createTable();
-      table.setSizeFull();
+      grid = createGrid();
+      grid.setSizeFull();
 
-      addTableClickListener(table);
-      loadTableData(table);
-      return table;
+      addTableClickListener(grid);
+      loadTableData(grid);
+      return grid;
    }
 
    @Override
@@ -30,12 +31,12 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       filterPanel = createFilterPanel();
 
       filterPanel.addSearchClickListener(click -> {
-         loadTableData(table);
+         loadTableData(grid);
       });
 
       filterPanel.addResetClickListener(click -> {
          filterPanel.fieldReset();
-         loadTableData(table);
+         loadTableData(grid);
       });
 
       return filterPanel;
@@ -47,41 +48,37 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
    }
 
    protected Component getControlPanel() {
-      return new ControlPanel(
-            messageSource,
-            click -> actionCreate(),
-            click -> actionDelete()
-      );
+      return new ControlPanel(click -> actionCreate(), click -> actionDelete());
    }
 
-   private void loadTableData(ListTable<T> table) {
+   private void loadTableData(ListGrid<T> table) {
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
 
       List<T> beans = repository.loadAll(filter);
-      table.setBeans(beans);
+      table.setItems(beans);
       table.collapseColumns();
-      table.sort();
+//      grid.sort();
    }
 
-   protected void addTableClickListener(MTable<T> table) {
+   protected void addTableClickListener(ListGrid<T> table) {
 
       AbstractFormController<T, ID> formController = getFormController();
 
       if (formController != null) {
-         table.addRowClickListener(click -> {
-            if (click.isDoubleClick()) {
-               formController.edit(click.getRow(), table);
+         table.addItemClickListener(click -> {
+            if (click.getMouseEventDetails().isDoubleClick()) {
+               formController.edit(click.getItem(), table);
             }
          });
       }
    }
 
-   protected abstract ListTable<T> createTable();
+   protected abstract ListGrid<T> createGrid();
 
    protected void actionCreate() {
       T entity = createNewInstance();
-      getFormController().edit(entity, table);
+      getFormController().edit(entity, grid);
    }
 
    protected T createNewInstance() {
@@ -94,13 +91,15 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
    //TODO translate
    protected void actionDelete() {
-      T selected = table.getValue();
-      if (selected == null) {
+      Set<T> selected = grid.getSelectedItems();
+      if (CollectionUtils.isEmpty(selected)) {
          Notification.show("Niekas nepasirinkta", WARNING_MESSAGE);
       } else {
-         getEntityRepository().delete(selected.getId());
-         table.removeItem(selected);
-         table.select(null);
+         selected.forEach(item -> {
+            getEntityRepository().delete(item.getId());
+            grid.removeItem(item);
+         });
+         grid.deselectAll();
          Notification.show("Įrašas pašalintas", TRAY_NOTIFICATION);
       }
    }

@@ -9,9 +9,8 @@ import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTable;
 
 import java.util.Date;
 
@@ -52,7 +51,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
 //   }
 //
 //   private void saveAction(MealEventManualCreateForm form) {
-//      String cardCode = (String) form.createTable().getValue();
+//      String cardCode = (String) form.createGrid().getValue();
 //      MealType type = form.getEventType();
 //      if (valid(cardCode, form.getDate(), type)) {
 //         UserMeal userMeal = pupilService.load(cardCode).get();
@@ -86,11 +85,11 @@ public class MealEventListController extends AbstractListController<MealEventLog
 //   }
 
    @Override
-   protected void addTableClickListener(MTable<MealEventLog> table) {/*do nothing*/}
+   protected void addTableClickListener(ListGrid<MealEventLog> table) {/*do nothing*/}
 
    @Override
-   protected ListTable<MealEventLog> createTable() {
-      return new MealEventTable();
+   protected ListGrid<MealEventLog> createGrid() {
+      return new MealEventGrid();
    }
 
    @Override

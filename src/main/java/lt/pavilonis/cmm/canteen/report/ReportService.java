@@ -12,9 +12,8 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.text.Format;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -28,14 +27,14 @@ public class ReportService {
    @Autowired
    private MessageSourceAdapter messages;
 
-   private static final Format DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private static final Logger LOG = getLogger(UserMealService.class);
 
-   public ByteArrayOutputStream generate(Date periodStart, Date periodEnd, PupilType pupilType) {
+   public ByteArrayOutputStream generate(LocalDate periodStart, LocalDate periodEnd, PupilType pupilType) {
 
       List<MealEventLog> events = mealEventLogRepository.load(pupilType, periodStart, periodEnd);
 
-      String reportPeriod = DATE_FORMAT.format(periodStart) + "  -  " + DATE_FORMAT.format(periodEnd);
+      String reportPeriod = DateTimeFormatter.ISO_DATE.format(periodStart) +
+            "  -  " + DateTimeFormatter.ISO_DATE.format(periodEnd);
 
       HSSFWorkbook wb = new Report(messages, reportPeriod, events)
             .create(pupilType);

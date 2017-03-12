@@ -1,47 +1,47 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
+import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import org.vaadin.viritin.MSize;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
-import org.vaadin.viritin.layouts.MWindow;
+import lt.pavilonis.cmm.common.component.TableControlPanel;
+import lt.pavilonis.cmm.common.field.AButton;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 
-public class UserMealSelectionPopup extends MWindow {
+public class UserMealSelectionPopup extends Window {
 
-   public UserMealSelectionPopup(List<Meal> mealsToSelectFrom,
-                                 Consumer<Meal> selectionConsumer,
-                                 MessageSourceAdapter messages) {
+   public UserMealSelectionPopup(List<Meal> mealsToSelectFrom, Consumer<Set<Meal>> selectionConsumer) {
 
+      MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
       setCaption(messages.get(this, "caption"));
-      withSize(MSize.size("700px", "490px"));
 
-      MealTable selectionTable = new MealTable(mealsToSelectFrom);
-      selectionTable.collapseColumns();
-      selectionTable.addRowClickListener(click -> {
-         if (click.isDoubleClick()) {
-            selectAction(selectionConsumer, click.getRow());
-         }
-      });
+      setWidth(700, Unit.PIXELS);
+      setHeight(490, Unit.PIXELS);
 
-      MHorizontalLayout controls = new MHorizontalLayout(
-            new MButton(
-                  FontAwesome.PLUS,
-                  "Pridėti pasirinktą",
-                  click -> selectAction(selectionConsumer, selectionTable.getValue())
-            ),
-            new MButton(FontAwesome.TIMES, "Uždaryti", click -> close())
+      MealGrid grid = new MealGrid(mealsToSelectFrom);
+      grid.collapseColumns();
+      grid.addSelectionListener(click -> selectAction(selectionConsumer, click.getAllSelectedItems()));
+
+      HorizontalLayout controls = new HorizontalLayout(
+            new AButton(TableControlPanel.class.getSimpleName() + ".addSelected")
+                  .withIcon(VaadinIcons.PLUS)
+                  .withClickListener(click -> selectAction(selectionConsumer, grid.getSelectedItems())),
+            new AButton("Uždaryti")
+                  .withIcon(VaadinIcons.CLOSE)
+                  .withClickListener(click -> close())
       );
 
-      MVerticalLayout layout = new MVerticalLayout(selectionTable, controls)
-            .withSize(MSize.FULL_SIZE)
-            .expand(selectionTable);
+      VerticalLayout layout = new VerticalLayout(grid, controls);
+      layout.setSizeFull();
+      layout.setExpandRatio(grid, 1);
 
       setContent(layout);
       setModal(true);
@@ -49,8 +49,8 @@ public class UserMealSelectionPopup extends MWindow {
       UI.getCurrent().addWindow(this);
    }
 
-   protected void selectAction(Consumer<Meal> mealSelectionConsumer, Meal selectedValue) {
-      if (selectedValue != null) {
+   protected void selectAction(Consumer<Set<Meal>> mealSelectionConsumer, Set<Meal> selectedValue) {
+      if (CollectionUtils.isNotEmpty(selectedValue)) {
          mealSelectionConsumer.accept(selectedValue);
       }
       close();

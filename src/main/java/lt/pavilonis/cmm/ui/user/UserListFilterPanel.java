@@ -1,14 +1,13 @@
 package lt.pavilonis.cmm.ui.user;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.repository.UserRestRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.fields.MTextField;
+import lt.pavilonis.cmm.common.field.ATextField;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,9 +30,9 @@ class UserListFilterPanel extends FilterPanel<UserFilter> {
    }
 
    @Override
-   protected List<Field> getFields() {
-      List<Field> fields = Arrays.asList(
-            textField = new MTextField(messages.get(this, "firstLastName")),
+   protected List<HasValue<?>> getFields() {
+      List<HasValue<?>> fields = Arrays.asList(
+            textField = new ATextField(this.getClass(), "firstLastName"),
             groupCombo = new ComboBox(messages.get(this, "group")),
             roleCombo = new ComboBox(messages.get(this, "role"))
       );
@@ -43,7 +42,7 @@ class UserListFilterPanel extends FilterPanel<UserFilter> {
    }
 
    @Override
-   protected Field getFieldToFocus() {
+   protected AbstractField<?> getFieldToFocus() {
       return textField;
    }
 }

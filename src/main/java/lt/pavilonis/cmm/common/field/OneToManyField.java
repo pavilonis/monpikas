@@ -5,15 +5,14 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.TableControlPanel;
 import lt.pavilonis.cmm.repository.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
-import org.vaadin.viritin.MSize;
-import org.vaadin.viritin.layouts.MVerticalLayout;
-import org.vaadin.viritin.layouts.MWindow;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -23,7 +22,7 @@ import java.util.function.Consumer;
 
 public class OneToManyField<T> extends CustomField<List> {
 
-   private final ListTable<T> table;
+   private final ListGrid<T> table;
    private final List<T> value = new ArrayList<>();
    private final Class<T> type;
 
@@ -41,8 +40,8 @@ public class OneToManyField<T> extends CustomField<List> {
 
    }
 
-   protected ListTable<T> createTable(Class<T> type) {
-      ListTable<T> table = new ListTable<>(type);
+   protected ListGrid<T> createTable(Class<T> type) {
+      ListGrid<T> table = new ListGrid<>(type);
       setWidth(550, Unit.PIXELS);
       setHeight(350, Unit.PIXELS);
       return table;
@@ -51,20 +50,18 @@ public class OneToManyField<T> extends CustomField<List> {
 
    @Override
    protected Component initContent() {
-      return new MVerticalLayout(
-            table,
-            new TableControlPanel(
-                  eventAdd -> actionAdd(),
-                  eventRemove -> actionRemove()
-            )
-      ).withMargin(false);
+      TableControlPanel controls = new TableControlPanel(
+            eventAdd -> actionAdd(),
+            eventRemove -> actionRemove()
+      );
+      return new VerticalLayout(table, controls);
    }
 
    private void actionAdd() {
       Consumer<Set<T>> selectionConsumer = items -> {
          boolean duplicatesFound = false;
          for (T item : items) {
-            if (value.contains(items)) {
+            if (value.contains(item)) {
                duplicatesFound = true;
             } else {
                value.add(item);
@@ -98,14 +95,15 @@ public class OneToManyField<T> extends CustomField<List> {
       return value;
    }
 
-   private class SelectionPopup extends MWindow {
+   private class SelectionPopup extends Window {
 
       private SelectionPopup(Consumer<Set<T>> selectionConsumer) {
 
          setCaption(App.translate(SelectionPopup.class, "caption"));
-         withSize(MSize.size("700px", "490px"));
+         setWidth(700, Unit.PIXELS);
+         setHeight(490, Unit.PIXELS);
 
-         ListTable<T> selectionTable = new ListTable<>(type);
+         ListGrid<T> selectionTable = new ListGrid<>(type);
          selectionTable.setDataProvider(
                (sortOrder, offset, limit) -> getSelectionElements().stream(),
                () -> getSelectionElements().size()
@@ -116,18 +114,15 @@ public class OneToManyField<T> extends CustomField<List> {
             }
          });
 
-         setContent(
-               new MVerticalLayout(
-                     selectionTable,
-                     new TableControlPanel(
-                           "addSelected", "close",
-                           click -> selectAction(selectionConsumer, selectionTable.getSelectedItems()),
-                           click -> close()
-                     )
-               )
-                     .withSize(MSize.FULL_SIZE)
-                     .expand(selectionTable)
+         TableControlPanel controls = new TableControlPanel(
+               "addSelected", "close",
+               click -> selectAction(selectionConsumer, selectionTable.getSelectedItems()),
+               click -> close()
          );
+         VerticalLayout layout = new VerticalLayout(selectionTable, controls);
+         layout.setSizeFull();
+         layout.setExpandRatio(selectionTable, 1f);
+         setContent(layout);
          setModal(true);
 
          UI.getCurrent().addWindow(this);

@@ -1,14 +1,16 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.DateField;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.field.ADateField;
-import org.joda.time.LocalDateTime;
+import lt.pavilonis.cmm.common.field.ATextField;
 
+import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,26 +32,23 @@ public class MealEventFilterPanel extends FilterPanel<MealEventFilter> {
    }
 
    @Override
-   protected List<Field> getFields() {
+   protected List<HasValue<?>> getFields() {
       return Arrays.asList(
-            periodStart = new ADateField(getClass(), "periodStart").withRequired(true),
+            periodStart = new ADateField(getClass(), "periodStart").withRequired(),
             periodEnd = new ADateField(getClass(), "periodEnd"),
-            textField = new TextField(messages.get(this, "name"))
+            textField = new ATextField(this.getClass(), "name")
       );
    }
 
    @Override
    protected void setDefaultValues() {
       periodStart.setValue(
-            LocalDateTime.now()
-                  .minusWeeks(2)
-                  .withTime(0, 0, 0, 0)
-                  .toDate()
+            LocalDate.now().minusWeeks(2)
       );
    }
 
    @Override
-   protected Field getFieldToFocus() {
+   protected AbstractField<?> getFieldToFocus() {
       return textField;
    }
 }

@@ -9,7 +9,7 @@ public final class KeyFilter {
    private final String text;
    private final boolean logMode;
 
-   public KeyFilter(LocalDate periodStart, LocalDate periodEnd, Long scannerId, String text, boolean logMode) {
+   KeyFilter(LocalDate periodStart, LocalDate periodEnd, Long scannerId, String text, boolean logMode) {
       this.periodStart = periodStart;
       this.periodEnd = periodEnd;
       this.scannerId = scannerId;

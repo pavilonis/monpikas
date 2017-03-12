@@ -1,10 +1,11 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
+import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
+import com.vaadin.data.ValueContext;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Notification;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
@@ -14,14 +15,14 @@ import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FormView;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.MBeanFieldGroup;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
+import java.util.Set;
 
 @UIScope
 @SpringComponent
@@ -42,10 +43,15 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected void beforeSave(MealEventLog model) {
-      UserMeal value = formView.getTableValue();
-      if (value != null && model.getMealType() != null) {
+      Set<UserMeal> value = formView.getGridSelection();
 
-         Meal meal = value.getMealData()
+      if (CollectionUtils.isNotEmpty(value)
+            && value.size() == 1
+            && model.getMealType() != null) {
+
+         UserMeal selectedUserMeal = value.iterator().next();
+
+         Meal meal = selectedUserMeal.getMealData()
                .getMeals()
                .stream()
                .filter(portion -> portion.getType() == model.getMealType())
@@ -53,10 +59,10 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
                .orElseThrow(() -> new RuntimeException("User does not have required meal assigned"));
 
          model.setDate(correctMealEventTime(model.getDate(), meal));
-         model.setName(value.getUser().getName());
-         model.setCardCode(value.getUser().getCardCode());
-         model.setGrade(value.getUser().getGroup());
-         model.setPupilType(value.getMealData().getType());
+         model.setName(selectedUserMeal.getUser().getName());
+         model.setCardCode(selectedUserMeal.getUser().getCardCode());
+         model.setGrade(selectedUserMeal.getUser().getGroup());
+         model.setPupilType(selectedUserMeal.getMealData().getType());
          model.setPrice(meal.getPrice());
       }
    }
@@ -69,29 +75,36 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
    }
 
    @Override
-   protected Collection<MBeanFieldGroup.MValidator<MealEventLog>> getValidators() {
-      return Collections.singletonList(value -> {
-         //TODO add validation error component in abstract form
-         try {
-            tmpMethod(value);
-         } catch (Validator.InvalidValueException e) {
-            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-            throw e;
+   protected Collection<Validator<MealEventLog>> getValidators() {
+      Validator<MealEventLog> validator = new Validator<MealEventLog>() {
+         @Override
+         public ValidationResult apply(MealEventLog value, ValueContext context) {
+            return ValidationResult.ok();
          }
-      });
+      };
+//      return Collections.singletonList(value -> {
+//         //TODO add validation error component in abstract form
+//         try {
+//            tmpMethod(value);
+//         } catch (Validator.InvalidValueException e) {
+//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
+//            throw e;
+//         }
+//      });
+      return Arrays.asList(validator);
    }
 
-   private void tmpMethod(MealEventLog value) {
-      if (StringUtils.isBlank(value.getCardCode())) {
-         throw new Validator.InvalidValueException("Nepasirinktas mokinys");
-      } else if (value.getDate() == null) {
-         throw new Validator.InvalidValueException("Nenurodyta data");
-      } else if (!mealService.portionAssigned(value.getCardCode(), value.getMealType())) {
-         throw new Validator.InvalidValueException("Mokinys neturi leidimo šio tipo maitinimuisi");
-      } else if (!mealService.canHaveMeal(value.getCardCode(), value.getDate(), value.getMealType())) {
-         throw new Validator.InvalidValueException("Viršijamas nurodytos dienos maitinimosi limitas");
-      }
-   }
+//   private void tmpMethod(MealEventLog value) {
+//      if (StringUtils.isBlank(value.getCardCode())) {
+//         throw new Validator.InvalidValueException("Nepasirinktas mokinys");
+//      } else if (value.getDate() == null) {
+//         throw new Validator.InvalidValueException("Nenurodyta data");
+//      } else if (!mealService.portionAssigned(value.getCardCode(), value.getMealType())) {
+//         throw new Validator.InvalidValueException("Mokinys neturi leidimo šio tipo maitinimuisi");
+//      } else if (!mealService.canHaveMeal(value.getCardCode(), value.getDate(), value.getMealType())) {
+//         throw new Validator.InvalidValueException("Viršijamas nurodytos dienos maitinimosi limitas");
+//      }
+//   }
 
    @Override
    protected EntityRepository<MealEventLog, Long, ?> getEntityRepository() {

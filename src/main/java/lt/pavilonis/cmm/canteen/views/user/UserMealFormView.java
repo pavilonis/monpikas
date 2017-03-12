@@ -1,31 +1,31 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
+import com.vaadin.data.Binder;
 import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Image;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealRepository;
-import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
-import lt.pavilonis.cmm.common.component.TableControlPanel;
 import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.component.TableControlPanel;
+import lt.pavilonis.cmm.common.field.ATextArea;
+import lt.pavilonis.cmm.common.field.ATextField;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.users.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.MBeanFieldGroup;
-import org.vaadin.viritin.MSize;
-import org.vaadin.viritin.fields.MTextArea;
-import org.vaadin.viritin.fields.MTextField;
-import org.vaadin.viritin.layouts.MCssLayout;
-import org.vaadin.viritin.layouts.MGridLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -34,66 +34,57 @@ import java.util.stream.Stream;
 @SpringComponent
 public class UserMealFormView extends FormView<UserMeal> {
 
-   private final MTextField name = new MTextField();
-   private final MTextField birthDate = new MTextField();
-   private final MCssLayout photoLayout = new MCssLayout();
-   private final MTextArea comment = new MTextArea().withNullRepresentation("").withRows(1);
+   private final ATextField name = new ATextField(this.getClass(), "name");
+   private final ATextField birthDate = new ATextField(this.getClass(), "birthDate");
+   private final CssLayout photoLayout = new CssLayout();
+   private final TextArea comment = new ATextArea(this.getClass() + ".comment");
    private final EnumComboBox<PupilType> type = new EnumComboBox<>(PupilType.class).withRequired(true);
-   private final MealTable mealTable;
+   private final MealGrid mealTable;
 
    @Autowired
    private ImageService imageService;
 
    @Autowired
-   public UserMealFormView(MealRepository mealRepository, MessageSourceAdapter messages) {
-
-      name.setCaption(messages.get(this, "name"));
-      birthDate.setCaption(messages.get(this, "birthDate"));
+   public UserMealFormView(MealRepository mealRepository) {
 
       //TODO make this as many to many custom field
-      mealTable = new MealTable(Collections.<Meal>emptyList());
-      comment.setCaption(messages.get(this, "comment"));
+      mealTable = new MealGrid(Collections.<Meal>emptyList());
 
-      withSize(MSize.size("774px", "460px"));
-      mealTable.withSize(MSize.size("512px", "250px"));
+      setWidth(774, Unit.PIXELS);
+      setHeight(460, Unit.PIXELS);
+      mealTable.setWidth(512, Unit.PIXELS);
+      mealTable.setHeight(250, Unit.PIXELS);
 
-      Stream.of(name, birthDate, type)
-            .forEach(field -> field.setWidth("250px"));
+      Stream.of(name, birthDate, type).forEach(field -> field.setWidth("250px"));
+      Stream.of(name, birthDate).forEach(field -> field.setEnabled(false));
 
-      Stream.of(name, birthDate)
-            .forEach(field -> field.setEnabled(false));
-
-      Consumer<Meal> mealSelectionConsumer = meal -> {
-         if (!mealTable.containsId(meal)) {
-            mealTable.addBeans(meal);
-         }
-      };
+      Consumer<Set<Meal>> mealSelectionConsumer = meals -> meals.stream()
+            .filter(meal -> !mealTable.hasItem(meal))
+            .forEach(mealTable::addItem);
 
       TableControlPanel controls = new TableControlPanel(
             click -> new UserMealSelectionPopup(
                   mealRepository.loadAll(new MealFilter()),
-                  mealSelectionConsumer,
-                  messages
-            ),
+                  mealSelectionConsumer),
             click -> {
-               Meal selected = mealTable.getValue();
-               mealTable.getContainerDataSource().removeItem(selected);
+               Set<Meal> selected = mealTable.getSelectedItems();
+               selected.forEach(mealTable::removeItem);
             }
       );
 
-      MGridLayout grid = new MGridLayout(3, 3)
-            .withMargin(false)
-            .withDefaultComponentAlignment(Alignment.TOP_LEFT);
-      grid.add(name, birthDate, type);
-      grid.addComponent(new MVerticalLayout(mealTable, controls).withMargin(false), 0, 1, 1, 1);
+      GridLayout grid = new GridLayout(3, 3);
+
+      grid.addComponents(name, birthDate, type);
+      grid.addComponent(new VerticalLayout(mealTable, controls), 0, 1, 1, 1);
       grid.addComponent(photoLayout, 2, 1);
       grid.addComponent(comment, 0, 2, 2, 2);
+      grid.setDefaultComponentAlignment(Alignment.TOP_LEFT);
 
-      add(grid);
+      addComponent(grid);
    }
 
    @Override
-   public void manualBinding(MBeanFieldGroup<UserMeal> binding) {
+   public void manualBinding(Binder<UserMeal> binding) {
       binding.bind(type, "mealData.type");
       binding.bind(comment, "mealData.comment");
    }
@@ -102,8 +93,7 @@ public class UserMealFormView extends FormView<UserMeal> {
    public void initCustomFieldValues(UserMeal entity) {
       name.setValue(entity.getUser().getName());
       birthDate.setValue(entity.getUser().getBirthDate());
-      mealTable.removeAllItems();
-      mealTable.addBeans(entity.getMealData().getMeals());
+      mealTable.setItems(entity.getMealData().getMeals());
       mealTable.collapseColumns();
       updateImage(entity.getUser().getBase16photo());
    }
@@ -119,6 +109,6 @@ public class UserMealFormView extends FormView<UserMeal> {
 
    @SuppressWarnings("unchecked")
    List<Meal> getMealTableValue() {
-      return (List<Meal>) mealTable.getItemIds();
+      return (List<Meal>) mealTable.getSelectedItems();
    }
 }

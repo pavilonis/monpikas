@@ -2,8 +2,7 @@ package lt.pavilonis.cmm.ui.user;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import lt.pavilonis.cmm.MessageSourceAdapter;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.ui.user.form.UserEditWindow;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,17 +13,16 @@ import java.util.List;
 
 @SpringComponent
 @UIScope
-class UserTable extends ListTable<UserRepresentation> {
+class UserGrid extends ListGrid<UserRepresentation> {
 
    @Autowired
-   public UserTable(UserEditWindow editPopup) {
+   public UserGrid(UserEditWindow editPopup) {
       super(UserRepresentation.class);
 
-      addRowClickListener(click -> {
-         if (click.isDoubleClick()) {
-            editPopup.edit(click.getRow());
-         }
-      });
+      addSelectionListener(event ->
+                  event.getFirstSelectedItem()
+                        .ifPresent(editPopup::edit)
+      );
    }
 
    @Override
@@ -33,8 +31,8 @@ class UserTable extends ListTable<UserRepresentation> {
    }
 
    @Override
-   protected void customize(MessageSourceAdapter messageSource) {
-      setSortContainerPropertyId("lastName");
+   protected void customize() {
+      sort("lastName");
    }
 
    @Override

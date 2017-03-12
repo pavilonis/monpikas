@@ -1,14 +1,15 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
+import com.vaadin.data.HasValue;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.CheckBox;
-import com.vaadin.ui.Field;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.MealType;
-import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.FilterPanel;
-import org.vaadin.viritin.fields.MCheckBox;
+import lt.pavilonis.cmm.common.field.ACheckBox;
+import lt.pavilonis.cmm.common.field.EnumComboBox;
 
 import java.util.Arrays;
 import java.util.List;
@@ -22,15 +23,14 @@ public class UserMealListFilterPanel extends FilterPanel<UserMealFilter> {
    private CheckBox withMealAssigned;
 
    @Override
-   protected List<Field> getFields() {
+   protected List<HasValue<?>> getFields() {
       // TODO not filtering now - need fix
       mealTypeComboBox = new EnumComboBox<>(MealType.class);
-      List<Field> fields = Arrays.asList(
+      List<HasValue<?>> fields = Arrays.asList(
             textField = new TextField(messages.get(this, "name")),
-            withMealAssigned = new MCheckBox(messages.get(this, "withMealAssigned"), true)
+            withMealAssigned = new ACheckBox(this.getClass(), "withMealAssigned").withValue(true)
       );
-      mealTypeComboBox.setValue(null);
-      textField.setImmediate(true);
+      mealTypeComboBox.clear();
       return fields;
    }
 
@@ -44,7 +44,7 @@ public class UserMealListFilterPanel extends FilterPanel<UserMealFilter> {
    }
 
    @Override
-   protected Field getFieldToFocus() {
+   protected AbstractField<?> getFieldToFocus() {
       return textField;
    }
 }

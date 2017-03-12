@@ -1,33 +1,32 @@
 package lt.pavilonis.cmm.ui.user.form;
 
-import com.vaadin.server.FontAwesome;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TabSheet;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
 import lt.pavilonis.cmm.ui.VaadinUI;
 import lt.pavilonis.cmm.users.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.MSize;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
-import org.vaadin.viritin.layouts.MWindow;
 
 import java.util.function.Consumer;
 
 @SpringComponent
 @UIScope
-public class UserEditWindow extends MWindow {
+public class UserEditWindow extends Window {
 
-   private final Button saveButton;
+   private final Button saveButton = new AButton(this, "save").withIcon(VaadinIcons.CHECK);
    private final TabSheet sheet = new TabSheet();
    private Runnable postSaveUpdateAction = () -> {/**/};
-   private MessageSourceAdapter messages;
 
    @Autowired
    private UserRestRepository userRepository;
@@ -36,27 +35,25 @@ public class UserEditWindow extends MWindow {
    private ImageService imageService;
 
    @Autowired
-   public UserEditWindow(MessageSourceAdapter messages) {
-      this.messages = messages;
-      setCaption(messages.get(this, "title"));
-      saveButton = new Button(messages.get(this, "save"), FontAwesome.CHECK);
+   public UserEditWindow() {
+      setCaption(App.translate(this, "title"));
       setResizable(false);
 
-      withSize(MSize.size(650, Unit.PIXELS, 590, Unit.PIXELS));
+      setWidth(650, Unit.PIXELS);
+      setHeight(590, Unit.PIXELS);
 
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 
       setModal(true);
-      setContent(new MVerticalLayout(
-            sheet,
-            new MHorizontalLayout(
-                  saveButton,
-                  new MButton(FontAwesome.REMOVE,
-                        messages.get(this, "close"),
-                        (click) -> close())
-            ).withSpacing(true)
-      ));
+      HorizontalLayout controls = new HorizontalLayout(
+            saveButton,
+            new AButton(this.getClass(), "close")
+                  .withIcon(VaadinIcons.FILE_REMOVE)
+                  .withClickListener(click -> close())
+      );
+      controls.setSpacing(true);
+      setContent(new VerticalLayout(sheet, controls));
    }
 
    public void edit(UserRepresentation user) {
@@ -72,21 +69,14 @@ public class UserEditWindow extends MWindow {
       user = userRepository.load(user.getCardCode())
             .orElseThrow(() -> new RuntimeException("User not found"));
 
-      sheet.addTab(
-            new UserEditWindowPresenceTimeTabTable(userRepository, user.getCardCode()),
-            messages.get(this, "hoursOfPresence")
-      );
+      UserEditWindowPresenceTimeTabGrid tab1 =
+            new UserEditWindowPresenceTimeTabGrid(userRepository, user.getCardCode());
+      sheet.addTab(tab1, App.translate(this, "hoursOfPresence"));
 
-      sheet.addTab(
-            new UserEditWindowDetailsTab(
-                  user,
-                  imageService.imageResource(user.getBase16photo()),
-                  updateAction,
-                  saveButton,
-                  messages
-            ),
-            messages.get(this, "editDetails")
-      );
+      Resource image = imageService.imageResource(user.getBase16photo());
+      UserEditWindowDetailsTab tab = new UserEditWindowDetailsTab(user, image, updateAction, saveButton);
+      sheet.addTab(tab, App.translate(this, "editDetails"));
+
       VaadinUI.getCurrent().addWindow(this);
    }
 }

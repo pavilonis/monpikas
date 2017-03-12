@@ -1,9 +1,9 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.server.Resource;
-import org.vaadin.viritin.button.MButton;
+import com.vaadin.ui.Button;
 
-public class MenuButton extends MButton {
+public class MenuButton extends Button {
 
    private final Class<? extends AbstractViewController> controllerClass;
    private final String roleName;
@@ -12,7 +12,7 @@ public class MenuButton extends MButton {
       this.controllerClass = controllerClass;
       this.roleName = roleName;
       setIcon(icon);
-      setWidth("200px");
+      setWidth(200, Unit.PIXELS);
       addStyleName("text-align-left");
    }
 

@@ -11,7 +11,7 @@
    <parent>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-parent</artifactId>
-      <version>1.5.1.RELEASE</version>
+      <version>1.5.2.RELEASE</version>
    </parent>
 
    <properties>
@@ -31,12 +31,6 @@
       <dependency>
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-security</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>org.vaadin</groupId>
-         <artifactId>viritin</artifactId>
-         <version>2.0.alpha1</version>
       </dependency>
 
       <!--SERIALIZATION-->
@@ -71,12 +65,17 @@
       <dependency>
          <groupId>mysql</groupId>
          <artifactId>mysql-connector-java</artifactId>
-         <version>5.1.40</version>
+         <version>5.1.41</version>
       </dependency>
       <dependency>
          <groupId>org.flywaydb</groupId>
          <artifactId>flyway-core</artifactId>
-         <version>4.0.3</version>
+         <version>4.1.2</version>
+      </dependency>
+      <dependency>
+         <groupId>commons-io</groupId>
+         <artifactId>commons-io</artifactId>
+         <version>2.5</version>
       </dependency>
 
    </dependencies>
@@ -87,6 +86,7 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-bom</artifactId>
             <version>8.0.1</version>
+            <!--<version>7.7.7</version>-->
             <type>pom</type>
             <scope>import</scope>
          </dependency>

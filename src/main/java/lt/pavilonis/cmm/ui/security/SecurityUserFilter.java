@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.ui.security;
 
-public class SecurityUserFilter {
+public final class SecurityUserFilter {
    private final String username;
    private final String text;
 

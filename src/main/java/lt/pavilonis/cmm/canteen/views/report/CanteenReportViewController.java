@@ -1,48 +1,46 @@
 package lt.pavilonis.cmm.canteen.views.report;
 
 import com.vaadin.server.FileDownloader;
+import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.report.ReportService;
 import lt.pavilonis.cmm.common.AbstractViewController;
+import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
-import org.joda.time.LocalDate;
-import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MVerticalLayout;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.TemporalAdjusters;
 
-import static com.vaadin.shared.ui.label.ContentMode.HTML;
 import static com.vaadin.ui.Alignment.TOP_CENTER;
 
 @SpringComponent
 @UIScope
 public class CanteenReportViewController extends AbstractViewController {
 
-   private final static SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
    private final ComboBox pupilTypeCombo = pupilTypeCombo();
    private final DateField periodStartField = new ADateField(this.getClass(), "periodStart")
-         .withValue(LocalDate.now().withDayOfMonth(1).toDate())
-         .withRequired()
-         .withImmediate();
+         .withValue(LocalDate.now().with(TemporalAdjusters.firstDayOfMonth()))
+         .withRequired();
 
    private final DateField periodEndField = new ADateField(this.getClass(), "periodEnd")
-         .withValue(LocalDate.now().dayOfMonth().withMaximumValue().toDate())
-         .withRequired()
-         .withImmediate();
+         .withValue(LocalDate.now().with(TemporalAdjusters.lastDayOfMonth()))
+         .withRequired();
 
    private StreamResource streamResource;
 
@@ -54,21 +52,16 @@ public class CanteenReportViewController extends AbstractViewController {
       StreamResource.StreamSource source = () -> {
          PupilType type = (PupilType) pupilTypeCombo.getValue();
 
-         Date periodStart = LocalDateTime.fromDateFields(periodStartField.getValue())
-               .withTime(0, 0, 0, 0)
-               .toDate();
+         ByteArrayOutputStream stream =
+               service.generate(periodStartField.getValue(), periodEndField.getValue(), type);
 
-         Date periodEnd = LocalDateTime.fromDateFields(periodEndField.getValue())
-               .withTime(23, 59, 59, 999)
-               .toDate();
-
-         ByteArrayOutputStream stream = service.generate(periodStart, periodEnd, type);
          streamResource.setFilename(
-               String.join("_",
+               String.join(
+                     "_",
                      "ataskaita",
                      type.toString().toLowerCase(),
-                     DATE_FORMAT.format(periodStart),
-                     DATE_FORMAT.format(periodEnd) + ".xls"
+                     DateTimeFormatter.ISO_DATE.format(periodStartField.getValue()),
+                     DateTimeFormatter.ISO_DATE.format(periodEndField.getValue()) + ".xls"
                )
          );
 
@@ -81,16 +74,15 @@ public class CanteenReportViewController extends AbstractViewController {
    @Override
    protected Component getMainArea() {
 
-      Button generateButton = new Button(messageSource.get(this, "buttonGenerate"));
-
-      MVerticalLayout layout = new MVerticalLayout(
-            new Label(messageSource.get(this, "title"), HTML),
-            new MHorizontalLayout(periodStartField, periodEndField),
+      Button generateButton = new AButton(this.getClass(), "buttonGenerate");
+      VerticalLayout layout = new VerticalLayout(
+            new Label(messageSource.get(this, "title"), ContentMode.HTML),
+            new HorizontalLayout(periodStartField, periodEndField),
             pupilTypeCombo,
             generateButton
-      )
-            .withHeight("350px")
-            .alignAll(TOP_CENTER);
+      );
+      layout.setHeight(350, Sizeable.Unit.PIXELS);
+      layout.setDefaultComponentAlignment(TOP_CENTER);
 
       streamResource = getStream(service);
       FileDownloader fileDownloader = new FileDownloader(streamResource);
@@ -100,9 +92,8 @@ public class CanteenReportViewController extends AbstractViewController {
    }
 
    private ComboBox pupilTypeCombo() {
-      ComboBox combo = new EnumComboBox<>(PupilType.class);
-      combo.setNullSelectionAllowed(false);
-      combo.setImmediate(true);
+      ComboBox<PupilType> combo = new EnumComboBox<>(PupilType.class);
+      combo.setEmptySelectionAllowed(false);
       combo.setValue(PupilType.SOCIAL);
       return combo;
    }

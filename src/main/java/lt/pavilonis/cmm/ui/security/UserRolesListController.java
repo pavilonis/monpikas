@@ -8,9 +8,8 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.FormView;
-import lt.pavilonis.cmm.common.ListTable;
-import lt.pavilonis.cmm.converter.BooleanCellConverter;
-import lt.pavilonis.cmm.converter.CollectionCellConverter;
+import lt.pavilonis.cmm.common.ListGrid;
+import lt.pavilonis.cmm.converter.CollectionValueProviderAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -24,17 +23,19 @@ public class UserRolesListController extends AbstractListController<SecurityUser
    private SecurityUserDetailsService service;
 
    @Override
-   protected ListTable<SecurityUser> createTable() {
-      return new ListTable<SecurityUser>(SecurityUser.class) {
+   protected ListGrid<SecurityUser> createGrid() {
+      return new ListGrid<SecurityUser>(SecurityUser.class) {
          @Override
          protected List<String> getProperties(Class<SecurityUser> type) {
-            return Arrays.asList("username", "name", "email", "authorities", "enabled");
+            return Arrays.asList("username", "name", "email", "enabled");
          }
 
          @Override
-         protected void customize(MessageSourceAdapter messageSource) {
-            setConverter("authorities", new CollectionCellConverter());
-            setConverter("enabled", new BooleanCellConverter());
+         protected void customize() {
+            addColumn(new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities))
+                  .setCaption("Authorities");
+//            setConverter("authorities", new CollectionValueProviderAdapter());
+//            setConverter("enabled", new BooleanCellConverter());
          }
       };
    }

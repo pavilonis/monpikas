@@ -28,3 +28,5 @@ nbdist/
 .mvn/
 mvnw
 mvnw.cmd
+
+*.log

@@ -1,14 +1,12 @@
 package lt.pavilonis.cmm.common.component;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.FontAwesome;
-import lt.pavilonis.cmm.App;
-import org.vaadin.viritin.button.MButton;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
+import com.vaadin.ui.HorizontalLayout;
+import lt.pavilonis.cmm.common.field.AButton;
 
 import static com.vaadin.ui.Button.ClickListener;
 
-public class TableControlPanel extends MHorizontalLayout {
+public class TableControlPanel extends HorizontalLayout {
 
 
    public TableControlPanel(ClickListener listenerAdd, ClickListener listenerRemove) {
@@ -16,23 +14,18 @@ public class TableControlPanel extends MHorizontalLayout {
    }
 
    public TableControlPanel(
-         String buttonCaptionPositive,
-         String buttonCaptionNegative,
-         ClickListener listenerPositive,
-         ClickListener listenerNegative) {
+         String buttonCaptionPositive, String buttonCaptionNegative,
+         ClickListener listenerPositive, ClickListener listenerNegative) {
 
-      add(
-            new MButton(
-                  VaadinIcons.PLUS,
-                  App.translate(this, buttonCaptionPositive),
-                  listenerPositive
-            ),
+      addComponents(
+            new AButton(this.getClass().getSimpleName() + "." + buttonCaptionPositive)
+                  .withIcon(VaadinIcons.PLUS)
+                  .withClickListener(listenerPositive),
 
-            new MButton(
-                  VaadinIcons.WARNING,
-                  App.translate(this, buttonCaptionNegative),
-                  listenerNegative
-            ).withStyleName("redicon")
+            new AButton(this.getClass().getSimpleName() + "." + buttonCaptionNegative)
+                  .withIcon(VaadinIcons.WARNING)
+                  .withClickListener(listenerNegative)
+                  .withStyleName("redicon")
       );
    }
 }

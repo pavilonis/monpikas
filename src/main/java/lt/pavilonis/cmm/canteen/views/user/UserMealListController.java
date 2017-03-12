@@ -12,7 +12,7 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.FormView;
-import lt.pavilonis.cmm.common.ListTable;
+import lt.pavilonis.cmm.common.ListGrid;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.HashSet;
@@ -29,8 +29,8 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
    private UserMealListFilterPanel filterPanel;
 
    @Override
-   protected ListTable<UserMeal> createTable() {
-      return new UserMealTable();
+   protected ListGrid<UserMeal> createGrid() {
+      return new UserMealGrid();
    }
 
    @Autowired

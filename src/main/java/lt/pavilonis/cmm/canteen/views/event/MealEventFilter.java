@@ -1,22 +1,17 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
-import org.joda.time.LocalDateTime;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 public final class MealEventFilter {
    private final String text;
-   private final Date periodStart;
-   private final Date periodEnd;
+   private final LocalDate periodStart;
+   private final LocalDate periodEnd;
 
-   public MealEventFilter(String text, Date periodStart, Date periodEnd) {
+   public MealEventFilter(String text, LocalDate periodStart, LocalDate periodEnd) {
       this.text = text;
-      this.periodStart = periodStart == null
-            ? null :
-            LocalDateTime.fromDateFields(periodStart).withTime(0, 0, 0, 0).toDate();
-      this.periodEnd = periodEnd == null
-            ? null
-            : LocalDateTime.fromDateFields(periodEnd).withTime(23, 59, 59, 999).toDate();
+      this.periodStart = periodStart;
+      this.periodEnd = periodEnd;
 
    }
 
@@ -24,11 +19,11 @@ public final class MealEventFilter {
       return text;
    }
 
-   public Date getPeriodStart() {
+   public LocalDate getPeriodStart() {
       return periodStart;
    }
 
-   public Date getPeriodEnd() {
+   public LocalDate getPeriodEnd() {
       return periodEnd;
    }
 }

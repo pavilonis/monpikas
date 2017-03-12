@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
 
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
@@ -8,36 +9,33 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.canteen.views.user.UserMealFilter;
 import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
-import org.vaadin.viritin.fields.MDateField;
-import org.vaadin.viritin.fields.MTable;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Set;
 
 final class MealEventFormView extends FormView<MealEventLog> {
 
-   private final UserMealTable table;
+   private final UserMealGrid table;
    private final UserMealService service;
    private final TextField textFilter = new ATextField(getClass(), "name");
    private final EnumComboBox<MealType> mealType = new EnumComboBox<>(MealType.class)
          .withRequired(true);
-   private final MDateField date = new ADateField(getClass(), "date")
-         .withValue(new Date())
-         .withRequired(true);
+   private final ADateField date = new ADateField(getClass(), "date")
+         .withValue(LocalDate.now())
+         .withRequired();
 
    MealEventFormView(UserMealService service) {
       this.service = service;
-      this.table = new UserMealTable("Pasirinkite mokinį");
+      this.table = new UserMealGrid("Pasirinkite mokinį");
 
-      MHorizontalLayout top = new MHorizontalLayout(date, mealType)
-            .withMargin(false);
-      add(top, textFilter, table);
+      addComponents(new HorizontalLayout(date, mealType), textFilter, table);
 
-      textFilter.addTextChangeListener(change -> updateTable(change.getText(), mealType.getValue()));
+      textFilter.addValueChangeListener(change -> updateTable(change.getValue(), mealType.getValue()));
       mealType.addValueChangeListener(change -> updateTable(textFilter.getValue(), mealType.getValue()));
       updateTable(null, mealType.getValue());
    }
@@ -46,28 +44,24 @@ final class MealEventFormView extends FormView<MealEventLog> {
       UserMealFilter filter = new UserMealFilter(value, text, true);
       List<UserMeal> beans = service.loadAll(filter);
 
-      table.select(null);
-      table.setBeans(beans);
+      table.deselectAll();
+      table.setItems(beans);
    }
 
-   UserMeal getTableValue() {
-      return table.getValue();
+   Set<UserMeal> getGridSelection() {
+      return table.getSelectedItems();
    }
 
-   private final class UserMealTable extends MTable<UserMeal> {
-      private UserMealTable(String caption) {
+   private final class UserMealGrid extends ListGrid<UserMeal> {
+      private UserMealGrid(String caption) {
+         super(UserMeal.class);
          setCaption(caption);
-         withProperties("user.name", "user.group");
-         withColumnHeaders("Vardas", "Klasė");
-         setColumnWidth("user.group", 85);
-         setColumnCollapsingAllowed(true);
-         setSelectable(true);
-         setNullSelectionAllowed(false);
-         setCacheRate(5);
-         setPageLength(7);
+         addColumns("user.name", "user.group");
+         setHeaders("Vardas", "Klasė");
+         getColumn("user.group").setWidth(85);
+         setSelectionMode(SelectionMode.SINGLE);
          setWidth("100%");
-         setSortContainerPropertyId("user.name");
-         sort();
+         sort("user.name");
       }
    }
 }

@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.converter.ADecimalFormat;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -8,6 +9,8 @@ import java.time.LocalTime;
 import java.util.Objects;
 
 public final class Meal implements Identifiable<Long> {
+
+   private static final DecimalFormat NUMBER_FORMAT = new ADecimalFormat();
 
    private Long id;
    private String name;
@@ -79,7 +82,7 @@ public final class Meal implements Identifiable<Long> {
 
    @Override
    public String toString() {
-      return name + " - " + new DecimalFormat("0.00").format(price);
+      return name + " - " + NUMBER_FORMAT.format(price);
    }
 
    @Override

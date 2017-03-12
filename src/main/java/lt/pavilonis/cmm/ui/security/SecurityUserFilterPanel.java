@@ -1,19 +1,18 @@
 package lt.pavilonis.cmm.ui.security;
 
-import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.Field;
+import com.vaadin.data.HasValue;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FilterPanel;
 
 import java.util.Collections;
 import java.util.List;
 
-public class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
+final class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
 
    private TextField text;
 
    @Override
-   protected List<AbstractField<?>> getFields() {
+   protected List<HasValue<?>> getFields() {
       text = new TextField();
       return Collections.singletonList(text);
    }

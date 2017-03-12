@@ -23,6 +23,10 @@ public class MessageSourceAdapter {
       } else {
          className = object.getClass().getSimpleName();
       }
-      return messageSource.getMessage(className + "." + propertyName, null, null);
+      return get(className + "." + propertyName);
+   }
+
+   public String get(String code) {
+      return messageSource.getMessage(code, null, null);
    }
 }

@@ -1,7 +1,9 @@
 package lt.pavilonis.cmm.ui.security;
 
+import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CheckBox;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
@@ -9,8 +11,6 @@ import lt.pavilonis.cmm.common.FormView;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.OneToManyField;
 import org.springframework.security.core.GrantedAuthority;
-import org.vaadin.viritin.layouts.MHorizontalLayout;
-import org.vaadin.viritin.layouts.MMarginInfo;
 
 import java.util.stream.Stream;
 
@@ -22,19 +22,17 @@ public class SecurityUserFormView extends FormView<SecurityUser> {
    private final OneToManyField<GrantedAuthority> authorities = new OneToManyField<>(GrantedAuthority.class);
 
    public SecurityUserFormView() {
-      add(
-            new MHorizontalLayout(username, name)
-                  .withMargin(false),
 
-            new MHorizontalLayout(email, enabled)
-                  .withMargin(false)
-                  .withAlign(enabled, Alignment.BOTTOM_CENTER),
-            authorities
-      );
+      HorizontalLayout row1 = new HorizontalLayout(username, name);
+      HorizontalLayout row2 = new HorizontalLayout(email, enabled);
+      row2.setComponentAlignment(enabled, Alignment.BOTTOM_CENTER);
+
+      addComponents(row1, row2, authorities);
 
       Stream.of(username, name, email)
-            .forEach(field -> field.setWidth("268px"));
+            .forEach(field -> field.setWidth(268, Unit.PIXELS));
+
       authorities.setTableHeight(256, Unit.PIXELS);
-      withMargin(new MMarginInfo(false, false, true, false));
+      setMargin(new MarginInfo(false, false, true, false));
    }
 }

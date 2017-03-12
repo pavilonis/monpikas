@@ -1,28 +1,22 @@
 package lt.pavilonis.cmm.ui.user.form;
 
-import com.vaadin.ui.Table;
+import com.vaadin.ui.StyleGenerator;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 
-public class PresenceTimeCellStyleGenerator implements Table.CellStyleGenerator {
+final class PresenceTimeCellStyleGenerator implements StyleGenerator<PresenceTimeRepresentation> {
 
    private static final String STYLE_RED = "red";
    private static final String STYLE_YELLOW = "yellow";
    private static final String STYLE_GREEN = "green";
-   private static final String PROPERTY_HOUR_DIFFERENCE = "hourDifference";
 
    @Override
-   public String getStyle(Table source, Object itemId, Object propertyId) {
-      if (!PROPERTY_HOUR_DIFFERENCE.equals(propertyId)) {
-         return null;
-      }
+   public String apply(PresenceTimeRepresentation item) {
 
-      PresenceTimeRepresentation time = (PresenceTimeRepresentation) itemId;
-
-      if (time.getHourDifference() < 7) {
+      if (item.getHourDifference() < 7) {
          return STYLE_RED;
       }
 
-      return time.getHourDifference() < 8
+      return item.getHourDifference() < 8
             ? STYLE_YELLOW
             : STYLE_GREEN;
    }
