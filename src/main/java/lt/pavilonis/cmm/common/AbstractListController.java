@@ -65,13 +65,15 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
       AbstractFormController<T, ID> formController = getFormController();
 
-      if (formController != null) {
-         table.addItemClickListener(click -> {
-            if (click.getMouseEventDetails().isDoubleClick()) {
-               formController.edit(click.getItem(), table);
-            }
-         });
+      if (formController == null) {
+         return;
       }
+
+      table.addItemClickListener(click -> {
+         if (click.getMouseEventDetails().isDoubleClick()) {
+            formController.edit(click.getItem(), table);
+         }
+      });
    }
 
    protected abstract ListGrid<T> createGrid();

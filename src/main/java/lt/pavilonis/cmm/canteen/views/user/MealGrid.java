@@ -7,6 +7,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public final class MealGrid extends ListGrid<Meal> {
 
@@ -18,12 +19,11 @@ public final class MealGrid extends ListGrid<Meal> {
    }
 
    @Override
-   public void addColumns(List<String> properties) {
+   protected void addCustomColumns() {
       addColumn(meal -> messageSource.get(meal.getType().getClass(), meal.getType().name()))
             .setId("type");
       addColumn(meal -> NUMBER_FORMAT.format(meal.getPrice()))
             .setId("price");
-      super.addColumns(properties);
    }
 
    @Override

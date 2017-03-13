@@ -3,8 +3,8 @@ package lt.pavilonis.cmm.common;
 import com.vaadin.ui.Grid;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
+import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -16,26 +16,38 @@ public class ListGrid<T> extends Grid<T> {
    private Collection<T> items;
 
    public ListGrid(Class<T> type) {
-//      super(type);
+      super(type);
 
       List<String> properties = getProperties(type);
+      if (CollectionUtils.isNotEmpty(properties)) {
+         getColumns().stream()
+               .map(Column::getId)
+               .filter(columnId -> !properties.contains(columnId))
+               .forEach(this::removeColumn);
+      }
+
       addCustomColumns();
       addColumns(properties);
 
-      String[] headers = properties.stream()
-            .map(property -> messageSource.get(type, property))
+      if (!properties.isEmpty()) {
+         setColumnOrder(properties.toArray(new String[properties.size()]));
+      }
+
+
+      String[] headers = getColumns().stream()
+            .map(Column::getId)
+            .map(property -> App.translate(type, property))
             .toArray(String[]::new);
 
       setHeaders(headers);
-
-      setColumnOrder(properties.toArray(new String[properties.size()]));
 
       defaultConfiguration();
       customize();
    }
 
    protected List<String> getProperties(Class<T> type) {
-      return PropertyCollector.collect(type);
+      return Collections.emptyList();
+//      return PropertyCollector.collect(type);
    }
 
    protected void customize() {/*hook*/}
@@ -44,8 +56,8 @@ public class ListGrid<T> extends Grid<T> {
 //      collap(true);
       setColumnReorderingAllowed(true);
 //      setSelectable(true);
-//      setNullSelectionAllowed(false);
 //      setCacheRate(5);
+
       setSizeFull();
    }
 
@@ -90,9 +102,9 @@ public class ListGrid<T> extends Grid<T> {
             .forEach(this::addColumn);
    }
 
-   public void addColumns(String... properties) {
-      addColumns(Arrays.asList(properties));
-   }
+//   public void addColumns(String... properties) {
+//      addColumns(Arrays.asList(properties));
+//   }
 
    public void setHeaders(String... headers) {
       List<Column<T, ?>> columns = getColumns();

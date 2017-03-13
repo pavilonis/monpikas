@@ -6,14 +6,14 @@ import lt.pavilonis.cmm.common.field.AButton;
 
 import static com.vaadin.ui.Button.ClickListener;
 
-public class TableControlPanel extends HorizontalLayout {
+public class GridControlPanel extends HorizontalLayout {
 
 
-   public TableControlPanel(ClickListener listenerAdd, ClickListener listenerRemove) {
+   public GridControlPanel(ClickListener listenerAdd, ClickListener listenerRemove) {
       this("add", "remove", listenerAdd, listenerRemove);
    }
 
-   public TableControlPanel(
+   public GridControlPanel(
          String buttonCaptionPositive, String buttonCaptionNegative,
          ClickListener listenerPositive, ClickListener listenerNegative) {
 

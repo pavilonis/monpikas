@@ -26,7 +26,7 @@ public class MealListController extends AbstractListController<Meal, Long, MealF
 
    @Override
    protected AbstractFormController<Meal, Long> getFormController() {
-      return new AbstractFormController<Meal, Long>() {
+      return new AbstractFormController<Meal, Long>(Meal.class) {
 
          @Override
          protected EntityRepository<Meal, Long, ?> getEntityRepository() {

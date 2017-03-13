@@ -31,9 +31,13 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          }
 
          @Override
-         protected void customize() {
+         protected void addCustomColumns() {
             addColumn(new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities))
                   .setCaption("Authorities");
+         }
+
+         @Override
+         protected void customize() {
 //            setConverter("authorities", new CollectionValueProviderAdapter());
 //            setConverter("enabled", new BooleanCellConverter());
          }
@@ -57,7 +61,7 @@ public class UserRolesListController extends AbstractListController<SecurityUser
 
    @Override
    protected AbstractFormController<SecurityUser, String> getFormController() {
-      return new AbstractFormController<SecurityUser, String>() {
+      return new AbstractFormController<SecurityUser, String>(SecurityUser.class) {
          @Override
          protected EntityRepository<SecurityUser, String, ?> getEntityRepository() {
             return service;
@@ -72,8 +76,6 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          protected MessageSourceAdapter getMessageSource() {
             return UserRolesListController.this.messageSource;
          }
-
-
       };
    }
 }

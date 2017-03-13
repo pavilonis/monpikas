@@ -8,7 +8,7 @@ import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.common.component.TableControlPanel;
+import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.field.AButton;
 import org.apache.commons.collections4.CollectionUtils;
 
@@ -31,7 +31,7 @@ public class UserMealSelectionPopup extends Window {
       grid.addSelectionListener(click -> selectAction(selectionConsumer, click.getAllSelectedItems()));
 
       HorizontalLayout controls = new HorizontalLayout(
-            new AButton(TableControlPanel.class.getSimpleName() + ".addSelected")
+            new AButton(GridControlPanel.class.getSimpleName() + ".addSelected")
                   .withIcon(VaadinIcons.PLUS)
                   .withClickListener(click -> selectAction(selectionConsumer, grid.getSelectedItems())),
             new AButton("Uždaryti")

@@ -43,7 +43,7 @@ public class UserMealListController extends AbstractListController<UserMeal, Str
 
    @Override
    protected AbstractFormController<UserMeal, String> getFormController() {
-      return new AbstractFormController<UserMeal, String>() {
+      return new AbstractFormController<UserMeal, String>(UserMeal.class) {
          @Override
          protected EntityRepository<UserMeal, String, UserMealFilter> getEntityRepository() {
             return userMealService;

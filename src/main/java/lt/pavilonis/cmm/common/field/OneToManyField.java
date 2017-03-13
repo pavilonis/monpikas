@@ -10,47 +10,44 @@ import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.common.component.TableControlPanel;
+import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.repository.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OneToManyField<T> extends CustomField<List> {
+public class OneToManyField<T> extends CustomField<Collection<T>> {
 
    private final ListGrid<T> table;
-   private final List<T> value = new ArrayList<>();
+   private final Collection<T> value = new ArrayList<>();
    private final Class<T> type;
 
    public OneToManyField(Class<T> type) {
-      this.table = createTable(type);
-      this.table.setDataProvider(
-            (sortOrder, offset, limit) -> value.stream(),
-            value::size
-      );
+      this.table = createGrid(type);
+      this.table.setItems(value);
       this.type = type;
    }
 
    @Override
-   protected void doSetValue(List value) {
-
+   protected void doSetValue(Collection<T> value) {
+      this.value.addAll(value);
    }
 
-   protected ListGrid<T> createTable(Class<T> type) {
-      ListGrid<T> table = new ListGrid<>(type);
+   protected ListGrid<T> createGrid(Class<T> type) {
+      ListGrid<T> grid = new ListGrid<>(type);
       setWidth(550, Unit.PIXELS);
       setHeight(350, Unit.PIXELS);
-      return table;
+      return grid;
    }
-
 
    @Override
    protected Component initContent() {
-      TableControlPanel controls = new TableControlPanel(
+      GridControlPanel controls = new GridControlPanel(
             eventAdd -> actionAdd(),
             eventRemove -> actionRemove()
       );
@@ -91,7 +88,7 @@ public class OneToManyField<T> extends CustomField<List> {
    }
 
    @Override
-   public List<T> getValue() {
+   public Collection<T> getValue() {
       return value;
    }
 
@@ -104,17 +101,14 @@ public class OneToManyField<T> extends CustomField<List> {
          setHeight(490, Unit.PIXELS);
 
          ListGrid<T> selectionTable = new ListGrid<>(type);
-         selectionTable.setDataProvider(
-               (sortOrder, offset, limit) -> getSelectionElements().stream(),
-               () -> getSelectionElements().size()
-         );
+         selectionTable.setItems(getSelectionElements());
          selectionTable.addItemClickListener(click -> {
             if (click.getMouseEventDetails().isDoubleClick()) {
                selectAction(selectionConsumer, Collections.singleton(click.getItem()));
             }
          });
 
-         TableControlPanel controls = new TableControlPanel(
+         GridControlPanel controls = new GridControlPanel(
                "addSelected", "close",
                click -> selectAction(selectionConsumer, selectionTable.getSelectedItems()),
                click -> close()

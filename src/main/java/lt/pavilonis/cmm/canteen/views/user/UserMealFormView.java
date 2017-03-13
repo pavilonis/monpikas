@@ -16,7 +16,7 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.repository.MealRepository;
 import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
 import lt.pavilonis.cmm.common.FormView;
-import lt.pavilonis.cmm.common.component.TableControlPanel;
+import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.field.ATextArea;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
@@ -62,7 +62,7 @@ public class UserMealFormView extends FormView<UserMeal> {
             .filter(meal -> !mealTable.hasItem(meal))
             .forEach(mealTable::addItem);
 
-      TableControlPanel controls = new TableControlPanel(
+      GridControlPanel controls = new GridControlPanel(
             click -> new UserMealSelectionPopup(
                   mealRepository.loadAll(new MealFilter()),
                   mealSelectionConsumer),

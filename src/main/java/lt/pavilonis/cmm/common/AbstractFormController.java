@@ -21,12 +21,17 @@ import java.util.function.Consumer;
 
 public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
+   private final Class<T> clazz;
+   private Binder<T> binder;
    private T model;
-   private final Binder<T> binder = new Binder<>();
    private Window window;
 
    @Autowired
    protected MessageSourceAdapter messages;
+
+   public AbstractFormController(Class<T> clazz) {
+      this.clazz = clazz;
+   }
 
    protected T actionSave() {
       beforeSave(model);
@@ -99,6 +104,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
 
       model = editEntity;
+      binder = new Binder<>(clazz);
       binder.setBean(model);
       binder.bindInstanceFields(formView);
 

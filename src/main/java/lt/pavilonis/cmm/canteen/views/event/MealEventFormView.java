@@ -15,6 +15,7 @@ import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -56,12 +57,16 @@ final class MealEventFormView extends FormView<MealEventLog> {
       private UserMealGrid(String caption) {
          super(UserMeal.class);
          setCaption(caption);
-         addColumns("user.name", "user.group");
          setHeaders("Vardas", "Klasė");
          getColumn("user.group").setWidth(85);
          setSelectionMode(SelectionMode.SINGLE);
-         setWidth("100%");
+         setWidth(100, Unit.PERCENTAGE);
          sort("user.name");
+      }
+
+      @Override
+      protected List<String> getProperties(Class<UserMeal> type) {
+         return Arrays.asList("user.name", "user.group");
       }
    }
 }

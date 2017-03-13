@@ -52,9 +52,10 @@ public abstract class FilterPanel<FILTER> extends HorizontalLayout {
    }
 
    protected Component getFieldLayout() {
-      HorizontalLayout components = new HorizontalLayout(fields.toArray(new AbstractField[fields.size()]));
-      components.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
-      return components;
+      HorizontalLayout layout = new HorizontalLayout();
+      fields.forEach(field -> layout.addComponent((Component) field));
+      layout.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+      return layout;
    }
 
    protected abstract List<HasValue<?>> getFields();

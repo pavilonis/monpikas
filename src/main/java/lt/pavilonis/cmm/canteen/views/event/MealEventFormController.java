@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.canteen.views.event;
 
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
-import com.vaadin.data.ValueContext;
 import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
@@ -27,6 +26,10 @@ import java.util.Set;
 @UIScope
 @SpringComponent
 public class MealEventFormController extends AbstractFormController<MealEventLog, Long> {
+
+   public MealEventFormController() {
+      super(MealEventLog.class);
+   }
 
    @Autowired
    private MealEventLogRepository eventLogRepository;
@@ -76,12 +79,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected Collection<Validator<MealEventLog>> getValidators() {
-      Validator<MealEventLog> validator = new Validator<MealEventLog>() {
-         @Override
-         public ValidationResult apply(MealEventLog value, ValueContext context) {
-            return ValidationResult.ok();
-         }
-      };
+      Validator<MealEventLog> validator = (value, context) -> ValidationResult.ok();
 //      return Collections.singletonList(value -> {
 //         //TODO add validation error component in abstract form
 //         try {
