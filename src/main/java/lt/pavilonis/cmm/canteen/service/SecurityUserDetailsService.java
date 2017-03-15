@@ -7,6 +7,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,9 +16,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-public class SecurityUserDetailsService implements UserDetailsService, EntityRepository<SecurityUser, String, SecurityUserFilter> {
+public class SecurityUserDetailsService implements UserDetailsService, EntityRepository<SecurityUser, Long, SecurityUserFilter> {
 
    private static final SecurityUserResultSetExtractor EXTRACTOR = new SecurityUserResultSetExtractor();
 
@@ -64,7 +67,12 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
 
    private SecurityUser save(SecurityUser user) {
       String temporaryPassword = passwordEncoder.encode(user.getUsername());
-      jdbc.update(
+      Map<String, Object> args = new HashMap<>();
+      args.put("username", user.getUsername());
+      args.put("name", user.getName());
+      KeyHolder keyHolder = new GeneratedKeyHolder();
+      //TODO
+      namedJdbc.update(
             "INSERT INTO User (username, name, email, enabled, password) VALUES (?, ?, ?, ?, ?)",
             user.getUsername(), user.getName(), user.getEmail(), user.isEnabled(), temporaryPassword
       );
@@ -91,7 +99,7 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    }
 
    @Override
-   public Optional<SecurityUser> load(String username) {
+   public Optional<SecurityUser> load(long id) {
       List<SecurityUser> result = loadAll(new SecurityUserFilter(username, null));
       if (result.size() > 1) {
          throw new IllegalStateException();

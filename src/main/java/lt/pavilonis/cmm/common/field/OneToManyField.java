@@ -23,13 +23,13 @@ import java.util.function.Consumer;
 
 public class OneToManyField<T> extends CustomField<Collection<T>> {
 
-   private final ListGrid<T> table;
+   private final ListGrid<T> grid;
    private final Collection<T> value = new ArrayList<>();
    private final Class<T> type;
 
    public OneToManyField(Class<T> type) {
-      this.table = createGrid(type);
-      this.table.setItems(value);
+      this.grid = createGrid(type);
+      this.grid.setItems(value);
       this.type = type;
    }
 
@@ -51,7 +51,7 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
             eventAdd -> actionAdd(),
             eventRemove -> actionRemove()
       );
-      return new VerticalLayout(table, controls);
+      return new VerticalLayout(grid, controls);
    }
 
    private void actionAdd() {
@@ -73,12 +73,15 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
    }
 
    private void actionRemove() {
-      Set<T> selectedItems = table.getSelectedItems();
+      Set<T> selectedItems = grid.getSelectedItems();
       if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
-         value.removeAll(selectedItems);
-         table.getDataProvider().refreshAll();
+         selectedItems.forEach(item -> {
+            value.remove(item);
+            grid.setItems(value);
+         });
+//         grid.getDataProvider().refreshAll();
       }
    }
 
@@ -131,6 +134,6 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
    }
 
    public void setTableHeight(float value, Unit unit) {
-      table.setHeight(value, unit);
+      grid.setHeight(value, unit);
    }
 }

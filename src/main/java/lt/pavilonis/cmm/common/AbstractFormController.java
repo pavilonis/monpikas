@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.data.Binder;
+import com.vaadin.data.ValidationException;
 import com.vaadin.data.Validator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.UserError;
@@ -36,15 +37,17 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
    protected T actionSave() {
       beforeSave(model);
 
-      if (!binder.isValid()) {
+      EntityRepository<T, ID, ?> entityRepository = getEntityRepository();
+      try {
+         binder.writeBean(model);
+         return entityRepository.saveOrUpdate(model);
+      } catch (ValidationException e) {
+         e.printStackTrace();
          //TODO not visible!
          window.setComponentError(new UserError("Invalid field values"));
 //         Notification.show("Invalid field values", Notification.Type.WARNING_MESSAGE);
-//         throw new Validator.InvalidValueException("Invalid field values");
+         return null;
       }
-
-      EntityRepository<T, ID, ?> entityRepository = getEntityRepository();
-      return entityRepository.saveOrUpdate(model);
    }
 
    protected void beforeSave(T model) {/*hook*/}

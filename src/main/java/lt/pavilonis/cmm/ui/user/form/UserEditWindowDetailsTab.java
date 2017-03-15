@@ -27,18 +27,16 @@ final class UserEditWindowDetailsTab extends HorizontalLayout {
    private final TextField lastName = new ATextField(this.getClass(), "lastName");
    private final TextField group = new ATextField(this.getClass(), "group");
    private final TextField role = new ATextField(this.getClass(), "role");
-   private final ADateField birthDate = new ADateField(this.getClass(), "birthDate");
+   private final TextField birthDate = new ATextField(this.getClass(), "birthDate");
    //            .withConverter(new StringToDateConverter());
    private final VerticalLayout rightLayout = new VerticalLayout();
 
    private final UserRepresentation model;
    private Image currentUserImage;
-   private final Binder<UserRepresentation> binder = new Binder<>(UserRepresentation.class);
 
    UserEditWindowDetailsTab(UserRepresentation model, Resource imageResource,
                             Consumer<UserRepresentation> saveAction, Button saveButton) {
       this.model = model;
-
       UserEditWindowDetailsTabImageUploader uploadReceiver =
             new UserEditWindowDetailsTabImageUploader(this::updateUserPhoto);
       Upload imageUploader = new Upload(null, uploadReceiver);
@@ -61,10 +59,11 @@ final class UserEditWindowDetailsTab extends HorizontalLayout {
 
       updateUserPhoto(imageResource);
 
+      Binder<UserRepresentation> binder = new Binder<>(UserRepresentation.class);
       binder.setBean(model);
       binder.bindInstanceFields(this);
 
-      saveButton.addClickListener((click) -> {
+      saveButton.addClickListener(click -> {
          if (binder.isValid()) {
             byte[] bytes = uploadReceiver.getScaledImageBytes();
             if (bytes != null && bytes.length > 0) {
