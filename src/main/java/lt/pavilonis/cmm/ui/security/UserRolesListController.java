@@ -17,7 +17,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-public class UserRolesListController extends AbstractListController<SecurityUser, String, SecurityUserFilter> {
+public class UserRolesListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired
    private SecurityUserDetailsService service;
@@ -50,7 +50,7 @@ public class UserRolesListController extends AbstractListController<SecurityUser
    }
 
    @Override
-   protected EntityRepository<SecurityUser, String, SecurityUserFilter> getEntityRepository() {
+   protected EntityRepository<SecurityUser, Long, SecurityUserFilter> getEntityRepository() {
       return service;
    }
 
@@ -60,10 +60,10 @@ public class UserRolesListController extends AbstractListController<SecurityUser
    }
 
    @Override
-   protected AbstractFormController<SecurityUser, String> getFormController() {
-      return new AbstractFormController<SecurityUser, String>(SecurityUser.class) {
+   protected AbstractFormController<SecurityUser, Long> getFormController() {
+      return new AbstractFormController<SecurityUser, Long>(SecurityUser.class) {
          @Override
-         protected EntityRepository<SecurityUser, String, ?> getEntityRepository() {
+         protected EntityRepository<SecurityUser, Long, ?> getEntityRepository() {
             return service;
          }
 

@@ -9,14 +9,14 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 
-final class UserEditWindowPresenceTimeTabGrid extends ListGrid<PresenceTimeRepresentation> {
+final class UserFormViewPresenceTimeTabGrid extends ListGrid<PresenceTimeRepresentation> {
 
    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
-   UserEditWindowPresenceTimeTabGrid(UserRestRepository userRepository, String cardCode) {
+   UserFormViewPresenceTimeTabGrid(List<PresenceTimeRepresentation> items) {
       super(PresenceTimeRepresentation.class);
 
-      setItems(userRepository.loadPresenceTime(cardCode));
+      setItems(items);
 
       setHeight(430, Unit.PIXELS);
       addStyleName("table-border-less");

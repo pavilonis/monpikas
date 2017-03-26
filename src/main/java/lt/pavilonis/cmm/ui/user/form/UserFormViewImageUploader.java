@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.ui.user.form;
 
+import com.google.common.io.BaseEncoding;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Upload;
@@ -9,15 +10,15 @@ import org.apache.commons.io.IOUtils;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
-public class UserEditWindowDetailsTabImageUploader implements Upload.Receiver, Upload.SucceededListener {
+public class UserFormViewImageUploader implements Upload.Receiver, Upload.SucceededListener {
 
-   Consumer<Resource> imageResourceConsumer;
+   private BiConsumer<Resource, String> imageResourceConsumer;
    private ByteArrayOutputStream baos;
    private byte[] scaledImageBytes;
 
-   public UserEditWindowDetailsTabImageUploader(Consumer<Resource> imageResourceConsumer) {
+   public UserFormViewImageUploader(BiConsumer<Resource, String> imageResourceConsumer) {
       this.imageResourceConsumer = imageResourceConsumer;
    }
 
@@ -29,10 +30,13 @@ public class UserEditWindowDetailsTabImageUploader implements Upload.Receiver, U
    @Override
    public void uploadSucceeded(Upload.SucceededEvent event) {
       byte[] bytes = baos.toByteArray();
-      scaledImageBytes = ImageUtils.scale(bytes, 600, 600);
+      scaledImageBytes = ImageUtils.scale(bytes, 500, 500);
 
-      StreamResource imageResource = new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
-      imageResourceConsumer.accept(imageResource);
+      StreamResource imageResource =
+            new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
+      String base16ImageString = BaseEncoding.base16().encode(bytes);
+
+      imageResourceConsumer.accept(imageResource, base16ImageString);
       IOUtils.closeQuietly(baos);
    }
 

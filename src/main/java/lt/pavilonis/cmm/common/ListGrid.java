@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.apache.commons.collections4.CollectionUtils;
@@ -58,6 +59,9 @@ public class ListGrid<T> extends Grid<T> {
 //      setSelectable(true);
 //      setCacheRate(5);
 
+      setSelectionMode(SelectionMode.SINGLE);
+      //TODO any other way?
+      ((SingleSelectionModel) getSelectionModel()).setDeselectAllowed(false);
       setSizeFull();
    }
 

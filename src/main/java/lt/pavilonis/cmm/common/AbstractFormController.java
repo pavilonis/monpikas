@@ -5,6 +5,7 @@ import com.vaadin.data.ValidationException;
 import com.vaadin.data.Validator;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.UserError;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -24,7 +25,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
    private final Class<T> clazz;
    private Binder<T> binder;
-   private T model;
+   protected T model;
    private Window window;
 
    @Autowired
@@ -57,58 +58,55 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
    }
 
    private Component createControlLayout(Consumer<T> persistedEntityConsumer) {
-      return new HorizontalLayout(
-            new AButton(AbstractFormController.class.getSimpleName() + ".buttonSave")
-                  .withIcon(VaadinIcons.CHECK)
-                  .withClickListener(click -> {
-                           T entity = actionSave();
-                           persistedEntityConsumer.accept(entity);
-                           actionClose();
-                           Notification.show(
-                                 getMessageSource().get(AbstractFormController.class, "saved"),
-                                 Type.TRAY_NOTIFICATION
-                           );
-                        }
-                  ),
-            new AButton(AbstractFormController.class.getSimpleName() + ".buttonClose")
-                  .withIcon(VaadinIcons.FILE_REMOVE)
-                  .withClickListener(click -> actionClose())
-      );
+      Button.ClickListener buttonSaveListener = click -> {
+         T entity = actionSave();
+         persistedEntityConsumer.accept(entity);
+         actionClose();
+         String message = getMessageSource().get(AbstractFormController.class, "saved");
+         Notification.show(message, Type.TRAY_NOTIFICATION);
+      };
+
+      AButton buttonSave = new AButton(AbstractFormController.class.getSimpleName() + ".buttonSave")
+            .withIcon(VaadinIcons.CHECK)
+            .withClickListener(buttonSaveListener);
+
+      AButton buttonCancel = new AButton(AbstractFormController.class.getSimpleName() + ".buttonClose")
+            .withIcon(VaadinIcons.FILE_REMOVE)
+            .withClickListener(click -> actionClose());
+
+      return new HorizontalLayout(buttonSave, buttonCancel);
    }
 
-   protected void edit(T entity, ListGrid<T> listGrid) {
+   protected void edit(T listItem, ListGrid<T> listGrid) {
 
-      ID id = entity.getId();
+      ID id = listItem.getId();
       T editEntity;
       if (id == null) {
-         editEntity = entity;
+         editEntity = listItem;
       } else {
          editEntity = getEntityRepository().load(id)
                .orElseThrow(() -> new RuntimeException("Could not load entity selected for edition: "
-                     + entity.getClass().getSimpleName() + ". id: " + id));
+                     + listItem.getClass().getSimpleName() + ". id: " + id));
       }
 
       Consumer<T> persistedEntityConsumer = persistedEntity -> {
-         if (entity.getId() != null) {
-            listGrid.removeItem(entity);
+         if (listItem.getId() != null) {
+            listGrid.removeItem(listItem);
          }
          listGrid.addItem(persistedEntity);
 //         listGrid.sort();
          listGrid.select(persistedEntity);
       };
 
-      FormView<T> formView = createFormView();
-      Component controlLayout = createControlLayout(persistedEntityConsumer);
-
-      window = new Window(
-            formView.getFormCaption(),
-            new VerticalLayout(formView, controlLayout)
-      );
-
-
       model = editEntity;
       binder = new Binder<>(clazz);
       binder.setBean(model);
+
+      FormView<T> formView = createFormView();
+      Component controlLayout = createControlLayout(persistedEntityConsumer);
+      VerticalLayout layout = new VerticalLayout(formView, controlLayout);
+
+      window = new Window(formView.getFormCaption(), layout);
       binder.bindInstanceFields(formView);
 
       formView.manualBinding(binder);

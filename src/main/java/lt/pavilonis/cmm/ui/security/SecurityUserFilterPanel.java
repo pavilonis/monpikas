@@ -19,6 +19,6 @@ final class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
 
    @Override
    public SecurityUserFilter getFilter() {
-      return new SecurityUserFilter(null, text.getValue());
+      return new SecurityUserFilter(null, null, text.getValue());
    }
 }

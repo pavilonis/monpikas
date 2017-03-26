@@ -18,20 +18,21 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
    @Override
    public List<SecurityUser> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-      Map<String, SecurityUser> result = new HashMap<>();
+      Map<Long, SecurityUser> result = new HashMap<>();
 
       while (rs.next()) {
-         String username = rs.getString("u.username");
-         SecurityUser user = result.get(username);
+         Long id = rs.getLong("u.id");
+         SecurityUser user = result.get(id);
          if (user == null) {
             user = new SecurityUser(
+                  id,
                   rs.getString("u.name"),
-                  username,
+                  rs.getString("u.username"),
                   rs.getString("u.password"),
                   rs.getString("u.email"),
                   rs.getBoolean("u.enabled")
             );
-            result.put(username, user);
+            result.put(id, user);
          }
 
          maybeAddAuthority(

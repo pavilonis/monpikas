@@ -3,12 +3,14 @@ package lt.pavilonis.cmm.ui.user;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
+import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
+import lt.pavilonis.cmm.ui.user.form.UserFormController;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringComponent
@@ -16,17 +18,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class UserListController extends AbstractListController<UserRepresentation, String, UserFilter> {
 
    @Autowired
-   private UserGrid userTable;
-
-   @Autowired
    private UserRestRepository userRepository;
 
    @Autowired
    private UserListFilterPanel userListFilterPanel;
 
+   @Autowired
+   private UserFormController userFormController;
+
    @Override
    protected ListGrid<UserRepresentation> createGrid() {
-      return userTable;
+      return new UserGrid();
+   }
+
+   @Override
+   protected AbstractFormController<UserRepresentation, String> getFormController() {
+      return userFormController;
    }
 
    @Override

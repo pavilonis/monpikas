@@ -31,7 +31,7 @@ INSERT INTO Role (name)
    FROM UserRole2
    ORDER BY name;
 
-# INSERT INTO User (username, name, email, password, enabled)
+INSERT INTO User (username, name, email, password, enabled)
    SELECT
       username,
       name,
@@ -48,8 +48,8 @@ INSERT INTO UserRole (user_id, role_id)
    FROM User u
       JOIN User u2 ON u2.username = u.username
       JOIN UserRole2 ur2 ON ur2.username = u2.username
-      JOIN Role r ON r.name = ur2.name
+      JOIN Role r ON r.name = ur2.name;
 
-drop table userRole2;
-drop TABLE User2;
+DROP TABLE UserRole2;
+DROP TABLE User2;
 

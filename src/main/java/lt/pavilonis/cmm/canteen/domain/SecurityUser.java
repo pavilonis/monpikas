@@ -8,8 +8,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class SecurityUser implements UserDetails, Identifiable<String> {
+public final class SecurityUser implements UserDetails, Identifiable<Long> {
 
+   private Long id;
    private String name;
    private String username;
    private String password;
@@ -20,7 +21,8 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
    public SecurityUser() {
    }
 
-   public SecurityUser(String name, String username, String password, String email, boolean enabled) {
+   public SecurityUser(Long id, String name, String username, String password, String email, boolean enabled) {
+      this.id = id;
       this.name = name;
       this.username = username;
       this.password = password;
@@ -29,8 +31,8 @@ public final class SecurityUser implements UserDetails, Identifiable<String> {
    }
 
    @Override
-   public String getId() {
-      return getUsername();
+   public Long getId() {
+      return id;
    }
 
    public String getName() {

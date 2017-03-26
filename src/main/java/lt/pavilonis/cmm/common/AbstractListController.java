@@ -20,7 +20,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       grid = createGrid();
       grid.setSizeFull();
 
-      addTableClickListener(grid);
+      addGridClickListener(grid);
       loadTableData(grid);
       return grid;
    }
@@ -61,7 +61,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 //      grid.sort();
    }
 
-   protected void addTableClickListener(ListGrid<T> table) {
+   protected void addGridClickListener(ListGrid<T> table) {
 
       AbstractFormController<T, ID> formController = getFormController();
 

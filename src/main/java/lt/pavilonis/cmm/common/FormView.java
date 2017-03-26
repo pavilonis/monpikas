@@ -6,10 +6,6 @@ import lt.pavilonis.cmm.App;
 
 public class FormView<T> extends VerticalLayout {
 
-   public FormView() {
-      setMargin(false);
-   }
-
    public void manualBinding(Binder<T> binding) {
    }
 

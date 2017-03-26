@@ -85,7 +85,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
 //   }
 
    @Override
-   protected void addTableClickListener(ListGrid<MealEventLog> table) {/*do nothing*/}
+   protected void addGridClickListener(ListGrid<MealEventLog> table) {/*do nothing*/}
 
    @Override
    protected ListGrid<MealEventLog> createGrid() {

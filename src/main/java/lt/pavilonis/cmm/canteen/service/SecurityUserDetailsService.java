@@ -6,12 +6,14 @@ import lt.pavilonis.cmm.ui.security.SecurityUserFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -34,8 +36,15 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
 
    @Override
    public UserDetails loadUserByUsername(String username) {
-      return load(username)
-            .orElse(null);
+      List<SecurityUser> result = loadAll(new SecurityUserFilter(null, username, null));
+
+      if (result.size() > 1) {
+         throw new IllegalStateException("Duplicate usernames?");
+
+      } else if (result.size() == 1) {
+         return result.get(0);
+      }
+      return null;
    }
 
    @Override
@@ -44,7 +53,7 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
       if (StringUtils.isBlank(user.getUsername())) {
          throw new IllegalArgumentException("no username");
       }
-      return load(user.getUsername()).isPresent()
+      return load(user.getId()).isPresent()
             ? update(user)
             : save(user);
    }
@@ -61,7 +70,7 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
             user.getUsername(), authority.getAuthority()
       ));
 
-      return load(user.getUsername())
+      return load(user.getId())
             .orElseThrow(IllegalStateException::new);
    }
 
@@ -70,27 +79,36 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
       Map<String, Object> args = new HashMap<>();
       args.put("username", user.getUsername());
       args.put("name", user.getName());
+      args.put("email", user.getEmail());
+      args.put("enabled", user.isEnabled());
+      args.put("password", temporaryPassword);
+
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      //TODO
-      namedJdbc.update(
-            "INSERT INTO User (username, name, email, enabled, password) VALUES (?, ?, ?, ?, ?)",
-            user.getUsername(), user.getName(), user.getEmail(), user.isEnabled(), temporaryPassword
+      namedJdbc.update("" +
+                  "INSERT INTO User (username, name, email, enabled, password)" +
+                  " VALUES (:username, :name, :email, :enabled, :password)",
+            new MapSqlParameterSource(args),
+            keyHolder
+
       );
-      return load(user.getUsername())
+      return load(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
    }
 
    @Override
    public List<SecurityUser> loadAll(SecurityUserFilter filter) {
       HashMap<String, Object> args = new HashMap<>();
+      args.put("id", filter.getId());
       args.put("username", StringUtils.stripToNull(filter.getUsername()));
       args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
       return namedJdbc.query("" +
                   "SELECT u.*, r.name " +
                   "FROM User u " +
-                  "  LEFT JOIN UserRole r ON r.username = u.username " +
+                  "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +
+                  "  LEFT JOIN Role r ON r.id = ur.role_id " +
                   "WHERE " +
-                  "  (:username IS NULL OR :username = u.username)" +
+                  "  (:id IS NULL OR :id = u.id)" +
+                  "  AND (:username IS NULL OR :username = u.username)" +
                   "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
                   "ORDER BY u.name",
             args,
@@ -99,8 +117,8 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    }
 
    @Override
-   public Optional<SecurityUser> load(long id) {
-      List<SecurityUser> result = loadAll(new SecurityUserFilter(username, null));
+   public Optional<SecurityUser> load(Long id) {
+      List<SecurityUser> result = loadAll(new SecurityUserFilter(id, null, null));
       if (result.size() > 1) {
          throw new IllegalStateException();
       }
@@ -111,8 +129,8 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    }
 
    @Override
-   public void delete(String username) {
-      jdbc.update("DELETE FROM User WHERE username = ?", username);
+   public void delete(Long id) {
+      jdbc.update("DELETE FROM User WHERE username = ?", id);
    }
 
    @Override
