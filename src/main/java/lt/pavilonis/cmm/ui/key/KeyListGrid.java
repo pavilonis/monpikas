@@ -10,9 +10,9 @@ import java.util.List;
 
 @SpringComponent
 @UIScope
-class KeyGrid extends ListGrid<KeyRepresentation> {
+class KeyListGrid extends ListGrid<KeyRepresentation> {
 
-   public KeyGrid() {
+   public KeyListGrid() {
       super(KeyRepresentation.class);
    }
 
@@ -20,6 +20,16 @@ class KeyGrid extends ListGrid<KeyRepresentation> {
    protected List<String> getProperties(Class<KeyRepresentation> type) {
       return Arrays.asList("scanner", "keyNumber", "dateTime",
             "user.name", "user.group", "user.role", "keyAction");
+   }
+
+   @Override
+   protected void addCustomColumns() {
+      addColumn(key -> key.getUser().getName())
+            .setId("user.name");
+      addColumn(key -> key.getUser().getRole())
+            .setId("user.role");
+      addColumn(key -> key.getUser().getGroup())
+            .setId("user.group");
    }
 
    @Override

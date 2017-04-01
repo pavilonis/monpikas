@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.repository;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.domain.KeyRepresentation;
-import lt.pavilonis.cmm.ui.key.KeyFilter;
+import lt.pavilonis.cmm.ui.key.KeyListFilter;
 import lt.pavilonis.cmm.util.UriUtils;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 
 @Repository
-public class KeyRestRepository implements EntityRepository<KeyRepresentation, String, KeyFilter> {
+public class KeyRestRepository implements EntityRepository<KeyRepresentation, String, KeyListFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(KeyRestRepository.class);
    private static final String SEGMENT_KEYS = "keys";
@@ -38,7 +38,7 @@ public class KeyRestRepository implements EntityRepository<KeyRepresentation, St
    private RestTemplate restTemplate;
 
    @Override
-   public List<KeyRepresentation> loadAll(KeyFilter filter) {
+   public List<KeyRepresentation> loadAll(KeyListFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
 
       List<Object> segments = newArrayList(SEGMENT_KEYS);

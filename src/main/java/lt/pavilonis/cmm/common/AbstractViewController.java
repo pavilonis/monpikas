@@ -44,6 +44,7 @@ public abstract class AbstractViewController {
 
    protected AbstractOrderedLayout getRootLayout() {
       VerticalLayout layout = new VerticalLayout();
+      layout.setMargin(false);
       layout.setSizeFull();
       return layout;
    }

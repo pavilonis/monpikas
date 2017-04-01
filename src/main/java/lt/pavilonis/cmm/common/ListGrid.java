@@ -92,6 +92,7 @@ public class ListGrid<T> extends Grid<T> {
       getDataProvider().refreshAll();
    }
 
+   //TODO return type as map, to force setting IDs ?
    protected void addCustomColumns() {
    }
 

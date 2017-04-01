@@ -13,13 +13,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
-public class KeyListController extends AbstractListController<KeyRepresentation, String, KeyFilter> {
+public class KeyListController extends AbstractListController<KeyRepresentation, String, KeyListFilter> {
 
    @Autowired
    private KeyListFilterPanel keyListFilterPanel;
 
    @Autowired
-   private KeyGrid keyTable;
+   private KeyListGrid keyTable;
 
    @Autowired
    private KeyRestRepository repository;
@@ -30,12 +30,12 @@ public class KeyListController extends AbstractListController<KeyRepresentation,
    }
 
    @Override
-   protected FilterPanel<KeyFilter> createFilterPanel() {
+   protected FilterPanel<KeyListFilter> createFilterPanel() {
       return keyListFilterPanel;
    }
 
    @Override
-   protected EntityRepository<KeyRepresentation, String, KeyFilter> getEntityRepository() {
+   protected EntityRepository<KeyRepresentation, String, KeyListFilter> getEntityRepository() {
       return repository;
    }
 

@@ -34,7 +34,6 @@ public abstract class FilterPanel<FILTER> extends HorizontalLayout {
       );
 
       setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
-      setMargin(false);
       setDefaultValues();
 
       maybeFocus();

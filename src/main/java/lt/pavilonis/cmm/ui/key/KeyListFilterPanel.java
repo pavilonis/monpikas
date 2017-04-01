@@ -3,13 +3,11 @@ package lt.pavilonis.cmm.ui.key;
 import com.vaadin.data.HasValue;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
@@ -26,7 +24,7 @@ import java.util.List;
 
 @SpringComponent
 @UIScope
-class KeyListFilterPanel extends FilterPanel<KeyFilter> {
+class KeyListFilterPanel extends FilterPanel<KeyListFilter> {
 
    private TextField textField;
    private ComboBox scannerCombo;
@@ -45,8 +43,8 @@ class KeyListFilterPanel extends FilterPanel<KeyFilter> {
    }
 
    @Override
-   public KeyFilter getFilter() {
-      return new KeyFilter(
+   public KeyListFilter getFilter() {
+      return new KeyListFilter(
             periodStart.getValue(),
             periodEnd.getValue(),
             scannerCombo.getValue() == null ? null : ((ScannerRepresentation) scannerCombo.getValue()).getId(),
