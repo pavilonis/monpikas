@@ -5,6 +5,10 @@ public class UserFilter {
    private final String role;
    private final String group;
 
+   public UserFilter() {
+      this(null, null, null);
+   }
+
    public UserFilter(String name, String role, String group) {
       this.name = name;
       this.role = role;

@@ -7,6 +7,10 @@ public final class UserMealFilter {
    private final String text;
    private final boolean withMealAssigned;
 
+   public UserMealFilter() {
+      this(null, null, false);
+   }
+
    public UserMealFilter(MealType mealType, String text, boolean withMealAssigned) {
       this.mealType = mealType;
       this.text = text;

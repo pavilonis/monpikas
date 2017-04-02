@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
-import org.springframework.security.core.GrantedAuthority;
+import lt.pavilonis.cmm.ui.security.Role;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ public final class SecurityUser implements UserDetails, Identifiable<Long> {
    private String password;
    private String email;
    private boolean enabled;
-   private List<GrantedAuthority> authorities = new ArrayList<>();
+   private List<Role> authorities = new ArrayList<>();
 
    public SecurityUser() {
    }
@@ -73,11 +73,11 @@ public final class SecurityUser implements UserDetails, Identifiable<Long> {
    }
 
    @Override
-   public Collection<GrantedAuthority> getAuthorities() {
+   public Collection<Role> getAuthorities() {
       return this.authorities;
    }
 
-   public void setAuthorities(List<GrantedAuthority> authorities) {
+   public void setAuthorities(List<Role> authorities) {
       this.authorities = authorities;
    }
 

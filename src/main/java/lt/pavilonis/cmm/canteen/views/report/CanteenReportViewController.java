@@ -75,14 +75,17 @@ public class CanteenReportViewController extends AbstractViewController {
    protected Component getMainArea() {
 
       Button generateButton = new AButton(this.getClass(), "buttonGenerate");
-      VerticalLayout layout = new VerticalLayout(
+      VerticalLayout layout = new VerticalLayout();
+      layout.setDefaultComponentAlignment(TOP_CENTER);
+      layout.addComponents(
             new Label(messageSource.get(this, "title"), ContentMode.HTML),
             new HorizontalLayout(periodStartField, periodEndField),
             pupilTypeCombo,
             generateButton
       );
       layout.setHeight(350, Sizeable.Unit.PIXELS);
-      layout.setDefaultComponentAlignment(TOP_CENTER);
+      layout.setMargin(false);
+      layout.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
       streamResource = getStream(service);
       FileDownloader fileDownloader = new FileDownloader(streamResource);

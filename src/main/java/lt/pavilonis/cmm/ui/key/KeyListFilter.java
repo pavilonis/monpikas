@@ -9,7 +9,11 @@ public final class KeyListFilter {
    private final String text;
    private final boolean logMode;
 
-   KeyListFilter(LocalDate periodStart, LocalDate periodEnd, Long scannerId, String text, boolean logMode) {
+   public KeyListFilter() {
+      this(null, null, null, null, false);
+   }
+
+   public KeyListFilter(LocalDate periodStart, LocalDate periodEnd, Long scannerId, String text, boolean logMode) {
       this.periodStart = periodStart;
       this.periodEnd = periodEnd;
       this.scannerId = scannerId;

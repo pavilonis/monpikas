@@ -13,7 +13,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
@@ -36,7 +35,7 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
 
    @Override
    public UserDetails loadUserByUsername(String username) {
-      List<SecurityUser> result = loadAll(new SecurityUserFilter(null, username, null));
+      List<SecurityUser> result = load(new SecurityUserFilter(null, username, null));
 
       if (result.size() > 1) {
          throw new IllegalStateException("Duplicate usernames?");
@@ -53,24 +52,25 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
       if (StringUtils.isBlank(user.getUsername())) {
          throw new IllegalArgumentException("no username");
       }
-      return load(user.getId()).isPresent()
+      return find(user.getId()).isPresent()
             ? update(user)
             : save(user);
    }
 
    private SecurityUser update(SecurityUser user) {
       jdbc.update(
-            "UPDATE User SET name = ?, email = ?, enabled = ? WHERE username = ?",
-            user.getName(), user.getEmail(), user.isEnabled(), user.getUsername()
+            "UPDATE User SET name = ?, email = ?, enabled = ?, username = ? WHERE id = ?",
+            user.getName(), user.getEmail(), user.isEnabled(), user.getUsername(), user.getId()
       );
 
-      jdbc.update("DELETE FROM UserRole WHERE username = ?", user.getUsername());
-      user.getAuthorities().forEach(authority -> jdbc.update(
-            "INSERT INTO UserRole (username, name) VALUES (?, ?)",
-            user.getUsername(), authority.getAuthority()
-      ));
+      jdbc.update("DELETE FROM UserRole WHERE user_id = ?", user.getId());
+      user.getAuthorities()
+            .forEach(role -> jdbc.update(
+                  "INSERT INTO UserRole (user_id, role_id) VALUES (?, ?)",
+                  user.getId(), role.getId()
+            ));
 
-      return load(user.getId())
+      return find(user.getId())
             .orElseThrow(IllegalStateException::new);
    }
 
@@ -91,18 +91,18 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
             keyHolder
 
       );
-      return load(keyHolder.getKey().longValue())
+      return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
    }
 
    @Override
-   public List<SecurityUser> loadAll(SecurityUserFilter filter) {
+   public List<SecurityUser> load(SecurityUserFilter filter) {
       HashMap<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("username", StringUtils.stripToNull(filter.getUsername()));
       args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
       return namedJdbc.query("" +
-                  "SELECT u.*, r.name " +
+                  "SELECT u.*, r.* " +
                   "FROM User u " +
                   "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +
                   "  LEFT JOIN Role r ON r.id = ur.role_id " +
@@ -117,8 +117,8 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    }
 
    @Override
-   public Optional<SecurityUser> load(Long id) {
-      List<SecurityUser> result = loadAll(new SecurityUserFilter(id, null, null));
+   public Optional<SecurityUser> find(Long id) {
+      List<SecurityUser> result = load(new SecurityUserFilter(id, null, null));
       if (result.size() > 1) {
          throw new IllegalStateException();
       }

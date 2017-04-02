@@ -1,68 +1,79 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ListGrid<T> extends Grid<T> {
+public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
 
-   protected final MessageSourceAdapter messageSource = App.context.getBean(MessageSourceAdapter.class);
-   private Collection<T> items;
+   private static final String PROPERTY_ID = "ID";
+   protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
+   private List<T> items = new ArrayList<>();
 
    public ListGrid(Class<T> type) {
       super(type);
+      super.setItems(items);
 
       List<String> properties = getProperties(type);
+      Map<String, ValueProvider<T, ?>> customColumns = getCustomColumns();
+
       if (CollectionUtils.isNotEmpty(properties)) {
          getColumns().stream()
                .map(Column::getId)
-               .filter(columnId -> !properties.contains(columnId))
+               .filter(column -> !properties.contains(column) || customColumns.containsKey(column))
                .forEach(this::removeColumn);
       }
 
-      addCustomColumns();
-      addColumns(properties);
+      addColumns(properties, customColumns);
 
       if (!properties.isEmpty()) {
          setColumnOrder(properties.toArray(new String[properties.size()]));
       }
 
-
-      String[] headers = getColumns().stream()
-            .map(Column::getId)
-            .map(property -> App.translate(type, property))
-            .toArray(String[]::new);
-
+      String[] headers = translateHeaders(type);
       setHeaders(headers);
 
       defaultConfiguration();
       customize();
+      collapseColumns();
+   }
+
+   protected String[] translateHeaders(Class<T> type) {
+      return getColumns().stream()
+            .map(Column::getId)
+            .map(property -> PROPERTY_ID.equals(property) ? PROPERTY_ID : App.translate(type, property))
+            .toArray(String[]::new);
    }
 
    protected List<String> getProperties(Class<T> type) {
       return Collections.emptyList();
-//      return PropertyCollector.collect(type);
    }
 
    protected void customize() {/*hook*/}
 
    private void defaultConfiguration() {
-//      collap(true);
       setColumnReorderingAllowed(true);
-//      setSelectable(true);
-//      setCacheRate(5);
-
       setSelectionMode(SelectionMode.SINGLE);
-      //TODO any other way?
       ((SingleSelectionModel) getSelectionModel()).setDeselectAllowed(false);
       setSizeFull();
+
+      getColumns()
+            .forEach(column -> column.setHidable(true));
+
+      Grid.Column<T, ?> idColumn = getColumn("id");
+      if (idColumn != null) {
+         idColumn.setHidden(true);
+      }
    }
 
    protected List<String> columnsToCollapse() {
@@ -70,33 +81,28 @@ public class ListGrid<T> extends Grid<T> {
    }
 
    public void collapseColumns() {
-//      columnsToCollapse().forEach(
-//            columnId -> setColumnCollapsed(columnId, true)
-//      );
+      columnsToCollapse().stream()
+            .map(this::getColumn)
+            .forEach(column -> column.setHidden(true));
    }
 
    @Override
    public void setItems(Collection<T> items) {
-      this.items = items;
-      super.setItems(items);
+      this.items.clear();
+      items.forEach(this.items::add);
+      super.setItems(this.items);
    }
 
-   public void removeItem(T item) {
-      this.items.remove(item);
-//      setItems(this.items);
+   protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
+      return Collections.emptyMap();
    }
 
-   public void addItem(T item) {
-      this.items.add(item);
-//      setItems(this.items);
-      getDataProvider().refreshAll();
-   }
+   private void addColumns(List<String> properties, Map<String, ValueProvider<T, ?>> customColumns) {
 
-   //TODO return type as map, to force setting IDs ?
-   protected void addCustomColumns() {
-   }
-
-   public void addColumns(List<String> properties) {
+      customColumns.forEach((id, valueProvider) -> {
+         Column<T, ?> column = addColumn(valueProvider);
+         column.setId(id);
+      });
 
       List<String> existingColumns = getColumns().stream()
             .map(Column::getId)
@@ -124,5 +130,32 @@ public class ListGrid<T> extends Grid<T> {
 
    public boolean hasItem(T item) {
       return this.items.contains(item);
+   }
+
+   public void addOrUpdate(T itemOld, T itemNew) {
+      if (itemOld.getId() != null) {
+         int i = items.indexOf(itemOld);
+         items.remove(i);
+         items.add(i, itemNew);
+      } else {
+         items.add(itemNew);
+      }
+      getDataProvider().refreshAll();
+//      getDataProvider().refreshItem(itemNew);
+      select(itemNew);
+   }
+
+   public void removeItem(T item) {
+      this.items.remove(item);
+      getDataProvider().refreshAll();
+   }
+
+   public void addItem(T item) {
+      this.items.add(item);
+      getDataProvider().refreshAll();
+   }
+
+   public Collection<T> getItems() {
+      return items;
    }
 }

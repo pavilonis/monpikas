@@ -48,7 +48,7 @@ public class MealRestController {
 
       userRestRepository.logUserScan(cardCode);
 
-      Optional<UserMeal> optionalUserMeal = userMealService.load(cardCode);
+      Optional<UserMeal> optionalUserMeal = userMealService.find(cardCode);
 
 
       if (!optionalUserMeal.isPresent()) {

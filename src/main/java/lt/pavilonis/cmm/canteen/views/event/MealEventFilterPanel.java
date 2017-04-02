@@ -27,7 +27,8 @@ public class MealEventFilterPanel extends FilterPanel<MealEventFilter> {
       return new MealEventFilter(
             textField.getValue(),
             periodStart.getValue(),
-            periodEnd.getValue()
+            periodEnd.getValue(),
+            null
       );
    }
 

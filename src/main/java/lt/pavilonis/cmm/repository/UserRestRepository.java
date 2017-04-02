@@ -42,7 +42,8 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    @Autowired
    private RestTemplate restTemplate;
 
-   public List<UserRepresentation> loadAll(UserFilter filter) {
+   @Override
+   public List<UserRepresentation> load(UserFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>(3);
 
@@ -63,7 +64,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    @Override
-   public Optional<UserRepresentation> load(String cardCode) {
+   public Optional<UserRepresentation> find(String cardCode) {
 
       LocalDateTime opStart = LocalDateTime.now();
 

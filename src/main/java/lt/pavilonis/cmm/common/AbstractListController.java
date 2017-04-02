@@ -55,9 +55,8 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
 
-      List<T> beans = repository.loadAll(filter);
+      List<T> beans = repository.load(filter);
       table.setItems(beans);
-      table.collapseColumns();
 //      grid.sort();
    }
 

@@ -1,5 +1,7 @@
 package lt.pavilonis.cmm.canteen.views.event;
 
+import com.google.common.collect.ImmutableMap;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
@@ -12,6 +14,7 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 public class MealEventGrid extends ListGrid<MealEventLog> {
 
@@ -28,27 +31,19 @@ public class MealEventGrid extends ListGrid<MealEventLog> {
    }
 
    @Override
-   protected void addCustomColumns() {
-      addColumn(item -> DATE_FORMAT.format(item.getDate()))
-            .setId("date");
-
-      addColumn(item -> NUMBER_FORMAT.format(item.getPrice()))
-            .setId("price");
-
-      addColumn(item -> App.translate(MealType.class, item.getMealType().name()))
-            .setId("mealType");
-
-      addColumn(item -> App.translate(PupilType.class, item.getPupilType().name()))
-            .setId("pupilType");
+   protected Map<String, ValueProvider<MealEventLog, ?>> getCustomColumns() {
+      return ImmutableMap.of(
+            "date", item -> DATE_FORMAT.format(item.getDate()),
+            "price", item -> NUMBER_FORMAT.format(item.getPrice()),
+            "mealType", item -> App.translate(MealType.class, item.getMealType().name()),
+            "pupilType", item -> App.translate(PupilType.class, item.getPupilType().name())
+      );
    }
 
    @Override
    protected void customize() {
-
       getColumn("cardCode").setWidth(180);
-      getColumn("grade").setWidth(60);
-      getColumn("birthDate").setWidth(130);
-
+      getColumn("grade").setWidth(80);
       sort("date", SortDirection.DESCENDING);
    }
 

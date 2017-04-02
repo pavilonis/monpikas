@@ -38,7 +38,7 @@ public class KeyRestRepository implements EntityRepository<KeyRepresentation, St
    private RestTemplate restTemplate;
 
    @Override
-   public List<KeyRepresentation> loadAll(KeyListFilter filter) {
+   public List<KeyRepresentation> load(KeyListFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
 
       List<Object> segments = newArrayList(SEGMENT_KEYS);
@@ -70,7 +70,7 @@ public class KeyRestRepository implements EntityRepository<KeyRepresentation, St
    }
 
    @Override
-   public Optional<KeyRepresentation> load(String s) {
+   public Optional<KeyRepresentation> find(String s) {
       throw new NotImplementedException("Not needed");
    }
 

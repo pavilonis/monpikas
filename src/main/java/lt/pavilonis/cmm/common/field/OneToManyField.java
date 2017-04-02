@@ -9,39 +9,37 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.repository.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OneToManyField<T> extends CustomField<Collection<T>> {
+public class OneToManyField<T extends Identifiable<?>> extends CustomField<Collection<T>> {
 
    private final ListGrid<T> grid;
-   private final Collection<T> value = new ArrayList<>();
    private final Class<T> type;
 
    public OneToManyField(Class<T> type) {
       this.grid = createGrid(type);
-      this.grid.setItems(value);
       this.type = type;
    }
 
    @Override
    protected void doSetValue(Collection<T> value) {
-      this.value.addAll(value);
+      this.grid.setItems(value);
    }
 
    protected ListGrid<T> createGrid(Class<T> type) {
       ListGrid<T> grid = new ListGrid<>(type);
-      setWidth(550, Unit.PIXELS);
-      setHeight(350, Unit.PIXELS);
+      grid.setWidth(512, Unit.PIXELS);
+      grid.setHeight(330, Unit.PIXELS);
       return grid;
    }
 
@@ -51,17 +49,19 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
             eventAdd -> actionAdd(),
             eventRemove -> actionRemove()
       );
-      return new VerticalLayout(grid, controls);
+      VerticalLayout layout = new VerticalLayout(grid, controls);
+      layout.setMargin(false);
+      return layout;
    }
 
    private void actionAdd() {
       Consumer<Set<T>> selectionConsumer = items -> {
          boolean duplicatesFound = false;
          for (T item : items) {
-            if (value.contains(item)) {
+            if (grid.hasItem(item)) {
                duplicatesFound = true;
             } else {
-               value.add(item);
+               grid.addItem(item);
             }
          }
          if (duplicatesFound) {
@@ -77,22 +77,18 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
       if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
-         selectedItems.forEach(item -> {
-            value.remove(item);
-            grid.setItems(value);
-         });
-//         grid.getDataProvider().refreshAll();
+         selectedItems.forEach(grid::removeItem);
       }
    }
 
    protected List<T> getSelectionElements() {
       EntityRepository<T, ?, ?> repository = RepositoryFinder.find(type);
-      return repository.loadAll(null);
+      return repository.load(null); //TODO null?
    }
 
    @Override
    public Collection<T> getValue() {
-      return value;
+      return grid.getItems();
    }
 
    private class SelectionPopup extends Window {
@@ -135,5 +131,9 @@ public class OneToManyField<T> extends CustomField<Collection<T>> {
 
    public void setTableHeight(float value, Unit unit) {
       grid.setHeight(value, unit);
+   }
+
+   public void setTableWidth(int size, Unit units) {
+      grid.setWidth(size, units);
    }
 }

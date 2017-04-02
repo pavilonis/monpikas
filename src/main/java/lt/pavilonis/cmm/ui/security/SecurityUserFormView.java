@@ -10,7 +10,6 @@ import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.common.FormView;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.OneToManyField;
-import org.springframework.security.core.GrantedAuthority;
 
 import java.util.stream.Stream;
 
@@ -19,7 +18,8 @@ public class SecurityUserFormView extends FormView<SecurityUser> {
    private final TextField username = new ATextField(this.getClass(), "username");
    private final TextField email = new ATextField(this.getClass(), "email");
    private final CheckBox enabled = new CheckBox(App.translate(this, "enabled"));
-   private final OneToManyField<GrantedAuthority> authorities = new OneToManyField<>(GrantedAuthority.class);
+   private final OneToManyField<Role> authorities =
+         new OneToManyField<>(Role.class);
 
    public SecurityUserFormView() {
 
@@ -32,6 +32,7 @@ public class SecurityUserFormView extends FormView<SecurityUser> {
       Stream.of(username, name, email)
             .forEach(field -> field.setWidth(268, Unit.PIXELS));
 
+      authorities.setTableWidth(548, Unit.PIXELS);
       authorities.setTableHeight(256, Unit.PIXELS);
       setMargin(new MarginInfo(false, false, true, false));
    }

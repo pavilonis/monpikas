@@ -16,9 +16,13 @@ public class CollectionValueProviderAdapter<T> implements ValueProvider<T, Strin
 
    @Override
    public String apply(T item) {
-      return collectionSupplier.apply(item)
+      String result = collectionSupplier.apply(item)
             .stream()
             .map(String::valueOf)
             .collect(Collectors.joining(", "));
+
+      return result.length() <= 50
+            ? result
+            : result.substring(0, 49) + "...";
    }
 }

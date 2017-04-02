@@ -54,7 +54,7 @@ public class MealEventListController extends AbstractListController<MealEventLog
 //      String cardCode = (String) form.createGrid().getValue();
 //      MealType type = form.getEventType();
 //      if (valid(cardCode, form.getDate(), type)) {
-//         UserMeal userMeal = pupilService.load(cardCode).get();
+//         UserMeal userMeal = pupilService.find(cardCode).get();
 //
 //         BigDecimal price = userMeal
 //               .getMealData()

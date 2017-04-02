@@ -40,7 +40,25 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
    private MealEventLogRepository eventsRepository;
 
    @Override
-   public Optional<UserMeal> load(String cardCode) {
+   public List<UserMeal> load(UserMealFilter filter) {
+      LocalDateTime opStart = LocalDateTime.now();
+      Collection<MealData> pupilDataCollection = pupilDataRepository.loadAll(
+            filter.isWithMealAssigned(),
+            filter.getMealType()
+      );
+      LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
+
+      opStart = LocalDateTime.now();
+      List<UserRepresentation> users = usersRepository.loadAllPupils(filter.getText());
+      LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
+
+      return filter.isWithMealAssigned()
+            ? mergeByMeals(pupilDataCollection, users)
+            : mergeByUsers(pupilDataCollection, users);
+   }
+
+   @Override
+   public Optional<UserMeal> find(String cardCode) {
       Optional<UserRepresentation> optionalUser = usersRepository.load(cardCode);
       if (!optionalUser.isPresent()) {
          return Optional.empty();
@@ -65,32 +83,14 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
       int mealsThatDay = eventsRepository.numOfMealEvents(cardCode, dayStart, dayEnd, type);
       return mealsThatDay == 0;
    }
-
-   public boolean portionAssigned(String cardCode, MealType type) {
-      Optional<MealData> pupil = pupilDataRepository.load(cardCode);
-
-      return pupil.orElseThrow(IllegalArgumentException::new)
-            .getMeals().stream()
-            .anyMatch(portion -> portion.getType() == type);
-   }
-
-   @Override
-   public List<UserMeal> loadAll(UserMealFilter filter) {
-      LocalDateTime opStart = LocalDateTime.now();
-      Collection<MealData> pupilDataCollection = pupilDataRepository.loadAll(
-            filter.isWithMealAssigned(),
-            filter.getMealType()
-      );
-      LOG.info("Loaded pupil meal data [duration={}]", TimeUtils.duration(opStart));
-
-      opStart = LocalDateTime.now();
-      List<UserRepresentation> users = usersRepository.loadAllPupils(filter.getText());
-      LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
-
-      return filter.isWithMealAssigned()
-            ? mergeByMeals(pupilDataCollection, users)
-            : mergeByUsers(pupilDataCollection, users);
-   }
+//
+//   public boolean portionAssigned(String cardCode, MealType type) {
+//      Optional<MealData> pupil = pupilDataRepository.load(cardCode);
+//
+//      return pupil.orElseThrow(IllegalArgumentException::new)
+//            .getMeals().stream()
+//            .anyMatch(portion -> portion.getType() == type);
+//   }
 
    private List<UserMeal> mergeByUsers(Collection<MealData> pupilDataCollection, List<UserRepresentation> users) {
       LocalDateTime opStart;
@@ -138,7 +138,7 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
       // User representation is only used for viewing.
       // So, only mealData is saved.
       MealData mealData = pupilDataRepository.saveOrUpdate(entity.getMealData());
-      return this.load(mealData.getCardCode())
+      return this.find(mealData.getCardCode())
             .orElseThrow(() -> new RuntimeException("Could not load recently saved mealData for user"));
    }
 

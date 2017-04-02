@@ -28,14 +28,13 @@ public abstract class FilterPanel<FILTER> extends HorizontalLayout {
          .withClickShortcut(ShortcutAction.KeyCode.ESCAPE);
 
    public FilterPanel() {
-      addComponents(
-            getFieldLayout(),
-            getButtonLayout()
-      );
-
       setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
-      setDefaultValues();
 
+      Component fields = getFieldLayout();
+      HorizontalLayout controlButtons = getButtonLayout();
+      addComponents(fields, controlButtons);
+
+      setDefaultValues();
       maybeFocus();
    }
 
@@ -52,8 +51,9 @@ public abstract class FilterPanel<FILTER> extends HorizontalLayout {
 
    protected Component getFieldLayout() {
       HorizontalLayout layout = new HorizontalLayout();
-      fields.forEach(field -> layout.addComponent((Component) field));
       layout.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+
+      fields.forEach(field -> layout.addComponent((Component) field));
       return layout;
    }
 
@@ -62,7 +62,9 @@ public abstract class FilterPanel<FILTER> extends HorizontalLayout {
    public abstract FILTER getFilter();
 
    protected HorizontalLayout getButtonLayout() {
-      return new HorizontalLayout(buttonFilter, buttonReset);
+      HorizontalLayout layout = new HorizontalLayout(buttonFilter, buttonReset);
+      layout.setDefaultComponentAlignment(Alignment.BOTTOM_LEFT);
+      return layout;
    }
 
    protected void fieldReset() {

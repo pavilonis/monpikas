@@ -5,6 +5,7 @@ import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
+import lt.pavilonis.cmm.canteen.views.event.MealEventFilter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +32,8 @@ public class ReportService {
 
    public ByteArrayOutputStream generate(LocalDate periodStart, LocalDate periodEnd, PupilType pupilType) {
 
-      List<MealEventLog> events = mealEventLogRepository.load(pupilType, periodStart, periodEnd);
+      List<MealEventLog> events = mealEventLogRepository
+            .load(new MealEventFilter(null, periodStart, periodEnd, pupilType));
 
       String reportPeriod = DateTimeFormatter.ISO_DATE.format(periodStart) +
             "  -  " + DateTimeFormatter.ISO_DATE.format(periodEnd);

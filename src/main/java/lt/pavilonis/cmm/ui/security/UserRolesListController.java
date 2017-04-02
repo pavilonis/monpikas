@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.ui.security;
 
+import com.vaadin.data.ValueProvider;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
@@ -14,7 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 public class UserRolesListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
@@ -31,9 +34,11 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          }
 
          @Override
-         protected void addCustomColumns() {
-            addColumn(new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities))
-                  .setCaption("Authorities");
+         protected Map<String, ValueProvider<SecurityUser, ?>> getCustomColumns() {
+            return Collections.singletonMap(
+                  "authorities",
+                  new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities)
+            );
          }
 
          @Override
@@ -70,11 +75,6 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          @Override
          protected FormView<SecurityUser> createFormView() {
             return new SecurityUserFormView();
-         }
-
-         @Override
-         protected MessageSourceAdapter getMessageSource() {
-            return UserRolesListController.this.messageSource;
          }
       };
    }

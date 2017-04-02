@@ -29,12 +29,12 @@ public class UserFormView extends FormView<UserRepresentation> {
    private final TextField base16photo = new TextField();
 
    public UserFormView(List<PresenceTimeRepresentation> presenceTimeData, Resource userImage) {
-
+      setWidth(550, Unit.PIXELS);
       TabSheet sheet = new TabSheet();
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
       sheet.addTab(
-            new UserFormViewPresenceTimeTabGrid(presenceTimeData),
+            new UserFormViewPresenceTimeGrid(presenceTimeData),
             App.translate(this, "hoursOfPresence")
       );
 
@@ -42,32 +42,35 @@ public class UserFormView extends FormView<UserRepresentation> {
             new UserEditWindowDetailsTab(userImage, base16photo),
             App.translate(this, "editDetails")
       );
+
+      addComponent(sheet);
    }
 
    private final class UserEditWindowDetailsTab extends HorizontalLayout {
 
-      //            .withConverter(new StringToDateConverter());
       private final VerticalLayout rightLayout = new VerticalLayout();
 
       private Image currentUserImage;
 
       private UserEditWindowDetailsTab(Resource imageResource, TextField base16ImageTextField) {
 
+         setMargin(true);
          UserFormViewImageUploader uploadReceiver = new UserFormViewImageUploader((newImage, base16ImageString) -> {
             updateUserPhoto(newImage);
             base16ImageTextField.setValue(base16ImageString);
          });
          Upload imageUploader = new Upload(null, uploadReceiver);
          imageUploader.setImmediateMode(true);
-         imageUploader.setButtonCaption(App.translate(this, "selectImage"));
+         imageUploader.setButtonCaption(App.translate(UserFormView.class, "selectImage"));
          imageUploader.addSucceededListener(uploadReceiver);
 
          Stream.of(firstName, lastName, birthDate, role, group, cardCode)
                .forEach(field -> field.setWidth("250px"));
 
          VerticalLayout fields = new VerticalLayout(firstName, lastName, birthDate, role, group);
+         fields.setMargin(false);
 
-         rightLayout.setSpacing(true);
+         rightLayout.setMargin(false);
          rightLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
          rightLayout.addComponents(cardCode, imageUploader);
          addComponents(fields, rightLayout);
@@ -83,7 +86,7 @@ public class UserFormView extends FormView<UserRepresentation> {
       private void updateUserPhoto(Resource imageResource) {
          if (currentUserImage != null)
             rightLayout.removeComponent(currentUserImage);
-         Image image = new Image(App.translate(this, "userPhoto"), imageResource);
+         Image image = new Image(App.translate(UserFormView.class, "userPhoto"), imageResource);
          image.addStyleName("user-photo");
          rightLayout.addComponent(currentUserImage = image, 1);
       }

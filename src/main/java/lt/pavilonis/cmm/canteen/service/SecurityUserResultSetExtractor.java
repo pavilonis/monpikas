@@ -1,11 +1,9 @@
 package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import org.apache.commons.lang3.StringUtils;
+import lt.pavilonis.cmm.ui.security.Role;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -35,8 +33,9 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
             result.put(id, user);
          }
 
-         maybeAddAuthority(
+         maybeAddRole(
                user,
+               rs.getLong("r.id"),
                rs.getString("r.name")
          );
       }
@@ -44,12 +43,13 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
       return new ArrayList<>(result.values());
    }
 
-   protected void maybeAddAuthority(SecurityUser user, String roleName) {
-      if (StringUtils.isNoneBlank(roleName)) {
-         GrantedAuthority authority = new SimpleGrantedAuthority(roleName);
-         if (!user.getAuthorities().contains(authority)) {
-            user.getAuthorities().add(authority);
-         }
+   protected void maybeAddRole(SecurityUser user, Long id, String roleName) {
+      boolean isNewRole = user.getAuthorities().stream()
+            .map(Role::getId)
+            .noneMatch(id::equals);
+
+      if (isNewRole) {
+         user.getAuthorities().add(new Role(id, roleName));
       }
    }
 }

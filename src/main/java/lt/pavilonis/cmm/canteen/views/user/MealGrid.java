@@ -1,5 +1,7 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
+import com.google.common.collect.ImmutableMap;
+import com.vaadin.data.ValueProvider;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.common.ListGrid;
 
@@ -7,7 +9,7 @@ import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
+import java.util.Map;
 
 public final class MealGrid extends ListGrid<Meal> {
 
@@ -19,11 +21,11 @@ public final class MealGrid extends ListGrid<Meal> {
    }
 
    @Override
-   protected void addCustomColumns() {
-      addColumn(meal -> messageSource.get(meal.getType().getClass(), meal.getType().name()))
-            .setId("type");
-      addColumn(meal -> NUMBER_FORMAT.format(meal.getPrice()))
-            .setId("price");
+   protected Map<String, ValueProvider<Meal, ?>> getCustomColumns() {
+      return ImmutableMap.of(
+            "type", meal -> messages.get(meal.getType().getClass(), meal.getType().name()),
+            "price", meal -> NUMBER_FORMAT.format(meal.getPrice())
+      );
    }
 
    @Override

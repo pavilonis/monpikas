@@ -13,8 +13,11 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.common.field.AButton;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
@@ -23,6 +26,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
+   private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class);
    private final Class<T> clazz;
    private Binder<T> binder;
    protected T model;
@@ -57,13 +61,15 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       window.close();
    }
 
-   private Component createControlLayout(Consumer<T> persistedEntityConsumer) {
+   private Component createControlLayout(Consumer<T> persistedItemConsumer) {
       Button.ClickListener buttonSaveListener = click -> {
          T entity = actionSave();
-         persistedEntityConsumer.accept(entity);
+         persistedItemConsumer.accept(entity);
          actionClose();
-         String message = getMessageSource().get(AbstractFormController.class, "saved");
-         Notification.show(message, Type.TRAY_NOTIFICATION);
+         Notification.show(
+               App.translate(AbstractFormController.class, "saved"),
+               Type.TRAY_NOTIFICATION
+         );
       };
 
       AButton buttonSave = new AButton(AbstractFormController.class.getSimpleName() + ".buttonSave")
@@ -77,37 +83,27 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       return new HorizontalLayout(buttonSave, buttonCancel);
    }
 
-   protected void edit(T listItem, ListGrid<T> listGrid) {
+   protected void edit(T itemToEdit, ListGrid<T> listGrid) {
 
-      ID id = listItem.getId();
-      T editEntity;
-      if (id == null) {
-         editEntity = listItem;
-      } else {
-         editEntity = getEntityRepository().load(id)
-               .orElseThrow(() -> new RuntimeException("Could not load entity selected for edition: "
-                     + listItem.getClass().getSimpleName() + ". id: " + id));
-      }
+      model = itemToEdit.getId() == null
+            ? itemToEdit
+            : loadExisting(itemToEdit);
 
-      Consumer<T> persistedEntityConsumer = persistedEntity -> {
-         if (listItem.getId() != null) {
-            listGrid.removeItem(listItem);
-         }
-         listGrid.addItem(persistedEntity);
-//         listGrid.sort();
-         listGrid.select(persistedEntity);
-      };
+      Consumer<T> persistedItemConsumer = updatedItem -> listGrid.addOrUpdate(itemToEdit, updatedItem);
 
-      model = editEntity;
       binder = new Binder<>(clazz);
       binder.setBean(model);
 
       FormView<T> formView = createFormView();
-      Component controlLayout = createControlLayout(persistedEntityConsumer);
+      Component controlLayout = createControlLayout(persistedItemConsumer);
       VerticalLayout layout = new VerticalLayout(formView, controlLayout);
 
       window = new Window(formView.getFormCaption(), layout);
-      binder.bindInstanceFields(formView);
+      try {
+         binder.bindInstanceFields(formView);
+      } catch (IllegalStateException e) {
+         LOG.warn(e.getMessage());
+      }
 
       formView.manualBinding(binder);
       formView.initCustomFieldValues(model);
@@ -122,9 +118,10 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       UI.getCurrent().addWindow(window);
    }
 
-
-   protected MessageSourceAdapter getMessageSource() {
-      return messages;
+   private T loadExisting(T itemToEdit) {
+      return getEntityRepository().find(itemToEdit.getId())
+            .orElseThrow(() -> new RuntimeException("Could not load entity selected for edition: "
+                  + itemToEdit.getClass().getSimpleName() + ". id: " + itemToEdit.getId()));
    }
 
    protected Collection<Validator<T>> getValidators() {

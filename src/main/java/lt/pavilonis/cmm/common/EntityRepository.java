@@ -7,9 +7,9 @@ public interface EntityRepository<T, ID, FILTER> {
 
    T saveOrUpdate(T entity);
 
-   List<T> loadAll(FILTER filter);
+   List<T> load(FILTER filter);
 
-   Optional<T> load(ID id);
+   Optional<T> find(ID id);
 
    void delete(ID id);
 

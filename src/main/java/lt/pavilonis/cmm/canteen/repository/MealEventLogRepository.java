@@ -16,7 +16,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -55,23 +55,13 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
       );
    }
 
-   public List<MealEventLog> load(PupilType pupilType, LocalDate periodStart, LocalDate periodEnd) {
-      return jdbc.query("" +
-                  "SELECT * " +
-                  "FROM MealEventLog " +
-                  "WHERE pupilType = ? " +
-                  "  AND `date` BETWEEN ? AND ?",
-            MAPPER,
-            pupilType.name(), periodStart.atTime(0, 0, 0), periodEnd.atTime(23, 59, 59)
-      );
-   }
-
    @Override
-   public List<MealEventLog> loadAll(MealEventFilter filter) {
+   public List<MealEventLog> load(MealEventFilter filter) {
       Map<String, Object> params = new HashMap<>();
-      params.put("periodStart", filter.getPeriodStart());
-      params.put("periodEnd", filter.getPeriodEnd());
+      params.put("periodStart", filter.getPeriodStart() == null ? null : filter.getPeriodStart().atTime(LocalTime.MIN));
+      params.put("periodEnd", filter.getPeriodEnd() == null ? null : filter.getPeriodEnd().atTime(LocalTime.MAX));
       params.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
+      params.put("type", filter.getType() == null ? null : filter.getType().name());
 
       return namedJdbc.query("" +
                   "SELECT * " +
@@ -79,7 +69,8 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
                   "WHERE " +
                   "  (:periodStart IS NULL OR :periodStart <= date) " +
                   "  AND (:periodEnd IS NULL OR :periodEnd >= date) " +
-                  "  AND (:text IS NULL OR name LIKE :text)",
+                  "  AND (:text IS NULL OR name LIKE :text)" +
+                  "  AND (:type IS NULL OR pupilType = :type)",
             params,
             MAPPER
       );
@@ -105,12 +96,12 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
             keyHolder
       );
 
-      return load(keyHolder.getKey().longValue())
+      return find(keyHolder.getKey().longValue())
             .orElseThrow(() -> new RuntimeException("could not saved mealEventLog"));
    }
 
    @Override
-   public Optional<MealEventLog> load(Long id) {
+   public Optional<MealEventLog> find(Long id) {
       MealEventLog result = jdbc.queryForObject("SELECT * FROM MealEventLog WHERE id = ?", MAPPER, id);
       return Optional.of(result);
    }
