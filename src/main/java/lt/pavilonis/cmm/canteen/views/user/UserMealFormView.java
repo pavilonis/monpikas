@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.views.user;
 
+import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.Binder;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.CssLayout;
@@ -9,6 +10,7 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.canteen.domain.Meal;
+import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.common.FieldLayout;
@@ -29,15 +31,17 @@ public class UserMealFormView extends FieldLayout<UserMeal> {
    private final TextArea comment = new TextArea(App.translate(this.getClass(), "comment"));
    private final EnumComboBox<PupilType> typeField = new EnumComboBox<>(PupilType.class)
          .withRequired(true);
-   private final OneToManyField<Meal> mealsField = new OneToManyField<>(Meal.class);
+   private final OneToManyField<Meal> mealsField = new OneToManyField<>(
+         Meal.class, ImmutableMap.of("type", meal -> App.translate(MealType.class, meal.getType().name())));
 
    public UserMealFormView(ImageService imageService) {
       this.imageService = imageService;
-      setWidth(830, Unit.PIXELS);
+      setWidth(852, Unit.PIXELS);
       setHeight(460, Unit.PIXELS);
-      mealsField.setWidth(550, Unit.PIXELS);
+      mealsField.setTableWidth(600, Unit.PIXELS);
 
-      Stream.of(name, birthDate, typeField).forEach(field -> field.setWidth("250px"));
+      name.setWidth(348, Unit.PIXELS);
+      Stream.of(birthDate, typeField).forEach(field -> field.setWidth(240, Unit.PIXELS));
       Stream.of(name, birthDate).forEach(field -> field.setEnabled(false));
 
       HorizontalLayout row1 = new HorizontalLayout(name, birthDate, typeField);

@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.common.field;
 
-import com.vaadin.server.Sizeable;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Notification;
@@ -19,6 +19,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -28,7 +29,11 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
    private final Class<T> type;
 
    public OneToManyField(Class<T> type) {
-      this.grid = createGrid(type);
+      this(type, Collections.emptyMap());
+   }
+
+   public OneToManyField(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
+      this.grid = createGrid(type, customColumns);
       this.type = type;
    }
 
@@ -37,8 +42,13 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
       this.grid.setItems(value);
    }
 
-   protected ListGrid<T> createGrid(Class<T> type) {
-      ListGrid<T> grid = new ListGrid<>(type);
+   protected ListGrid<T> createGrid(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
+      ListGrid<T> grid = new ListGrid<T>(type) {
+         @Override
+         protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
+            return customColumns;
+         }
+      };
       grid.setWidth(512, Unit.PIXELS);
       grid.setHeight(330, Unit.PIXELS);
       return grid;

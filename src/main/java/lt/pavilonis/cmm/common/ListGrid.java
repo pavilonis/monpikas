@@ -5,7 +5,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.MessageSourceAdapter;
-import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,12 +26,11 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
       List<String> properties = getProperties(type);
       Map<String, ValueProvider<T, ?>> customColumns = getCustomColumns();
 
-      if (CollectionUtils.isNotEmpty(properties)) {
-         getColumns().stream()
-               .map(Column::getId)
-               .filter(column -> !properties.contains(column) || customColumns.containsKey(column))
-               .forEach(this::removeColumn);
-      }
+      getColumns().stream()
+            .map(Column::getId)
+            .filter(column ->
+                  (!properties.isEmpty() && !properties.contains(column)) || customColumns.containsKey(column))
+            .forEach(this::removeColumn);
 
       addColumns(properties, customColumns);
 
@@ -100,8 +98,10 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
    private void addColumns(List<String> properties, Map<String, ValueProvider<T, ?>> customColumns) {
 
       customColumns.forEach((id, valueProvider) -> {
-         Column<T, ?> column = addColumn(valueProvider);
-         column.setId(id);
+         if (properties.isEmpty() || properties.contains(id)) {
+            Column<T, ?> column = addColumn(valueProvider);
+            column.setId(id);
+         }
       });
 
       List<String> existingColumns = getColumns().stream()
