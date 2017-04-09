@@ -13,7 +13,7 @@ import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import org.apache.commons.collections4.CollectionUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
    private MealEventFormView formView;
 
    @Override
-   protected FormView<MealEventLog> createFormView() {
+   protected FieldLayout<MealEventLog> createFieldLayout() {
       return formView = new MealEventFormView(mealService);
    }
 
@@ -92,6 +92,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
       return Arrays.asList(validator);
    }
 
+   //TODO fix validations
 //   private void tmpMethod(MealEventLog value) {
 //      if (StringUtils.isBlank(value.getCardCode())) {
 //         throw new Validator.InvalidValueException("Nepasirinktas mokinys");

@@ -7,13 +7,13 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.OneToManyField;
 
 import java.util.stream.Stream;
 
-public class SecurityUserFormView extends FormView<SecurityUser> {
+public class SecurityUserFormView extends FieldLayout<SecurityUser> {
    private final TextField name = new ATextField(this.getClass(), "name");
    private final TextField username = new ATextField(this.getClass(), "username");
    private final TextField email = new ATextField(this.getClass(), "email");

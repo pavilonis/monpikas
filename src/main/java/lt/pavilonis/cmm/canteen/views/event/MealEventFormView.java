@@ -9,7 +9,7 @@ import lt.pavilonis.cmm.canteen.domain.UserMeal;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
 import lt.pavilonis.cmm.canteen.views.user.UserMealFilter;
 import lt.pavilonis.cmm.canteen.views.user.UserMealGrid;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
@@ -19,7 +19,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
-final class MealEventFormView extends FormView<MealEventLog> {
+final class MealEventFormView extends FieldLayout<MealEventLog> {
 
    private final UserMealGrid grid;
    private final UserMealService service;

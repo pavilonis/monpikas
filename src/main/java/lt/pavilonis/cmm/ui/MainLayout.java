@@ -61,7 +61,7 @@ public class MainLayout extends HorizontalLayout {
 
       Stream.of(
             //TODO move icon and role data somewere
-            new MenuButton(CanteenReportViewController.class, "ROLE_MEAL_REPORT", VaadinIcons.EXCHANGE),
+            new MenuButton(CanteenReportViewController.class, "ROLE_MEAL_REPORT", VaadinIcons.FILE_TABLE),
             new MenuButton(MealListController.class, "ROLE_MEAL_CONFIG", VaadinIcons.WRENCH),
             new MenuButton(MealEventListController.class, "ROLE_MEAL_EVENTS", VaadinIcons.CUTLERY),
             new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", VaadinIcons.CHILD),

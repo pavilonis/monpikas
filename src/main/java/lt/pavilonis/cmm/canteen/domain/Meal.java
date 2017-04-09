@@ -2,7 +2,11 @@ package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.converter.ADecimalFormat;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
@@ -13,10 +17,20 @@ public final class Meal implements Identifiable<Long> {
    private static final DecimalFormat NUMBER_FORMAT = new ADecimalFormat();
 
    private Long id;
+
+   @NotBlank
    private String name;
+
+   @NotNull
    private MealType type;
+
+   @NotNull
    private BigDecimal price;
+
+   @NotNull
    private LocalTime startTime;
+
+   @NotNull
    private LocalTime endTime;
 
    public Meal() {

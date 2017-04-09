@@ -5,7 +5,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.domain.UserRepresentation;
 import lt.pavilonis.cmm.repository.UserRestRepository;
@@ -35,7 +35,7 @@ public class UserFormController extends AbstractFormController<UserRepresentatio
    }
 
    @Override
-   protected FormView<UserRepresentation> createFormView() {
+   protected FieldLayout<UserRepresentation> createFieldLayout() {
       List<PresenceTimeRepresentation> presenceTimeData = userRepository.loadPresenceTime(model.getCardCode());
       Resource image = imageService.imageResource(model.getBase16photo());
       return new UserFormView(presenceTimeData, image);

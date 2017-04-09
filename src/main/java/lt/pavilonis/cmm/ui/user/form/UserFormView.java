@@ -10,7 +10,7 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.domain.UserRepresentation;
@@ -18,7 +18,7 @@ import lt.pavilonis.cmm.domain.UserRepresentation;
 import java.util.List;
 import java.util.stream.Stream;
 
-public class UserFormView extends FormView<UserRepresentation> {
+public class UserFormView extends FieldLayout<UserRepresentation> {
 
    private final TextField cardCode = new ATextField(this.getClass(), "cardCode");
    private final TextField firstName = new ATextField(this.getClass(), "firstName");

@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.common.field;
 
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.Notification;

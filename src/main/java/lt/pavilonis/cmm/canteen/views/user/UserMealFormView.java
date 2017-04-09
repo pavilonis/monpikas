@@ -11,7 +11,7 @@ import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
 import lt.pavilonis.cmm.common.field.OneToManyField;
@@ -21,7 +21,7 @@ import java.util.HashSet;
 import java.util.stream.Stream;
 
 //TODO add validator to ensure that user has no more than one meal for each type
-public class UserMealFormView extends FormView<UserMeal> {
+public class UserMealFormView extends FieldLayout<UserMeal> {
    private final ImageService imageService;
    private final ATextField name = new ATextField(this.getClass(), "name");
    private final ATextField birthDate = new ATextField(this.getClass(), "birthDate");
@@ -33,9 +33,9 @@ public class UserMealFormView extends FormView<UserMeal> {
 
    public UserMealFormView(ImageService imageService) {
       this.imageService = imageService;
-      setWidth(774, Unit.PIXELS);
+      setWidth(830, Unit.PIXELS);
       setHeight(460, Unit.PIXELS);
-      mealsField.setWidth(512, Unit.PIXELS);
+      mealsField.setWidth(550, Unit.PIXELS);
 
       Stream.of(name, birthDate, typeField).forEach(field -> field.setWidth("250px"));
       Stream.of(name, birthDate).forEach(field -> field.setEnabled(false));

@@ -2,8 +2,12 @@ package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.ui.security.Role;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -11,11 +15,22 @@ import java.util.List;
 public final class SecurityUser implements UserDetails, Identifiable<Long> {
 
    private Long id;
+
+   @NotBlank
    private String name;
+
+   @NotBlank
    private String username;
+
+   @NotBlank
    private String password;
+
+   @Email
+   @NotBlank
    private String email;
+
    private boolean enabled;
+
    private List<Role> authorities = new ArrayList<>();
 
    public SecurityUser() {

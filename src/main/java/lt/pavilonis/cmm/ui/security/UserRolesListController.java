@@ -1,14 +1,13 @@
 package lt.pavilonis.cmm.ui.security;
 
 import com.vaadin.data.ValueProvider;
-import lt.pavilonis.cmm.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
-import lt.pavilonis.cmm.common.FormView;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.converter.CollectionValueProviderAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,7 +72,7 @@ public class UserRolesListController extends AbstractListController<SecurityUser
          }
 
          @Override
-         protected FormView<SecurityUser> createFormView() {
+         protected FieldLayout<SecurityUser> createFieldLayout() {
             return new SecurityUserFormView();
          }
       };
