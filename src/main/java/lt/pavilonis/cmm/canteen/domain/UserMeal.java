@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
-import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.UserRepresentation;
 
 public final class UserMeal implements Identifiable<String> {
    private final UserRepresentation user;

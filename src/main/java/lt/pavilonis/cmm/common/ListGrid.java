@@ -4,7 +4,7 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -4,7 +4,7 @@ package lt.pavilonis.cmm.canteen.repository;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
-import lt.pavilonis.cmm.canteen.views.event.MealEventFilter;
+import lt.pavilonis.cmm.canteen.ui.event.MealEventFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

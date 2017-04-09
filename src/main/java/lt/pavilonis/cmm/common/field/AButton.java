@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.common.field;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 
 public class AButton extends Button {
 

@@ -13,7 +13,7 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.GridControlPanel;
-import lt.pavilonis.cmm.repository.RepositoryFinder;
+import lt.pavilonis.cmm.common.service.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.Collection;

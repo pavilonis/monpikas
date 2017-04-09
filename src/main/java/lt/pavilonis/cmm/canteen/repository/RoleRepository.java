@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.ui.security.Role;
+import lt.pavilonis.cmm.security.Role;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

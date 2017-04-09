@@ -1,12 +1,10 @@
 package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
-import lt.pavilonis.cmm.converter.ADecimalFormat;
+import lt.pavilonis.cmm.common.converter.ADecimalFormat;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.constraints.NotEmpty;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.time.LocalTime;

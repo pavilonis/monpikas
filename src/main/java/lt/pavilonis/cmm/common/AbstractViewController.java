@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.common;
 import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.VerticalLayout;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class AbstractViewController {

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.ui.security.SecurityUserFilter;
+import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

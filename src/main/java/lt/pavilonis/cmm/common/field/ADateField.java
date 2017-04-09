@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.common.field;
 
 import com.vaadin.ui.DateField;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 
 import java.time.LocalDate;
 

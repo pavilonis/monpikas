@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.report;
 
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;

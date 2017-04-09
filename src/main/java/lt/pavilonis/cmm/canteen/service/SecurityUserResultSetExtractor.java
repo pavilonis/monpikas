@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import lt.pavilonis.cmm.ui.security.Role;
+import lt.pavilonis.cmm.security.Role;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 

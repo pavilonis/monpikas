@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.cmm.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.UserRepresentation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

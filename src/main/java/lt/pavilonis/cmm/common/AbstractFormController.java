@@ -12,7 +12,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import lt.pavilonis.cmm.common.field.AButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

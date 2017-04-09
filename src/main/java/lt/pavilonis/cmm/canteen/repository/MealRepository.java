@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.canteen.views.setting.MealFilter;
+import lt.pavilonis.cmm.canteen.ui.setting.MealFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;

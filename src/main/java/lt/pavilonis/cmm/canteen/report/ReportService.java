@@ -1,11 +1,11 @@
 package lt.pavilonis.cmm.canteen.report;
 
-import lt.pavilonis.cmm.MessageSourceAdapter;
+import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.repository.MealEventLogRepository;
 import lt.pavilonis.cmm.canteen.service.UserMealService;
-import lt.pavilonis.cmm.canteen.views.event.MealEventFilter;
+import lt.pavilonis.cmm.canteen.ui.event.MealEventFilter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
