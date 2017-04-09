@@ -13,6 +13,7 @@ import lt.pavilonis.cmm.canteen.ui.event.MealEventListController;
 import lt.pavilonis.cmm.canteen.ui.report.CanteenReportViewController;
 import lt.pavilonis.cmm.canteen.ui.setting.MealListController;
 import lt.pavilonis.cmm.canteen.ui.user.UserMealListController;
+import lt.pavilonis.cmm.classroom.ClassroomListController;
 import lt.pavilonis.cmm.common.AbstractViewController;
 import lt.pavilonis.cmm.common.MenuButton;
 import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
@@ -66,7 +67,7 @@ public class MainLayout extends HorizontalLayout {
             new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", VaadinIcons.CHILD),
             new MenuButton(UserListController.class, "ROLE_USERS", VaadinIcons.USER),
             new MenuButton(KeyListController.class, "ROLE_KEYS", VaadinIcons.KEY),
-            new MenuButton(KeyListController.class, "ROLE_CLASSROOMS", VaadinIcons.LIGHTBULB),
+            new MenuButton(ClassroomListController.class, "ROLE_CLASSROOMS", VaadinIcons.TIME_FORWARD),
             new MenuButton(UserRolesListController.class, "ROLE_ROLES", VaadinIcons.USER_STAR)
       )
             .filter(button -> userRoles.contains(button.getRoleName()))

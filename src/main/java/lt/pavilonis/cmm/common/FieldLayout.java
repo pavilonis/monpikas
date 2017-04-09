@@ -27,7 +27,7 @@ public class FieldLayout<T> extends VerticalLayout {
    }
 
    public void displayErrorMessage(String errorMessage) {
-      validationStatusLabel.setValue("<h3>" + errorMessage + "</h3>");
+      validationStatusLabel.setValue("<span style='color:red'>" + errorMessage + "</span>");
       validationStatusLabel.setVisible(true);
    }
 }

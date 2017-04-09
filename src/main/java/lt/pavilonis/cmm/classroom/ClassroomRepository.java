@@ -46,7 +46,7 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
          params.add("classroomNumber", filter.getText());
       }
 
-      if (filter.isLogMode()) {
+      if (filter.isHistoryMode()) {
          segments.add(SEGMENT_LOG);
          params.add("periodStart", DateTimeFormatter.ISO_DATE.format(filter.getPeriodStart()));
          params.add("periodEnd", DateTimeFormatter.ISO_DATE.format(filter.getPeriodEnd()));

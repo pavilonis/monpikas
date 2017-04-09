@@ -7,13 +7,13 @@ public final class ClassroomFilter {
    private final LocalDate periodStart;
    private final LocalDate periodEnd;
    private final String text;
-   private final boolean logMode;
+   private final boolean isHistoryMode;
 
-   public ClassroomFilter(LocalDate periodStart, LocalDate periodEnd, String text, boolean logMode) {
+   public ClassroomFilter(LocalDate periodStart, LocalDate periodEnd, String text, boolean isHistoryMode) {
       this.periodStart = periodStart;
       this.periodEnd = periodEnd;
       this.text = text;
-      this.logMode = logMode;
+      this.isHistoryMode = isHistoryMode;
    }
 
    public LocalDate getPeriodStart() {
@@ -28,7 +28,7 @@ public final class ClassroomFilter {
       return text;
    }
 
-   public boolean isLogMode() {
-      return logMode;
+   public boolean isHistoryMode() {
+      return isHistoryMode;
    }
 }

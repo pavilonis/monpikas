@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.classroom;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lt.pavilonis.cmm.common.Identifiable;
 
 import java.time.LocalDateTime;
@@ -10,7 +11,10 @@ public class ClassroomOccupancy implements Identifiable<Void> {
    private final int classroomNumber;
    private final boolean occupied;
 
-   public ClassroomOccupancy(LocalDateTime dateTime, boolean occupied, int classroomNumber) {
+   public ClassroomOccupancy(@JsonProperty("dateTime") LocalDateTime dateTime,
+                             @JsonProperty("occupied") boolean occupied,
+                             @JsonProperty("classroomNumber") int classroomNumber) {
+      
       this.dateTime = dateTime;
       this.classroomNumber = classroomNumber;
       this.occupied = occupied;

@@ -1,7 +1,9 @@
 package lt.pavilonis.cmm.canteen.domain;
 
 import lt.pavilonis.cmm.common.Identifiable;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -29,9 +31,14 @@ public final class MealEventLog implements Comparable, Identifiable<Long> {
    }
 
    private Long id;
+
+   @NotBlank
    private String cardCode;
+
    private String name;
    private String grade;
+
+   @NotNull
    private Date date;
    private BigDecimal price;
    private MealType mealType;

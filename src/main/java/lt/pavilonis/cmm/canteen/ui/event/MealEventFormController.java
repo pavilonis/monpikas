@@ -79,31 +79,15 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected Collection<Validator<MealEventLog>> getValidators() {
-      Validator<MealEventLog> validator = (value, context) -> ValidationResult.ok();
-//      return Collections.singletonList(value -> {
-//         //TODO add validation error component in abstract form
-//         try {
-//            tmpMethod(value);
-//         } catch (Validator.InvalidValueException e) {
-//            Notification.show(e.getMessage(), Notification.Type.ERROR_MESSAGE);
-//            throw e;
-//         }
-//      });
-      return Arrays.asList(validator);
+      return Arrays.asList(
+            (value, context) -> mealService.portionAssigned(value.getCardCode(), value.getMealType())
+                  ? ValidationResult.ok()
+                  : ValidationResult.error("Mokinys neturi leidimo šio tipo maitinimuisi"),
+            (value, context) -> mealService.canHaveMeal(value.getCardCode(), value.getDate(), value.getMealType())
+                  ? ValidationResult.ok()
+                  : ValidationResult.error("Viršijamas nurodytos dienos maitinimosi limitas")
+      );
    }
-
-   //TODO fix validations
-//   private void tmpMethod(MealEventLog value) {
-//      if (StringUtils.isBlank(value.getCardCode())) {
-//         throw new Validator.InvalidValueException("Nepasirinktas mokinys");
-//      } else if (value.getDate() == null) {
-//         throw new Validator.InvalidValueException("Nenurodyta data");
-//      } else if (!mealService.portionAssigned(value.getCardCode(), value.getMealType())) {
-//         throw new Validator.InvalidValueException("Mokinys neturi leidimo šio tipo maitinimuisi");
-//      } else if (!mealService.canHaveMeal(value.getCardCode(), value.getDate(), value.getMealType())) {
-//         throw new Validator.InvalidValueException("Viršijamas nurodytos dienos maitinimosi limitas");
-//      }
-//   }
 
    @Override
    protected EntityRepository<MealEventLog, Long, ?> getEntityRepository() {
@@ -112,7 +96,7 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
 
    @Override
    protected void customizeWindow(Window window) {
-      window.setWidth(406, Unit.PIXELS);
+      window.setWidth(430, Unit.PIXELS);
       window.setHeight(600, Unit.PIXELS);
    }
 }

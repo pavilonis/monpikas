@@ -2,8 +2,6 @@ package lt.pavilonis.cmm.classroom;
 
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.ListGrid;
 
@@ -22,8 +20,7 @@ final class ClassroomListGrid extends ListGrid<ClassroomOccupancy> {
 
    @Override
    protected List<String> getProperties() {
-      return Arrays.asList("dateTime", "classroomNumber", "occupied", "dateTime",
-            "user.name", "user.group", "user.role", "keyAction");
+      return Arrays.asList("dateTime", "classroomNumber", "occupied");
    }
 
    @Override

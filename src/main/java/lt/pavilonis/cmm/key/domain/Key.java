@@ -3,7 +3,6 @@ package lt.pavilonis.cmm.key.domain;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lt.pavilonis.cmm.common.Identifiable;
 import lt.pavilonis.cmm.user.domain.UserRepresentation;
-import org.apache.commons.lang3.NotImplementedException;
 
 import java.time.LocalDateTime;
 
@@ -46,10 +45,5 @@ public class Key implements Identifiable<String> {
 
    public KeyAction getKeyAction() {
       return keyAction;
-   }
-
-   @Override
-   public String getId() {
-      throw new NotImplementedException("not needed");
    }
 }

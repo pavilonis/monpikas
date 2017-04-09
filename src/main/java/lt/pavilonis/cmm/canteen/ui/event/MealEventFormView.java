@@ -34,7 +34,7 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
       this.service = service;
       this.grid = new UserMealGrid();//"Pasirinkite mokinį");
       grid.setWidth(100, Unit.PERCENTAGE);
-      grid.setHeight(200, Unit.PIXELS);
+      grid.setHeight(340, Unit.PIXELS);
 
       List<String> columns = Arrays.asList("user.name", "user.group");
       grid.getColumns().stream()
@@ -59,21 +59,4 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
    Set<UserMeal> getGridSelection() {
       return grid.getSelectedItems();
    }
-//
-//   private final class UserMealGrid extends ListGrid<UserMeal> {
-//      private UserMealGrid(String caption) {
-//         super(UserMeal.class);
-//         setCaption(caption);
-//         setHeaders("Vardas", "Klasė");
-//         getColumn("user.group").setWidth(85);
-//         setSelectionMode(SelectionMode.SINGLE);
-//         setWidth(100, Unit.PERCENTAGE);
-//         sort("user.name");
-//      }
-//
-//      @Override
-//      protected List<String> getProperties(Class<UserMeal> type) {
-//         return Arrays.asList("user.name", "user.group");
-//      }
-//   }
 }

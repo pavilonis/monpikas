@@ -83,14 +83,14 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
       int mealsThatDay = eventsRepository.numOfMealEvents(cardCode, dayStart, dayEnd, type);
       return mealsThatDay == 0;
    }
-//
-//   public boolean portionAssigned(String cardCode, MealType type) {
-//      Optional<MealData> pupil = pupilDataRepository.load(cardCode);
-//
-//      return pupil.orElseThrow(IllegalArgumentException::new)
-//            .getMeals().stream()
-//            .anyMatch(portion -> portion.getType() == type);
-//   }
+
+   public boolean portionAssigned(String cardCode, MealType type) {
+      Optional<MealData> pupil = pupilDataRepository.load(cardCode);
+
+      return pupil.orElseThrow(IllegalArgumentException::new)
+            .getMeals().stream()
+            .anyMatch(portion -> portion.getType() == type);
+   }
 
    private List<UserMeal> mergeByUsers(Collection<MealData> pupilDataCollection, List<UserRepresentation> users) {
       LocalDateTime opStart;
