@@ -18,7 +18,7 @@ public class UserMealGrid extends ListGrid<UserMeal> {
    }
 
    @Override
-   protected List<String> getProperties(Class<UserMeal> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("user.cardCode", "user.name", "user.birthDate",
             "user.group", "mealData.meals", "mealData.comment");
    }

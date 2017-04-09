@@ -27,8 +27,9 @@ public class UserRolesListController extends AbstractListController<SecurityUser
    @Override
    protected ListGrid<SecurityUser> createGrid() {
       return new ListGrid<SecurityUser>(SecurityUser.class) {
+
          @Override
-         protected List<String> getProperties(Class<SecurityUser> type) {
+         protected List<String> getProperties() {
             return Arrays.asList("username", "name", "email", "enabled");
          }
 
@@ -38,12 +39,6 @@ public class UserRolesListController extends AbstractListController<SecurityUser
                   "authorities",
                   new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities)
             );
-         }
-
-         @Override
-         protected void customize() {
-//            setConverter("authorities", new CollectionValueProviderAdapter());
-//            setConverter("enabled", new BooleanCellConverter());
          }
       };
    }

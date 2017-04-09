@@ -26,7 +26,7 @@ public class MealEventGrid extends ListGrid<MealEventLog> {
    }
 
    @Override
-   protected List<String> getProperties(Class<MealEventLog> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("id", "cardCode", "grade", "name", "date", "mealType", "pupilType", "price");
    }
 

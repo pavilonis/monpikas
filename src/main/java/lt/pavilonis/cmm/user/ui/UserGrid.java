@@ -14,7 +14,7 @@ class UserGrid extends ListGrid<UserRepresentation> {
    }
 
    @Override
-   protected List<String> getProperties(Class<UserRepresentation> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("cardCode", "firstName", "lastName", "role", "group");
    }
 

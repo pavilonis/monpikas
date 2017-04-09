@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.key.ui;
+package lt.pavilonis.cmm.classroom;
 
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
@@ -7,35 +7,33 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.key.domain.Key;
-import lt.pavilonis.cmm.key.repository.KeyRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
-public class KeyListController extends AbstractListController<Key, String, KeyListFilter> {
+public class ClassroomListController extends AbstractListController<ClassroomOccupancy, Void, ClassroomFilter> {
 
    @Autowired
-   private KeyRestRepository repository;
+   private ClassroomRepository repository;
 
    @Override
-   protected ListGrid<Key> createGrid() {
-      return new KeyListGrid();
+   protected ListGrid<ClassroomOccupancy> createGrid() {
+      return new ClassroomListGrid();
    }
 
    @Override
-   protected FilterPanel<KeyListFilter> createFilterPanel() {
-      return new KeyListFilterPanel();
+   protected FilterPanel<ClassroomFilter> createFilterPanel() {
+      return new ClassroomFilterPanel();
    }
 
    @Override
-   protected EntityRepository<Key, String, KeyListFilter> getEntityRepository() {
+   protected EntityRepository<ClassroomOccupancy, Void, ClassroomFilter> getEntityRepository() {
       return repository;
    }
 
    @Override
-   protected Class<Key> getEntityClass() {
-      return Key.class;
+   protected Class<ClassroomOccupancy> getEntityClass() {
+      return ClassroomOccupancy.class;
    }
 
    @Override

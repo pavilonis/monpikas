@@ -29,7 +29,7 @@ public final class MealGrid extends ListGrid<Meal> {
    }
 
    @Override
-   protected List<String> getProperties(Class<Meal> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("id", "name", "type", "startTime", "endTime", "price");
    }
 

@@ -23,7 +23,7 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
       super(type);
       super.setItems(items);
 
-      List<String> properties = getProperties(type);
+      List<String> properties = getProperties();
       Map<String, ValueProvider<T, ?>> customColumns = getCustomColumns();
 
       getColumns().stream()
@@ -53,7 +53,7 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
             .toArray(String[]::new);
    }
 
-   protected List<String> getProperties(Class<T> type) {
+   protected List<String> getProperties() {
       return Collections.emptyList();
    }
 

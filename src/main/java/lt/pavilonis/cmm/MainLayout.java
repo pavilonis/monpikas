@@ -66,6 +66,7 @@ public class MainLayout extends HorizontalLayout {
             new MenuButton(UserMealListController.class, "ROLE_USER_MEALS", VaadinIcons.CHILD),
             new MenuButton(UserListController.class, "ROLE_USERS", VaadinIcons.USER),
             new MenuButton(KeyListController.class, "ROLE_KEYS", VaadinIcons.KEY),
+            new MenuButton(KeyListController.class, "ROLE_CLASSROOMS", VaadinIcons.LIGHTBULB),
             new MenuButton(UserRolesListController.class, "ROLE_ROLES", VaadinIcons.USER_STAR)
       )
             .filter(button -> userRoles.contains(button.getRoleName()))

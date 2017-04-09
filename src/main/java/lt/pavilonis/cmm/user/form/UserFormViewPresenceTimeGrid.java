@@ -24,7 +24,7 @@ final class UserFormViewPresenceTimeGrid extends ListGrid<PresenceTimeRepresenta
    }
 
    @Override
-   protected List<String> getProperties(Class<PresenceTimeRepresentation> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("date", "startTime", "endTime", "hourDifference");
    }
 

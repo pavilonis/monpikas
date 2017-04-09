@@ -25,7 +25,7 @@ class KeyListGrid extends ListGrid<Key> {
    }
 
    @Override
-   protected List<String> getProperties(Class<Key> type) {
+   protected List<String> getProperties() {
       return Arrays.asList("scanner", "keyNumber", "dateTime",
             "user.name", "user.group", "user.role", "keyAction");
    }
