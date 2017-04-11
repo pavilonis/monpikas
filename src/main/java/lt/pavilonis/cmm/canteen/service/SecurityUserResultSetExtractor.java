@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.security.Role;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -44,12 +45,17 @@ final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<Se
    }
 
    protected void maybeAddRole(SecurityUser user, Long id, String roleName) {
+      if (StringUtils.isBlank(roleName)) {
+         return;
+      }
+
       boolean isNewRole = user.getAuthorities().stream()
             .map(Role::getId)
             .noneMatch(id::equals);
-
-      if (isNewRole) {
-         user.getAuthorities().add(new Role(id, roleName));
+      if (!isNewRole) {
+         return;
       }
+
+      user.getAuthorities().add(new Role(id, roleName));
    }
 }
