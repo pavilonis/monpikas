@@ -5,10 +5,6 @@ public final class SecurityUserFilter {
    private final String username;
    private final String text;
 
-   public SecurityUserFilter() {
-      this(null, null, null);
-   }
-
    public SecurityUserFilter(Long id, String username, String text) {
       this.id = id;
       this.username = username;
