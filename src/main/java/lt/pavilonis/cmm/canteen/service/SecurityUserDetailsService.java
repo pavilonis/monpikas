@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.canteen.service;
 
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.security.Role;
 import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +16,12 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class SecurityUserDetailsService implements UserDetailsService, EntityRepository<SecurityUser, Long, SecurityUserFilter> {
 
@@ -64,14 +67,20 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
       );
 
       jdbc.update("DELETE FROM UserRole WHERE user_id = ?", user.getId());
-      user.getAuthorities()
-            .forEach(role -> jdbc.update(
-                  "INSERT INTO UserRole (user_id, role_id) VALUES (?, ?)",
-                  user.getId(), role.getId()
-            ));
+      saveRoles(user.getId(), user.getAuthorities());
 
       return find(user.getId())
             .orElseThrow(IllegalStateException::new);
+   }
+
+   private void saveRoles(long userId, Collection<Role> roles) {
+      List<Object[]> args = roles.stream()
+            .map(Role::getId)
+            .distinct()
+            .map(roleId -> new Object[]{userId, roleId})
+            .collect(Collectors.toList());
+
+      jdbc.batchUpdate("INSERT INTO UserRole (user_id, role_id) VALUES (?, ?)", args);
    }
 
    private SecurityUser save(SecurityUser user) {
@@ -89,10 +98,12 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
                   " VALUES (:username, :name, :email, :enabled, :password)",
             new MapSqlParameterSource(args),
             keyHolder
-
       );
-      return find(keyHolder.getKey().longValue())
-            .orElseThrow(IllegalStateException::new);
+
+      long userId = keyHolder.getKey().longValue();
+      saveRoles(userId, user.getAuthorities());
+
+      return find(userId).orElseThrow(IllegalStateException::new);
    }
 
    @Override
