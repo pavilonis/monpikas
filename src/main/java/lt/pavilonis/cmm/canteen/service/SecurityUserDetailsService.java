@@ -52,9 +52,9 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
       if (StringUtils.isBlank(user.getUsername())) {
          throw new IllegalArgumentException("no username");
       }
-      return find(user.getId()).isPresent()
-            ? update(user)
-            : save(user);
+      return user.getId() == null
+            ? save(user)
+            : update(user);
    }
 
    private SecurityUser update(SecurityUser user) {
