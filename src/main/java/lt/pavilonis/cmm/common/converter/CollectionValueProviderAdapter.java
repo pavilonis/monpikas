@@ -8,15 +8,15 @@ import java.util.stream.Collectors;
 
 public class CollectionValueProviderAdapter<T> implements ValueProvider<T, String> {
 
-   private final Function<T, Collection<?>> collectionSupplier;
+   private final Function<T, Collection<?>> transformer;
 
-   public CollectionValueProviderAdapter(Function<T, Collection<?>> collectionSupplier) {
-      this.collectionSupplier = collectionSupplier;
+   public CollectionValueProviderAdapter(Function<T, Collection<?>> transformer) {
+      this.transformer = transformer;
    }
 
    @Override
    public String apply(T item) {
-      String result = collectionSupplier.apply(item)
+      String result = transformer.apply(item)
             .stream()
             .map(String::valueOf)
             .collect(Collectors.joining(", "));

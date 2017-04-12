@@ -12,7 +12,7 @@ import java.util.Map;
 
 final class ClassroomListGrid extends ListGrid<ClassroomOccupancy> {
 
-   private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm");
+   private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd  HH:mm");
 
    public ClassroomListGrid() {
       super(ClassroomOccupancy.class);
