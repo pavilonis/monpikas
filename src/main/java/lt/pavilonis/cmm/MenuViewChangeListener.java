@@ -4,19 +4,19 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CssLayout;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.Map;
+import java.util.List;
 import java.util.stream.StreamSupport;
 
 public class MenuViewChangeListener implements ViewChangeListener {
 
    private static final String STYLE_SELECTED = "selected";
    private final CssLayout menuLayout;
-   private final Map<String, String> menuItems;
+   private final List<MenuLinkGroup> menuLinkGroups;
    private final CssLayout menuItemsLayout;
 
-   public MenuViewChangeListener(CssLayout menuLayout, Map<String, String> menuItems, CssLayout menuItemsLayout) {
+   public MenuViewChangeListener(CssLayout menuLayout, List<MenuLinkGroup> menuLinkGroups, CssLayout menuItemsLayout) {
       this.menuLayout = menuLayout;
-      this.menuItems = menuItems;
+      this.menuLinkGroups = menuLinkGroups;
       this.menuItemsLayout = menuItemsLayout;
    }
 
@@ -27,18 +27,20 @@ public class MenuViewChangeListener implements ViewChangeListener {
 
    @Override
    public void afterViewChange(ViewChangeEvent event) {
+      String newPageCode = event.getViewName();
       menuItemsLayout.forEach(item -> item.removeStyleName(STYLE_SELECTED));
-      menuItems.entrySet().stream()
-            .filter(item -> event.getViewName().equals(item.getKey()))
-            .map(Map.Entry::getValue)
+      menuLinkGroups.stream()
+            .flatMap(group -> group.getLinks().stream())
+            .filter(link -> link.getCode().equals(newPageCode))
             .findAny()
-            .ifPresent(value -> StreamSupport.stream(menuItemsLayout.spliterator(), false)
-                  .filter(c -> StringUtils.startsWith(c.getCaption(), value))
-                  .findAny()
-                  .ifPresent(c -> c.setStyleName(STYLE_SELECTED)));
+            .ifPresent(
+                  link -> StreamSupport.stream(menuItemsLayout.spliterator(), false)
+                        .filter(c -> StringUtils.startsWith(c.getCaption(), App.translate("Menu", link.getCode())))
+                        .findAny()
+                        .ifPresent(c -> c.setStyleName(STYLE_SELECTED))
+            );
 
       menuLayout.removeStyleName("valo-menuLayout-visible");
    }
-
 }
 

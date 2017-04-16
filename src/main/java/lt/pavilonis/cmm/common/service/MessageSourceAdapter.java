@@ -11,19 +11,22 @@ public class MessageSourceAdapter {
    private MessageSource messageSource;
 
    public String get(Object object, String propertyName) {
-      String className;
+      String main;
 
-      if (object instanceof Class) {
+      if (object instanceof String) {
+         main = (String) object;
+
+      } else if (object instanceof Class) {
          Class clazz = (Class) object;
 
-         className = clazz.isAnonymousClass()
+         main = clazz.isAnonymousClass()
                ? "ANONYMOUS"
                : clazz.getSimpleName();
 
       } else {
-         className = object.getClass().getSimpleName();
+         main = object.getClass().getSimpleName();
       }
-      return get(className + "." + propertyName);
+      return get(main + "." + propertyName);
    }
 
    public String get(String code) {

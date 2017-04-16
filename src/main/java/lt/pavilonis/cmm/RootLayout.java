@@ -18,6 +18,7 @@ public class RootLayout extends HorizontalLayout {
 
       addComponents(menuArea, contentArea);
       setExpandRatio(contentArea, 1);
+      setWidth("100%");
    }
 
    public ComponentContainer getContentContainer() {
