@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm;
 
-
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
@@ -44,5 +43,4 @@ public class RootLayout extends HorizontalLayout {
       layout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
       return layout;
    }
-
 }

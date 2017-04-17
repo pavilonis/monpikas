@@ -113,10 +113,6 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
             .forEach(this::addColumn);
    }
 
-//   public void addColumns(String... properties) {
-//      addColumns(Arrays.asList(properties));
-//   }
-
    public void setHeaders(String... headers) {
       List<Column<T, ?>> columns = getColumns();
       if (headers.length != columns.size()) {
@@ -141,7 +137,6 @@ public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
          items.add(itemNew);
       }
       getDataProvider().refreshAll();
-//      getDataProvider().refreshItem(itemNew);
       select(itemNew);
    }
 

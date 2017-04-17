@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.ui.report;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Sizeable;
 import com.vaadin.server.StreamResource;
@@ -99,5 +100,25 @@ public class CanteenReportViewController extends AbstractViewController {
       combo.setEmptySelectionAllowed(false);
       combo.setValue(PupilType.SOCIAL);
       return combo;
+   }
+
+   @Override
+   public String getViewName() {
+      return "canteen-report";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.FILE_TABLE;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "MEAL_REPORT";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "canteen";
    }
 }

@@ -9,25 +9,24 @@ import com.vaadin.ui.themes.ValoTheme;
 import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
+import java.util.Map;
 
 public class MenuItemsLayout extends CssLayout {
 
-   public MenuItemsLayout(List<MenuLinkGroup> linkGroups, Navigator navigator) {
+   public MenuItemsLayout(Map<String, List<MenuItem>> menuStructure, Navigator navigator) {
       setPrimaryStyleName("valo-menuitems");
 
-      for (MenuLinkGroup linkGroup : linkGroups) {
+      menuStructure.forEach((groupCodeName, groupedMenuItems) -> {
 
-         Label groupLabel = createGroupLabel(App.translate("LinkGroup", linkGroup.getCodeName()));
+         Label groupLabel = createGroupLabel(App.translate("LinkGroup", groupCodeName));
          addComponent(groupLabel);
 
-         for (MenuLink link : linkGroup.getLinks()) {
-            Button linkButton = createButton(link, navigator);
-            addComponent(linkButton);
-            navigator.addView(link.getCode(), link.getViewClass());
-         }
-      }
-   }
+         for (MenuItem item : groupedMenuItems) {
 
+            addComponent(createButton(item, navigator));
+         }
+      });
+   }
 
    private Label createGroupLabel(String text) {
       Label label;
@@ -38,20 +37,23 @@ public class MenuItemsLayout extends CssLayout {
       return label;
    }
 
-   private Button createButton(MenuLink link, Navigator navigator) {
-      String caption = App.translate("Menu", link.getCode());
-      Button button = new Button(createButtonCaption(caption), link.getIcon());
-      button.addClickListener(event -> navigator.navigateTo(link.getCode()));
+   private Button createButton(MenuItem item, Navigator navigator) {
+      Button button = new Button(createButtonCaption(item.getCodeName()), item.getIcon());
+      button.addClickListener(
+            event -> navigator.navigateTo(item.getCodeName())
+      );
       button.setCaptionAsHtml(true);
       button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
       return button;
    }
 
 
-   private String createButtonCaption(String caption) {
-      if (RandomUtils.nextInt(1, 5) == 1) {
-         return caption + " <span class=\"valo-menu-badge\">12</span>";
+   private String createButtonCaption(String captionCode) {
+      String translatedCaption = App.translate("Menu", captionCode);
+
+      if (RandomUtils.nextInt(1, 5) != 1) {
+         return translatedCaption;
       }
-      return caption;
+      return translatedCaption + " <span class=\"valo-menu-badge\">12</span>";
    }
 }

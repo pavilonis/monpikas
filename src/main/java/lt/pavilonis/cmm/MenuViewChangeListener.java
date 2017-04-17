@@ -11,12 +11,14 @@ public class MenuViewChangeListener implements ViewChangeListener {
 
    private static final String STYLE_SELECTED = "selected";
    private final CssLayout menuLayout;
-   private final List<MenuLinkGroup> menuLinkGroups;
+   private final List<MenuItem> menuItems;
    private final CssLayout menuItemsLayout;
 
-   public MenuViewChangeListener(CssLayout menuLayout, List<MenuLinkGroup> menuLinkGroups, CssLayout menuItemsLayout) {
+   public MenuViewChangeListener(CssLayout menuLayout,
+                                 List<MenuItem> menuItems,
+                                 CssLayout menuItemsLayout) {
       this.menuLayout = menuLayout;
-      this.menuLinkGroups = menuLinkGroups;
+      this.menuItems = menuItems;
       this.menuItemsLayout = menuItemsLayout;
    }
 
@@ -29,13 +31,13 @@ public class MenuViewChangeListener implements ViewChangeListener {
    public void afterViewChange(ViewChangeEvent event) {
       String newPageCode = event.getViewName();
       menuItemsLayout.forEach(item -> item.removeStyleName(STYLE_SELECTED));
-      menuLinkGroups.stream()
-            .flatMap(group -> group.getLinks().stream())
-            .filter(link -> link.getCode().equals(newPageCode))
+
+      menuItems.stream()
+            .filter(link -> link.getCodeName().equals(newPageCode))
             .findAny()
             .ifPresent(
                   link -> StreamSupport.stream(menuItemsLayout.spliterator(), false)
-                        .filter(c -> StringUtils.startsWith(c.getCaption(), App.translate("Menu", link.getCode())))
+                        .filter(c -> StringUtils.startsWith(c.getCaption(), App.translate("Menu", link.getCodeName())))
                         .findAny()
                         .ifPresent(c -> c.setStyleName(STYLE_SELECTED))
             );

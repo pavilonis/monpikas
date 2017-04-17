@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.security.ui;
 
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
 import lt.pavilonis.cmm.common.AbstractFormController;
@@ -73,5 +74,25 @@ public class SecurityUserListController extends AbstractListController<SecurityU
             return new SecurityUserFormView();
          }
       };
+   }
+
+   @Override
+   public String getViewName() {
+      return "users-system";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.USER_STAR;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "USERS_SYSTEM";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "system";
    }
 }
