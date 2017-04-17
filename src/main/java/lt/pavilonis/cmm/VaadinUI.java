@@ -71,7 +71,7 @@ public class VaadinUI extends UI {
                   )
             ));
 
-      result.put("other", Collections.singletonList(new MenuItem("dashboard", VaadinIcons.DASHBOARD)));
+      result.put("other", Collections.singletonList(new MenuItem("dashboard", VaadinIcons.LINE_CHART)));
       return result;
    }
 

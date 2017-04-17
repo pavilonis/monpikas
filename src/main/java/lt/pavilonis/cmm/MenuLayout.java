@@ -59,7 +59,7 @@ public class MenuLayout extends CssLayout {
       Label title = new Label("" +
             "<h3>ČMM <strong>Monpikas</strong> " +
             "  <span style='color:darkgrey'>" +
-            "     " + PROPERTY_VERSION +
+            "     " + "v" + PROPERTY_VERSION +
             "  </span>" +
             "</h3>", ContentMode.HTML
       );
