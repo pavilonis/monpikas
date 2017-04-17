@@ -4,7 +4,7 @@
 
    <groupId>org.springframework</groupId>
    <artifactId>monpikas</artifactId>
-   <version>0.79</version>
+   <version>0.80</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
@@ -84,7 +84,6 @@
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-bom</artifactId>
             <version>8.0.5</version>
-            <!--<version>7.7.7</version>-->
             <type>pom</type>
             <scope>import</scope>
          </dependency>
@@ -148,6 +147,8 @@
       <resources>
          <resource>
             <directory>src/main/resources</directory>
+            <!-- Helps to get application version using project.version variable-->
+            <filtering>true</filtering>
          </resource>
          <resource>
             <directory>src/main/webapp</directory>

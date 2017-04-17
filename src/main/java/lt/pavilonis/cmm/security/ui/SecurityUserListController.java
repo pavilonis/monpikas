@@ -1,43 +1,46 @@
 package lt.pavilonis.cmm.security.ui;
 
+import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
+import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
 import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.FieldLayout;
+import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
+import lt.pavilonis.cmm.common.converter.BooleanValueProviderAdapter;
 import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 @Controller
-public class UserRolesListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
+public class SecurityUserListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired
    private SecurityUserDetailsService service;
 
    @Override
    protected ListGrid<SecurityUser> createGrid() {
+
       return new ListGrid<SecurityUser>(SecurityUser.class) {
 
          @Override
          protected List<String> getProperties() {
-            return Arrays.asList("username", "name", "email", "enabled");
+            return Arrays.asList("username", "name", "email", "enabled", "authorities");
          }
 
          @Override
          protected Map<String, ValueProvider<SecurityUser, ?>> getCustomColumns() {
-            return Collections.singletonMap(
-                  "authorities",
-                  new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities)
+            return ImmutableMap.of(
+                  "authorities", new CollectionValueProviderAdapter<>(SecurityUser::getAuthorities),
+                  "enabled", new BooleanValueProviderAdapter<>(SecurityUser::getEnabled)
             );
          }
       };
@@ -71,5 +74,25 @@ public class UserRolesListController extends AbstractListController<SecurityUser
             return new SecurityUserFormView();
          }
       };
+   }
+
+   @Override
+   public String getViewName() {
+      return "users-system";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.USER_STAR;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "USERS_SYSTEM";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "system";
    }
 }

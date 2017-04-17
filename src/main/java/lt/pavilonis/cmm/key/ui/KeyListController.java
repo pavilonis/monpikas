@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.key.ui;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
@@ -41,5 +42,25 @@ public class KeyListController extends AbstractListController<Key, String, KeyLi
    @Override
    protected Component getControlPanel() {
       return null;
+   }
+
+   @Override
+   public String getViewName() {
+      return "keys";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.KEY;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "KEYS";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "school";
    }
 }

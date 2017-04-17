@@ -1,19 +1,19 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.ui.AbstractOrderedLayout;
+import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.VerticalLayout;
 import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
+import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public abstract class AbstractViewController {
+public abstract class AbstractViewController implements MenuItemViewProvider {
 
    @Autowired
    protected MessageSourceAdapter messageSource;
 
-   public Component getView() {
+   public ViewLayout getView() {
 
-      AbstractOrderedLayout layout = getRootLayout();
+      ViewLayout layout = getRootLayout();
 
       Component header = getHeader();
       if (header != null) {
@@ -42,10 +42,19 @@ public abstract class AbstractViewController {
 
    protected abstract Component getMainArea();
 
-   protected AbstractOrderedLayout getRootLayout() {
-      VerticalLayout layout = new VerticalLayout();
-      layout.setMargin(false);
-      layout.setSizeFull();
-      return layout;
+   protected ViewLayout getRootLayout() {
+      return new ViewLayout();
+   }
+
+   @Override
+   public View getView(String viewName) {
+      return getView();
+   }
+
+   @Override
+   public String getViewName(String viewAndParameters) {
+      return StringUtils.equals(viewAndParameters, getViewName())
+            ? viewAndParameters
+            : null;
    }
 }

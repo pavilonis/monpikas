@@ -57,6 +57,7 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
 
       LOG.info("Class occupancy entries loaded [number={}, duration={}]",
             response.length, TimeUtils.duration(opStart));
+
       return Arrays.asList(response);
    }
 

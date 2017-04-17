@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.canteen.ui.event;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
@@ -26,63 +27,6 @@ public class MealEventListController extends AbstractListController<MealEventLog
 
    @Autowired
    private MealEventFormController mealEventFormController;
-
-//   private void deleteAction() {
-//      if (!hasRole("ROLE_ADMIN")) {
-//         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
-//         return;
-//      }
-//      MealEventLog value = table.getValue();
-//      if (value == null) {
-//         show("Niekas nepasirinkta", WARNING_MESSAGE);
-//      } else {
-//         eventLogs.delete(value.getId());
-//         table.removeItem(value);
-//         table.select(null);
-//         show("Įrašas pašalintas", TRAY_NOTIFICATION);
-//      }
-//   }
-
-//   private void addAction() {
-//      if (!hasRole("ROLE_ADMIN")) {
-//         show("Veiksmas negalimas: truksta teisių", ERROR_MESSAGE);
-//         return;
-//      }
-//   }
-//
-//   private void saveAction(MealEventManualCreateForm form) {
-//      String cardCode = (String) form.createGrid().getValue();
-//      MealType type = form.getEventType();
-//      if (valid(cardCode, form.getDate(), type)) {
-//         UserMeal userMeal = pupilService.find(cardCode).get();
-//
-//         BigDecimal price = userMeal
-//               .getMealData()
-//               .getMeals()
-//               .stream()
-//               .filter(portion -> portion.getType() == type)
-//               .findFirst()
-//               .get()
-//               .getPrice();
-//
-//         MealEventLog log = eventLogs.saveOrUpdate(
-//               new MealEventLog(
-//                     null,
-//                     userMeal.getUser().getCardCode(),
-//                     userMeal.getUser().getName(),
-//                     userMeal.getUser().getGroup(),
-//                     null,
-//                     price,
-//                     type,
-//                     userMeal.getMealData().getType()
-//
-//               )
-//         );
-//         table.addBeans(log);
-////         form.close();
-//         show("Išsaugota", TRAY_NOTIFICATION);
-//      }
-//   }
 
    @Override
    protected void addGridClickListener(ListGrid<MealEventLog> table) {/*do nothing*/}
@@ -118,5 +62,25 @@ public class MealEventListController extends AbstractListController<MealEventLog
       entity.setDate(new Date());
       entity.setMealType(MealType.DINNER);
       return entity;
+   }
+
+   @Override
+   public String getViewName() {
+      return "meal-events";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.CUTLERY;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "MEAL_EVENTS";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "canteen";
    }
 }

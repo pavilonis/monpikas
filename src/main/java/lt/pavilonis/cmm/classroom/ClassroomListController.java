@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.classroom;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
@@ -39,5 +40,25 @@ public class ClassroomListController extends AbstractListController<ClassroomOcc
    @Override
    protected Component getControlPanel() {
       return null;
+   }
+
+   @Override
+   public String getViewName() {
+      return "classrooms";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.TIME_FORWARD;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "CLASSROOMS";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "school";
    }
 }

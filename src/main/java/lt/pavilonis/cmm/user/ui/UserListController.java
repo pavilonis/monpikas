@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.user.ui;
 
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
@@ -9,8 +10,8 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.user.domain.UserRepresentation;
-import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import lt.pavilonis.cmm.user.form.UserFormController;
+import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringComponent
@@ -54,5 +55,25 @@ public class UserListController extends AbstractListController<UserRepresentatio
    @Override
    protected Component getControlPanel() {
       return null;
+   }
+
+   @Override
+   public String getViewName() {
+      return "users";
+   }
+
+   @Override
+   public VaadinIcons getViewIcon() {
+      return VaadinIcons.USER;
+   }
+
+   @Override
+   public String getViewRole() {
+      return "USERS";
+   }
+
+   @Override
+   public String getViewGroupName() {
+      return "school";
    }
 }
