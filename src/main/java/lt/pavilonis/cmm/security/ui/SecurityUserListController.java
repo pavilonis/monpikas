@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class UserRolesListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
+public class SecurityUserListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired
    private SecurityUserDetailsService service;
