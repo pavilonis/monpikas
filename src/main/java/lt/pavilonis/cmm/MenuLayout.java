@@ -13,9 +13,14 @@ import com.vaadin.ui.themes.ValoTheme;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.stream.Collectors;
 
 public class MenuLayout extends CssLayout {
+
+   private static final String PROPERTY_VERSION = ResourceBundle
+         .getBundle("application")
+         .getString("application.version");
 
    public MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure) {
 
@@ -44,16 +49,19 @@ public class MenuLayout extends CssLayout {
 
       ThemeResource icon = new ThemeResource("profile-pic-300px.jpg");
       MenuBar.MenuItem settingsItem = settings.addItem("Vardas Pavardė", icon, null);
-      settingsItem.addItem("Preferences", null);
+      settingsItem.addItem("TODO1", null);
       settingsItem.addSeparator();
-      settingsItem.addItem("Sign Out", null);
+      settingsItem.addItem("TODO2", null);
       return settings;
    }
 
    private HorizontalLayout createMenuHeader() {
-      Label title = new Label(
-            //TODO update version with maven
-            "<h3>ČMM <strong>Monpikas</strong> <span style='color:darkgrey'>v0.91</span></h3>", ContentMode.HTML
+      Label title = new Label("" +
+            "<h3>ČMM <strong>Monpikas</strong> " +
+            "  <span style='color:darkgrey'>" +
+            "     " + PROPERTY_VERSION +
+            "  </span>" +
+            "</h3>", ContentMode.HTML
       );
       title.setSizeUndefined();
       HorizontalLayout layout = new HorizontalLayout(title);

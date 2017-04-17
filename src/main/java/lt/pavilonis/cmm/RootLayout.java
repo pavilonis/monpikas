@@ -1,12 +1,16 @@
 package lt.pavilonis.cmm;
 
+import com.vaadin.navigator.View;
+import com.vaadin.navigator.ViewDisplay;
+import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-public class RootLayout extends HorizontalLayout {
+@SpringViewDisplay
+public class RootLayout extends HorizontalLayout implements ViewDisplay{
 
    private final CssLayout contentArea = createContentArea();
    private final CssLayout menuArea = createMenuArea();
@@ -42,5 +46,11 @@ public class RootLayout extends HorizontalLayout {
       CssLayout layout = new CssLayout();
       layout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
       return layout;
+   }
+
+   @Override
+   public void showView(View view) {
+      contentArea.removeAllComponents();
+      contentArea.addComponent((Component)view);
    }
 }

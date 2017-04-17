@@ -6,7 +6,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import org.apache.commons.lang3.RandomUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -18,13 +17,14 @@ public class MenuItemsLayout extends CssLayout {
 
       menuStructure.forEach((groupCodeName, groupedMenuItems) -> {
 
-         Label groupLabel = createGroupLabel(App.translate("LinkGroup", groupCodeName));
+         Label groupLabel = createGroupLabel(App.translate("MenuItemGroup", groupCodeName));
          addComponent(groupLabel);
 
-         for (MenuItem item : groupedMenuItems) {
-
-            addComponent(createButton(item, navigator));
-         }
+         groupedMenuItems.stream()
+               .sorted((i1, i2) -> App.translate(MenuItem.class, i1.getCodeName())
+                     .compareTo(App.translate(MenuItem.class, i2.getCodeName())))
+               .map(item -> createButton(item, navigator))
+               .forEach(this::addComponent);
       });
    }
 
@@ -38,7 +38,7 @@ public class MenuItemsLayout extends CssLayout {
    }
 
    private Button createButton(MenuItem item, Navigator navigator) {
-      Button button = new Button(createButtonCaption(item.getCodeName()), item.getIcon());
+      Button button = new Button(createButtonCaption(item), item.getIcon());
       button.addClickListener(
             event -> navigator.navigateTo(item.getCodeName())
       );
@@ -48,12 +48,12 @@ public class MenuItemsLayout extends CssLayout {
    }
 
 
-   private String createButtonCaption(String captionCode) {
-      String translatedCaption = App.translate("Menu", captionCode);
+   private String createButtonCaption(MenuItem item) {
+      String translatedCaption = App.translate(item, item.getCodeName());
 
-      if (RandomUtils.nextInt(1, 5) != 1) {
-         return translatedCaption;
-      }
-      return translatedCaption + " <span class=\"valo-menu-badge\">12</span>";
+//      if (RandomUtils.nextInt(1, 5) != 1) {
+      return translatedCaption;
+//      }
+//      return translatedCaption + " <span class=\"valo-menu-badge\">12</span>";
    }
 }

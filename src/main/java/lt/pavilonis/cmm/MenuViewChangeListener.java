@@ -33,13 +33,19 @@ public class MenuViewChangeListener implements ViewChangeListener {
       menuItemsLayout.forEach(item -> item.removeStyleName(STYLE_SELECTED));
 
       menuItems.stream()
-            .filter(link -> link.getCodeName().equals(newPageCode))
+            .filter(item -> item.getCodeName().equals(newPageCode))
             .findAny()
-            .ifPresent(
-                  link -> StreamSupport.stream(menuItemsLayout.spliterator(), false)
-                        .filter(c -> StringUtils.startsWith(c.getCaption(), App.translate("Menu", link.getCodeName())))
-                        .findAny()
-                        .ifPresent(c -> c.setStyleName(STYLE_SELECTED))
+            .ifPresent(item -> {
+                     String caption = App.translate(item, item.getCodeName());
+                     StreamSupport.stream(menuItemsLayout.spliterator(), false)
+                           .filter(c -> StringUtils.equals(
+                                 c.getCaption(),
+//                                 StringUtils.strip(StringUtils.substringBefore(c.getCaption(), "<")),
+                                 caption
+                           ))
+                           .findAny()
+                           .ifPresent(c -> c.setStyleName(STYLE_SELECTED));
+                  }
             );
 
       menuLayout.removeStyleName("valo-menuLayout-visible");

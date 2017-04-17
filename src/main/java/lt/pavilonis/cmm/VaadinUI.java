@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm;
 
 import com.vaadin.annotations.Theme;
+import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
@@ -16,24 +17,29 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 @SpringUI
 @Theme("custom")
 public class VaadinUI extends UI {
-   //
+
    @Autowired
    private List<MenuItemViewProvider> viewProviders;
+
+   @Autowired
+   private RootLayout rootLayout;
 
    @Override
    protected void init(VaadinRequest request) {
 
-      RootLayout rootLayout = new RootLayout();
+//      RootLayout rootLayout = new RootLayout();
 
-      Navigator navigator = new Navigator(this, rootLayout.getContentContainer());
+      Navigator navigator = getNavigator();//new Navigator(this, rootLayout.getContentContainer());
 
       viewProviders.forEach(navigator::addProvider);
 
@@ -53,15 +59,20 @@ public class VaadinUI extends UI {
 
       Set<String> userRoles = currentUserRoles();
 
-      return viewProviders.stream()
+      Map<String, List<MenuItem>> result = viewProviders.stream()
             .filter(provider -> userRoles.contains(provider.getViewRole()))
             .collect(Collectors.groupingBy(
                   MenuItemViewProvider::getViewGroupName,
+                  () -> new TreeMap<>((a, b) -> App.translate("MenuItemGroup", a)
+                        .compareTo(App.translate("MenuItemGroup", b))),
                   Collectors.mapping(
                         provider -> new MenuItem(provider.getViewName(), provider.getViewIcon()),
                         Collectors.toList()
                   )
             ));
+
+      result.put("other", Collections.singletonList(new MenuItem("dashboard", VaadinIcons.DASHBOARD)));
+      return result;
    }
 
    private Set<String> currentUserRoles() {
