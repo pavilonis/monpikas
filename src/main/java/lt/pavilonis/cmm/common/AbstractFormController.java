@@ -41,13 +41,15 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
    }
 
    protected Optional<T> actionSave(FieldLayout<T> fieldLayout) {
-      beforeSave(model);
 
       EntityRepository<T, ID, ?> entityRepository = getEntityRepository();
 
       try {
 
          binder.writeBean(model);
+
+         beforeSave(model);
+
          T persistedItem = entityRepository.saveOrUpdate(model);
          return Optional.of(persistedItem);
 

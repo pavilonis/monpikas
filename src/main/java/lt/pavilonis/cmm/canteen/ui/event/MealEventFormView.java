@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.ui.event;
 
 
+import com.vaadin.data.Binder;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
@@ -14,8 +15,14 @@ import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
 
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -26,13 +33,13 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
    private final TextField textFilter = new ATextField(getClass(), "name");
    private final EnumComboBox<MealType> mealType = new EnumComboBox<>(MealType.class)
          .withRequired(true);
-   private final ADateField date = new ADateField(getClass(), "date")
+   private final ADateField dateField = new ADateField(getClass(), "date")
          .withValue(LocalDate.now())
          .withRequired();
 
    MealEventFormView(UserMealService service) {
       this.service = service;
-      this.grid = new UserMealGrid();//"Pasirinkite mokinį");
+      this.grid = new UserMealGrid();
       grid.setWidth(100, Unit.PERCENTAGE);
       grid.setHeight(340, Unit.PIXELS);
 
@@ -41,7 +48,7 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
             .filter(col -> !columns.contains(col.getId()))
             .forEach(col -> col.setHidden(true));
 
-      addComponents(new HorizontalLayout(date, mealType), textFilter, grid);
+      addComponents(new HorizontalLayout(dateField, mealType), textFilter, grid);
 
       textFilter.addValueChangeListener(change -> updateTable(change.getValue(), mealType.getValue()));
       mealType.addValueChangeListener(change -> updateTable(textFilter.getValue(), mealType.getValue()));
@@ -58,5 +65,19 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
 
    Set<UserMeal> getGridSelection() {
       return grid.getSelectedItems();
+   }
+
+   @Override
+   public void manualBinding(Binder<MealEventLog> binding) {
+      binding.bind(
+            dateField,
+            mealEventLog -> {
+               Instant instant = mealEventLog.getDate().toInstant();
+               return LocalDateTime.ofInstant(instant, ZoneId.systemDefault()).toLocalDate();
+            },
+            (mealEventLog, localDate) -> {
+               ZonedDateTime zonedDateTime = localDate.atTime(LocalTime.MIN).atZone(ZoneId.systemDefault());
+               mealEventLog.setDate(Date.from(zonedDateTime.toInstant()));
+            });
    }
 }
