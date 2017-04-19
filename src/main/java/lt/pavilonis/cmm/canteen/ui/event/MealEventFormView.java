@@ -4,6 +4,7 @@ package lt.pavilonis.cmm.canteen.ui.event;
 import com.vaadin.data.Binder;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
+import lt.pavilonis.cmm.canteen.domain.Meal;
 import lt.pavilonis.cmm.canteen.domain.MealEventLog;
 import lt.pavilonis.cmm.canteen.domain.MealType;
 import lt.pavilonis.cmm.canteen.domain.UserMeal;
@@ -14,6 +15,7 @@ import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
+import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.Instant;
 import java.time.LocalDate;
@@ -63,10 +65,6 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
       grid.setItems(beans);
    }
 
-   Set<UserMeal> getGridSelection() {
-      return grid.getSelectedItems();
-   }
-
    @Override
    public void manualBinding(Binder<MealEventLog> binding) {
       binding.bind(
@@ -78,6 +76,41 @@ final class MealEventFormView extends FieldLayout<MealEventLog> {
             (mealEventLog, localDate) -> {
                ZonedDateTime zonedDateTime = localDate.atTime(LocalTime.MIN).atZone(ZoneId.systemDefault());
                mealEventLog.setDate(Date.from(zonedDateTime.toInstant()));
+
+               //TODO use oneToMany field to get value like from other fields
+               setSelectedUserData(mealEventLog);
             });
+   }
+
+   private void setSelectedUserData(MealEventLog model) {
+      Set<UserMeal> value = grid.getSelectedItems();
+
+      if (CollectionUtils.isNotEmpty(value)
+            && value.size() == 1
+            && mealType.getValue() != null) {
+
+         UserMeal selectedUserMeal = value.iterator().next();
+
+         Meal meal = selectedUserMeal.getMealData()
+               .getMeals()
+               .stream()
+               .filter(portion -> portion.getType() == mealType.getValue())
+               .findFirst()
+               .orElseThrow(() -> new RuntimeException("Could not find required meal type. Should not happen"));
+
+         model.setDate(correctMealEventTime(model.getDate(), meal));
+         model.setName(selectedUserMeal.getUser().getName());
+         model.setCardCode(selectedUserMeal.getUser().getCardCode());
+         model.setGrade(selectedUserMeal.getUser().getGroup());
+         model.setPupilType(selectedUserMeal.getMealData().getType());
+         model.setPrice(meal.getPrice());
+      }
+   }
+
+   private Date correctMealEventTime(Date date, Meal meal) {
+      return org.joda.time.LocalDateTime.fromDateFields(date)
+            .withTime(0, 0, 0, 0)
+            .plusSeconds(meal.getStartTime().toSecondOfDay())
+            .toDate();
    }
 }

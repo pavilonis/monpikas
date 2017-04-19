@@ -48,7 +48,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
 
          binder.writeBean(model);
 
-         beforeSave(model);
+//         beforeSave(model);
 
          T persistedItem = entityRepository.saveOrUpdate(model);
          return Optional.of(persistedItem);
@@ -66,7 +66,7 @@ public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
       }
    }
 
-   protected void beforeSave(T model) {/*hook*/}
+//   protected void beforeSave(T model) {/*hook*/}
 
    protected void actionClose() {
       window.close();
