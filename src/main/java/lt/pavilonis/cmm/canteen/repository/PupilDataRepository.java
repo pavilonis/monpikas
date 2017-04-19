@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.MealData;
 import lt.pavilonis.cmm.canteen.domain.MealType;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -32,6 +33,9 @@ public class PupilDataRepository {
    }
 
    public Optional<MealData> load(String cardCode) {
+      if (StringUtils.isBlank(cardCode)) {
+         throw new IllegalArgumentException("Got empty argument!");
+      }
       Map<String, MealData> result = query(cardCode, null, false);
       return result.isEmpty()
             ? Optional.<MealData>empty()

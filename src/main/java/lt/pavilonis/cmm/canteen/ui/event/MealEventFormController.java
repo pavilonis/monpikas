@@ -15,6 +15,7 @@ import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.joda.time.LocalDateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -44,38 +45,33 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
       return formView = new MealEventFormView(mealService);
    }
 
-   @Override
-   protected void beforeSave(MealEventLog model) {
-      Set<UserMeal> value = formView.getGridSelection();
+//   @Override
+//   protected void beforeSave(MealEventLog model) {
+//      Set<UserMeal> value = formView.getGridSelection();
+//
+//      if (CollectionUtils.isNotEmpty(value)
+//            && value.size() == 1
+//            && model.getMealType() != null) {
+//
+//         UserMeal selectedUserMeal = value.iterator().next();
+//
+//         Meal meal = selectedUserMeal.getMealData()
+//               .getMeals()
+//               .stream()
+//               .filter(portion -> portion.getType() == model.getMealType())
+//               .findFirst()
+//               .orElseThrow(() -> new RuntimeException("User does not have required meal assigned"));
+//
+//         model.setDate(correctMealEventTime(model.getDate(), meal));
+//         model.setName(selectedUserMeal.getUser().getName());
+//         model.setCardCode(selectedUserMeal.getUser().getCardCode());
+//         model.setGrade(selectedUserMeal.getUser().getGroup());
+//         model.setPupilType(selectedUserMeal.getMealData().getType());
+//         model.setPrice(meal.getPrice());
+//      }
+//   }
 
-      if (CollectionUtils.isNotEmpty(value)
-            && value.size() == 1
-            && model.getMealType() != null) {
 
-         UserMeal selectedUserMeal = value.iterator().next();
-
-         Meal meal = selectedUserMeal.getMealData()
-               .getMeals()
-               .stream()
-               .filter(portion -> portion.getType() == model.getMealType())
-               .findFirst()
-               .orElseThrow(() -> new RuntimeException("User does not have required meal assigned"));
-
-         model.setDate(correctMealEventTime(model.getDate(), meal));
-         model.setName(selectedUserMeal.getUser().getName());
-         model.setCardCode(selectedUserMeal.getUser().getCardCode());
-         model.setGrade(selectedUserMeal.getUser().getGroup());
-         model.setPupilType(selectedUserMeal.getMealData().getType());
-         model.setPrice(meal.getPrice());
-      }
-   }
-
-   private Date correctMealEventTime(Date date, Meal meal) {
-      return LocalDateTime.fromDateFields(date)
-            .withTime(0, 0, 0, 0)
-            .plusSeconds(meal.getStartTime().toSecondOfDay())
-            .toDate();
-   }
 
    @Override
    protected Collection<Validator<MealEventLog>> getValidators() {
@@ -85,7 +81,10 @@ public class MealEventFormController extends AbstractFormController<MealEventLog
                   : ValidationResult.error("Mokinys neturi leidimo šio tipo maitinimuisi"),
             (value, context) -> mealService.canHaveMeal(value.getCardCode(), value.getDate(), value.getMealType())
                   ? ValidationResult.ok()
-                  : ValidationResult.error("Viršijamas nurodytos dienos maitinimosi limitas")
+                  : ValidationResult.error("Viršijamas nurodytos dienos maitinimosi limitas"),
+            (value, context) -> StringUtils.isNotBlank(value.getCardCode())
+                  ? ValidationResult.ok()
+                  : ValidationResult.error("Nepasirinktas mokinys")
       );
    }
 

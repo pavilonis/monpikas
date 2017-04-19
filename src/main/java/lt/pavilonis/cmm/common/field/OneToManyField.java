@@ -27,13 +27,15 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
 
    private final ListGrid<T> grid;
    private final Class<T> type;
+   private final Map<String, ValueProvider<T, ?>> customColumns;
 
    public OneToManyField(Class<T> type) {
       this(type, Collections.emptyMap());
    }
 
    public OneToManyField(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
-      this.grid = createGrid(type, customColumns);
+      this.customColumns = customColumns;
+      this.grid = createGrid(type);
       this.type = type;
    }
 
@@ -42,7 +44,7 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
       this.grid.setItems(value);
    }
 
-   protected ListGrid<T> createGrid(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
+   protected ListGrid<T> createGrid(Class<T> type) {
       ListGrid<T> grid = new ListGrid<T>(type) {
          @Override
          protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
@@ -110,7 +112,12 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
          setWidth(700, Unit.PIXELS);
          setHeight(490, Unit.PIXELS);
 
-         ListGrid<T> selectionTable = new ListGrid<>(type);
+         ListGrid<T> selectionTable = new ListGrid<T>(type) {
+            @Override
+            protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
+               return customColumns;
+            }
+         };
          selectionTable.setItems(getSelectionElements());
          selectionTable.addItemClickListener(click -> {
             if (click.getMouseEventDetails().isDoubleClick()) {
