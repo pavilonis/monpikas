@@ -6,8 +6,8 @@ import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
-import lt.pavilonis.cmm.user.domain.PresenceTimeRepresentation;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.PresenceTime;
+import lt.pavilonis.cmm.user.domain.User;
 import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import lt.pavilonis.cmm.common.service.ImageService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +16,7 @@ import java.util.List;
 
 @SpringComponent
 @UIScope
-public class UserFormController extends AbstractFormController<UserRepresentation, String> {
+public class UserFormController extends AbstractFormController<User, String> {
 
    @Autowired
    private UserRestRepository userRepository;
@@ -26,17 +26,17 @@ public class UserFormController extends AbstractFormController<UserRepresentatio
 
    @Autowired
    public UserFormController() {
-      super(UserRepresentation.class);
+      super(User.class);
    }
 
    @Override
-   protected EntityRepository<UserRepresentation, String, ?> getEntityRepository() {
+   protected EntityRepository<User, String, ?> getEntityRepository() {
       return userRepository;
    }
 
    @Override
-   protected FieldLayout<UserRepresentation> createFieldLayout() {
-      List<PresenceTimeRepresentation> presenceTimeData = userRepository.loadPresenceTime(model.getCardCode());
+   protected FieldLayout<User> createFieldLayout() {
+      List<PresenceTime> presenceTimeData = userRepository.loadPresenceTime(model.getCardCode());
       Resource image = imageService.imageResource(model.getBase16photo());
       return new UserFormView(presenceTimeData, image);
    }

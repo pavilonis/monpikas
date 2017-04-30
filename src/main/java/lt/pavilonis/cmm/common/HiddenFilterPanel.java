@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.data.HasValue;
-import com.vaadin.ui.AbstractField;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
 import java.util.Collections;
 import java.util.List;

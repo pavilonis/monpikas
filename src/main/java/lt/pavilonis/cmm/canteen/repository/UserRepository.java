@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.User;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +36,9 @@ public class UserRepository {
    @Autowired
    private RestTemplate rest;
 
-   public Optional<UserRepresentation> load(String cardCode) {
+   public Optional<User> load(String cardCode) {
       try {
-         UserRepresentation response = rest.getForObject(uri(cardCode), UserRepresentation.class);
+         User response = rest.getForObject(uri(cardCode), User.class);
          return Optional.of(response);
       } catch (HttpClientErrorException e) {
          LOG.error(e.getMessage());
@@ -55,9 +55,9 @@ public class UserRepository {
       }
    }
 
-   public List<UserRepresentation> loadAll() {
+   public List<User> loadAll() {
       try {
-         UserRepresentation[] response = rest.getForObject(uri(), UserRepresentation[].class);
+         User[] response = rest.getForObject(uri(), User[].class);
          return newArrayList(response);
       } catch (Exception e) {
          e.printStackTrace();
@@ -82,15 +82,15 @@ public class UserRepository {
       return uri(Collections.emptyMap(), segments);
    }
 
-   public List<UserRepresentation> loadAllPupils(String name) {
+   public List<User> loadAllPupils(String name) {
       Map<String, Object> args = new HashMap<>();
       args.put(ARG_ROLE, ROLE_PUPIL);
       if (StringUtils.isNoneBlank(name)) {
          args.put(ARG_NAME, name);
       }
       try {
-         UserRepresentation[] response = rest
-               .getForObject(uri(args), UserRepresentation[].class);
+         User[] response = rest
+               .getForObject(uri(args), User[].class);
 
          return newArrayList(response);
 

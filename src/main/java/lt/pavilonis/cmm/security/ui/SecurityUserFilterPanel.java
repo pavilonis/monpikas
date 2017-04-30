@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.security.ui;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
 import java.util.Collections;
 import java.util.List;

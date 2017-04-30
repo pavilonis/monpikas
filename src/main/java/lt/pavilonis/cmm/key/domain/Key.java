@@ -2,21 +2,21 @@ package lt.pavilonis.cmm.key.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lt.pavilonis.cmm.common.Identifiable;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.User;
 
 import java.time.LocalDateTime;
 
 public class Key implements Identifiable<String> {
    private final int keyNumber;
    private final LocalDateTime dateTime;
-   private final UserRepresentation user;
+   private final User user;
    private final Scanner scanner;
    private final KeyAction keyAction;
 
    public Key(@JsonProperty("keyNumber") int keyNumber,
 //                            @JsonSerialize(using = IsoLocalDateTimeSerializer.class)
               @JsonProperty("dateTime") LocalDateTime dateTime,
-              @JsonProperty("user") UserRepresentation user,
+              @JsonProperty("user") User user,
               @JsonProperty("scanner") Scanner scanner,
               @JsonProperty("keyAction") KeyAction keyAction) {
 
@@ -35,7 +35,7 @@ public class Key implements Identifiable<String> {
       return dateTime;
    }
 
-   public UserRepresentation getUser() {
+   public User getUser() {
       return user;
    }
 

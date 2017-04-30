@@ -12,13 +12,13 @@ import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
-import lt.pavilonis.cmm.user.domain.PresenceTimeRepresentation;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.PresenceTime;
+import lt.pavilonis.cmm.user.domain.User;
 
 import java.util.List;
 import java.util.stream.Stream;
 
-public class UserFormView extends FieldLayout<UserRepresentation> {
+public class UserFormView extends FieldLayout<User> {
 
    private final TextField cardCode = new ATextField(this.getClass(), "cardCode");
    private final TextField firstName = new ATextField(this.getClass(), "firstName");
@@ -28,7 +28,7 @@ public class UserFormView extends FieldLayout<UserRepresentation> {
    private final TextField birthDate = new ATextField(this.getClass(), "birthDate");
    private final TextField base16photo = new TextField();
 
-   public UserFormView(List<PresenceTimeRepresentation> presenceTimeData, Resource userImage) {
+   public UserFormView(List<PresenceTime> presenceTimeData, Resource userImage) {
       setWidth(550, Unit.PIXELS);
       TabSheet sheet = new TabSheet();
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);

@@ -7,7 +7,7 @@ import com.vaadin.ui.Button.ClickEvent;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ACheckBox;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;

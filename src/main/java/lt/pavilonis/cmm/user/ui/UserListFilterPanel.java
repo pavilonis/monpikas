@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ATextField;
 
 import java.util.Arrays;

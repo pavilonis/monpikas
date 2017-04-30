@@ -11,7 +11,7 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ACheckBox;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;

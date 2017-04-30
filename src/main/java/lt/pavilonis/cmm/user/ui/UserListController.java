@@ -7,16 +7,16 @@ import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.User;
 import lt.pavilonis.cmm.user.form.UserFormController;
 import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @SpringComponent
 @UIScope
-public class UserListController extends AbstractListController<UserRepresentation, String, UserFilter> {
+public class UserListController extends AbstractListController<User, String, UserFilter> {
 
    @Autowired
    private UserRestRepository userRepository;
@@ -28,12 +28,12 @@ public class UserListController extends AbstractListController<UserRepresentatio
    private UserFormController userFormController;
 
    @Override
-   protected ListGrid<UserRepresentation> createGrid() {
+   protected ListGrid<User> createGrid() {
       return new UserGrid();
    }
 
    @Override
-   protected AbstractFormController<UserRepresentation, String> getFormController() {
+   protected AbstractFormController<User, String> getFormController() {
       return userFormController;
    }
 
@@ -43,13 +43,13 @@ public class UserListController extends AbstractListController<UserRepresentatio
    }
 
    @Override
-   protected EntityRepository<UserRepresentation, String, UserFilter> getEntityRepository() {
+   protected EntityRepository<User, String, UserFilter> getEntityRepository() {
       return userRepository;
    }
 
    @Override
-   protected Class<UserRepresentation> getEntityClass() {
-      return UserRepresentation.class;
+   protected Class<User> getEntityClass() {
+      return User.class;
    }
 
    @Override

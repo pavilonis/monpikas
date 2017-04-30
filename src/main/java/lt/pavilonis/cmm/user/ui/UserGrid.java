@@ -1,16 +1,16 @@
 package lt.pavilonis.cmm.user.ui;
 
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.User;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class UserGrid extends ListGrid<UserRepresentation> {
+class UserGrid extends ListGrid<User> {
 
    public UserGrid() {
-      super(UserRepresentation.class);
+      super(User.class);
    }
 
    @Override

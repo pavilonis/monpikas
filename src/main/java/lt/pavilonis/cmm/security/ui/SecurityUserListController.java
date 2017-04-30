@@ -9,7 +9,7 @@ import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.converter.BooleanValueProviderAdapter;
 import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;

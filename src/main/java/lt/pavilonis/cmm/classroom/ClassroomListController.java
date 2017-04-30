@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.FilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import org.springframework.beans.factory.annotation.Autowired;
 

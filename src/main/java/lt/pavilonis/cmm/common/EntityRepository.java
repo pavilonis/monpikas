@@ -7,6 +7,8 @@ import java.util.Optional;
 
 public interface EntityRepository<T, ID, FILTER> {
 
+   String ID = "id";
+
    T saveOrUpdate(T entity);
 
    List<T> load(FILTER filter);
@@ -17,7 +19,7 @@ public interface EntityRepository<T, ID, FILTER> {
 
    Class<T> entityClass();
 
-   default Optional<DataProvider<T, FILTER>> dataProvider() {
+   default Optional<DataProvider<T, FILTER>> lazyDataProvider() {
       return Optional.empty();
    }
 }

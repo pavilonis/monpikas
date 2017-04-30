@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.cmm.canteen.domain.MealData;
-import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.canteen.domain.EatingData;
+import lt.pavilonis.cmm.canteen.domain.EatingType;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,42 +28,42 @@ public class PupilDataRepository {
    @Autowired
    private NamedParameterJdbcTemplate namedJdbc;
 
-   public Collection<MealData> loadAll(boolean withMealsAssignedOnly, MealType mealType) {
-      return query(null, mealType, withMealsAssignedOnly).values();
+   public Collection<EatingData> loadAll(boolean withEatingsAssignedOnly, EatingType eatingType) {
+      return query(null, eatingType, withEatingsAssignedOnly).values();
    }
 
-   public Optional<MealData> load(String cardCode) {
+   public Optional<EatingData> load(String cardCode) {
       if (StringUtils.isBlank(cardCode)) {
          throw new IllegalArgumentException("Got empty argument!");
       }
-      Map<String, MealData> result = query(cardCode, null, false);
+      Map<String, EatingData> result = query(cardCode, null, false);
       return result.isEmpty()
-            ? Optional.<MealData>empty()
+            ? Optional.<EatingData>empty()
             : Optional.of(result.values().iterator().next());
    }
 
-   private Map<String, MealData> query(String cardCode, MealType mealType, boolean withMealsAssigned) {
+   private Map<String, EatingData> query(String cardCode, EatingType eatingType, boolean withEatingsAssigned) {
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", cardCode);
-      args.put("withMealsAssigned", withMealsAssigned);
-      args.put("mealType", mealType == null ? null : mealType.name());
+      args.put("withEatingsAssigned", withEatingsAssigned);
+      args.put("eatingType", eatingType == null ? null : eatingType.name());
       return namedJdbc.query("" +
                   "SELECT " +
                   "  p.cardCode, p.comment, p.type, " +
-                  "  m.id, m.name, m.type, m.price, m.startTime, m.endTime " +
+                  "  e.id, e.name, e.type, e.price, e.startTime, e.endTime " +
                   "FROM Pupil p" +
-                  "  LEFT JOIN PupilMeal pm ON pm.pupil_cardCode = p.cardCode " +
-                  "  LEFT JOIN Meal m ON m.id = pm.meal_id " +
+                  "  LEFT JOIN PupilEating pm ON pm.pupil_cardCode = p.cardCode " +
+                  "  LEFT JOIN Eating e ON e.id = pm.eating_id " +
                   "WHERE (:cardCode IS NULL OR :cardCode = p.cardCode)" +
-                  "  AND (:mealType IS NULL OR m.type = :mealType)" +
-                  "  AND (:withMealsAssigned IS FALSE OR m.id IS NOT NULL)",
+                  "  AND (:eatingType IS NULL OR e.type = :eatingType)" +
+                  "  AND (:withEatingsAssigned IS FALSE OR e.id IS NOT NULL)",
             args,
             PUPIL_DATA_EXTRACTOR
       );
    }
 
    @Transactional
-   public MealData saveOrUpdate(MealData pupil) {
+   public EatingData saveOrUpdate(EatingData pupil) {
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", pupil.getCardCode());
       args.put("type", pupil.getType().name());
@@ -76,14 +76,14 @@ public class PupilDataRepository {
             args
       );
 
-      jdbc.update("DELETE FROM PupilMeal WHERE pupil_cardCode = ?", pupil.getCardCode());
+      jdbc.update("DELETE FROM PupilEating WHERE pupil_cardCode = ?", pupil.getCardCode());
 
-      List<Object[]> batchArgs = pupil.getMeals().stream()
-            .map(meal -> new Object[]{pupil.getCardCode(), meal.getId()})
+      List<Object[]> batchArgs = pupil.getEatings().stream()
+            .map(eating -> new Object[]{pupil.getCardCode(), eating.getId()})
             .collect(toList());
 
       if (!batchArgs.isEmpty()) {
-         jdbc.batchUpdate("INSERT INTO PupilMeal (pupil_cardCode, meal_id) VALUES (?, ?)", batchArgs);
+         jdbc.batchUpdate("INSERT INTO PupilEating (pupil_cardCode, eating_id) VALUES (?, ?)", batchArgs);
       }
 
       return load(pupil.getCardCode()).get();

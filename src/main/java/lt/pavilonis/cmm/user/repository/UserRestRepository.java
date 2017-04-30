@@ -4,8 +4,8 @@ import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.user.domain.PresenceTimeRepresentation;
-import lt.pavilonis.cmm.user.domain.UserRepresentation;
+import lt.pavilonis.cmm.user.domain.PresenceTime;
+import lt.pavilonis.cmm.user.domain.User;
 import lt.pavilonis.cmm.user.ui.UserFilter;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -32,7 +32,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class UserRestRepository implements EntityRepository<UserRepresentation, String, UserFilter> {
+public class UserRestRepository implements EntityRepository<User, String, UserFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
    private static final String SEGMENT_SIZE = "size";
@@ -48,7 +48,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    private RestTemplate restTemplate;
 
    @Override
-   public List<UserRepresentation> load(UserFilter filter) {
+   public List<User> load(UserFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>(3);
 
@@ -56,7 +56,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
       addParam(params, "role", filter.getRole());
       addParam(params, "group", filter.getGroup());
 
-      UserRepresentation[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), UserRepresentation[].class);
+      User[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
 
       LOG.info("Loaded all users [number={}, duration={}]", response.length, TimeUtils.duration(opStart));
       return Arrays.asList(response);
@@ -74,12 +74,12 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    @Override
-   public Optional<UserRepresentation> find(String cardCode) {
+   public Optional<User> find(String cardCode) {
 
       LocalDateTime opStart = LocalDateTime.now();
 
-      UserRepresentation result = restTemplate
-            .getForObject(uri(SEGMENT_USERS, cardCode), UserRepresentation.class);
+      User result = restTemplate
+            .getForObject(uri(SEGMENT_USERS, cardCode), User.class);
 
       LOG.info("User loaded [cardCode={}, duration={}]", cardCode, TimeUtils.duration(opStart));
       return Optional.ofNullable(result);
@@ -90,16 +90,16 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    @Override
-   public Class<UserRepresentation> entityClass() {
-      return UserRepresentation.class;
+   public Class<User> entityClass() {
+      return User.class;
    }
 
-   public UserRepresentation update(UserRepresentation userRepresentation) {
-      ResponseEntity<UserRepresentation> response = restTemplate.exchange(
+   public User update(User userRepresentation) {
+      ResponseEntity<User> response = restTemplate.exchange(
             uri(SEGMENT_USERS),
             HttpMethod.PUT,
             new HttpEntity<>(userRepresentation),
-            UserRepresentation.class
+            User.class
       );
       return response.getBody();
    }
@@ -117,9 +117,9 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
             .toUri();
    }
 
-   public List<PresenceTimeRepresentation> loadPresenceTime(String cardCode) {
-      PresenceTimeRepresentation[] response = restTemplate
-            .getForObject(uri(SEGMENT_PRESENCE, cardCode), PresenceTimeRepresentation[].class);
+   public List<PresenceTime> loadPresenceTime(String cardCode) {
+      PresenceTime[] response = restTemplate
+            .getForObject(uri(SEGMENT_PRESENCE, cardCode), PresenceTime[].class);
       return Arrays.asList(response);
    }
 
@@ -133,23 +133,23 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    @Override
-   public UserRepresentation saveOrUpdate(UserRepresentation entity) {
+   public User saveOrUpdate(User entity) {
       throw new NotImplementedException("Not needed yet");
    }
 
    @Override
-   public Optional<DataProvider<UserRepresentation, UserFilter>> dataProvider() {
-      DataProvider<UserRepresentation, UserFilter> provider =
-            new AbstractBackEndDataProvider<UserRepresentation, UserFilter>() {
+   public Optional<DataProvider<User, UserFilter>> lazyDataProvider() {
+      DataProvider<User, UserFilter> provider =
+            new AbstractBackEndDataProvider<User, UserFilter>() {
                @Override
-               protected Stream<UserRepresentation> fetchFromBackEnd(Query<UserRepresentation, UserFilter> query) {
+               protected Stream<User> fetchFromBackEnd(Query<User, UserFilter> query) {
 
                   LocalDateTime opStart = LocalDateTime.now();
 
                   MultiValueMap<String, String> params = collectParams(query);
 
-                  UserRepresentation[] response =
-                        restTemplate.getForObject(uri(params, SEGMENT_USERS), UserRepresentation[].class);
+                  User[] response =
+                        restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
 
                   LOG.info("Loaded users [number={}, offset={}, limit={}, duration={}]",
                         response.length, query.getOffset(), query.getLimit(), TimeUtils.duration(opStart));
@@ -157,7 +157,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
                }
 
                @Override
-               protected int sizeInBackEnd(Query<UserRepresentation, UserFilter> query) {
+               protected int sizeInBackEnd(Query<User, UserFilter> query) {
                   LocalDateTime opStart = LocalDateTime.now();
 
                   MultiValueMap<String, String> params = collectParams(query);
@@ -170,7 +170,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
       return Optional.of(provider);
    }
 
-   private MultiValueMap<String, String> collectParams(Query<UserRepresentation, UserFilter> query) {
+   private MultiValueMap<String, String> collectParams(Query<User, UserFilter> query) {
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       addParam(params, "offset", query.getOffset());
       addParam(params, "limit", query.getLimit());
