@@ -40,7 +40,7 @@ public class RoleRepository implements EntityRepository<Role, Long, RoleFilter> 
    }
 
    @Override
-   public Class<Role> getEntityClass() {
+   public Class<Role> entityClass() {
       return Role.class;
    }
 }

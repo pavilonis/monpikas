@@ -1,5 +1,7 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.provider.DataProvider;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -13,5 +15,9 @@ public interface EntityRepository<T, ID, FILTER> {
 
    void delete(ID id);
 
-   Class<T> getEntityClass();
+   Class<T> entityClass();
+
+   default Optional<DataProvider<T, FILTER>> dataProvider() {
+      return Optional.empty();
+   }
 }

@@ -15,7 +15,7 @@ public class RepositoryFinder {
       Map<String, EntityRepository> beans = App.context.getBeansOfType(ENTITY_REPOSITORY_CLASS);
 
       return beans.values().stream()
-            .filter(bean -> bean.getEntityClass() == type)
+            .filter(bean -> bean.entityClass() == type)
             .findFirst()
             .orElseThrow(() -> new RuntimeException("Could not find repository for " + type.getSimpleName()));
    }

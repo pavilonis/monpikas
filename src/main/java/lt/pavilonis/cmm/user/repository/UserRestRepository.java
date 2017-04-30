@@ -1,5 +1,8 @@
 package lt.pavilonis.cmm.user.repository;
 
+import com.vaadin.data.provider.AbstractBackEndDataProvider;
+import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.user.domain.PresenceTimeRepresentation;
 import lt.pavilonis.cmm.user.domain.UserRepresentation;
@@ -26,11 +29,13 @@ import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 @Repository
 public class UserRestRepository implements EntityRepository<UserRepresentation, String, UserFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserRestRepository.class);
+   private static final String SEGMENT_SIZE = "size";
    private static final String SEGMENT_USERS = "users";
    private static final String SEGMENT_SCANLOG = "scanlog";
    private static final String SCANNER_ID_CANTEEN = "6";
@@ -53,13 +58,18 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
 
       UserRepresentation[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), UserRepresentation[].class);
 
-      LOG.info("All users loaded [number={}, duration={}]", response.length, TimeUtils.duration(opStart));
+      LOG.info("Loaded all users [number={}, duration={}]", response.length, TimeUtils.duration(opStart));
       return Arrays.asList(response);
    }
 
-   private void addParam(MultiValueMap<String, String> params, String paramName, String paramValue) {
-      if (StringUtils.isNoneBlank(paramValue)) {
-         params.set(paramName, paramValue);
+   private void addParam(MultiValueMap<String, String> params, String paramName, Object paramValue) {
+      if (paramValue == null) {
+         return;
+      }
+
+      String stringValue = String.valueOf(paramValue);
+      if (StringUtils.isNoneBlank(stringValue)) {
+         params.set(paramName, stringValue);
       }
    }
 
@@ -80,7 +90,7 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    }
 
    @Override
-   public Class<UserRepresentation> getEntityClass() {
+   public Class<UserRepresentation> entityClass() {
       return UserRepresentation.class;
    }
 
@@ -125,5 +135,50 @@ public class UserRestRepository implements EntityRepository<UserRepresentation, 
    @Override
    public UserRepresentation saveOrUpdate(UserRepresentation entity) {
       throw new NotImplementedException("Not needed yet");
+   }
+
+   @Override
+   public Optional<DataProvider<UserRepresentation, UserFilter>> dataProvider() {
+      DataProvider<UserRepresentation, UserFilter> provider =
+            new AbstractBackEndDataProvider<UserRepresentation, UserFilter>() {
+               @Override
+               protected Stream<UserRepresentation> fetchFromBackEnd(Query<UserRepresentation, UserFilter> query) {
+
+                  LocalDateTime opStart = LocalDateTime.now();
+
+                  MultiValueMap<String, String> params = collectParams(query);
+
+                  UserRepresentation[] response =
+                        restTemplate.getForObject(uri(params, SEGMENT_USERS), UserRepresentation[].class);
+
+                  LOG.info("Loaded users [number={}, offset={}, limit={}, duration={}]",
+                        response.length, query.getOffset(), query.getLimit(), TimeUtils.duration(opStart));
+                  return Stream.of(response);
+               }
+
+               @Override
+               protected int sizeInBackEnd(Query<UserRepresentation, UserFilter> query) {
+                  LocalDateTime opStart = LocalDateTime.now();
+
+                  MultiValueMap<String, String> params = collectParams(query);
+
+                  int size = restTemplate.getForObject(uri(params, SEGMENT_USERS, SEGMENT_SIZE), Integer.class);
+                  LOG.info("Checked number of users [number={}, duration={}]", size, TimeUtils.duration(opStart));
+                  return size;
+               }
+            };
+      return Optional.of(provider);
+   }
+
+   private MultiValueMap<String, String> collectParams(Query<UserRepresentation, UserFilter> query) {
+      MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
+      addParam(params, "offset", query.getOffset());
+      addParam(params, "limit", query.getLimit());
+      query.getFilter().ifPresent(filter -> {
+         addParam(params, "name", filter.getName());
+         addParam(params, "role", filter.getRole());
+         addParam(params, "group", filter.getGroup());
+      });
+      return params;
    }
 }

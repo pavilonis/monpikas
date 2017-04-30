@@ -145,7 +145,7 @@ public class SecurityUserDetailsService implements UserDetailsService, EntityRep
    }
 
    @Override
-   public Class<SecurityUser> getEntityClass() {
+   public Class<SecurityUser> entityClass() {
       return SecurityUser.class;
    }
 }

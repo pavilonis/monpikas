@@ -47,7 +47,7 @@ public class MealRepository implements EntityRepository<Meal, Long, MealFilter> 
    }
 
    @Override
-   public Class<Meal> getEntityClass() {
+   public Class<Meal> entityClass() {
       return Meal.class;
    }
 

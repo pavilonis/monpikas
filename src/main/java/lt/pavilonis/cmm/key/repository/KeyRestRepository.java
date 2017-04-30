@@ -80,7 +80,7 @@ public class KeyRestRepository implements EntityRepository<Key, String, KeyListF
    }
 
    @Override
-   public Class<Key> getEntityClass() {
+   public Class<Key> entityClass() {
       return Key.class;
    }
 }

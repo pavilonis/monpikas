@@ -148,7 +148,7 @@ public class UserMealService implements EntityRepository<UserMeal, String, UserM
    }
 
    @Override
-   public Class<UserMeal> getEntityClass() {
+   public Class<UserMeal> entityClass() {
       return UserMeal.class;
    }
 }

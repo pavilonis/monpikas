@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.data.ValueProvider;
+import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;

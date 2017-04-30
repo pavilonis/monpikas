@@ -21,7 +21,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       grid.setSizeFull();
 
       addGridClickListener(grid);
-      loadTableData(grid);
+      loadGridData(grid);
       return grid;
    }
 
@@ -30,13 +30,11 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
       filterPanel = createFilterPanel();
 
-      filterPanel.addSearchClickListener(click -> {
-         loadTableData(grid);
-      });
+      filterPanel.addSearchClickListener(click -> loadGridData(grid));
 
       filterPanel.addResetClickListener(click -> {
          filterPanel.fieldReset();
-         loadTableData(grid);
+         loadGridData(grid);
       });
 
       return filterPanel;
@@ -51,13 +49,15 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       return new ControlPanel(click -> actionCreate(), click -> actionDelete());
    }
 
-   private void loadTableData(ListGrid<T> table) {
+   private void loadGridData(ListGrid<T> grid) {
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
-
-      List<T> beans = repository.load(filter);
-      table.setItems(beans);
-//      grid.sort();
+      if (repository.dataProvider().isPresent()) {
+         grid.setDataProvider(repository.dataProvider().get());
+      } else {
+         List<T> beans = repository.load(filter);
+         grid.setItems(beans);
+      }
    }
 
    protected void addGridClickListener(ListGrid<T> table) {

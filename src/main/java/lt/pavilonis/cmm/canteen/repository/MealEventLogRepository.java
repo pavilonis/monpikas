@@ -112,7 +112,7 @@ public class MealEventLogRepository implements EntityRepository<MealEventLog, Lo
    }
 
    @Override
-   public Class<MealEventLog> getEntityClass() {
+   public Class<MealEventLog> entityClass() {
       return MealEventLog.class;
    }
 }

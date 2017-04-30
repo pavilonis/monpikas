@@ -77,7 +77,7 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
    }
 
    @Override
-   public Class<ClassroomOccupancy> getEntityClass() {
+   public Class<ClassroomOccupancy> entityClass() {
       return ClassroomOccupancy.class;
    }
 }
