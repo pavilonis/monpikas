@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.canteen.domain;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.security.Role;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -10,12 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class SecurityUser implements UserDetails, Identifiable<Long> {
-
-   private Long id;
-
-   @NotBlank
-   private String name;
+public final class SecurityUser extends Named<Long> implements UserDetails {
 
    @NotBlank
    private String username;
@@ -35,21 +30,12 @@ public final class SecurityUser implements UserDetails, Identifiable<Long> {
    }
 
    public SecurityUser(Long id, String name, String username, String password, String email, boolean enabled) {
-      this.id = id;
-      this.name = name;
+      setId(id);
+      setName(name);
       this.username = username;
       this.password = password;
       this.email = email;
       this.enabled = enabled;
-   }
-
-   @Override
-   public Long getId() {
-      return id;
-   }
-
-   public String getName() {
-      return name;
    }
 
    @Override
@@ -63,10 +49,6 @@ public final class SecurityUser implements UserDetails, Identifiable<Long> {
 
    public boolean getEnabled() {
       return enabled;
-   }
-
-   public void setName(String name) {
-      this.name = name;
    }
 
    public void setUsername(String username) {

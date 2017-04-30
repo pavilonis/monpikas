@@ -1,9 +1,9 @@
 package lt.pavilonis.cmm.key.repository;
 
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.util.UriUtils;
 import lt.pavilonis.cmm.key.domain.Key;
 import lt.pavilonis.cmm.key.ui.KeyListFilter;
-import lt.pavilonis.cmm.common.util.UriUtils;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +25,7 @@ import java.util.Optional;
 import static com.google.common.collect.Lists.newArrayList;
 
 @Repository
-public class KeyRestRepository implements EntityRepository<Key, String, KeyListFilter> {
+public class KeyRestRepository implements EntityRepository<Key, Void, KeyListFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(KeyRestRepository.class);
    private static final String SEGMENT_KEYS = "keys";
@@ -70,12 +70,12 @@ public class KeyRestRepository implements EntityRepository<Key, String, KeyListF
    }
 
    @Override
-   public Optional<Key> find(String s) {
+   public Optional<Key> find(Void s) {
       throw new NotImplementedException("Not needed");
    }
 
    @Override
-   public void delete(String s) {
+   public void delete(Void s) {
       throw new NotImplementedException("Not needed");
    }
 

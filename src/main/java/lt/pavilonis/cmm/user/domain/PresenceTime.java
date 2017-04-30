@@ -1,12 +1,12 @@
 package lt.pavilonis.cmm.user.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-public class PresenceTime implements Identifiable<Void> {
+public class PresenceTime extends Identified<Void> {
    private final LocalDate date;
    private final LocalTime startTime;
    private final LocalTime endTime;
@@ -20,11 +20,6 @@ public class PresenceTime implements Identifiable<Void> {
       this.startTime = startTime;
       this.endTime = endTime;
       this.hourDifference = hourDifference;
-   }
-
-   @Override
-   public Void getId() {
-      return null;
    }
 
    public LocalDate getDate() {

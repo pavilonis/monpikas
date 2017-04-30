@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
 @SpringComponent
-public class KeyListController extends AbstractListController<Key, String, KeyListFilter> {
+public class KeyListController extends AbstractListController<Key, Void, KeyListFilter> {
 
    @Autowired
    private KeyRestRepository repository;
@@ -30,7 +30,7 @@ public class KeyListController extends AbstractListController<Key, String, KeyLi
    }
 
    @Override
-   protected EntityRepository<Key, String, KeyListFilter> getEntityRepository() {
+   protected EntityRepository<Key, Void, KeyListFilter> getEntityRepository() {
       return repository;
    }
 

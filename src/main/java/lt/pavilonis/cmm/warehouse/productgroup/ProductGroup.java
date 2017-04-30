@@ -1,37 +1,18 @@
 package lt.pavilonis.cmm.warehouse.productgroup;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Named;
 
-public class ProductGroup implements Identifiable<Long> {
+public final class ProductGroup extends Named<Long> {
 
-   private Long id;
-   private String name;
    private int kcal100;
 
    public ProductGroup() {
    }
 
    public ProductGroup(Long id, String name, int kcal100) {
-      this.id = id;
-      this.name = name;
+      setId(id);
+      setName(name);
       this.kcal100 = kcal100;
-   }
-
-   @Override
-   public Long getId() {
-      return id;
-   }
-
-   public void setId(Long id) {
-      this.id = id;
-   }
-
-   public String getName() {
-      return name;
-   }
-
-   public void setName(String name) {
-      this.name = name;
    }
 
    public int getKcal100() {

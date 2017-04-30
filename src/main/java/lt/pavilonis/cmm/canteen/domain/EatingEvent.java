@@ -1,13 +1,13 @@
 package lt.pavilonis.cmm.canteen.domain;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Named;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public final class EatingEvent implements Comparable, Identifiable<Long> {
+public final class EatingEvent extends Named<Long> implements Comparable {
 
    public EatingEvent(Long id,
                       String cardCode,
@@ -17,9 +17,9 @@ public final class EatingEvent implements Comparable, Identifiable<Long> {
                       BigDecimal price,
                       EatingType eatingType,
                       PupilType pupilType) {
-      this.id = id;
+      setId(id);
       this.cardCode = cardCode;
-      this.name = name;
+      setName(name);
       this.grade = grade;
       this.date = date;
       this.price = price;
@@ -30,12 +30,9 @@ public final class EatingEvent implements Comparable, Identifiable<Long> {
    public EatingEvent() {
    }
 
-   private Long id;
-
    @NotBlank
    private String cardCode;
 
-   private String name;
    private String grade;
 
    @NotNull
@@ -44,17 +41,8 @@ public final class EatingEvent implements Comparable, Identifiable<Long> {
    private EatingType eatingType;
    private PupilType pupilType;
 
-   @Override
-   public Long getId() {
-      return id;
-   }
-
    public String getCardCode() {
       return cardCode;
-   }
-
-   public String getName() {
-      return name;
    }
 
    public String getGrade() {
@@ -77,16 +65,8 @@ public final class EatingEvent implements Comparable, Identifiable<Long> {
       return pupilType;
    }
 
-   public void setId(Long id) {
-      this.id = id;
-   }
-
    public void setCardCode(String cardCode) {
       this.cardCode = cardCode;
-   }
-
-   public void setName(String name) {
-      this.name = name;
    }
 
    public void setGrade(String grade) {
@@ -116,6 +96,6 @@ public final class EatingEvent implements Comparable, Identifiable<Long> {
 
    @Override
    public String toString() {
-      return name + " " + date + " " + price;
+      return getName() + " " + date + " " + price;
    }
 }

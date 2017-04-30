@@ -11,7 +11,7 @@ import java.util.Set;
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
-public abstract class AbstractListController<T extends Identifiable<ID>, ID, FILTER> extends AbstractViewController {
+public abstract class AbstractListController<T extends Identified<ID>, ID, FILTER> extends AbstractViewController {
 
    protected ListGrid<T> grid;
    protected FilterPanel<FILTER> filterPanel;

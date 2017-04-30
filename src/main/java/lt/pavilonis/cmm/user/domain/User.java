@@ -1,10 +1,10 @@
 package lt.pavilonis.cmm.user.domain;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 
 import javax.validation.constraints.NotNull;
 
-public class User implements Identifiable<String> {
+public class User extends Identified<String> {
 
    private String cardCode;
 

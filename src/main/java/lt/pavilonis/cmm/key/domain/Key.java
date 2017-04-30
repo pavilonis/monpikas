@@ -1,12 +1,12 @@
 package lt.pavilonis.cmm.key.domain;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.user.domain.User;
 
 import java.time.LocalDateTime;
 
-public class Key implements Identifiable<String> {
+public class Key extends Identified<Void> {
    private final int keyNumber;
    private final LocalDateTime dateTime;
    private final User user;

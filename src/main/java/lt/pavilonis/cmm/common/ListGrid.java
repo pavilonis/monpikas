@@ -1,7 +1,6 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.data.ValueProvider;
-import com.vaadin.server.SerializableSupplier;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
@@ -14,7 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class ListGrid<T extends Identifiable<?>> extends Grid<T> {
+public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
    private static final String PROPERTY_ID = "ID";
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.productgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
-import org.apache.commons.lang3.StringUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -60,7 +60,7 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
    public List<ProductGroup> load(IdNameFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("name", StringUtils.isBlank(filter.getName()) ? null : "%" + filter.getName() + "%");
+      args.put("name", QueryUtils.likeArg(filter.getName()));
       return jdbc.query("" +
                   "SELECT id, name, kcal100 " +
                   "FROM ProductGroup " +

@@ -1,9 +1,10 @@
 package lt.pavilonis.cmm.canteen.domain;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.user.domain.User;
 
-public final class UserEating implements Identifiable<String> {
+public final class UserEating extends Identified<String> {
+
    private final User user;
    private final EatingData eatingData;
 

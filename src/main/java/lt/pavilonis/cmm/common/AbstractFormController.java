@@ -25,7 +25,7 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.function.Consumer;
 
-public abstract class AbstractFormController<T extends Identifiable<ID>, ID> {
+public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
    private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class);
    private final Class<T> clazz;

@@ -10,7 +10,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.service.RepositoryFinder;
@@ -23,7 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OneToManyField<T extends Identifiable<?>> extends CustomField<Collection<T>> {
+public class OneToManyField<T extends Identified<?>> extends CustomField<Collection<T>> {
 
    private final ListGrid<T> grid;
    private final Class<T> type;

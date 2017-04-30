@@ -1,8 +1,7 @@
 package lt.pavilonis.cmm.canteen.domain;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.common.converter.ADecimalFormat;
-import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
@@ -10,14 +9,7 @@ import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.util.Objects;
 
-public final class Eating implements Identifiable<Long> {
-
-   private static final DecimalFormat NUMBER_FORMAT = new ADecimalFormat();
-
-   private Long id;
-
-   @NotBlank
-   private String name;
+public final class Eating extends Named<Long> {
 
    @NotNull
    private EatingType type;
@@ -35,21 +27,12 @@ public final class Eating implements Identifiable<Long> {
    }
 
    public Eating(Long id, String name, EatingType type, BigDecimal price, LocalTime startTime, LocalTime endTime) {
-      this.id = id;
-      this.name = name;
+      setId(id);
+      setName(name);
       this.type = type;
       this.price = price;
       this.startTime = startTime;
       this.endTime = endTime;
-   }
-
-   @Override
-   public Long getId() {
-      return id;
-   }
-
-   public String getName() {
-      return name;
    }
 
    public EatingType getType() {
@@ -68,10 +51,6 @@ public final class Eating implements Identifiable<Long> {
       return endTime;
    }
 
-   public void setId(Long id) {
-      this.id = id;
-   }
-
    public void setEndTime(LocalTime endTime) {
       this.endTime = endTime;
    }
@@ -88,18 +67,9 @@ public final class Eating implements Identifiable<Long> {
       this.type = type;
    }
 
-   public void setName(String name) {
-      this.name = name;
-   }
-
-   @Override
-   public String toString() {
-      return name + " - " + NUMBER_FORMAT.format(price);
-   }
-
    @Override
    public int hashCode() {
-      return Math.toIntExact(id);
+      return Math.toIntExact(getId());
    }
 
    @Override

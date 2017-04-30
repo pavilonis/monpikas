@@ -1,11 +1,11 @@
 package lt.pavilonis.cmm.classroom;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 
 import java.time.LocalDateTime;
 
-public class ClassroomOccupancy implements Identifiable<Void> {
+public class ClassroomOccupancy extends Identified<Void> {
 
    private final LocalDateTime dateTime;
    private final int classroomNumber;

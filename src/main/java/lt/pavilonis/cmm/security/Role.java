@@ -1,32 +1,25 @@
 package lt.pavilonis.cmm.security;
 
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
+import lt.pavilonis.cmm.common.Named;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.util.Assert;
 
 /**
  * Copied code from {@link org.springframework.security.core.authority.SimpleGrantedAuthority}
- * and implemented {@link Identifiable} interface
+ * and implemented {@link Identified} interface
  */
-public class Role implements GrantedAuthority, Identifiable<Long> {
+public class Role extends Named<Long> implements GrantedAuthority {
 
-   private final String role;
-   private final Long id;
-
-   public Role(Long id, String role) {
-      Assert.hasText(role, "A granted authority textual representation is required");
-      this.id = id;
-      this.role = role;
-   }
-
-   @Override
-   public Long getId() {
-      return id;
+   public Role(Long id, String name) {
+      Assert.hasText(name, "A granted authority textual representation is required");
+      setId(id);
+      setName(name);
    }
 
    @Override
    public String getAuthority() {
-      return role;
+      return getName();
    }
 
    public boolean equals(Object obj) {
@@ -35,17 +28,17 @@ public class Role implements GrantedAuthority, Identifiable<Long> {
       }
 
       if (obj instanceof Role) {
-         return role.equals(((Role) obj).role);
+         return getName().equals(((Role) obj).getName());
       }
 
       return false;
    }
 
    public int hashCode() {
-      return this.role.hashCode();
+      return this.getName().hashCode();
    }
 
    public String toString() {
-      return this.role;
+      return this.getName();
    }
 }

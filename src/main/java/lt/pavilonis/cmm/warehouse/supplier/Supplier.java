@@ -1,21 +1,22 @@
 package lt.pavilonis.cmm.warehouse.supplier;
 
-public final class Supplier {
+import lt.pavilonis.cmm.common.Named;
 
-   private Long id;
+public final class Supplier extends Named<Long> {
+
    private String code;
-   private String name;
 
-   public Supplier(String code, String name) {
+   public Supplier(Long id, String code, String name) {
+      setId(id);
       this.code = code;
-      this.name = name;
+      setName(name);
    }
 
    public String getCode() {
       return code;
    }
 
-   public String getName() {
-      return name;
+   public void setCode(String code) {
+      this.code = code;
    }
 }
