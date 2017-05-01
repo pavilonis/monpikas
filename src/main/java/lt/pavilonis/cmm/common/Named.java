@@ -4,6 +4,14 @@ import org.hibernate.validator.constraints.NotBlank;
 
 public class Named<ID> extends Identified<ID> {
 
+   public Named(ID id, String name) {
+      setId(id);
+      this.name = name;
+   }
+
+   public Named() {
+   }
+
    @NotBlank
    private String name;
 
