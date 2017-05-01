@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.warehouse.dish;
 import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.warehouse.dishGroup.DishGroup;
 
-public class Dish extends Named<Long> {
+public final class Dish extends Named<Long> {
 
    private DishGroup dishGroup;
 

@@ -18,7 +18,7 @@ public class UserEatingGrid extends ListGrid<UserEating> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Arrays.asList("user.cardCode", "user.name", "user.birthDate",
             "user.group", "eatingData.eatings", "eatingData.comment");
    }

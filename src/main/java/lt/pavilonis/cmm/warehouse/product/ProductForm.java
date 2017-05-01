@@ -14,7 +14,7 @@ import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 
 import java.util.List;
 
-public class ProductForm extends FieldLayout<Product> {
+public final class ProductForm extends FieldLayout<Product> {
    private final TextField name = new ATextField(Product.class, "name");
    private final TextField unitWeight = new ATextField(Product.class, "unitWeight");
    private final EnumComboBox<MeasureUnit> measureUnit = new EnumComboBox<>(MeasureUnit.class);

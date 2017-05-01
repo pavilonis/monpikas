@@ -29,7 +29,7 @@ public final class EatingGrid extends ListGrid<Eating> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Arrays.asList("id", "name", "type", "startTime", "endTime", "price");
    }
 

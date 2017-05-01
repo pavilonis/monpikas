@@ -5,7 +5,7 @@ import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 
-public class ProductGroupForm extends FieldLayout<ProductGroup> {
+public final class ProductGroupForm extends FieldLayout<ProductGroup> {
 
    private final TextField name = new ATextField(ProductGroup.class, "name");
    private final TextField kcal100 = new ATextField(ProductGroup.class, "kcal100");

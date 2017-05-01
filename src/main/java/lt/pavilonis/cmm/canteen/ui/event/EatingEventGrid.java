@@ -26,7 +26,7 @@ public class EatingEventGrid extends ListGrid<EatingEvent> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Arrays.asList("id", "cardCode", "grade", "name", "date", "eatingType", "pupilType", "price");
    }
 

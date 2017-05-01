@@ -8,7 +8,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public class ProductMapper implements RowMapper<Product> {
+public final class ProductMapper implements RowMapper<Product> {
 
    private static final RowMapper<ProductGroup> PRODUCT_GROUP_MAPPER = new ProductGroupMapper();
 

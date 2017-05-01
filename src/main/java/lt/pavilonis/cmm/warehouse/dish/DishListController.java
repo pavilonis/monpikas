@@ -37,7 +37,7 @@ public class DishListController extends AbstractListController<Dish, Long, IdNam
          }
 
          @Override
-         protected List<String> getProperties() {
+         protected List<String> columnOrder() {
             return Arrays.asList("name", "dishGroup");
          }
       };

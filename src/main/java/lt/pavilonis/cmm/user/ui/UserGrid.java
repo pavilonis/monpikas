@@ -14,7 +14,7 @@ class UserGrid extends ListGrid<User> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Arrays.asList("cardCode", "firstName", "lastName", "role", "group");
    }
 

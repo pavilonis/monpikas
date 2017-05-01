@@ -16,6 +16,7 @@ import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.service.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -28,13 +29,27 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
    private final ListGrid<T> grid;
    private final Class<T> type;
    private final Map<String, ValueProvider<T, ?>> customColumns;
+   private final List<String> columnOrder;
 
    public OneToManyField(Class<T> type) {
       this(type, Collections.emptyMap());
    }
 
-   public OneToManyField(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
+   public OneToManyField(Class<T> type, String... columnOrder) {
+      this(type, Collections.emptyMap(), columnOrder);
+   }
+
+   public OneToManyField(Class<T> type,
+                         Map<String, ValueProvider<T, ?>> customColumns) {
+      this(type, customColumns, new String[0]);
+   }
+
+   public OneToManyField(Class<T> type,
+                         Map<String, ValueProvider<T, ?>> customColumns,
+                         String... columnOrder) {
+
       this.customColumns = customColumns;
+      this.columnOrder = Arrays.asList(columnOrder);
       this.grid = createGrid(type);
       this.type = type;
    }
@@ -49,6 +64,11 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
          @Override
          protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
             return customColumns;
+         }
+
+         @Override
+         protected List<String> columnOrder() {
+            return columnOrder;
          }
       };
       grid.setWidth(512, Unit.PIXELS);
@@ -116,6 +136,11 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
             @Override
             protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
                return customColumns;
+            }
+
+            @Override
+            protected List<String> columnOrder() {
+               return columnOrder;
             }
          };
          selectionTable.setItems(getSelectionElements());

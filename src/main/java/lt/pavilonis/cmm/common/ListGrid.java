@@ -24,7 +24,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
       super(type);
       super.setItems(items);
 
-      List<String> properties = getProperties();
+      List<String> properties = columnOrder();
       Map<String, ValueProvider<T, ?>> customColumns = getCustomColumns();
 
       getColumns().stream()
@@ -54,7 +54,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
             .toArray(String[]::new);
    }
 
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Collections.emptyList();
    }
 

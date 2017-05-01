@@ -32,7 +32,12 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
    private final EnumComboBox<PupilType> typeField = new EnumComboBox<>(PupilType.class)
          .withRequired(true);
    private final OneToManyField<Eating> eatingsField = new OneToManyField<>(
-         Eating.class, ImmutableMap.of("type", eating -> App.translate(EatingType.class, eating.getType().name())));
+         Eating.class,
+         ImmutableMap.of(
+               "type",
+               eating -> App.translate(EatingType.class, eating.getType().name())
+         )
+   );
 
    public UserEatingFormView(ImageService imageService) {
       this.imageService = imageService;

@@ -32,7 +32,7 @@ public class SecurityUserListController extends AbstractListController<SecurityU
       return new ListGrid<SecurityUser>(SecurityUser.class) {
 
          @Override
-         protected List<String> getProperties() {
+         protected List<String> columnOrder() {
             return Arrays.asList("username", "name", "email", "enabled", "authorities");
          }
 
@@ -71,7 +71,7 @@ public class SecurityUserListController extends AbstractListController<SecurityU
 
          @Override
          protected FieldLayout<SecurityUser> createFieldLayout() {
-            return new SecurityUserFormView();
+            return new SecurityUserForm();
          }
       };
    }

@@ -11,6 +11,8 @@ import java.util.Objects;
 
 public final class Eating extends Named<Long> {
 
+   private static final DecimalFormat NUMBER_FORMAT = new ADecimalFormat();
+
    @NotNull
    private EatingType type;
 
@@ -65,6 +67,11 @@ public final class Eating extends Named<Long> {
 
    public void setType(EatingType type) {
       this.type = type;
+   }
+
+   @Override
+   public String toString() {
+      return getName() + " - " + NUMBER_FORMAT.format(price);
    }
 
    @Override

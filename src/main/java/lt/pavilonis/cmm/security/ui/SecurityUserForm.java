@@ -14,15 +14,14 @@ import lt.pavilonis.cmm.security.Role;
 
 import java.util.stream.Stream;
 
-public class SecurityUserFormView extends FieldLayout<SecurityUser> {
-   private final TextField name = new ATextField(this.getClass(), "name");
-   private final TextField username = new ATextField(this.getClass(), "username");
-   private final TextField email = new ATextField(this.getClass(), "email");
+public class SecurityUserForm extends FieldLayout<SecurityUser> {
+   private final TextField name = new ATextField(getClass(), "name");
+   private final TextField username = new ATextField(getClass(), "username");
+   private final TextField email = new ATextField(getClass(), "email");
    private final CheckBox enabled = new CheckBox(App.translate(this, "enabled"));
-   private final OneToManyField<Role> authorities =
-         new OneToManyField<>(Role.class);
+   private final OneToManyField<Role> authorities = new OneToManyField<>(Role.class, "name");
 
-   public SecurityUserFormView() {
+   public SecurityUserForm() {
 
       HorizontalLayout row1 = new HorizontalLayout(username, name);
       HorizontalLayout row2 = new HorizontalLayout(email, enabled);

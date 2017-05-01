@@ -12,7 +12,7 @@ import lt.pavilonis.cmm.warehouse.dishGroup.DishGroup;
 
 import java.util.List;
 
-public class DishForm extends FieldLayout<Dish> {
+public final class DishForm extends FieldLayout<Dish> {
 
    private final TextField name = new ATextField(Dish.class, "name");
 

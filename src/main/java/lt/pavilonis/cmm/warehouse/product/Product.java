@@ -4,7 +4,7 @@ import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.warehouse.MeasureUnit;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 
-public class Product extends Named<Long> {
+public final class Product extends Named<Long> {
 
    private MeasureUnit measureUnit;
    private int unitWeight;

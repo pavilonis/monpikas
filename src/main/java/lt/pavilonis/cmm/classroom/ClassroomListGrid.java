@@ -19,7 +19,7 @@ final class ClassroomListGrid extends ListGrid<ClassroomOccupancy> {
    }
 
    @Override
-   protected List<String> getProperties() {
+   protected List<String> columnOrder() {
       return Arrays.asList("dateTime", "classroomNumber", "occupied");
    }
 

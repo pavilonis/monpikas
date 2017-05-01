@@ -151,7 +151,7 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
                   User[] response =
                         restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
 
-                  LOG.info("Loaded users [number={}, offset={}, limit={}, duration={}]",
+                  LOG.info("Loaded [number={}, offset={}, limit={}, duration={}]",
                         response.length, query.getOffset(), query.getLimit(), TimeUtils.duration(opStart));
                   return Stream.of(response);
                }

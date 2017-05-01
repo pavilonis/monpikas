@@ -37,7 +37,7 @@ public class ProductListController extends AbstractListController<Product, Long,
          }
 
          @Override
-         protected List<String> getProperties() {
+         protected List<String> columnOrder() {
             return Arrays.asList("name", "unitWeight", "measureUnit", "productGroup");
          }
       };
