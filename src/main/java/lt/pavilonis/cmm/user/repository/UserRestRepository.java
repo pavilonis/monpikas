@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.user.repository;
 
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.user.domain.PresenceTime;
@@ -138,15 +138,15 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
    }
 
    @Override
-   public Optional<DataProvider<User, UserFilter>> lazyDataProvider() {
-      DataProvider<User, UserFilter> provider =
+   public Optional<BackEndDataProvider<User, UserFilter>> lazyDataProvider(UserFilter filter) {
+      BackEndDataProvider<User, UserFilter> provider =
             new AbstractBackEndDataProvider<User, UserFilter>() {
                @Override
                protected Stream<User> fetchFromBackEnd(Query<User, UserFilter> query) {
 
                   LocalDateTime opStart = LocalDateTime.now();
 
-                  MultiValueMap<String, String> params = collectParams(query);
+                  MultiValueMap<String, String> params = collectParams(query, filter);
 
                   User[] response =
                         restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
@@ -160,7 +160,7 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
                protected int sizeInBackEnd(Query<User, UserFilter> query) {
                   LocalDateTime opStart = LocalDateTime.now();
 
-                  MultiValueMap<String, String> params = collectParams(query);
+                  MultiValueMap<String, String> params = collectParams(query, filter);
 
                   int size = restTemplate.getForObject(uri(params, SEGMENT_USERS, SEGMENT_SIZE), Integer.class);
                   LOG.info("Checked number of users [number={}, duration={}]", size, TimeUtils.duration(opStart));
@@ -170,15 +170,14 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
       return Optional.of(provider);
    }
 
-   private MultiValueMap<String, String> collectParams(Query<User, UserFilter> query) {
+   private MultiValueMap<String, String> collectParams(Query<User, UserFilter> query, UserFilter filter) {
       MultiValueMap<String, String> params = new LinkedMultiValueMap<>();
       addParam(params, "offset", query.getOffset());
       addParam(params, "limit", query.getLimit());
-      query.getFilter().ifPresent(filter -> {
-         addParam(params, "name", filter.getName());
-         addParam(params, "role", filter.getRole());
-         addParam(params, "group", filter.getGroup());
-      });
+
+      addParam(params, "name", filter.getName());
+      addParam(params, "role", filter.getRole());
+      addParam(params, "group", filter.getGroup());
       return params;
    }
 }

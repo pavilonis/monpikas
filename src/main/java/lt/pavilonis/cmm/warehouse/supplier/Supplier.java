@@ -6,6 +6,9 @@ public final class Supplier extends Named<Long> {
 
    private String code;
 
+   public Supplier() {
+   }
+
    public Supplier(Long id, String code, String name) {
       setId(id);
       this.code = code;

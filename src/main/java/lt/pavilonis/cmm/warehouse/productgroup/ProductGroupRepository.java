@@ -21,8 +21,7 @@ import java.util.Optional;
 @Repository
 public class ProductGroupRepository implements EntityRepository<ProductGroup, Long, IdNameFilter> {
 
-   private static final RowMapper<ProductGroup> MAPPER =
-         (rs, i) -> new ProductGroup(rs.getLong(1), rs.getString(2), rs.getInt(3));
+   private static final RowMapper<ProductGroup> MAPPER = new ProductGroupMapper();
 
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
@@ -62,10 +61,10 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
       args.put("id", filter.getId());
       args.put("name", QueryUtils.likeArg(filter.getName()));
       return jdbc.query("" +
-                  "SELECT id, name, kcal100 " +
-                  "FROM ProductGroup " +
-                  "WHERE (:id IS NULL OR id = :id) AND (:name IS NULL OR name LIKE :name) " +
-                  "ORDER BY name",
+                  "SELECT pg.id, pg.name, pg.kcal100 " +
+                  "FROM ProductGroup pg " +
+                  "WHERE (:id IS NULL OR pg.id = :id) AND (:name IS NULL OR pg.name LIKE :name) " +
+                  "ORDER BY pg.name",
             args,
             MAPPER
       );

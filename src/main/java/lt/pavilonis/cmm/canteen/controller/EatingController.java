@@ -11,6 +11,7 @@ import lt.pavilonis.cmm.canteen.service.UserEatingService;
 import lt.pavilonis.cmm.user.domain.User;
 import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,13 +26,12 @@ import java.util.Optional;
 import java.util.Set;
 
 import static java.time.LocalTime.now;
-import static org.slf4j.LoggerFactory.getLogger;
 
 @RequestMapping("rest")
 @RestController
 public class EatingController {
 
-   private static final Logger LOG = getLogger(EatingController.class);
+   private static final Logger LOG = LoggerFactory.getLogger(EatingController.class);
 
    private final UserEatingService eatingService;
    private final EatingEventRepository eventsRepo;

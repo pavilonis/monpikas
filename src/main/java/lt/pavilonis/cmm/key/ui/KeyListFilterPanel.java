@@ -1,8 +1,6 @@
 package lt.pavilonis.cmm.key.ui;
 
 import com.vaadin.data.HasValue;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -11,10 +9,10 @@ import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ACheckBox;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.key.domain.Scanner;
 import lt.pavilonis.cmm.key.repository.ScannerRestRepository;
 
@@ -22,8 +20,6 @@ import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
 
-@SpringComponent
-@UIScope
 class KeyListFilterPanel extends FilterPanel<KeyListFilter> {
 
    private TextField textField;

@@ -21,33 +21,34 @@ CREATE TABLE Product (
    name           VARCHAR(255) NOT NULL,
    measureUnit    VARCHAR(15)  NOT NULL,
    unitWeight     MEDIUMINT    NOT NULL,
-   productGroupId BIGINT(20)   NOT NULL,
+   productGroup_id BIGINT(20)   NOT NULL,
+   dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (productGroupId) REFERENCES ProductGroup (id)
+   FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id)
 );
 
 CREATE TABLE ReceiptStatement (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   supplierId  BIGINT(20) NOT NULL,
+   supplier_id  BIGINT(20) NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (supplierId) REFERENCES Supplier (id)
+   FOREIGN KEY (supplier_id) REFERENCES Supplier (id)
 );
 
 CREATE TABLE ReceiptItem (
    id                         BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
    unitPrice                  DECIMAL(10, 3) NOT NULL,
    quantity                   DECIMAL(10, 3) NOT NULL,
-   productId                  BIGINT(20)     NOT NULL,
-   receiptStatementId         BIGINT(20)     NOT NULL,
+   product_id                  BIGINT(20)     NOT NULL,
+   receiptStatement_id         BIGINT(20)     NOT NULL,
    productNameSnapshot        VARCHAR(255)   NOT NULL,
    productMeasureUnitSnapshot VARCHAR(15)    NOT NULL,
    productUnitWeightSnapshot  MEDIUMINT      NOT NULL,
    dateCreated                DATETIME       NOT NULL             DEFAULT NOW(),
 
-   UNIQUE (productId, receiptStatementId),
-   FOREIGN KEY (productId) REFERENCES Product (id),
-   FOREIGN KEY (receiptStatementId) REFERENCES ReceiptStatement (id)
+   UNIQUE (product_id, receiptStatement_id),
+   FOREIGN KEY (product_id) REFERENCES Product (id),
+   FOREIGN KEY (receiptStatement_id) REFERENCES ReceiptStatement (id)
       ON DELETE CASCADE
 );
 
@@ -68,19 +69,19 @@ CREATE TABLE DishGroup (
 CREATE TABLE Dish (
    id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
    name        VARCHAR(255) NOT NULL,
-   dishGroupId BIGINT(20)   NOT NULL,
+   dishGroup_id BIGINT(20)   NOT NULL,
    dateCreated DATETIME     NOT NULL             DEFAULT NOW(),
-   FOREIGN KEY (dishGroupId) REFERENCES DishGroup (id)
+   FOREIGN KEY (dishGroup_id) REFERENCES DishGroup (id)
 );
 
 CREATE TABLE DishItem (
    id             BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   dishId         BIGINT(20)     NOT NULL,
-   productGroupId BIGINT(20)     NOT NULL,
+   dish_id         BIGINT(20)     NOT NULL,
+   productGroup_id BIGINT(20)     NOT NULL,
    outputWeight   DECIMAL(10, 3) NOT NULL,
    dateCreated    DATETIME       NOT NULL             DEFAULT NOW(),
-   FOREIGN KEY (productGroupId) REFERENCES ProductGroup (id),
-   FOREIGN KEY (dishId) REFERENCES Dish (id)
+   FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id),
+   FOREIGN KEY (dish_id) REFERENCES Dish (id)
       ON DELETE CASCADE
 );
 
@@ -94,23 +95,23 @@ CREATE TABLE MealType (
 
 CREATE TABLE Meal (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   mealTypeId  BIGINT(20) NOT NULL,
-   menuId      BIGINT(20) NOT NULL,
+   mealType_id  BIGINT(20) NOT NULL,
+   menu_id      BIGINT(20) NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (mealTypeId) REFERENCES MealType (id),
-   FOREIGN KEY (menuId) REFERENCES Menu (id)
+   FOREIGN KEY (mealType_id) REFERENCES MealType (id),
+   FOREIGN KEY (menu_id) REFERENCES Menu (id)
       ON DELETE CASCADE
 );
 
 CREATE TABLE MealItem (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   mealId      BIGINT(20) NOT NULL,
-   dishId      BIGINT(20) NOT NULL,
+   meal_id      BIGINT(20) NOT NULL,
+   dish_id      BIGINT(20) NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (dishId) REFERENCES Dish (id),
-   FOREIGN KEY (mealId) REFERENCES Meal (id)
+   FOREIGN KEY (dish_id) REFERENCES Dish (id),
+   FOREIGN KEY (meal_id) REFERENCES Meal (id)
       ON DELETE CASCADE
 );
 
@@ -125,16 +126,16 @@ CREATE TABLE WriteOffStatement (
 CREATE TABLE WriteOffItem (
    id                  BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
    quantity            DECIMAL(10, 3) NOT NULL,
-   receiptItemId       BIGINT(20)     NOT NULL,
-   writeOffStatementId BIGINT(20)     NOT NULL,
-   dishItemId          BIGINT(20)     NOT NULL,
-   mealItemId          BIGINT(20)     NOT NULL,
+   receiptItem_id       BIGINT(20)     NOT NULL,
+   writeOffStatement_id BIGINT(20)     NOT NULL,
+   dishItem_id          BIGINT(20)     NOT NULL,
+   mealItem_id          BIGINT(20)     NOT NULL,
    dateCreated         DATETIME       NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (receiptItemId) REFERENCES ReceiptItem (id),
-   FOREIGN KEY (dishItemId) REFERENCES DishItem (id),
-   FOREIGN KEY (mealItemId) REFERENCES MealItem (id),
-   FOREIGN KEY (writeOffStatementId) REFERENCES WriteOffStatement (id)
+   FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
+   FOREIGN KEY (dishItem_id) REFERENCES DishItem (id),
+   FOREIGN KEY (mealItem_id) REFERENCES MealItem (id),
+   FOREIGN KEY (writeOffStatement_id) REFERENCES WriteOffStatement (id)
       ON DELETE CASCADE
 );
 
@@ -146,7 +147,7 @@ CREATE TABLE Tax (
 
 CREATE TABLE TaxCurrent (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   taxId       BIGINT(20) NOT NULL,
+   tax_id       BIGINT(20) NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
-   FOREIGN KEY (taxId) REFERENCES Tax (id)
+   FOREIGN KEY (tax_id) REFERENCES Tax (id)
 );

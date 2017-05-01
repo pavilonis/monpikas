@@ -1,11 +1,13 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
@@ -53,8 +55,12 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    private void loadGridData(ListGrid<T> grid) {
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
-      if (repository.lazyDataProvider().isPresent()) {
-         grid.setDataProvider(repository.lazyDataProvider().get());
+
+      Optional<BackEndDataProvider<T, FILTER>> lazyDataProvider =
+            repository.lazyDataProvider(filter);
+
+      if (lazyDataProvider.isPresent()) {
+         grid.setDataProvider(lazyDataProvider.get());
       } else {
          List<T> beans = repository.load(filter);
          grid.setItems(beans);

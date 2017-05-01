@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.common;
 
 import com.vaadin.data.ValueProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
@@ -129,24 +130,30 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    }
 
    public void addOrUpdate(T itemOld, T itemNew) {
-      if (itemOld.getId() != null) {
-         int i = items.indexOf(itemOld);
-         items.remove(i);
-         items.add(i, itemNew);
-      } else {
-         items.add(itemNew);
+      if (getDataProvider() instanceof ListDataProvider) {
+         if (itemOld.getId() != null) {
+            int i = items.indexOf(itemOld);
+            items.remove(i);
+            items.add(i, itemNew);
+         } else {
+            items.add(itemNew);
+         }
       }
       getDataProvider().refreshAll();
       select(itemNew);
    }
 
    public void removeItem(T item) {
-      this.items.remove(item);
+      if (getDataProvider() instanceof ListDataProvider) {
+         this.items.remove(item);
+      }
       getDataProvider().refreshAll();
    }
 
    public void addItem(T item) {
-      this.items.add(item);
+      if (getDataProvider() instanceof ListDataProvider) {
+         this.items.add(item);
+      }
       getDataProvider().refreshAll();
    }
 

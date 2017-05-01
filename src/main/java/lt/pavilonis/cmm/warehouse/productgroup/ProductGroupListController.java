@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.warehouse.productgroup;
 
 import com.vaadin.icons.VaadinIcons;
+import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
@@ -22,6 +24,21 @@ public class ProductGroupListController extends AbstractListController<ProductGr
    }
 
    @Override
+   protected AbstractFormController<ProductGroup, Long> getFormController() {
+      return new AbstractFormController<ProductGroup, Long>(ProductGroup.class) {
+         @Override
+         protected EntityRepository<ProductGroup, Long, ?> getEntityRepository() {
+            return repository;
+         }
+
+         @Override
+         protected FieldLayout<ProductGroup> createFieldLayout() {
+            return new ProductGroupForm();
+         }
+      };
+   }
+
+   @Override
    protected FilterPanel<IdNameFilter> createFilterPanel() {
       return new NameFilterPanel();
    }
@@ -38,7 +55,7 @@ public class ProductGroupListController extends AbstractListController<ProductGr
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.FILE_TREE;
+      return VaadinIcons.STOCK;
    }
 
    @Override

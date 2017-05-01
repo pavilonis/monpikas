@@ -1,51 +1,152 @@
-//package lt.pavilonis.cmm.warehouse.product;
-//
-//import org.springframework.stereotype.Repository;
-//
-//import java.math.BigDecimal;
-//import java.util.Map;
-//
-//@Repository
-//public class ProductRepository extends JooqRepository implements ProductRepository {
-//
-//   @Override
-//   public List<ProductRecord> loadAll() {
-//      return dsl().selectFrom(PRODUCT).fetch();
-//   }
-//
-//   @Override
-//   public ProductRecord load(long id) {
-//      return dsl().selectFrom(PRODUCT).where(PRODUCT.ID.eq(id)).fetchOne();
-//   }
-//
-//   @Override
-//   public ProductRecord create(ProductResource res) {
-//      return dsl().insertInto(PRODUCT)
-//            .columns(PRODUCT.PRODUCTGROUPID, PRODUCT.NAME, PRODUCT.MEASUREUNIT, PRODUCT.UNITWEIGHT)
-//            .values(idFrom(res.getLink("productGroup")), res.getName(), res.getMeasureUnit().toString(), res.getUnitWeight())
-//            .returning()
-//            .fetchOne();
-//   }
-//
-//   @Override
-//   public ProductRecord update(Long id, ProductResource resource) {
-//      dsl().update(PRODUCT)
-//            .set(PRODUCT.PRODUCTGROUPID, idFrom(resource.getLink("productGroup")))
-//            .set(PRODUCT.NAME, resource.getName())
-//            .set(PRODUCT.MEASUREUNIT, resource.getMeasureUnit().toString())
-//            .set(PRODUCT.UNITWEIGHT, resource.getUnitWeight())
-//            .where(PRODUCT.ID.eq(id))
-//            .execute();
-//
-//      return dsl().selectFrom(PRODUCT).where(PRODUCT.ID.eq(id)).fetchOne();
-//   }
-//
-//   @Override
-//   public int delete(long id) {
-//      return dsl().deleteFrom(PRODUCT).where(PRODUCT.ID.eq(id)).execute();
-//   }
-//
-//   @Override
+package lt.pavilonis.cmm.warehouse.product;
+
+import com.vaadin.data.provider.AbstractBackEndDataProvider;
+import com.vaadin.data.provider.BackEndDataProvider;
+import com.vaadin.data.provider.Query;
+import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.util.QueryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
+import org.springframework.stereotype.Repository;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Stream;
+
+@Repository
+public class ProductRepository implements EntityRepository<Product, Long, IdNameFilter> {
+   private static final Logger LOG = LoggerFactory.getLogger(ProductRepository.class);
+   private static final String FROM_WHERE_BLOCK = "" +
+         "FROM Product p " +
+         "  JOIN ProductGroup pg ON pg.id = p.productGroup_id " +
+         "WHERE (:id IS NULL OR p.id = :id) AND (:name IS NULL OR p.name LIKE :name) ";
+   private static final RowMapper<Product> MAPPER = new ProductMapper();
+
+   @Autowired
+   private NamedParameterJdbcTemplate jdbc;
+
+   @Override
+   public Product saveOrUpdate(Product entity) {
+      Map<String, Object> args = new HashMap<>();
+      args.put(ID, entity.getId());
+      args.put("name", entity.getName());
+      args.put("measureUnit", entity.getMeasureUnit().name());
+      args.put("unitWeight", entity.getUnitWeight());
+      args.put("productGroupId", entity.getProductGroup().getId());
+
+      return entity.getId() == null
+            ? create(args)
+            : update(args);
+   }
+
+   private Product update(Map<String, ?> args) {
+      jdbc.update("" +
+                  "UPDATE Product " +
+                  "SET" +
+                  "  name = :name, " +
+                  "  measureUnit = :measureUnit, " +
+                  "  unitWeight = :unitWeight, " +
+                  "  productGroup_id = :productGroupId " +
+                  "WHERE id = :id",
+            args
+      );
+      return find((Long) args.get(ID))
+            .orElseThrow(IllegalStateException::new);
+   }
+
+   private Product create(Map<String, Object> args) {
+      KeyHolder keyHolder = new GeneratedKeyHolder();
+      jdbc.update("" +
+                  "INSERT INTO Product (name, measureUnit, unitWeight, productGroup_id) " +
+                  "VALUES (:name, :measureUnit, :unitWeight, :productGroupId)",
+            new MapSqlParameterSource(args),
+            keyHolder
+      );
+      return find(keyHolder.getKey().longValue())
+            .orElseThrow(IllegalStateException::new);
+   }
+
+
+   @Override
+   public List<Product> load(IdNameFilter filter) {
+      List<Product> result = jdbc.query("" +
+                  "SELECT p.id, p.name, p.measureUnit, p.unitWeight, p.productGroup_id," +
+                  "       pg.id, pg.name, pg.kcal100 " +
+                  FROM_WHERE_BLOCK +
+                  "ORDER BY p.name",
+            composeArgs(filter),
+            MAPPER
+      );
+      LOG.info("Loaded [number={}, offset={}, limit={}]", result.size(), filter.getOffSet(), filter.getLimit());
+      return result;
+   }
+
+   @Override
+   public Optional<Product> find(Long id) {
+      List<Product> result = load(new IdNameFilter(id));
+      return result.isEmpty()
+            ? Optional.empty()
+            : Optional.of(result.get(0));
+   }
+
+   @Override
+   public void delete(Long id) {
+      jdbc.update("DELETE FROM Product WHERE id = :id", Collections.singletonMap("id", id));
+   }
+
+   @Override
+   public Class<Product> entityClass() {
+      return Product.class;
+   }
+
+   @Override
+   public Optional<BackEndDataProvider<Product, IdNameFilter>> lazyDataProvider(IdNameFilter filter) {
+      BackEndDataProvider<Product, IdNameFilter> provider = new AbstractBackEndDataProvider<Product, IdNameFilter>() {
+         @Override
+         protected Stream<Product> fetchFromBackEnd(Query<Product, IdNameFilter> query) {
+            IdNameFilter updatedFilter = filter
+                  .withOffset(query.getOffset())
+                  .withLimit(query.getLimit());
+
+            return load(updatedFilter).stream();
+         }
+
+         @Override
+         protected int sizeInBackEnd(Query<Product, IdNameFilter> query) {
+            IdNameFilter updatedFilter = filter
+                  .withOffset(query.getOffset())
+                  .withLimit(query.getLimit());
+
+            return jdbc.queryForObject(
+                  "SELECT COUNT(p.id) " + FROM_WHERE_BLOCK,
+                  composeArgs(updatedFilter),
+                  Integer.class
+            );
+         }
+      };
+      return Optional.of(provider);
+   }
+
+   private Map<String, Object> composeArgs(IdNameFilter filter) {
+      Map<String, Object> args = new HashMap<>();
+      args.put("id", filter.getId());
+      args.put("name", QueryUtils.likeArg(filter.getName()));
+      args.put("offset", filter.getOffSet());
+      args.put("limit", filter.getLimit());
+      return args;
+   }
+
+   //   @Override
 //   public Map<Long, BigDecimal> currentBalance() {
 //      Map<Long, BigDecimal> balanceMap = dsl().select(
 //            PRODUCT.ID,
@@ -66,4 +167,4 @@
 //            .fetchMap(Long.class, BigDecimal.class);
 //      return balanceMap;
 //   }
-//}
+}

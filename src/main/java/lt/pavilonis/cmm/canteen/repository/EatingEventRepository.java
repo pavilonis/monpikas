@@ -6,7 +6,10 @@ import lt.pavilonis.cmm.canteen.domain.EatingType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.ui.event.EatingEventFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
-import org.apache.commons.lang3.StringUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.TimeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -16,6 +19,8 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +31,7 @@ import java.util.Optional;
 @Repository
 public class EatingEventRepository implements EntityRepository<EatingEvent, Long, EatingEventFilter> {
 
+   private static final Logger LOG = LoggerFactory.getLogger(EatingEventRepository.class);
    private final RowMapper<EatingEvent> MAPPER = (rs, i) -> new EatingEvent(
          rs.getLong("id"),
          rs.getString("cardCode"),
@@ -58,23 +64,21 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
 
    @Override
    public List<EatingEvent> load(EatingEventFilter filter) {
+
+      LocalDateTime opStart = LocalDateTime.now();
+
       Map<String, Object> params = new HashMap<>();
 
-      params.put("periodStart", filter.getPeriodStart() == null
-            ? null
-            : filter.getPeriodStart().atTime(LocalTime.MIN));
+      LocalDate start = filter.getPeriodStart();
+      LocalDate end = filter.getPeriodEnd();
 
-      params.put("periodEnd", filter.getPeriodEnd() == null
-            ? null
-            : filter.getPeriodEnd().atTime(LocalTime.MAX));
+      params.put("periodStart", start == null ? null : start.atTime(LocalTime.MIN));
+      params.put("periodEnd", end == null ? null : end.atTime(LocalTime.MAX));
 
-      params.put("text", StringUtils.isBlank(filter.getText())
-            ? null
-            : "%" + filter.getText() + "%");
-
+      params.put("text", QueryUtils.likeArg(filter.getText()));
       params.put("type", filter.getType() == null ? null : filter.getType().name());
 
-      return namedJdbc.query("" +
+      List<EatingEvent> result = namedJdbc.query("" +
                   "SELECT * " +
                   "FROM EatingEvent " +
                   "WHERE " +
@@ -85,6 +89,8 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
             params,
             MAPPER
       );
+      LOG.info("Loaded events [number={}, duration={}]", result.size(), TimeUtils.duration(opStart));
+      return result;
    }
 
    @Override

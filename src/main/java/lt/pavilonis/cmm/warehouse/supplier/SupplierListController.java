@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.warehouse.supplier;
 
 import com.vaadin.icons.VaadinIcons;
+import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
@@ -19,6 +21,21 @@ public class SupplierListController extends AbstractListController<Supplier, Lon
    @Override
    protected ListGrid<Supplier> createGrid() {
       return new ListGrid<>(Supplier.class);
+   }
+
+   @Override
+   protected AbstractFormController<Supplier, Long> getFormController() {
+      return new AbstractFormController<Supplier, Long>(Supplier.class) {
+         @Override
+         protected EntityRepository<Supplier, Long, ?> getEntityRepository() {
+            return repository;
+         }
+
+         @Override
+         protected FieldLayout<Supplier> createFieldLayout() {
+            return new SupplierForm();
+         }
+      };
    }
 
    @Override

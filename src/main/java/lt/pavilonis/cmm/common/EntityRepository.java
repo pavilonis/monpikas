@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.DataProvider;
 
 import java.util.List;
@@ -19,7 +20,7 @@ public interface EntityRepository<T, ID, FILTER> {
 
    Class<T> entityClass();
 
-   default Optional<DataProvider<T, FILTER>> lazyDataProvider() {
+   default Optional<BackEndDataProvider<T, FILTER>> lazyDataProvider(FILTER filter) {
       return Optional.empty();
    }
 }
