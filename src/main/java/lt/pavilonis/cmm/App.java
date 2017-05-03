@@ -17,7 +17,7 @@ import java.util.Locale;
 public class App {
 
    public static ConfigurableApplicationContext context;
-   private static MessageSourceAdapter messageSource;
+   private static MessageSourceAdapter messages;
 
    @Value("${api.auth.username}")
    private String apiUsername;
@@ -45,10 +45,14 @@ public class App {
 
    public static void main(String[] args) {
       context = SpringApplication.run(App.class);
-      messageSource = context.getBean(MessageSourceAdapter.class);
+      messages = context.getBean(MessageSourceAdapter.class);
    }
 
    public static String translate(Object objectOrClass, String property) {
-      return messageSource.get(objectOrClass, property);
+      return messages.get(objectOrClass, property);
+   }
+
+   public static String translate(String property) {
+      return messages.get(property);
    }
 }

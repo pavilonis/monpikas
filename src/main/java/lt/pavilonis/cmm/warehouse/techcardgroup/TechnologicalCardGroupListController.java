@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.dishGroup;
+package lt.pavilonis.cmm.warehouse.techcardgroup;
 
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.common.AbstractFormController;
@@ -13,27 +13,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class DishGroupListController extends AbstractListController<DishGroup, Long, IdNameFilter> {
+public class TechnologicalCardGroupListController extends AbstractListController<TechnologicalCardGroup, Long, IdNameFilter> {
 
    @Autowired
-   private DishGroupRepository repository;
+   private TechnologicalCardRepository repository;
 
    @Override
-   protected ListGrid<DishGroup> createGrid() {
-      return new ListGrid<>(DishGroup.class);
+   protected ListGrid<TechnologicalCardGroup> createGrid() {
+      return new ListGrid<>(TechnologicalCardGroup.class);
    }
 
    @Override
-   protected AbstractFormController<DishGroup, Long> getFormController() {
-      return new AbstractFormController<DishGroup, Long>(DishGroup.class) {
+   protected AbstractFormController<TechnologicalCardGroup, Long> getFormController() {
+      return new AbstractFormController<TechnologicalCardGroup, Long>(TechnologicalCardGroup.class) {
          @Override
-         protected EntityRepository<DishGroup, Long, ?> getEntityRepository() {
+         protected EntityRepository<TechnologicalCardGroup, Long, ?> getEntityRepository() {
             return repository;
          }
 
          @Override
-         protected FieldLayout<DishGroup> createFieldLayout() {
-            return new DishGroupForm();
+         protected FieldLayout<TechnologicalCardGroup> createFieldLayout() {
+            return new TechnologicalCardGroupForm();
          }
       };
    }
@@ -44,13 +44,13 @@ public class DishGroupListController extends AbstractListController<DishGroup, L
    }
 
    @Override
-   protected EntityRepository<DishGroup, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<TechnologicalCardGroup, Long, IdNameFilter> getEntityRepository() {
       return repository;
    }
 
    @Override
-   protected Class<DishGroup> getEntityClass() {
-      return DishGroup.class;
+   protected Class<TechnologicalCardGroup> getEntityClass() {
+      return TechnologicalCardGroup.class;
    }
 
    @Override

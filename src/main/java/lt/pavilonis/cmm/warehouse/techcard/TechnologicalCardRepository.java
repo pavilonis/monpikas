@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.dish;
+package lt.pavilonis.cmm.warehouse.techcard;
 
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.BackEndDataProvider;
@@ -16,7 +16,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,9 +24,9 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter> {
-   private static final Logger LOG = LoggerFactory.getLogger(DishRepository.class);
-   private static final RowMapper<Dish> MAPPER = new DishMapper();
+public class TechnologicalCardRepository implements EntityRepository<TechnologicalCard, Long, IdNameFilter> {
+   private static final Logger LOG = LoggerFactory.getLogger(TechnologicalCardRepository.class);
+   private static final RowMapper<TechnologicalCard> MAPPER = new TechnologicalCardMapper();
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM Dish d " +
          "  JOIN DishGroup dg ON dg.id = d.dishGroup_id " +
@@ -37,7 +36,7 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
    private NamedParameterJdbcTemplate jdbc;
 
    @Override
-   public Dish saveOrUpdate(Dish entity) {
+   public TechnologicalCard saveOrUpdate(TechnologicalCard entity) {
       Map<String, Object> args = new HashMap<>();
       args.put(ID, entity.getId());
       args.put("name", entity.getName());
@@ -48,7 +47,7 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
             : update(args);
    }
 
-   private Dish update(Map<String, ?> args) {
+   private TechnologicalCard update(Map<String, ?> args) {
       jdbc.update(
             "UPDATE Dish SET name = :name, dishGroup_id = :dishGroupId WHERE id = :id",
             args
@@ -57,7 +56,7 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
             .orElseThrow(IllegalStateException::new);
    }
 
-   private Dish create(Map<String, Object> args) {
+   private TechnologicalCard create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbc.update("" +
                   "INSERT INTO Dish (name, dishGroup_id) " +
@@ -71,8 +70,8 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
 
 
    @Override
-   public List<Dish> load(IdNameFilter filter) {
-      List<Dish> result = jdbc.query(
+   public List<TechnologicalCard> load(IdNameFilter filter) {
+      List<TechnologicalCard> result = jdbc.query(
             "SELECT d.id, d.name, dg.id, dg.name " + FROM_WHERE_BLOCK + "ORDER BY d.name",
             composeArgs(filter),
             MAPPER
@@ -83,8 +82,8 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
    }
 
    @Override
-   public Optional<Dish> find(Long id) {
-      List<Dish> result = load(new IdNameFilter(id));
+   public Optional<TechnologicalCard> find(Long id) {
+      List<TechnologicalCard> result = load(new IdNameFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -96,15 +95,15 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
    }
 
    @Override
-   public Class<Dish> entityClass() {
-      return Dish.class;
+   public Class<TechnologicalCard> entityClass() {
+      return TechnologicalCard.class;
    }
 
    @Override
-   public Optional<BackEndDataProvider<Dish, IdNameFilter>> lazyDataProvider(IdNameFilter filter) {
-      BackEndDataProvider<Dish, IdNameFilter> provider = new AbstractBackEndDataProvider<Dish, IdNameFilter>() {
+   public Optional<BackEndDataProvider<TechnologicalCard, IdNameFilter>> lazyDataProvider(IdNameFilter filter) {
+      BackEndDataProvider<TechnologicalCard, IdNameFilter> provider = new AbstractBackEndDataProvider<TechnologicalCard, IdNameFilter>() {
          @Override
-         protected Stream<Dish> fetchFromBackEnd(Query<Dish, IdNameFilter> query) {
+         protected Stream<TechnologicalCard> fetchFromBackEnd(Query<TechnologicalCard, IdNameFilter> query) {
             IdNameFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
@@ -113,7 +112,7 @@ public class DishRepository implements EntityRepository<Dish, Long, IdNameFilter
          }
 
          @Override
-         protected int sizeInBackEnd(Query<Dish, IdNameFilter> query) {
+         protected int sizeInBackEnd(Query<TechnologicalCard, IdNameFilter> query) {
             IdNameFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());

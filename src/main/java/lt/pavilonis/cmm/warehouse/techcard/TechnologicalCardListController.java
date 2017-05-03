@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.dish;
+package lt.pavilonis.cmm.warehouse.techcard;
 
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
@@ -10,7 +10,7 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
-import lt.pavilonis.cmm.warehouse.dishGroup.DishGroupRepository;
+import lt.pavilonis.cmm.warehouse.techcardgroup.TechnologicalCardRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -20,19 +20,19 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class DishListController extends AbstractListController<Dish, Long, IdNameFilter> {
+public class TechnologicalCardListController extends AbstractListController<TechnologicalCard, Long, IdNameFilter> {
 
    @Autowired
-   private DishRepository repository;
+   private TechnologicalCardRepository repository;
 
    @Autowired
-   private DishGroupRepository dishGroupRepo;
+   private TechnologicalCardRepository dishGroupRepo;
 
    @Override
-   protected ListGrid<Dish> createGrid() {
-      return new ListGrid<Dish>(Dish.class) {
+   protected ListGrid<TechnologicalCard> createGrid() {
+      return new ListGrid<TechnologicalCard>(TechnologicalCard.class) {
          @Override
-         protected Map<String, ValueProvider<Dish, ?>> getCustomColumns() {
+         protected Map<String, ValueProvider<TechnologicalCard, ?>> getCustomColumns() {
             return Collections.singletonMap("dishGroup", value -> value.getDishGroup().getName());
          }
 
@@ -44,16 +44,16 @@ public class DishListController extends AbstractListController<Dish, Long, IdNam
    }
 
    @Override
-   protected AbstractFormController<Dish, Long> getFormController() {
-      return new AbstractFormController<Dish, Long>(Dish.class) {
+   protected AbstractFormController<TechnologicalCard, Long> getFormController() {
+      return new AbstractFormController<TechnologicalCard, Long>(TechnologicalCard.class) {
          @Override
-         protected EntityRepository<Dish, Long, ?> getEntityRepository() {
+         protected EntityRepository<TechnologicalCard, Long, ?> getEntityRepository() {
             return repository;
          }
 
          @Override
-         protected FieldLayout<Dish> createFieldLayout() {
-            return new DishForm(dishGroupRepo.load(new IdNameFilter()));
+         protected FieldLayout<TechnologicalCard> createFieldLayout() {
+            return new TechnologicalCardForm(dishGroupRepo.load(new IdNameFilter()));
          }
       };
    }
@@ -64,13 +64,13 @@ public class DishListController extends AbstractListController<Dish, Long, IdNam
    }
 
    @Override
-   protected EntityRepository<Dish, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<TechnologicalCard, Long, IdNameFilter> getEntityRepository() {
       return repository;
    }
 
    @Override
-   protected Class<Dish> getEntityClass() {
-      return Dish.class;
+   protected Class<TechnologicalCard> getEntityClass() {
+      return TechnologicalCard.class;
    }
 
    @Override

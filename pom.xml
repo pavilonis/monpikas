@@ -3,7 +3,7 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.springframework</groupId>
-   <artifactId>monpikas</artifactId>
+   <artifactId>cmm-monpikas</artifactId>
    <version>0.83-SNAPSHOT</version>
 
    <parent>

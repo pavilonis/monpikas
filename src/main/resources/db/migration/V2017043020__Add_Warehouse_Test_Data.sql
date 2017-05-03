@@ -25,7 +25,8 @@ INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id)
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id) VALUE (7, 'Geltoni bananai', 'GRAM', 1000, 4);
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id) VALUE (8, 'Žali bananai', 'GRAM', 1000, 4);
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id) VALUE (9, 'Šviežios bulvės', 'GRAM', 1000, 5);
-INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id) VALUE (10, 'Extra burokeliai', 'GRAM', 1000, 6);
+INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id)
+   VALUE (10, 'Extra burokeliai', 'GRAM', 1000, 6);
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id)
    VALUE (11, 'Atšaldyta kiauliena', 'GRAM', 1000, 7);
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id) VALUE (12, 'Kava Jacobs', 'GRAM', 500, 9);
@@ -34,30 +35,30 @@ INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id)
 INSERT INTO Product (id, name, measureUnit, unitWeight, productGroup_id)
    VALUE (14, 'Panevežio cukrus', 'GRAM', 1000, 10);
 
-INSERT INTO DishGroup (id, name) VALUES (1, 'Sriubos');
-INSERT INTO DishGroup (id, name) VALUES (2, 'Košės');
-INSERT INTO DishGroup (id, name) VALUES (3, 'Salotos');
-INSERT INTO DishGroup (id, name) VALUES (4, 'Vaisiai');
-INSERT INTO DishGroup (id, name) VALUES (5, 'Desertas');
-INSERT INTO DishGroup (id, name) VALUES (6, 'Gerimai');
-INSERT INTO DishGroup (id, name) VALUES (7, 'Karšti patiekalai');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (1, 'Sriubos');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (2, 'Košės');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (3, 'Salotos');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (4, 'Vaisiai');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (5, 'Desertas');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (6, 'Gerimai');
+INSERT INTO TechnologicalCardGroup (id, name) VALUES (7, 'Karšti patiekalai');
 
-INSERT INTO Dish (id, name, dishGroup_id) VALUES (1, 'Barščiai', 1);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (1, 5, 50);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (1, 6, 40);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (1, 7, 30);
+INSERT INTO TechnologicalCard (id, name, technologicalCardGroup_id) VALUES (1, 'Barščiai', 1);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (1, 5, 50);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (1, 6, 40);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (1, 7, 30);
 
-INSERT INTO Dish (id, name, dishGroup_id) VALUES (2, 'Makaronai su kotletu', 7);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (2, 1, 60);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (2, 7, 30);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (2, 3, 5);
+INSERT INTO TechnologicalCard (id, name, technologicalCardGroup_id) VALUES (2, 'Makaronai su kotletu', 7);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (2, 1, 60);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (2, 7, 30);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (2, 3, 5);
 
-INSERT INTO Dish (id, name, dishGroup_id) VALUES (3, 'Kava su pienu', 6);
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (3, 8, 50);
+INSERT INTO TechnologicalCard (id, name, technologicalCardGroup_id) VALUES (3, 'Kava su pienu', 6);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (3, 8, 50);
 #pienas
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (3, 9, 5);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (3, 9, 5);
 #kava
-INSERT INTO DishItem (dish_id, productGroup_id, outputWeight) VALUES (3, 10, 5);
+INSERT INTO TechnologicalCardItem (technologicalCard_id, productGroup_id, outputWeight) VALUES (3, 10, 5);
 #cukrus
 
 INSERT INTO MealType (name) VALUES ('Pusryčiai'), ('Priešpiečiai'), ('Pietus'), ('Vakariene ir pavakariai');
@@ -134,16 +135,16 @@ VALUES (8, 4, 13, 1, 5, (SELECT name
                                                            FROM Product
                                                            WHERE id = 13));
 
-INSERT INTO Menu (id, date) VALUES (1, now());
-INSERT INTO Meal (id, menu_id, mealType_id) VALUES (1, 1, 1);
+INSERT INTO MenuRequirement (id, date) VALUES (1, now());
+INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (1, 1, 1);
 #pusryciai
-INSERT INTO MealItem (id, meal_id, dish_id) VALUES (1, 1, 1);
+INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (1, 1, 1);
 #barsciai
-INSERT INTO MealItem (id, meal_id, dish_id) VALUES (2, 1, 2);
+INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (2, 1, 2);
 #makaronai + kotletas
 
-INSERT INTO Menu (id, date) VALUES (2, now());
-INSERT INTO Meal (id, menu_id, mealType_id) VALUES (2, 2, 2);
+INSERT INTO MenuRequirement (id, date) VALUES (2, now());
+INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (2, 2, 2);
 #priespeciai
-INSERT INTO MealItem (id, meal_id, dish_id) VALUES (3, 2, 3);
+INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (3, 2, 3);
 #kava su pienu

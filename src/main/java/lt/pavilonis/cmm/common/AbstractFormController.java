@@ -110,7 +110,7 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       Component controlLayout = createControlLayout(persistedItemConsumer, fieldLayout);
 
       window = new Window(
-            fieldLayout.getFormCaption(),
+            fieldLayout.getFormCaption(clazz),
             new VerticalLayout(fieldLayout, controlLayout)
       );
 
