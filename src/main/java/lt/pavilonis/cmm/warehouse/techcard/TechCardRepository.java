@@ -1,21 +1,24 @@
 package lt.pavilonis.cmm.warehouse.techcard;
 
+import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -24,60 +27,79 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class TechnologicalCardRepository implements EntityRepository<TechnologicalCard, Long, IdTextFilter> {
-   private static final Logger LOG = LoggerFactory.getLogger(TechnologicalCardRepository.class);
-   private static final RowMapper<TechnologicalCard> MAPPER = new TechnologicalCardMapper();
+public class TechCardRepository implements EntityRepository<TechCard, Long, IdTextFilter> {
+
+   private static final Logger LOG = LoggerFactory.getLogger(TechCardRepository.class);
    private static final String FROM_WHERE_BLOCK = "" +
-         "FROM TechnologicalCard tc " +
-         "  JOIN TechnologicalCardGroup tcg ON tcg.id = tc.technologicalCardGroup_id " +
+         "FROM TechCard tc " +
+         "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +
+         "  LEFT JOIN TechCardProduct tcp ON tcp.techCard_id = tc.id " +
+         "  LEFT JOIN ProductGroup pg ON pg.id = tcp.productGroup_id " +
          "WHERE (:id IS NULL OR tc.id = :id) AND (:name IS NULL OR tc.name LIKE :name) ";
 
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
 
+   @Transactional
    @Override
-   public TechnologicalCard saveOrUpdate(TechnologicalCard entity) {
-      Map<String, Object> args = new HashMap<>();
-      args.put(ID, entity.getId());
-      args.put("name", entity.getName());
-      args.put("technologicalCardGroupId", entity.getTechnologicalCardGroup().getId());
+   public TechCard saveOrUpdate(TechCard card) {
 
-      return entity.getId() == null
-            ? create(args)
-            : update(args);
+      Map<String, Object> args = new HashMap<>();
+      args.put(ID, card.getId());
+      args.put("name", card.getName());
+      args.put("groupId", card.getGroup().getId());
+
+      return card.getId() == null
+            ? create(card, args)
+            : update(card, args);
    }
 
-   private TechnologicalCard update(Map<String, ?> args) {
-      jdbc.update("" +
-                  "UPDATE TechnologicalCard SET " +
-                  "  name = :name," +
-                  "  technologicalCardGroup_id = :technologicalCardGroupId " +
-                  "WHERE id = :id",
-            args
-      );
+   private TechCard update(TechCard card, Map<String, Object> args) {
+
+      jdbc.update("UPDATE TechCard SET name = :name, techCardGroup_id = :groupId WHERE id = :id", args);
+      jdbc.update("DELETE FROM TechCardProduct WHERE techCard_id = :id", args);
+      saveTechCardProducts(card.getId(), card.getProductGroupOutputWeight());
+
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
-   private TechnologicalCard create(Map<String, Object> args) {
+   private void saveTechCardProducts(long cardId, Map<ProductGroup, BigDecimal> outputWeights) {
+
+      String query = "INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) " +
+            "VALUES (:cardId, :productGroupId, :outputWeight)";
+
+      outputWeights.forEach((productGroup, outputWeight) -> jdbc.update(query, ImmutableMap.of(
+            "cardId", cardId,
+            "productGroupId", productGroup.getId(),
+            "outputWeight", outputWeight
+      )));
+   }
+
+   private TechCard create(TechCard card, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("" +
-                  "INSERT INTO TechnologicalCard (name, technologicalCardGroup_id) " +
-                  "VALUES (:name, :technologicalCardGroupId)",
-            new MapSqlParameterSource(args),
-            keyHolder
-      );
+      String query = "INSERT INTO TechCard (name, techCardGroup_id) VALUES (:name, :groupId)";
+
+      jdbc.update(query, new MapSqlParameterSource(args), keyHolder);
+      saveTechCardProducts(keyHolder.getKey().longValue(), card.getProductGroupOutputWeight());
+
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
    }
 
 
    @Override
-   public List<TechnologicalCard> load(IdTextFilter filter) {
-      List<TechnologicalCard> result = jdbc.query(
-            "SELECT tc.id, tc.name, tcg.id, tcg.name " + FROM_WHERE_BLOCK + "ORDER BY tc.name",
+   public List<TechCard> load(IdTextFilter filter) {
+      List<TechCard> result = jdbc.query("" +
+                  "SELECT " +
+                  "  tc.id, tc.name, " +
+                  "  tcg.id, tcg.name," +
+                  "  tcp.outputWeight," +
+                  "  pg.id, pg.name " +
+                  FROM_WHERE_BLOCK +
+                  "ORDER BY tc.name",
             composeArgs(filter),
-            MAPPER
+            new TechCardResultSetExtractor()
       );
       LOG.info("Loaded [number={}, offset={}, limit={}]",
             result.size(), filter.getOffSet(), filter.getLimit());
@@ -85,8 +107,8 @@ public class TechnologicalCardRepository implements EntityRepository<Technologic
    }
 
    @Override
-   public Optional<TechnologicalCard> find(Long id) {
-      List<TechnologicalCard> result = load(new IdTextFilter(id));
+   public Optional<TechCard> find(Long id) {
+      List<TechCard> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -94,19 +116,19 @@ public class TechnologicalCardRepository implements EntityRepository<Technologic
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM TechnologicalCard WHERE id = :id", Collections.singletonMap("id", id));
+      jdbc.update("DELETE FROM TechCard WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override
-   public Class<TechnologicalCard> entityClass() {
-      return TechnologicalCard.class;
+   public Class<TechCard> entityClass() {
+      return TechCard.class;
    }
 
    @Override
-   public Optional<BackEndDataProvider<TechnologicalCard, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
-      BackEndDataProvider<TechnologicalCard, IdTextFilter> provider = new AbstractBackEndDataProvider<TechnologicalCard, IdTextFilter>() {
+   public Optional<BackEndDataProvider<TechCard, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
+      BackEndDataProvider<TechCard, IdTextFilter> provider = new AbstractBackEndDataProvider<TechCard, IdTextFilter>() {
          @Override
-         protected Stream<TechnologicalCard> fetchFromBackEnd(Query<TechnologicalCard, IdTextFilter> query) {
+         protected Stream<TechCard> fetchFromBackEnd(Query<TechCard, IdTextFilter> query) {
             IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
@@ -115,16 +137,13 @@ public class TechnologicalCardRepository implements EntityRepository<Technologic
          }
 
          @Override
-         protected int sizeInBackEnd(Query<TechnologicalCard, IdTextFilter> query) {
+         protected int sizeInBackEnd(Query<TechCard, IdTextFilter> query) {
             IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
-            return jdbc.queryForObject(
-                  "SELECT COUNT(*) " + FROM_WHERE_BLOCK,
-                  composeArgs(updatedFilter),
-                  Integer.class
-            );
+            String sql = "SELECT COUNT(*) " + FROM_WHERE_BLOCK;
+            return jdbc.queryForObject(sql, composeArgs(updatedFilter), Integer.class);
          }
       };
       return Optional.of(provider);

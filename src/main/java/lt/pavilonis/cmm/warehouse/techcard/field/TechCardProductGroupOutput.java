@@ -1,25 +1,18 @@
-package lt.pavilonis.cmm.warehouse.techcard;
+package lt.pavilonis.cmm.warehouse.techcard.field;
 
 import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 
 import java.math.BigDecimal;
 
-public final class TechnologicalCardItem extends Identified<Long> {
+public final class TechCardProductGroupOutput extends Identified<Void> {
 
-   private final TechnologicalCard dish;
    private final ProductGroup productGroup;
    private final BigDecimal outputWeight;
 
-   public TechnologicalCardItem(long id, TechnologicalCard dish, ProductGroup productGroup, BigDecimal outputWeight) {
-      setId(id);
-      this.dish = dish;
+   public TechCardProductGroupOutput(ProductGroup productGroup, BigDecimal outputWeight) {
       this.productGroup = productGroup;
       this.outputWeight = outputWeight;
-   }
-
-   public TechnologicalCard getDish() {
-      return dish;
    }
 
    public ProductGroup getProductGroup() {

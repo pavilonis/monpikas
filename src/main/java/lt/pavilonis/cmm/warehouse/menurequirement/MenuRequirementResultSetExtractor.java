@@ -3,22 +3,27 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.meal.Meal;
 import lt.pavilonis.cmm.warehouse.meal.MealMapper;
-import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCard;
-import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCardMapper;
+import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
+import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupMapper;
+import lt.pavilonis.cmm.warehouse.techcard.TechCard;
+import lt.pavilonis.cmm.warehouse.techcard.TechCardRowMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public class MenuRequirementResultSetExtractor implements ResultSetExtractor<List<MenuRequirement>> {
 
    private static final MealMapper MEAL_MAPPER = new MealMapper();
-   private static final TechnologicalCardMapper TECH_CARD_MAPPER = new TechnologicalCardMapper();
+   private static final TechCardRowMapper TECH_CARD_MAPPER = new TechCardRowMapper();
+   private static final ProductGroupMapper PRODUCT_GROUP_MAPPER = new ProductGroupMapper();
 
    @Override
    public List<MenuRequirement> extractData(ResultSet rs) throws SQLException, DataAccessException {
@@ -40,14 +45,28 @@ public class MenuRequirementResultSetExtractor implements ResultSetExtractor<Lis
             return newMeal;
          });
 
-         List<TechnologicalCard> cards = meal.getTechnologicalCards();
-         findById(cards, rs.getLong("tc.id")).orElseGet(() -> {
-            TechnologicalCard newCard = TECH_CARD_MAPPER.mapRow(rs);
-            cards.add(newCard);
-            return newCard;
-         });
+         List<TechCard> cards = meal.getTechCards();
+
+         TechCard techCard = findById(cards, rs.getLong("tc.id"))
+               .orElseGet(() -> mapTechCard(rs, cards));
+
+         addOutputWeight(rs, techCard.getProductGroupOutputWeight());
       }
       return new ArrayList<>(result.values());
+   }
+
+   protected TechCard mapTechCard(ResultSet rs, List<TechCard> cards) {
+      TechCard techCard = TECH_CARD_MAPPER.mapRow(rs);
+      cards.add(techCard);
+      return techCard;
+   }
+
+   private void addOutputWeight(ResultSet rs, Map<ProductGroup, BigDecimal> weightMap) throws SQLException {
+      BigDecimal outputWeight = rs.getBigDecimal("tcp.outputWeight");
+      if (outputWeight != null) {
+         ProductGroup productGroup = PRODUCT_GROUP_MAPPER.mapRow(rs);
+         weightMap.putIfAbsent(productGroup, outputWeight);
+      }
    }
 
    protected <T extends Identified<Long>> Optional<T> findById(List<T> entities, long checkId) {

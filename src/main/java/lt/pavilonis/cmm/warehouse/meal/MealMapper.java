@@ -1,13 +1,13 @@
 package lt.pavilonis.cmm.warehouse.meal;
 
+import lt.pavilonis.cmm.common.util.SimpleRowMapper;
 import lt.pavilonis.cmm.warehouse.mealtype.MealTypeMapper;
-import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-public final class MealMapper implements RowMapper<Meal> {
+public final class MealMapper extends SimpleRowMapper<Meal> {
 
    private static final MealTypeMapper MEAL_TYPE_MAPPER = new MealTypeMapper();
 
@@ -18,13 +18,5 @@ public final class MealMapper implements RowMapper<Meal> {
             MEAL_TYPE_MAPPER.mapRow(rs, i),
             new ArrayList<>()
       );
-   }
-
-   public Meal mapRow(ResultSet rs) {
-      try {
-         return mapRow(rs, 0);
-      } catch (SQLException e) {
-         throw new RuntimeException("Could not map a row");
-      }
    }
 }

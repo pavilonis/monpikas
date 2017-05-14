@@ -1,11 +1,12 @@
 package lt.pavilonis.cmm.warehouse.productgroup;
 
+import lt.pavilonis.cmm.common.util.SimpleRowMapper;
 import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class ProductGroupMapper implements RowMapper<ProductGroup> {
+public final class ProductGroupMapper extends SimpleRowMapper<ProductGroup> {
    @Override
    public ProductGroup mapRow(ResultSet rs, int i) throws SQLException {
       return new ProductGroup(

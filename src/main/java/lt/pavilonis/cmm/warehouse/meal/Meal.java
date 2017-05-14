@@ -2,20 +2,20 @@ package lt.pavilonis.cmm.warehouse.meal;
 
 import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.mealtype.MealType;
-import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCard;
+import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 
 import java.util.List;
 
 public class Meal extends Identified<Long> {
 
    private MealType type;
-   private List<TechnologicalCard> technologicalCards;
+   private List<TechCard> techCards;
 //   private MenuRequirement menuRequirement;
 
-   public Meal(long id, MealType type, List<TechnologicalCard> technologicalCards) {
+   public Meal(long id, MealType type, List<TechCard> techCards) {
       this.setId(id);
       this.type = type;
-      this.technologicalCards = technologicalCards;
+      this.techCards = techCards;
    }
 
    public MealType getType() {
@@ -26,11 +26,11 @@ public class Meal extends Identified<Long> {
       this.type = type;
    }
 
-   public List<TechnologicalCard> getTechnologicalCards() {
-      return technologicalCards;
+   public List<TechCard> getTechCards() {
+      return techCards;
    }
 
-   public void setTechnologicalCards(List<TechnologicalCard> technologicalCards) {
-      this.technologicalCards = technologicalCards;
+   public void setTechCards(List<TechCard> techCards) {
+      this.techCards = techCards;
    }
 }

@@ -87,22 +87,25 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
       return layout;
    }
 
-   private void actionAdd() {
-      Consumer<Set<T>> selectionConsumer = items -> {
-         boolean duplicatesFound = false;
-         for (T item : items) {
-            if (grid.hasItem(item)) {
-               duplicatesFound = true;
-            } else {
-               grid.addItem(item);
-            }
-         }
-         if (duplicatesFound) {
-            Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
-         }
-      };
-
+   protected void actionAdd() {
+      Consumer<Set<T>> selectionConsumer = createSelectionConsumer();
       new SelectionPopup(selectionConsumer);
+   }
+
+   protected Consumer<Set<T>> createSelectionConsumer() {
+      return items -> {
+            boolean duplicatesFound = false;
+            for (T item : items) {
+               if (grid.hasItem(item)) {
+                  duplicatesFound = true;
+               } else {
+                  grid.addItem(item);
+               }
+            }
+            if (duplicatesFound) {
+               Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
+            }
+         };
    }
 
    private void actionRemove() {

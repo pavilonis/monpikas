@@ -3,10 +3,7 @@ package lt.pavilonis.cmm.warehouse.techcardgroup;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
-import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCard;
-import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCardFilter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,16 +17,13 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class TechnologicalCardGroupRepository implements EntityRepository<TechnologicalCardGroup, Long, IdTextFilter> {
-
-   private static final RowMapper<TechnologicalCardGroup> MAPPER =
-         (rs, i) -> new TechnologicalCardGroup();
+public class TechCardGroupRepository implements EntityRepository<TechCardGroup, Long, IdTextFilter> {
 
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
 
    @Override
-   public TechnologicalCardGroup saveOrUpdate(TechnologicalCardGroup entity) {
+   public TechCardGroup saveOrUpdate(TechCardGroup entity) {
       Map<String, Object> args = new HashMap<>();
       args.put(ID, entity.getId());
       args.put("name", entity.getName());
@@ -39,16 +33,16 @@ public class TechnologicalCardGroupRepository implements EntityRepository<Techno
             : update(args);
    }
 
-   private TechnologicalCardGroup update(Map<String, ?> args) {
-      jdbc.update("UPDATE DishGroup SET name = :name WHERE id = :id", args);
+   private TechCardGroup update(Map<String, ?> args) {
+      jdbc.update("UPDATE TechCardGroup SET name = :name WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
-   private TechnologicalCardGroup create(Map<String, Object> args) {
+   private TechCardGroup create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbc.update(
-            "INSERT INTO DishGroup (name) VALUES (:name)",
+            "INSERT INTO TechCardGroup (name) VALUES (:name)",
             new MapSqlParameterSource(args),
             keyHolder
       );
@@ -58,24 +52,24 @@ public class TechnologicalCardGroupRepository implements EntityRepository<Techno
    }
 
    @Override
-   public List<TechnologicalCardGroup> load(IdTextFilter filter) {
+   public List<TechCardGroup> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("text", QueryUtils.likeArg(filter.getText()));
 
       return jdbc.query("" +
-                  "SELECT id, name " +
-                  "FROM DishGroup " +
+                  "SELECT tcg.id, tcg.name " +
+                  "FROM TechCardGroup tcg " +
                   "WHERE (:id IS NULL OR id = :id) AND (:text IS NULL OR name LIKE :text) " +
                   "ORDER BY name",
             args,
-            MAPPER
+            new TechCardGroupMapper()
       );
    }
 
    @Override
-   public Optional<TechnologicalCardGroup> find(Long id) {
-      List<TechnologicalCardGroup> result = load(new IdTextFilter());
+   public Optional<TechCardGroup> find(Long id) {
+      List<TechCardGroup> result = load(new IdTextFilter());
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -83,20 +77,11 @@ public class TechnologicalCardGroupRepository implements EntityRepository<Techno
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM DishGroup WHERE id = :id", Collections.singletonMap("id", id));
+      jdbc.update("DELETE FROM TechCardGroup WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override
-   public Class<TechnologicalCardGroup> entityClass() {
-      return TechnologicalCardGroup.class;
+   public Class<TechCardGroup> entityClass() {
+      return TechCardGroup.class;
    }
-
-//TODO
-//
-//   @Override
-//   public List<DishRecord> dishes(long groupId) {
-//      return dsl().selectFrom(DISH)
-//            .where(DISH.DISHGROUPID.eq(groupId))
-//            .fetch();
-//   }
 }

@@ -50,4 +50,8 @@ public class IdTextFilter {
       this.limit = value;
       return this;
    }
+
+   public static IdTextFilter empty() {
+      return new IdTextFilter();
+   }
 }

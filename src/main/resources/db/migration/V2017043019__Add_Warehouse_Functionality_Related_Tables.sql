@@ -60,30 +60,30 @@ CREATE TABLE MenuRequirement (
 );
 
 
-CREATE TABLE TechnologicalCardGroup (
+CREATE TABLE TechCardGroup (
    id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
    name        VARCHAR(255) NOT NULL,
    dateCreated DATETIME     NOT NULL             DEFAULT NOW()
 );
 
-CREATE TABLE TechnologicalCard (
-   id                        BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   name                      VARCHAR(255) NOT NULL,
-   technologicalCardGroup_id BIGINT(20)   NOT NULL,
-   dateCreated               DATETIME     NOT NULL             DEFAULT NOW(),
+CREATE TABLE TechCard (
+   id               BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   name             VARCHAR(255) NOT NULL,
+   techCardGroup_id BIGINT(20)   NOT NULL,
+   dateCreated      DATETIME     NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (technologicalCardGroup_id) REFERENCES TechnologicalCardGroup (id)
+   FOREIGN KEY (techCardGroup_id) REFERENCES TechCardGroup (id)
 );
 
-CREATE TABLE TechnologicalCardItem (
-   id                   BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   technologicalCard_id BIGINT(20)     NOT NULL,
-   productGroup_id      BIGINT(20)     NOT NULL,
-   outputWeight         DECIMAL(10, 3) NOT NULL,
-   dateCreated          DATETIME       NOT NULL             DEFAULT NOW(),
+CREATE TABLE TechCardProduct (
+   id              BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   techCard_id     BIGINT(20)     NOT NULL,
+   productGroup_id BIGINT(20)     NOT NULL,
+   outputWeight    DECIMAL(10, 3) NOT NULL,
+   dateCreated     DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id),
-   FOREIGN KEY (technologicalCard_id) REFERENCES TechnologicalCard (id)
+   FOREIGN KEY (techCard_id) REFERENCES TechCard (id)
       ON DELETE CASCADE
 );
 
@@ -106,13 +106,13 @@ CREATE TABLE Meal (
       ON DELETE CASCADE
 );
 
-CREATE TABLE MealTechnologicalCard (
-   id                   BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   meal_id              BIGINT(20) NOT NULL,
-   technologicalCard_id BIGINT(20) NOT NULL,
-   dateCreated          DATETIME   NOT NULL             DEFAULT NOW(),
+CREATE TABLE MealTechCard (
+   id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   meal_id     BIGINT(20) NOT NULL,
+   techCard_id BIGINT(20) NOT NULL,
+   dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (technologicalCard_id) REFERENCES TechnologicalCard (id),
+   FOREIGN KEY (techCard_id) REFERENCES TechCard (id),
    FOREIGN KEY (meal_id) REFERENCES Meal (id)
       ON DELETE CASCADE
 );
@@ -126,17 +126,17 @@ CREATE TABLE WriteOffStatement (
 );
 
 CREATE TABLE WriteOffItem (
-   id                       BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   quantity                 DECIMAL(10, 3) NOT NULL,
-   receiptItem_id           BIGINT(20)     NOT NULL,
-   writeOffStatement_id     BIGINT(20)     NOT NULL,
-   technologicalCardItem_id BIGINT(20)     NOT NULL,
-   mealTechnologicalCard_id BIGINT(20)     NOT NULL,
-   dateCreated              DATETIME       NOT NULL             DEFAULT NOW(),
+   id                   BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   quantity             DECIMAL(10, 3) NOT NULL,
+   receiptItem_id       BIGINT(20)     NOT NULL,
+   writeOffStatement_id BIGINT(20)     NOT NULL,
+   techCardProduct_id   BIGINT(20)     NOT NULL,
+   mealTechCard_id      BIGINT(20)     NOT NULL,
+   dateCreated          DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
-   FOREIGN KEY (technologicalCardItem_id) REFERENCES TechnologicalCardItem (id),
-   FOREIGN KEY (mealTechnologicalCard_id) REFERENCES MealTechnologicalCard (id),
+   FOREIGN KEY (techCardProduct_id) REFERENCES TechCardProduct (id),
+   FOREIGN KEY (mealTechCard_id) REFERENCES MealTechCard (id),
    FOREIGN KEY (writeOffStatement_id) REFERENCES WriteOffStatement (id)
       ON DELETE CASCADE
 );

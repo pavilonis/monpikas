@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.meal;
+package lt.pavilonis.cmm.warehouse.techcardgroup;
 
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.common.AbstractFormController;
@@ -12,38 +12,28 @@ import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
-import java.util.Arrays;
-import java.util.List;
-
 @Controller
-public class MealListController extends AbstractListController<Meal, Long, IdTextFilter> {
+public class TechCardGroupListController extends AbstractListController<TechCardGroup, Long, IdTextFilter> {
 
    @Autowired
-   private MealRepository repository;
+   private TechCardGroupRepository repository;
 
    @Override
-   protected ListGrid<Meal> createGrid() {
-      return new ListGrid<Meal>(Meal.class) {
-
-         @Override
-         protected List<String> columnOrder() {
-            return Arrays.asList("name", "unitWeight", "measureUnit", "productGroup");
-         }
-      };
+   protected ListGrid<TechCardGroup> createGrid() {
+      return new ListGrid<>(TechCardGroup.class);
    }
 
    @Override
-   protected AbstractFormController<Meal, Long> getFormController() {
-      return new AbstractFormController<Meal, Long>(Meal.class) {
+   protected AbstractFormController<TechCardGroup, Long> getFormController() {
+      return new AbstractFormController<TechCardGroup, Long>(TechCardGroup.class) {
          @Override
-         protected EntityRepository<Meal, Long, ?> getEntityRepository() {
+         protected EntityRepository<TechCardGroup, Long, ?> getEntityRepository() {
             return repository;
          }
 
          @Override
-         protected FieldLayout<Meal> createFieldLayout() {
-//            return new MealForm(productGroupRepo.load(new IdNameFilter()));
-            return new MealForm();
+         protected FieldLayout<TechCardGroup> createFieldLayout() {
+            return new TechCardGroupForm();
          }
       };
    }
@@ -54,18 +44,18 @@ public class MealListController extends AbstractListController<Meal, Long, IdTex
    }
 
    @Override
-   protected EntityRepository<Meal, Long, IdTextFilter> getEntityRepository() {
+   protected EntityRepository<TechCardGroup, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 
    @Override
-   protected Class<Meal> getEntityClass() {
-      return Meal.class;
+   protected Class<TechCardGroup> getEntityClass() {
+      return TechCardGroup.class;
    }
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.PACKAGE;
+      return VaadinIcons.SPOON;
    }
 
    @Override
@@ -80,6 +70,6 @@ public class MealListController extends AbstractListController<Meal, Long, IdTex
 
    @Override
    public String getViewName() {
-      return "product";
+      return "tech-card-group";
    }
 }

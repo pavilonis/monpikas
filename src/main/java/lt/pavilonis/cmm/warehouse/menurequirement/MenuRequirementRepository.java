@@ -57,15 +57,15 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
 
          long insertedMealId = insertNewMeal(id, meal.getType().getId());
 
-         meal.getTechnologicalCards()
-               .forEach(card -> addTechnologicalCardToMeal(insertedMealId, card.getId()));
+         meal.getTechCards()
+               .forEach(card -> addTechCardToMeal(insertedMealId, card.getId()));
       });
    }
 
-   private void addTechnologicalCardToMeal(long insertedMealId, long technologicalCardId) {
+   private void addTechCardToMeal(long insertedMealId, long techCardId) {
       jdbc.update(
-            "INSERT INTO MealTechnologicalCard (meal_id, technologicalCard_id) VALUES (:mealId, :cardId)",
-            ImmutableMap.of("mealId", insertedMealId, "cardId", technologicalCardId)
+            "INSERT INTO MealTechCard (meal_id, techCard_id) VALUES (:mealId, :cardId)",
+            ImmutableMap.of("mealId", insertedMealId, "cardId", techCardId)
       );
    }
 
@@ -111,9 +111,9 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
                   "FROM MenuRequirement mr " +
                   "  JOIN Meal m ON m.menuRequirement_id = mr.id " +
                   "  JOIN MealType mt ON mt.id = m.mealType_id " +
-                  "  JOIN MealTechnologicalCard mtc ON mtc.meal_id = m.id " +
-                  "  JOIN TechnologicalCard tc ON tc.id = mtc.technologicalCard_id " +
-                  "  JOIN TechnologicalCardGroup tcg ON tcg.id = tc.technologicalCardGroup_id " +
+                  "  JOIN MealTechCard mtc ON mtc.meal_id = m.id " +
+                  "  JOIN TechCard tc ON tc.id = mtc.techCard_id " +
+                  "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +
                   "WHERE (:id IS NULL OR mr.id = :id) " +
                   "  AND (:periodStart IS NULL OR mr.date >= :periodStart)" +
                   "  AND (:periodEnd IS NULL OR mr.date <= :periodEnd) " +

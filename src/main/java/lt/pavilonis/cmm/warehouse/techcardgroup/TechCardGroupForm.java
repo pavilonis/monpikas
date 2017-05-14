@@ -5,10 +5,10 @@ import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.warehouse.supplier.Supplier;
 
-public final class TechnologicalCardGroupForm extends FieldLayout<TechnologicalCardGroup> {
+public final class TechCardGroupForm extends FieldLayout<TechCardGroup> {
    private final TextField name = new ATextField(Supplier.class, "name");
 
-   public TechnologicalCardGroupForm() {
+   public TechCardGroupForm() {
       addComponents(name);
    }
 }
