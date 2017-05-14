@@ -5,22 +5,22 @@ import lt.pavilonis.cmm.warehouse.techcardgroup.TechnologicalCardGroup;
 
 public final class TechnologicalCard extends Named<Long> {
 
-   private TechnologicalCardGroup dishGroup;
+   private TechnologicalCardGroup technologicalCardGroup;
 
    public TechnologicalCard() {
    }
 
-   public TechnologicalCard(long id, String name, TechnologicalCardGroup dishGroup) {
+   public TechnologicalCard(long id, String name, TechnologicalCardGroup technologicalCardGroup) {
       setId(id);
       setName(name);
-      this.dishGroup = dishGroup;
+      this.technologicalCardGroup = technologicalCardGroup;
    }
 
-   public TechnologicalCardGroup getDishGroup() {
-      return dishGroup;
+   public TechnologicalCardGroup getTechnologicalCardGroup() {
+      return technologicalCardGroup;
    }
 
-   public void setDishGroup(TechnologicalCardGroup dishGroup) {
-      this.dishGroup = dishGroup;
+   public void setTechnologicalCardGroup(TechnologicalCardGroup technologicalCardGroup) {
+      this.technologicalCardGroup = technologicalCardGroup;
    }
 }

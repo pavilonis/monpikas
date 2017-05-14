@@ -13,14 +13,14 @@ import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.HiddenFilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collections;
 
 @SpringComponent
 @UIScope
-public class EatingListController extends AbstractListController<Eating, Long, IdNameFilter> {
+public class EatingListController extends AbstractListController<Eating, Long, IdTextFilter> {
 
    @Autowired
    private EatingRepository repository;
@@ -47,12 +47,12 @@ public class EatingListController extends AbstractListController<Eating, Long, I
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
+   protected FilterPanel<IdTextFilter> createFilterPanel() {
       return new HiddenFilterPanel<>();
    }
 
    @Override
-   protected EntityRepository<Eating, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<Eating, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 

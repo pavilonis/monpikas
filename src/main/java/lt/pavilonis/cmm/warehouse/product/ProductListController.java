@@ -8,7 +8,7 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class ProductListController extends AbstractListController<Product, Long, IdNameFilter> {
+public class ProductListController extends AbstractListController<Product, Long, IdTextFilter> {
 
    @Autowired
    private ProductRepository repository;
@@ -53,18 +53,18 @@ public class ProductListController extends AbstractListController<Product, Long,
 
          @Override
          protected FieldLayout<Product> createFieldLayout() {
-            return new ProductForm(productGroupRepo.load(new IdNameFilter()));
+            return new ProductForm(productGroupRepo.load(new IdTextFilter()));
          }
       };
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
+   protected FilterPanel<IdTextFilter> createFilterPanel() {
       return new NameFilterPanel();
    }
 
    @Override
-   protected EntityRepository<Product, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<Product, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.canteen.domain.Eating;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -26,7 +26,7 @@ import static java.util.Collections.singletonMap;
 import static java.util.Objects.isNull;
 
 @Repository
-public class EatingRepository implements EntityRepository<Eating, Long, IdNameFilter> {
+public class EatingRepository implements EntityRepository<Eating, Long, IdTextFilter> {
 
    private final EatingMapper MAPPER = new EatingMapper();
 
@@ -37,7 +37,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdNameFi
    private NamedParameterJdbcTemplate namedJdbc;
 
    @Override
-   public List<Eating> load(IdNameFilter filter) {
+   public List<Eating> load(IdTextFilter filter) {
       return jdbc.query("SELECT e.* FROM Eating e", MAPPER);
    }
 

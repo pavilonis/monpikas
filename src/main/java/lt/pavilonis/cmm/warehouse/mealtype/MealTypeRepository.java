@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.warehouse.mealtype;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,9 +19,9 @@ import java.util.Optional;
 
 
 @Repository
-public class MealTypeRepository implements EntityRepository<MealType, Long, IdNameFilter> {
+public class MealTypeRepository implements EntityRepository<MealType, Long, IdTextFilter> {
 
-   private static final RowMapper<MealType> MAPPER = (rs, i) -> new MealType(rs.getLong(1), rs.getString(2));
+   private static final RowMapper<MealType> MAPPER = new MealTypeMapper();
 
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
@@ -52,10 +52,10 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdNa
    }
 
    @Override
-   public List<MealType> load(IdNameFilter filter) {
+   public List<MealType> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("name", QueryUtils.likeArg(filter.getName()));
+      args.put("name", QueryUtils.likeArg(filter.getText()));
       return jdbc.query("" +
                   "SELECT mt.id, mt.name " +
                   "FROM MealType mt " +
@@ -68,7 +68,7 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdNa
 
    @Override
    public Optional<MealType> find(Long id) {
-      List<MealType> result = load(new IdNameFilter(id));
+      List<MealType> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));

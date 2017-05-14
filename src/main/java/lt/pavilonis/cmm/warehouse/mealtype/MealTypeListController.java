@@ -7,13 +7,13 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class MealTypeListController extends AbstractListController<MealType, Long, IdNameFilter> {
+public class MealTypeListController extends AbstractListController<MealType, Long, IdTextFilter> {
 
    @Autowired
    private MealTypeRepository repository;
@@ -39,12 +39,12 @@ public class MealTypeListController extends AbstractListController<MealType, Lon
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
+   protected FilterPanel<IdTextFilter> createFilterPanel() {
       return new NameFilterPanel();
    }
 
    @Override
-   protected EntityRepository<MealType, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<MealType, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 

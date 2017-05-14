@@ -8,15 +8,12 @@ import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
-import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import lt.pavilonis.cmm.common.field.AButton;
 
 import java.util.List;
 
 public abstract class FilterPanel<FILTER> extends HorizontalLayout {
 
-   protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
    private final List<HasValue<?>> fields = getFields();
 
    private final AButton buttonFilter = new AButton(FilterPanel.class.getSimpleName() + ".filter")

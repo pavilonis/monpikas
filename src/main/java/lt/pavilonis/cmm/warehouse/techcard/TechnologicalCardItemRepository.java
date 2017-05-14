@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.warehouse.techcard;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupMapper;
 import org.slf4j.Logger;
@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class TechnologicalCardItemRepository implements EntityRepository<TechnologicalCardItem, Long, IdNameFilter> {
+public class TechnologicalCardItemRepository implements EntityRepository<TechnologicalCardItem, Long, IdTextFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(TechnologicalCardItemRepository.class);
    private static final RowMapper<TechnologicalCard> MAPPER_TECH_CARD = new TechnologicalCardMapper();
@@ -66,7 +66,7 @@ public class TechnologicalCardItemRepository implements EntityRepository<Technol
 
 
    @Override
-   public List<TechnologicalCardItem> load(IdNameFilter filter) {
+   public List<TechnologicalCardItem> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put(ID, filter.getId());
 
@@ -97,7 +97,7 @@ public class TechnologicalCardItemRepository implements EntityRepository<Technol
 
    @Override
    public Optional<TechnologicalCardItem> find(Long id) {
-      List<TechnologicalCardItem> result = load(new IdNameFilter(id));
+      List<TechnologicalCardItem> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));

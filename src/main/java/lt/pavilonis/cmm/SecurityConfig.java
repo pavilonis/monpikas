@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.common.config;
+package lt.pavilonis.cmm;
 
 import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;

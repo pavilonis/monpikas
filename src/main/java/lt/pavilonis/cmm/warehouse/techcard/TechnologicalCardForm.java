@@ -16,17 +16,20 @@ public final class TechnologicalCardForm extends FieldLayout<TechnologicalCard> 
 
    private final TextField name = new ATextField(TechnologicalCard.class, "name");
 
-   @PropertyId("dishGroup")
-   private final ComboBox<TechnologicalCardGroup> dishGroup;
+   @PropertyId("technologicalCardGroup")
+   private final ComboBox<TechnologicalCardGroup> technologicalCardGroup;
 
    public TechnologicalCardForm(List<TechnologicalCardGroup> dishGroups) {
-      dishGroup = new ComboBox<>(App.translate(TechnologicalCardGroup.class, "dishGroup"), dishGroups);
-      dishGroup.setItemCaptionGenerator(Named::getName);
-      addComponents(name, dishGroup);
+      technologicalCardGroup = new ComboBox<>(App.translate(TechnologicalCardGroup.class, "technologicalCardGroup"), dishGroups);
+      technologicalCardGroup.setItemCaptionGenerator(Named::getName);
+      addComponents(name, technologicalCardGroup);
    }
 
    @Override
    public void manualBinding(Binder<TechnologicalCard> binding) {
-      binding.bind(dishGroup, TechnologicalCard::getDishGroup, TechnologicalCard::setDishGroup);
+      binding.bind(technologicalCardGroup,
+            TechnologicalCard::getTechnologicalCardGroup,
+            TechnologicalCard::setTechnologicalCardGroup
+      );
    }
 }

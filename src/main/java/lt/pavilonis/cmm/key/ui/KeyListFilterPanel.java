@@ -68,11 +68,8 @@ class KeyListFilterPanel extends FilterPanel<KeyListFilter> {
 
    private ComboBox scannerCombo() {
       ScannerRestRepository scannerRepo = App.context.getBean(ScannerRestRepository.class);
-      ComboBox<Scanner> combo = new ComboBox<>(
-            messages.get(this, "scanner"),
-            scannerRepo.loadAll()
-      );
-      combo.setItemCaptionGenerator(item -> messages.get(item, item.getName()));
+      ComboBox<Scanner> combo = new ComboBox<>(App.translate(this, "scanner"), scannerRepo.loadAll());
+      combo.setItemCaptionGenerator(item -> App.translate(item, item.getName()));
       return combo;
    }
 

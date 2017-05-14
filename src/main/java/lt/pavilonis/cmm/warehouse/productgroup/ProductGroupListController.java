@@ -7,13 +7,13 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class ProductGroupListController extends AbstractListController<ProductGroup, Long, IdNameFilter> {
+public class ProductGroupListController extends AbstractListController<ProductGroup, Long, IdTextFilter> {
 
    @Autowired
    private ProductGroupRepository repository;
@@ -39,12 +39,12 @@ public class ProductGroupListController extends AbstractListController<ProductGr
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
+   protected FilterPanel<IdTextFilter> createFilterPanel() {
       return new NameFilterPanel();
    }
 
    @Override
-   protected EntityRepository<ProductGroup, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<ProductGroup, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 

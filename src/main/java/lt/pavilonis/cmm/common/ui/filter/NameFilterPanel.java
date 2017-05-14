@@ -7,13 +7,13 @@ import com.vaadin.ui.TextField;
 import java.util.Collections;
 import java.util.List;
 
-public class NameFilterPanel extends FilterPanel<IdNameFilter> {
+public class NameFilterPanel extends FilterPanel<IdTextFilter> {
 
    private TextField textField;
 
    @Override
-   public IdNameFilter getFilter() {
-      return new IdNameFilter(textField.getValue());
+   public IdTextFilter getFilter() {
+      return new IdTextFilter(textField.getValue());
    }
 
    @Override

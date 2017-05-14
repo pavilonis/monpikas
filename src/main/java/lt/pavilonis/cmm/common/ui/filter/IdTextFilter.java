@@ -1,27 +1,27 @@
 package lt.pavilonis.cmm.common.ui.filter;
 
-public final class IdNameFilter {
+public class IdTextFilter {
 
    private final Long id;
-   private final String name;
+   private final String text;
 
    private int offSet;
    private int limit;
 
-   public IdNameFilter(Long id, String name) {
+   public IdTextFilter(Long id, String text) {
       this.id = id;
-      this.name = name;
+      this.text = text;
    }
 
-   public IdNameFilter(String text) {
+   public IdTextFilter(String text) {
       this(null, text);
    }
 
-   public IdNameFilter(Long id) {
+   public IdTextFilter(Long id) {
       this(id, null);
    }
 
-   public IdNameFilter() {
+   public IdTextFilter() {
       this(null, null);
    }
 
@@ -29,8 +29,8 @@ public final class IdNameFilter {
       return id;
    }
 
-   public String getName() {
-      return name;
+   public String getText() {
+      return text;
    }
 
    public int getOffSet() {
@@ -41,12 +41,12 @@ public final class IdNameFilter {
       return limit;
    }
 
-   public IdNameFilter withOffset(int value) {
+   public IdTextFilter withOffset(int value) {
       this.offSet = value;
       return this;
    }
 
-   public IdNameFilter withLimit(int value) {
+   public IdTextFilter withLimit(int value) {
       this.limit = value;
       return this;
    }

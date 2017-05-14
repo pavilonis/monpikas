@@ -4,7 +4,7 @@ import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter> {
+public class MealRepository implements EntityRepository<Meal, Long, IdTextFilter> {
    private static final Logger LOG = LoggerFactory.getLogger(MealRepository.class);
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM Meal p " +
@@ -75,7 +75,7 @@ public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter
 
 
    @Override
-   public List<Meal> load(IdNameFilter filter) {
+   public List<Meal> load(IdTextFilter filter) {
       List<Meal> result = jdbc.query("" +
                   "SELECT p.id, p.name, p.measureUnit, p.unitWeight, p.productGroup_id," +
                   "       pg.id, pg.name, pg.kcal100 " +
@@ -90,7 +90,7 @@ public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter
 
    @Override
    public Optional<Meal> find(Long id) {
-      List<Meal> result = load(new IdNameFilter(id));
+      List<Meal> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -107,11 +107,11 @@ public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter
    }
 
    @Override
-   public Optional<BackEndDataProvider<Meal, IdNameFilter>> lazyDataProvider(IdNameFilter filter) {
-      BackEndDataProvider<Meal, IdNameFilter> provider = new AbstractBackEndDataProvider<Meal, IdNameFilter>() {
+   public Optional<BackEndDataProvider<Meal, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
+      BackEndDataProvider<Meal, IdTextFilter> provider = new AbstractBackEndDataProvider<Meal, IdTextFilter>() {
          @Override
-         protected Stream<Meal> fetchFromBackEnd(Query<Meal, IdNameFilter> query) {
-            IdNameFilter updatedFilter = filter
+         protected Stream<Meal> fetchFromBackEnd(Query<Meal, IdTextFilter> query) {
+            IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
@@ -119,8 +119,8 @@ public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter
          }
 
          @Override
-         protected int sizeInBackEnd(Query<Meal, IdNameFilter> query) {
-            IdNameFilter updatedFilter = filter
+         protected int sizeInBackEnd(Query<Meal, IdTextFilter> query) {
+            IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
@@ -134,10 +134,10 @@ public class MealRepository implements EntityRepository<Meal, Long, IdNameFilter
       return Optional.of(provider);
    }
 
-   private Map<String, Object> composeArgs(IdNameFilter filter) {
+   private Map<String, Object> composeArgs(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("name", QueryUtils.likeArg(filter.getName()));
+      args.put("name", QueryUtils.likeArg(filter.getText()));
       args.put("offset", filter.getOffSet());
       args.put("limit", filter.getLimit());
       return args;

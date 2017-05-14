@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.warehouse.supplier;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class SupplierRepository implements EntityRepository<Supplier, Long, IdNameFilter> {
+public class SupplierRepository implements EntityRepository<Supplier, Long, IdTextFilter> {
 
    private static final RowMapper<Supplier> MAPPER =
          (rs, i) -> new Supplier(rs.getLong(1), rs.getString(2), rs.getString(3));
@@ -56,10 +56,10 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdNa
    }
 
    @Override
-   public List<Supplier> load(IdNameFilter filter) {
+   public List<Supplier> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("text", QueryUtils.likeArg(filter.getName()));
+      args.put("text", QueryUtils.likeArg(filter.getText()));
 
       return jdbc.query("" +
                   "SELECT id, code, name " +
@@ -74,7 +74,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdNa
 
    @Override
    public Optional<Supplier> find(Long id) {
-      List<Supplier> result = load(new IdNameFilter(id));
+      List<Supplier> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));

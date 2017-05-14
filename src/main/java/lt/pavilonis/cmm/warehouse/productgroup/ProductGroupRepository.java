@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.warehouse.productgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
@@ -19,7 +19,7 @@ import java.util.Optional;
 
 
 @Repository
-public class ProductGroupRepository implements EntityRepository<ProductGroup, Long, IdNameFilter> {
+public class ProductGroupRepository implements EntityRepository<ProductGroup, Long, IdTextFilter> {
 
    private static final RowMapper<ProductGroup> MAPPER = new ProductGroupMapper();
 
@@ -56,10 +56,10 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
    }
 
    @Override
-   public List<ProductGroup> load(IdNameFilter filter) {
+   public List<ProductGroup> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("name", QueryUtils.likeArg(filter.getName()));
+      args.put("name", QueryUtils.likeArg(filter.getText()));
       return jdbc.query("" +
                   "SELECT pg.id, pg.name, pg.kcal100 " +
                   "FROM ProductGroup pg " +
@@ -72,7 +72,7 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
 
    @Override
    public Optional<ProductGroup> find(Long id) {
-      List<ProductGroup> result = load(new IdNameFilter(id));
+      List<ProductGroup> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));

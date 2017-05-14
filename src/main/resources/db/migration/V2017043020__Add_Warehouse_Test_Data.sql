@@ -138,13 +138,13 @@ VALUES (8, 4, 13, 1, 5, (SELECT name
 INSERT INTO MenuRequirement (id, date) VALUES (1, now());
 INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (1, 1, 1);
 #pusryciai
-INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (1, 1, 1);
+INSERT INTO MealTechnologicalCard (id, meal_id, technologicalCard_id) VALUES (1, 1, 1);
 #barsciai
-INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (2, 1, 2);
+INSERT INTO MealTechnologicalCard (id, meal_id, technologicalCard_id) VALUES (2, 1, 2);
 #makaronai + kotletas
 
 INSERT INTO MenuRequirement (id, date) VALUES (2, now());
 INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (2, 2, 2);
 #priespeciai
-INSERT INTO MealItem (id, meal_id, technologicalCard_id) VALUES (3, 2, 3);
+INSERT INTO MealTechnologicalCard (id, meal_id, technologicalCard_id) VALUES (3, 2, 3);
 #kava su pienu

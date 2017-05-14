@@ -7,7 +7,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-class UserGrid extends ListGrid<User> {
+final class UserGrid extends ListGrid<User> {
 
    public UserGrid() {
       super(User.class);

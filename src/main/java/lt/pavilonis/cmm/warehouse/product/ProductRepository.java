@@ -4,7 +4,7 @@ import com.vaadin.data.provider.AbstractBackEndDataProvider;
 import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class ProductRepository implements EntityRepository<Product, Long, IdNameFilter> {
+public class ProductRepository implements EntityRepository<Product, Long, IdTextFilter> {
    private static final Logger LOG = LoggerFactory.getLogger(ProductRepository.class);
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM Product p " +
@@ -78,7 +78,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdName
 
 
    @Override
-   public List<Product> load(IdNameFilter filter) {
+   public List<Product> load(IdTextFilter filter) {
       List<Product> result = jdbc.query("" +
                   "SELECT p.id, p.name, p.measureUnit, p.unitWeight, p.productGroup_id," +
                   "       pg.id, pg.name, pg.kcal100 " +
@@ -93,7 +93,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdName
 
    @Override
    public Optional<Product> find(Long id) {
-      List<Product> result = load(new IdNameFilter(id));
+      List<Product> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -110,11 +110,11 @@ public class ProductRepository implements EntityRepository<Product, Long, IdName
    }
 
    @Override
-   public Optional<BackEndDataProvider<Product, IdNameFilter>> lazyDataProvider(IdNameFilter filter) {
-      BackEndDataProvider<Product, IdNameFilter> provider = new AbstractBackEndDataProvider<Product, IdNameFilter>() {
+   public Optional<BackEndDataProvider<Product, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
+      BackEndDataProvider<Product, IdTextFilter> provider = new AbstractBackEndDataProvider<Product, IdTextFilter>() {
          @Override
-         protected Stream<Product> fetchFromBackEnd(Query<Product, IdNameFilter> query) {
-            IdNameFilter updatedFilter = filter
+         protected Stream<Product> fetchFromBackEnd(Query<Product, IdTextFilter> query) {
+            IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
@@ -122,8 +122,8 @@ public class ProductRepository implements EntityRepository<Product, Long, IdName
          }
 
          @Override
-         protected int sizeInBackEnd(Query<Product, IdNameFilter> query) {
-            IdNameFilter updatedFilter = filter
+         protected int sizeInBackEnd(Query<Product, IdTextFilter> query) {
+            IdTextFilter updatedFilter = filter
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
@@ -137,10 +137,10 @@ public class ProductRepository implements EntityRepository<Product, Long, IdName
       return Optional.of(provider);
    }
 
-   private Map<String, Object> composeArgs(IdNameFilter filter) {
+   private Map<String, Object> composeArgs(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("name", QueryUtils.likeArg(filter.getName()));
+      args.put("name", QueryUtils.likeArg(filter.getText()));
       args.put("offset", filter.getOffSet());
       args.put("limit", filter.getLimit());
       return args;

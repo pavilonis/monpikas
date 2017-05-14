@@ -66,7 +66,7 @@ public class VaadinUI extends UI {
                   () -> new TreeMap<>((a, b) -> App.translate("MenuItemGroup", a)
                         .compareTo(App.translate("MenuItemGroup", b))),
                   Collectors.mapping(
-                        provider -> new MenuItem(provider.getViewName(), provider.getViewIcon()),
+                        provider -> new MenuItem(provider.getViewName(), provider.getViewIcon()), //gets red sometimes
                         Collectors.toList()
                   )
             ));

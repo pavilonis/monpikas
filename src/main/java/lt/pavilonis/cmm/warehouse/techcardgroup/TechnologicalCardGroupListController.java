@@ -7,16 +7,16 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class TechnologicalCardGroupListController extends AbstractListController<TechnologicalCardGroup, Long, IdNameFilter> {
+public class TechnologicalCardGroupListController extends AbstractListController<TechnologicalCardGroup, Long, IdTextFilter> {
 
    @Autowired
-   private TechnologicalCardRepository repository;
+   private TechnologicalCardGroupRepository repository;
 
    @Override
    protected ListGrid<TechnologicalCardGroup> createGrid() {
@@ -39,12 +39,12 @@ public class TechnologicalCardGroupListController extends AbstractListController
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
+   protected FilterPanel<IdTextFilter> createFilterPanel() {
       return new NameFilterPanel();
    }
 
    @Override
-   protected EntityRepository<TechnologicalCardGroup, Long, IdNameFilter> getEntityRepository() {
+   protected EntityRepository<TechnologicalCardGroup, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 

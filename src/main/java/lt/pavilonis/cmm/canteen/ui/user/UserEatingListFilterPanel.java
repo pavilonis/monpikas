@@ -1,20 +1,19 @@
 package lt.pavilonis.cmm.canteen.ui.user;
 
 import com.vaadin.data.HasValue;
-import com.vaadin.spring.annotation.SpringComponent;
-import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.canteen.domain.EatingType;
-import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ACheckBox;
+import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.EnumComboBox;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
 import java.util.Arrays;
 import java.util.List;
 
-public class UserEatingListFilterPanel extends FilterPanel<UserEatingFilter> {
+final class UserEatingListFilterPanel extends FilterPanel<UserEatingFilter> {
 
    private TextField textField;
    private EnumComboBox<EatingType> eatingTypeComboBox;
@@ -25,8 +24,8 @@ public class UserEatingListFilterPanel extends FilterPanel<UserEatingFilter> {
       // TODO not filtering now - need fix
       eatingTypeComboBox = new EnumComboBox<>(EatingType.class);
       List<HasValue<?>> fields = Arrays.asList(
-            textField = new TextField(messages.get(this, "name")),
-            withEatingAssigned = new ACheckBox(this.getClass(), "withEatingAssigned").withValue(true)
+            textField = new ATextField(getClass(), "name"),
+            withEatingAssigned = new ACheckBox(getClass(), "withEatingAssigned").withValue(true)
       );
       eatingTypeComboBox.clear();
       return fields;

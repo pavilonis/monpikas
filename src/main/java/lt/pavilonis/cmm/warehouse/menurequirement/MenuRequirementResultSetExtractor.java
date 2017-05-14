@@ -1,22 +1,29 @@
 package lt.pavilonis.cmm.warehouse.menurequirement;
 
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.meal.Meal;
+import lt.pavilonis.cmm.warehouse.meal.MealMapper;
+import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCard;
+import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCardMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 public class MenuRequirementResultSetExtractor implements ResultSetExtractor<List<MenuRequirement>> {
+
+   private static final MealMapper MEAL_MAPPER = new MealMapper();
+   private static final TechnologicalCardMapper TECH_CARD_MAPPER = new TechnologicalCardMapper();
+
    @Override
    public List<MenuRequirement> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-      Map<Long, MenuRequirement> result = new HashMap<>();
+      LinkedHashMap<Long, MenuRequirement> result = new LinkedHashMap<>();
 
       while (rs.next()) {
          long id = rs.getLong("mr.id");
@@ -27,14 +34,25 @@ public class MenuRequirementResultSetExtractor implements ResultSetExtractor<Lis
          }
 
          List<Meal> meals = menu.getMeals();
+         Meal meal = findById(meals, rs.getLong("m.id")).orElseGet(() -> {
+            Meal newMeal = MEAL_MAPPER.mapRow(rs);
+            meals.add(newMeal);
+            return newMeal;
+         });
 
-
-
-         LocalDate date = rs.getDate("mr.date").toLocalDate();
-
-
+         List<TechnologicalCard> cards = meal.getTechnologicalCards();
+         findById(cards, rs.getLong("tc.id")).orElseGet(() -> {
+            TechnologicalCard newCard = TECH_CARD_MAPPER.mapRow(rs);
+            cards.add(newCard);
+            return newCard;
+         });
       }
+      return new ArrayList<>(result.values());
+   }
 
-      return result;
+   protected <T extends Identified<Long>> Optional<T> findById(List<T> entities, long checkId) {
+      return entities.stream()
+            .filter(e -> e.getId().equals(checkId))
+            .findFirst();
    }
 }

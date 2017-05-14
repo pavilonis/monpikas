@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.filter.CharacterEncodingFilter;
 
+import javax.servlet.Filter;
 import java.util.Locale;
 
 @SpringBootApplication
@@ -30,6 +32,14 @@ public class App {
       return builder.basicAuthorization(apiUsername, apiPassword)
             .messageConverters(new MappingJackson2HttpMessageConverter())
             .build();
+   }
+
+   @Bean
+   public Filter characterEncodingFilter() {
+      CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+      characterEncodingFilter.setEncoding("UTF-8");
+      characterEncodingFilter.setForceEncoding(true);
+      return characterEncodingFilter;
    }
 
    @Bean

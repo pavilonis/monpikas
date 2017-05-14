@@ -8,9 +8,7 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
-import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
-import lt.pavilonis.cmm.warehouse.techcardgroup.TechnologicalCardRepository;
+import lt.pavilonis.cmm.warehouse.techcardgroup.TechnologicalCardGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -20,25 +18,23 @@ import java.util.List;
 import java.util.Map;
 
 @Controller
-public class TechnologicalCardListController extends AbstractListController<TechnologicalCard, Long, IdNameFilter> {
+public class TechnologicalCardListController extends AbstractListController<TechnologicalCard, Long, TechnologicalCardFilter> {
 
    @Autowired
    private TechnologicalCardRepository repository;
-
-   @Autowired
-   private TechnologicalCardRepository dishGroupRepo;
 
    @Override
    protected ListGrid<TechnologicalCard> createGrid() {
       return new ListGrid<TechnologicalCard>(TechnologicalCard.class) {
          @Override
          protected Map<String, ValueProvider<TechnologicalCard, ?>> getCustomColumns() {
-            return Collections.singletonMap("dishGroup", value -> value.getDishGroup().getName());
+            return Collections.singletonMap("technologicalCardGroup",
+                  value -> value.getTechnologicalCardGroup().getName());
          }
 
          @Override
          protected List<String> columnOrder() {
-            return Arrays.asList("name", "dishGroup");
+            return Arrays.asList("name", "technologicalCardGroup");
          }
       };
    }
@@ -53,19 +49,20 @@ public class TechnologicalCardListController extends AbstractListController<Tech
 
          @Override
          protected FieldLayout<TechnologicalCard> createFieldLayout() {
-            return new TechnologicalCardForm(dishGroupRepo.load(new IdNameFilter()));
+            return null;
+//            return new TechnologicalCardForm(dishGroupRepo.load(new IdNameFilter()));
          }
       };
    }
 
    @Override
-   protected FilterPanel<IdNameFilter> createFilterPanel() {
-      return new NameFilterPanel();
+   protected FilterPanel<TechnologicalCardFilter> createFilterPanel() {
+      return null;
    }
 
    @Override
-   protected EntityRepository<TechnologicalCard, Long, IdNameFilter> getEntityRepository() {
-      return repository;
+   protected EntityRepository<TechnologicalCard, Long, TechnologicalCardFilter> getEntityRepository() {
+      return null;
    }
 
    @Override
@@ -90,6 +87,6 @@ public class TechnologicalCardListController extends AbstractListController<Tech
 
    @Override
    public String getViewName() {
-      return "dish";
+      return "technological-card";
    }
 }

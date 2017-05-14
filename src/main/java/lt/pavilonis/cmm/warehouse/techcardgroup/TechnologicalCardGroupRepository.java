@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.warehouse.techcardgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.IdNameFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCard;
+import lt.pavilonis.cmm.warehouse.techcard.TechnologicalCardFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -18,10 +20,10 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class TechnologicalCardRepository implements EntityRepository<TechnologicalCardGroup, Long, IdNameFilter> {
+public class TechnologicalCardGroupRepository implements EntityRepository<TechnologicalCardGroup, Long, IdTextFilter> {
 
    private static final RowMapper<TechnologicalCardGroup> MAPPER =
-         (rs, i) -> new TechnologicalCardGroup(rs.getLong(1), rs.getString(2));
+         (rs, i) -> new TechnologicalCardGroup();
 
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
@@ -56,10 +58,10 @@ public class TechnologicalCardRepository implements EntityRepository<Technologic
    }
 
    @Override
-   public List<TechnologicalCardGroup> load(IdNameFilter filter) {
+   public List<TechnologicalCardGroup> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
-      args.put("text", QueryUtils.likeArg(filter.getName()));
+      args.put("text", QueryUtils.likeArg(filter.getText()));
 
       return jdbc.query("" +
                   "SELECT id, name " +
@@ -73,7 +75,7 @@ public class TechnologicalCardRepository implements EntityRepository<Technologic
 
    @Override
    public Optional<TechnologicalCardGroup> find(Long id) {
-      List<TechnologicalCardGroup> result = load(new IdNameFilter(id));
+      List<TechnologicalCardGroup> result = load(new IdTextFilter());
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
