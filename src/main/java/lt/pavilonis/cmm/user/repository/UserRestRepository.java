@@ -58,7 +58,9 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
 
       User[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
 
-      LOG.info("Loaded all users [number={}, duration={}]", response.length, TimeUtils.duration(opStart));
+      LOG.info("Loaded [params={}, number={}, duration={}]",
+            params, response.length, TimeUtils.duration(opStart));
+
       return Arrays.asList(response);
    }
 
@@ -81,7 +83,7 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
       User result = restTemplate
             .getForObject(uri(SEGMENT_USERS, cardCode), User.class);
 
-      LOG.info("User loaded [cardCode={}, duration={}]", cardCode, TimeUtils.duration(opStart));
+      LOG.info("Loaded user [cardCode={}, duration={}]", cardCode, TimeUtils.duration(opStart));
       return Optional.ofNullable(result);
    }
 
@@ -125,10 +127,14 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
 
    public void logUserScan(String cardCode) {
       LOG.info("Sending scanLog post request");
+
       try {
-         restTemplate.postForObject(uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode), null, Void.class);
+         URI uri = uri(SEGMENT_SCANLOG, SCANNER_ID_CANTEEN, cardCode);
+         restTemplate.postForObject(uri, null, Void.class);
+
       } catch (HttpClientErrorException e) {
-         LOG.error("Error writing log for user with card: " + cardCode + ". Http status: " + e.getStatusCode());
+         LOG.error("Error writing log for user [cardCode={}, httpStatus={}]",
+               cardCode, e.getStatusCode());
       }
    }
 
@@ -148,11 +154,11 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
 
                   MultiValueMap<String, String> params = collectParams(query, filter);
 
-                  User[] response =
-                        restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
+                  User[] response = restTemplate.getForObject(uri(params, SEGMENT_USERS), User[].class);
 
-                  LOG.info("Loaded [number={}, offset={}, limit={}, duration={}]",
-                        response.length, query.getOffset(), query.getLimit(), TimeUtils.duration(opStart));
+                  LOG.info("Loaded [params={}, number={}, duration={}]",
+                        params, response.length, TimeUtils.duration(opStart));
+
                   return Stream.of(response);
                }
 
@@ -163,7 +169,7 @@ public class UserRestRepository implements EntityRepository<User, String, UserFi
                   MultiValueMap<String, String> params = collectParams(query, filter);
 
                   int size = restTemplate.getForObject(uri(params, SEGMENT_USERS, SEGMENT_SIZE), Integer.class);
-                  LOG.info("Checked number of users [number={}, duration={}]", size, TimeUtils.duration(opStart));
+                  LOG.info("User number [params={}, number={}, duration={}]", params, size, TimeUtils.duration(opStart));
                   return size;
                }
             };
