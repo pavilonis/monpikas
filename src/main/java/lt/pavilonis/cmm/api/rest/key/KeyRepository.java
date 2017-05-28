@@ -160,8 +160,8 @@ public class KeyRepository {
       return result;
    }
 
-   public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd,
-                            Long scannerId, Integer keyNumber, KeyAction keyAction, String nameLike) {
+   public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd, Long scannerId,
+                            Integer keyNumber, KeyAction keyAction, String nameLike) {
 
       LocalDateTime opStart = LocalDateTime.now();
 
@@ -191,7 +191,8 @@ public class KeyRepository {
                   "  JOIN tb_Users usr ON usr.id_user = card.id_user " +
                   "  JOIN mm_Scanner sc ON sc.id = kl.scanner_id " +
                   "WHERE " +
-                  "  kl.dateTime BETWEEN :periodStart AND :periodEnd" +
+                  "  kl.dateTime >= :periodStart " +
+                  "  AND (:periodEnd IS NULL OR kl.dateTime <= :periodEnd) " +
                   "  AND (:scannerId IS NULL OR kl.scanner_id = :scannerId) " +
                   "  AND (:keyNumber IS NULL OR kl.keyNumber = :keyNumber) " +
                   "  AND (:keyAction IS NULL OR kl.assigned = :keyAction) " +
