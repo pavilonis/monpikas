@@ -1,16 +1,19 @@
 package lt.pavilonis.cmm.common;
 
+import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
 
-public abstract class AbstractListController<T extends Identifiable<ID>, ID, FILTER> extends AbstractViewController {
+public abstract class AbstractListController<T extends Identified<ID>, ID, FILTER> extends AbstractViewController {
 
    protected ListGrid<T> grid;
    protected FilterPanel<FILTER> filterPanel;
@@ -21,7 +24,7 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       grid.setSizeFull();
 
       addGridClickListener(grid);
-      loadTableData(grid);
+      loadGridData(grid);
       return grid;
    }
 
@@ -30,13 +33,11 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
 
       filterPanel = createFilterPanel();
 
-      filterPanel.addSearchClickListener(click -> {
-         loadTableData(grid);
-      });
+      filterPanel.addSearchClickListener(click -> loadGridData(grid));
 
       filterPanel.addResetClickListener(click -> {
          filterPanel.fieldReset();
-         loadTableData(grid);
+         loadGridData(grid);
       });
 
       return filterPanel;
@@ -51,13 +52,19 @@ public abstract class AbstractListController<T extends Identifiable<ID>, ID, FIL
       return new ControlPanel(click -> actionCreate(), click -> actionDelete());
    }
 
-   private void loadTableData(ListGrid<T> table) {
+   private void loadGridData(ListGrid<T> grid) {
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
 
-      List<T> beans = repository.load(filter);
-      table.setItems(beans);
-//      grid.sort();
+      Optional<BackEndDataProvider<T, FILTER>> lazyDataProvider =
+            repository.lazyDataProvider(filter);
+
+      if (lazyDataProvider.isPresent()) {
+         grid.setDataProvider(lazyDataProvider.get());
+      } else {
+         List<T> beans = repository.load(filter);
+         grid.setItems(beans);
+      }
    }
 
    protected void addGridClickListener(ListGrid<T> table) {

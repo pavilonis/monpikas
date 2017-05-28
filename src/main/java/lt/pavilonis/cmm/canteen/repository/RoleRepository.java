@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.security.Role;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class RoleRepository implements EntityRepository<Role, Long, RoleFilter> {
+public class RoleRepository implements EntityRepository<Role, Long, IdTextFilter> {
 
    @Autowired
    private JdbcTemplate jdbc;
@@ -22,7 +23,7 @@ public class RoleRepository implements EntityRepository<Role, Long, RoleFilter> 
    }
 
    @Override
-   public List<Role> load(RoleFilter ignored) {
+   public List<Role> load(IdTextFilter ignored) {
       return jdbc.query(
             "SELECT id, name FROM Role",
             (rs, num) -> new Role(rs.getLong(1), rs.getString(2))
@@ -40,7 +41,7 @@ public class RoleRepository implements EntityRepository<Role, Long, RoleFilter> 
    }
 
    @Override
-   public Class<Role> getEntityClass() {
+   public Class<Role> entityClass() {
       return Role.class;
    }
 }

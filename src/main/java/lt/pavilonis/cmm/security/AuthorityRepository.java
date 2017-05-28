@@ -41,7 +41,7 @@ public class AuthorityRepository implements EntityRepository<GrantedAuthority, S
    }
 
    @Override
-   public Class<GrantedAuthority> getEntityClass() {
+   public Class<GrantedAuthority> entityClass() {
       return GrantedAuthority.class;
    }
 }

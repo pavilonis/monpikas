@@ -1,0 +1,1 @@
+CMM2..sp_rename 'KeyLog', 'mm_KeyLog';

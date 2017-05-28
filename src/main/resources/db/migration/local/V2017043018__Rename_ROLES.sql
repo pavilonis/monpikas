@@ -1,0 +1,5 @@
+UPDATE Role set name = 'USER_EATINGS' WHERE name = 'USER_MEALS';
+UPDATE Role set name = 'EATING_CONFIG' WHERE name = 'MEAL_CONFIG';
+UPDATE Role set name = 'EATING_REPORT' WHERE name = 'MEAL_REPORT';
+UPDATE Role set name = 'EATING_EVENTS' WHERE name = 'MEAL_EVENTS';
+INSERT INTO Role(name) VALUE ('WAREHOUSE');

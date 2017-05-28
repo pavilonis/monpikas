@@ -3,13 +3,13 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.springframework</groupId>
-   <artifactId>monpikas</artifactId>
-   <version>0.82</version>
+   <artifactId>cmm-monpikas</artifactId>
+   <version>0.83</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-parent</artifactId>
-      <version>1.5.2.RELEASE</version>
+      <version>1.5.3.RELEASE</version>
    </parent>
 
    <properties>
@@ -52,7 +52,7 @@
       <dependency>
          <groupId>lt.pavilonis</groupId>
          <artifactId>utils</artifactId>
-         <version>0.11</version>
+         <version>0.13</version>
       </dependency>
 
       <dependency>
@@ -61,19 +61,28 @@
          <version>3.15</version>
       </dependency>
       <dependency>
-         <groupId>mysql</groupId>
-         <artifactId>mysql-connector-java</artifactId>
-         <version>5.1.41</version>
-      </dependency>
-      <dependency>
          <groupId>org.flywaydb</groupId>
          <artifactId>flyway-core</artifactId>
-         <version>4.1.2</version>
+         <version>4.2.0</version>
       </dependency>
       <dependency>
          <groupId>commons-io</groupId>
          <artifactId>commons-io</artifactId>
          <version>2.5</version>
+      </dependency>
+
+      <!-- JDBC -->
+      <dependency>
+         <groupId>mysql</groupId>
+         <artifactId>mysql-connector-java</artifactId>
+         <version>5.1.41</version>
+      </dependency>
+      <!-- not available from public repo - downloaded manually and installed into local maven repo-->
+      <!-- mvn install:install-file -Dfile=sqljdbc42.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.2 -Dpackaging=jar -->
+      <dependency>
+         <groupId>com.microsoft.sqlserver</groupId>
+         <artifactId>sqljdbc4</artifactId>
+         <version>4.2</version>
       </dependency>
 
    </dependencies>
@@ -83,7 +92,7 @@
          <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-bom</artifactId>
-            <version>8.0.5</version>
+            <version>8.0.6</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>

@@ -1,8 +1,8 @@
 package lt.pavilonis.cmm.canteen.report;
 
-import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
-import lt.pavilonis.cmm.canteen.domain.MealEventLog;
-import lt.pavilonis.cmm.canteen.domain.MealType;
+import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.canteen.domain.EatingEvent;
+import lt.pavilonis.cmm.canteen.domain.EatingType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
@@ -21,18 +21,16 @@ import java.util.stream.Collectors;
 import static java.util.Collections.reverseOrder;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
 
-public class Report {
+public final class Report {
 
-   private final MessageSourceAdapter messages;
    private final ReportHelper helper;
    private final HSSFSheet sheet;
    private final HSSFWorkbook workbook;
    private final String periodTitle;
-   private final List<MealEventLog> events;
-   private final Map<MealType, BigDecimal> sums = new HashMap<>();
+   private final List<EatingEvent> events;
+   private final Map<EatingType, BigDecimal> sums = new HashMap<>();
 
-   public Report(MessageSourceAdapter messages, String periodTitle, List<MealEventLog> events) {
-      this.messages = messages;
+   public Report(String periodTitle, List<EatingEvent> events) {
       this.workbook = new HSSFWorkbook();
       this.sheet = workbook.createSheet("Ataskaita");
       this.helper = new ReportHelper(sheet);
@@ -45,19 +43,19 @@ public class Report {
       formatPage();
       setColumnWidths();
 
-      helper.cell(0, 0, messages.get(this, "title")).bold().mergeTo(6).create();
+      helper.cell(0, 0, App.translate(this, "title")).bold().mergeTo(6).create();
       helper.cell(0, 1, periodTitle).bold().mergeTo(6).create();
-      helper.cell(0, 3, messages.get(PupilType.class, pupilType.name())).mergeTo(6).create();
+      helper.cell(0, 3, App.translate(PupilType.class, pupilType.name())).mergeTo(6).create();
 
-      for (MealType mealType : MealType.values()) {
+      for (EatingType eatingType : EatingType.values()) {
 
-         Map<String, List<MealEventLog>> pupilMealsMap = events.stream()
-               .filter(event -> event.getMealType() == mealType)
-               .collect(Collectors.groupingBy(MealEventLog::getCardCode));
+         Map<String, List<EatingEvent>> pupilEatingsMap = events.stream()
+               .filter(event -> event.getEatingType() == eatingType)
+               .collect(Collectors.groupingBy(EatingEvent::getCardCode));
 
-         if (!pupilMealsMap.isEmpty()) {
+         if (!pupilEatingsMap.isEmpty()) {
             int rowNum = lastRow(2);
-            helper.cell(0, rowNum++, messages.get(MealType.class, mealType.name()))
+            helper.cell(0, rowNum++, App.translate(EatingType.class, eatingType.name()))
                   .mergeTo(6)
                   .bold()
                   .heigth(500)
@@ -71,11 +69,11 @@ public class Report {
             helper.cell(5, rowNum, "Skirta\nlėšų\ndienai").bold().create();
             helper.cell(6, rowNum, "Viso\npanaudota\nlėšų").bold().create();
 
-            sums.put(mealType, BigDecimal.ZERO);
+            sums.put(eatingType, BigDecimal.ZERO);
 
             int index = 1;
-            for (List<MealEventLog> events : pupilMealsMap.values()) {
-               sums.put(mealType, sums.get(mealType).add(printCalculate(index++, events)));
+            for (List<EatingEvent> events : pupilEatingsMap.values()) {
+               sums.put(eatingType, sums.get(eatingType).add(printCalculate(index++, events)));
             }
          }
       }
@@ -85,8 +83,8 @@ public class Report {
             .noBorder()
             .create();
 
-      sums.forEach((mealType, amount) -> {
-         helper.cell(4, lastRow() + 1, messages.get(MealType.class, mealType.name()))
+      sums.forEach((eatingType, amount) -> {
+         helper.cell(4, lastRow() + 1, App.translate(EatingType.class, eatingType.name()))
                .mergeTo(5)
                .align(HorizontalAlignment.RIGHT)
                .noBorder()
@@ -120,20 +118,20 @@ public class Report {
       return workbook;
    }
 
-   private BigDecimal printCalculate(int index, List<MealEventLog> events) {
+   private BigDecimal printCalculate(int index, List<EatingEvent> events) {
 
-      String mealDaysString = "";
-      int mealDaysCount = 0;
+      String eatingDaysString = "";
+      int eatingDaysCount = 0;
       BigDecimal priceSum = BigDecimal.ZERO;
 
       Collections.sort(events, reverseOrder());
 
-      for (MealEventLog event : events) {
+      for (EatingEvent event : events) {
          Calendar c = Calendar.getInstance();
          c.setTime(event.getDate());
-         mealDaysString += c.get(Calendar.DAY_OF_MONTH) + " ";
+         eatingDaysString += c.get(Calendar.DAY_OF_MONTH) + " ";
          priceSum = priceSum.add(event.getPrice());
-         mealDaysCount++;
+         eatingDaysCount++;
       }
 
       int row = lastRow(1);
@@ -143,8 +141,8 @@ public class Report {
       String grade = StringUtils.substring(events.get(0).getGrade(), 0, 5);
       helper.cell(2, row, grade).create();
 
-      helper.cell(3, row, mealDaysString).align(HorizontalAlignment.LEFT).create();
-      helper.cell(4, row, mealDaysCount).create();
+      helper.cell(3, row, eatingDaysString).align(HorizontalAlignment.LEFT).create();
+      helper.cell(4, row, eatingDaysCount).create();
       helper.cell(5, row, events.get(0).getPrice()).create();
       helper.cell(6, row, priceSum).create();
 

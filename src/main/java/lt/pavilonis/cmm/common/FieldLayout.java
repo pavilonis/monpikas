@@ -22,8 +22,8 @@ public class FieldLayout<T> extends VerticalLayout {
    public void initCustomFieldValues(T entity) {
    }
 
-   protected String getFormCaption() {
-      return App.translate(this, "caption");
+   protected String getFormCaption(Class<T> clazz) {
+      return App.translate(clazz.getSimpleName());
    }
 
    public void displayErrorMessage(String errorMessage) {

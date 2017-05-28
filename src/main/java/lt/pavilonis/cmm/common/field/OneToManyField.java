@@ -10,12 +10,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.Identifiable;
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.service.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -23,18 +25,32 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OneToManyField<T extends Identifiable<?>> extends CustomField<Collection<T>> {
+public class OneToManyField<T extends Identified<?>> extends CustomField<Collection<T>> {
 
    private final ListGrid<T> grid;
    private final Class<T> type;
    private final Map<String, ValueProvider<T, ?>> customColumns;
+   private final List<String> columnOrder;
 
    public OneToManyField(Class<T> type) {
       this(type, Collections.emptyMap());
    }
 
-   public OneToManyField(Class<T> type, Map<String, ValueProvider<T, ?>> customColumns) {
+   public OneToManyField(Class<T> type, String... columnOrder) {
+      this(type, Collections.emptyMap(), columnOrder);
+   }
+
+   public OneToManyField(Class<T> type,
+                         Map<String, ValueProvider<T, ?>> customColumns) {
+      this(type, customColumns, new String[0]);
+   }
+
+   public OneToManyField(Class<T> type,
+                         Map<String, ValueProvider<T, ?>> customColumns,
+                         String... columnOrder) {
+
       this.customColumns = customColumns;
+      this.columnOrder = Arrays.asList(columnOrder);
       this.grid = createGrid(type);
       this.type = type;
    }
@@ -49,6 +65,11 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
          @Override
          protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
             return customColumns;
+         }
+
+         @Override
+         protected List<String> columnOrder() {
+            return columnOrder;
          }
       };
       grid.setWidth(512, Unit.PIXELS);
@@ -67,8 +88,16 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
       return layout;
    }
 
-   private void actionAdd() {
-      Consumer<Set<T>> selectionConsumer = items -> {
+   protected void actionAdd() {
+      Consumer<Set<T>> selectionConsumer = createSelectionConsumer();
+      new SelectionPopup(selectionConsumer);
+   }
+
+   protected Consumer<Set<T>> createSelectionConsumer() {
+      return items -> {
+
+         ArrayList<T> oldValue = new ArrayList<>(grid.getItems());
+
          boolean duplicatesFound = false;
          for (T item : items) {
             if (grid.hasItem(item)) {
@@ -80,18 +109,23 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
          if (duplicatesFound) {
             Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
          }
-      };
 
-      new SelectionPopup(selectionConsumer);
+         fireEvent(createValueChange(oldValue, true));
+      };
    }
 
    private void actionRemove() {
+
+      ArrayList<T> oldValue = new ArrayList<>(grid.getItems());
+
       Set<T> selectedItems = grid.getSelectedItems();
       if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
          selectedItems.forEach(grid::removeItem);
       }
+
+      fireEvent(createValueChange(oldValue, true));
    }
 
    protected List<T> getSelectionElements() {
@@ -116,6 +150,11 @@ public class OneToManyField<T extends Identifiable<?>> extends CustomField<Colle
             @Override
             protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
                return customColumns;
+            }
+
+            @Override
+            protected List<String> columnOrder() {
+               return columnOrder;
             }
          };
          selectionTable.setItems(getSelectionElements());

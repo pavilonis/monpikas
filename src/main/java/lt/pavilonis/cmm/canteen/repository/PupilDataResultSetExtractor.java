@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.repository;
 
-import lt.pavilonis.cmm.canteen.domain.Meal;
-import lt.pavilonis.cmm.canteen.domain.MealData;
+import lt.pavilonis.cmm.canteen.domain.Eating;
+import lt.pavilonis.cmm.canteen.domain.EatingData;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -12,19 +12,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
-public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<String, MealData>> {
+public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<String, EatingData>> {
 
    private final int ANY = 100500;
-   private final MealMapper MEAL_MAPPER = new MealMapper();
+   private final EatingMapper EATING_MAPPER = new EatingMapper();
 
    @Override
-   public Map<String, MealData> extractData(ResultSet rs) throws SQLException, DataAccessException {
-      Map<String, MealData> result = new HashMap<>();
+   public Map<String, EatingData> extractData(ResultSet rs) throws SQLException, DataAccessException {
+      Map<String, EatingData> result = new HashMap<>();
       while (rs.next()) {
          String cardCode = rs.getString("p.cardCode");
-         MealData pupilData = result.get(cardCode);
+         EatingData pupilData = result.get(cardCode);
          if (pupilData == null) {
-            pupilData = new MealData(
+            pupilData = new EatingData(
                   cardCode,
                   PupilType.valueOf(rs.getString("p.type")),
                   rs.getString("p.comment"),
@@ -33,10 +33,10 @@ public class PupilDataResultSetExtractor implements ResultSetExtractor<Map<Strin
             result.put(cardCode, pupilData);
          }
 
-         Long mealId = (Long) rs.getObject("m.id");
-         if (mealId != null) {
-            Meal meal = MEAL_MAPPER.mapRow(rs, ANY);
-            pupilData.getMeals().add(meal);
+         Long eatingId = (Long) rs.getObject("e.id");
+         if (eatingId != null) {
+            Eating eating = EATING_MAPPER.mapRow(rs, ANY);
+            pupilData.getEatings().add(eating);
          }
       }
       return result;
