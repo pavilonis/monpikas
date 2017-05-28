@@ -10,7 +10,7 @@ import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
-import lt.pavilonis.cmm.common.HiddenFilterPanel;
+import lt.pavilonis.cmm.common.ui.filter.HiddenFilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;

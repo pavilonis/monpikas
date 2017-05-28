@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.common;
+package lt.pavilonis.cmm.common.ui.filter;
 
 import com.vaadin.data.HasValue;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
