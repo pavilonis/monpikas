@@ -21,6 +21,7 @@ public class TechCardProductGroupOutputField extends OneToManyField<TechCardProd
 
    @Override
    protected void actionAdd() {
-      new TechCardProductGroupOutputPopup(productGroups, createSelectionConsumer());
+      new TechCardProductGroupOutputPopup(productGroups,
+            createSelectionConsumer().andThen(items -> fireComponentEvent()));
    }
 }

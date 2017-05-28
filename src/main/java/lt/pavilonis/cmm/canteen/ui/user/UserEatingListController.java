@@ -72,7 +72,7 @@ public class UserEatingListController extends AbstractListController<UserEating,
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.TEETH;
+      return VaadinIcons.CHILD;
    }
 
    @Override

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.mealtype;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,7 +24,7 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
    private static final RowMapper<MealType> MAPPER = new MealTypeMapper();
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public MealType saveOrUpdate(MealType entity) {
@@ -38,14 +38,14 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
    }
 
    private MealType update(Map<String, ?> args) {
-      jdbc.update("UPDATE MealType SET name = :name WHERE id = :id", args);
+      jdbcNamed.update("UPDATE MealType SET name = :name WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
    private MealType create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("INSERT INTO MealType (name) VALUE (:name)", new MapSqlParameterSource(args), keyHolder);
+      jdbcNamed.update("INSERT INTO MealType (name) VALUE (:name)", new MapSqlParameterSource(args), keyHolder);
 
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
@@ -56,7 +56,7 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("name", QueryUtils.likeArg(filter.getText()));
-      return jdbc.query("" +
+      return jdbcNamed.query("" +
                   "SELECT mt.id, mt.name " +
                   "FROM MealType mt " +
                   "WHERE (:id IS NULL OR mt.id = :id) AND (:name IS NULL OR mt.name LIKE :name) " +
@@ -76,7 +76,7 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM MealType WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM MealType WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override

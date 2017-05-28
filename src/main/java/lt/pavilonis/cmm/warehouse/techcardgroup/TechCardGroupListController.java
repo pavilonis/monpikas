@@ -55,7 +55,7 @@ public class TechCardGroupListController extends AbstractListController<TechCard
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.SPOON;
+      return VaadinIcons.RECORDS;
    }
 
    @Override

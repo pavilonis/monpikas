@@ -1,16 +1,21 @@
 package lt.pavilonis.cmm.warehouse.menurequirement;
 
+import com.google.common.collect.ImmutableMap;
+import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
+import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+
+import java.util.Map;
 
 @Controller
 public class MenuRequirementListController extends AbstractListController<MenuRequirement, Long, IdPeriodFilter> {
@@ -20,7 +25,14 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
 
    @Override
    protected ListGrid<MenuRequirement> createGrid() {
-      return new ListGrid<>(MenuRequirement.class);
+      return new ListGrid<MenuRequirement>(MenuRequirement.class) {
+         @Override
+         protected Map<String, ValueProvider<MenuRequirement, ?>> getCustomColumns() {
+            return ImmutableMap.of(
+               "meals", new CollectionValueProviderAdapter<>(MenuRequirement::getMeals)
+            );
+         }
+      };
    }
 
    @Override

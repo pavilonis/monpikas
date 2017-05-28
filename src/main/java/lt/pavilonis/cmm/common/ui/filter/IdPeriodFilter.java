@@ -2,14 +2,11 @@ package lt.pavilonis.cmm.common.ui.filter;
 
 import java.time.LocalDate;
 
-public final class IdPeriodFilter {
+public class IdPeriodFilter {
 
    private final Long id;
    private final LocalDate periodStart;
    private final LocalDate periodEnd;
-
-   private int offSet;
-   private int limit;
 
    public IdPeriodFilter(long id) {
       this(id, null, null);
@@ -35,23 +32,5 @@ public final class IdPeriodFilter {
 
    public LocalDate getPeriodEnd() {
       return periodEnd;
-   }
-
-   public int getOffSet() {
-      return offSet;
-   }
-
-   public int getLimit() {
-      return limit;
-   }
-
-   public IdPeriodFilter withOffset(int value) {
-      this.offSet = value;
-      return this;
-   }
-
-   public IdPeriodFilter withLimit(int value) {
-      this.limit = value;
-      return this;
    }
 }

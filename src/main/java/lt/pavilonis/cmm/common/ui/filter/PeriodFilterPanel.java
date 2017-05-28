@@ -8,28 +8,37 @@ import lt.pavilonis.cmm.common.field.ADateField;
 import java.util.Arrays;
 import java.util.List;
 
-public class PeriodFilterPanel extends FilterPanel<IdPeriodFilter> {
+public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> {
 
    private DateField periodStart;
    private DateField periodEnd;
 
    @Override
-   public IdPeriodFilter getFilter() {
-      return new IdPeriodFilter(
+   public T getFilter() {
+      IdPeriodFilter idPeriodFilter = new IdPeriodFilter(
             periodStart.getValue(),
             periodEnd.getValue()
       );
+      return (T) idPeriodFilter;
    }
 
    @Override
    protected List<HasValue<?>> getFields() {
-      periodStart = new ADateField(getClass(), "periodStart");
-      periodEnd = new ADateField(getClass(), "periodEnd");
+      periodStart = new ADateField(PeriodFilterPanel.class, "periodStart");
+      periodEnd = new ADateField(PeriodFilterPanel.class, "periodEnd");
       return Arrays.asList(periodStart, periodEnd);
    }
 
    @Override
    protected AbstractField<?> getFieldToFocus() {
       return periodStart;
+   }
+
+   public DateField getPeriodStart() {
+      return periodStart;
+   }
+
+   public DateField getPeriodEnd() {
+      return periodEnd;
    }
 }

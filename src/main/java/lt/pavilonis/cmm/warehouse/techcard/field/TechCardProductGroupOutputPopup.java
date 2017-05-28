@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.warehouse.techcard.field;
 
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.FormLayout;
-import com.vaadin.ui.ItemCaptionGenerator;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
@@ -13,7 +12,6 @@ import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 import org.apache.commons.lang3.math.NumberUtils;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -56,11 +54,8 @@ public class TechCardProductGroupOutputPopup extends Window {
          return;
       }
 
-      Double outputWeightDoubleValue = Double.valueOf(outputWeightText);
-      TechCardProductGroupOutput value = new TechCardProductGroupOutput(
-            productGroup,
-            BigDecimal.valueOf(outputWeightDoubleValue)
-      );
+      int outputWeight = Integer.valueOf(outputWeightText);
+      TechCardProductGroupOutput value = new TechCardProductGroupOutput(productGroup, outputWeight);
       selectionConsumer.accept(Collections.singleton(value));
       close();
    }

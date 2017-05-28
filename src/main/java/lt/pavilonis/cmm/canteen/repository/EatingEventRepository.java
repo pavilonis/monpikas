@@ -6,7 +6,7 @@ import lt.pavilonis.cmm.canteen.domain.EatingType;
 import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.ui.event.EatingEventFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import lt.pavilonis.util.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +47,7 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
    private JdbcTemplate jdbc;
 
    @Autowired
-   private NamedParameterJdbcTemplate namedJdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    public int numOfEatingEvents(String cardCode, Date periodStart,
                                 Date periodEnd, EatingType eatingType) {
@@ -78,7 +78,7 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
       params.put("text", QueryUtils.likeArg(filter.getText()));
       params.put("type", filter.getType() == null ? null : filter.getType().name());
 
-      List<EatingEvent> result = namedJdbc.query("" +
+      List<EatingEvent> result = jdbcNamed.query("" +
                   "SELECT * " +
                   "FROM EatingEvent " +
                   "WHERE " +
@@ -106,7 +106,7 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
-      namedJdbc.update(
+      jdbcNamed.update(
             "INSERT INTO EatingEvent (cardCode, `name`, price, eatingType, grade, pupilType, date) " +
                   "VALUES (:cardCode, :name, :price, :eatingType, :grade, :pupilType, :date)",
             new MapSqlParameterSource(args),

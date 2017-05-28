@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.productgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,7 +24,7 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
    private static final RowMapper<ProductGroup> MAPPER = new ProductGroupMapper();
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public ProductGroup saveOrUpdate(ProductGroup entity) {
@@ -39,14 +39,14 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
    }
 
    private ProductGroup update(Map<String, ?> args) {
-      jdbc.update("UPDATE ProductGroup SET name = :name, kcal100 = :kcal100 WHERE id = :id", args);
+      jdbcNamed.update("UPDATE ProductGroup SET name = :name, kcal100 = :kcal100 WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
    private ProductGroup create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update(
+      jdbcNamed.update(
             "INSERT INTO ProductGroup (name, kcal100) VALUES (:name, :kcal100)",
             new MapSqlParameterSource(args),
             keyHolder
@@ -60,7 +60,7 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("name", QueryUtils.likeArg(filter.getText()));
-      return jdbc.query("" +
+      return jdbcNamed.query("" +
                   "SELECT pg.id, pg.name, pg.kcal100 " +
                   "FROM ProductGroup pg " +
                   "WHERE (:id IS NULL OR pg.id = :id) AND (:name IS NULL OR pg.name LIKE :name) " +
@@ -80,7 +80,7 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM ProductGroup WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM ProductGroup WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override

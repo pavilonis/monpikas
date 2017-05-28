@@ -1,14 +1,15 @@
 package lt.pavilonis.cmm.canteen.service;
 
+import lt.pavilonis.cmm.api.rest.user.User;
+import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.cmm.canteen.domain.EatingData;
 import lt.pavilonis.cmm.canteen.domain.EatingType;
 import lt.pavilonis.cmm.canteen.domain.UserEating;
 import lt.pavilonis.cmm.canteen.repository.EatingEventRepository;
 import lt.pavilonis.cmm.canteen.repository.PupilDataRepository;
-import lt.pavilonis.cmm.canteen.repository.UserRepository;
 import lt.pavilonis.cmm.canteen.ui.user.UserEatingFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.user.domain.User;
+import lt.pavilonis.cmm.school.user.UserFilter;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.LocalDate;
@@ -29,6 +30,7 @@ import static java.util.stream.Collectors.toList;
 public class UserEatingService implements EntityRepository<UserEating, String, UserEatingFilter> {
 
    private static final Logger LOG = LoggerFactory.getLogger(UserEatingService.class.getSimpleName());
+   private static final String ROLE_PUPIL = "Mokinys";
 
    @Autowired
    private PupilDataRepository pupilDataRepository;
@@ -49,7 +51,7 @@ public class UserEatingService implements EntityRepository<UserEating, String, U
       LOG.info("Loaded pupil eating data [duration={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
-      List<User> users = usersRepository.loadAllPupils(filter.getText());
+      List<User> users = usersRepository.load(new UserFilter(filter.getText(), ROLE_PUPIL, null, false));
       LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
 
       return filter.isWithEatingAssigned()
@@ -59,17 +61,15 @@ public class UserEatingService implements EntityRepository<UserEating, String, U
 
    @Override
    public Optional<UserEating> find(String cardCode) {
-      Optional<User> optionalUser = usersRepository.load(cardCode);
-      if (!optionalUser.isPresent()) {
+      User user = usersRepository.load(cardCode, true);
+      if (user == null) {
          return Optional.empty();
       }
 
       EatingData eatingData = pupilDataRepository.load(cardCode)
             .orElseGet(() -> new EatingData(cardCode));
 
-      return Optional.of(
-            new UserEating(optionalUser.get(), eatingData)
-      );
+      return Optional.of(new UserEating(user, eatingData));
    }
 
    public boolean canEat(String cardCode, Date day, EatingType type) {

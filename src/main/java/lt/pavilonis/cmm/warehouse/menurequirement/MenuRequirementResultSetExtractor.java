@@ -10,7 +10,6 @@ import lt.pavilonis.cmm.warehouse.techcard.TechCardRowMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -61,8 +60,8 @@ public class MenuRequirementResultSetExtractor implements ResultSetExtractor<Lis
       return techCard;
    }
 
-   private void addOutputWeight(ResultSet rs, Map<ProductGroup, BigDecimal> weightMap) throws SQLException {
-      BigDecimal outputWeight = rs.getBigDecimal("tcp.outputWeight");
+   private void addOutputWeight(ResultSet rs, Map<ProductGroup, Integer> weightMap) throws SQLException {
+      Integer outputWeight = (Integer) rs.getObject("tcp.outputWeight");
       if (outputWeight != null) {
          ProductGroup productGroup = PRODUCT_GROUP_MAPPER.mapRow(rs);
          weightMap.putIfAbsent(productGroup, outputWeight);

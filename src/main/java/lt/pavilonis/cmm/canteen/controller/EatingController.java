@@ -1,5 +1,7 @@
 package lt.pavilonis.cmm.canteen.controller;
 
+import lt.pavilonis.cmm.api.rest.scanlog.ScanLogRepository;
+import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.canteen.domain.Eating;
 import lt.pavilonis.cmm.canteen.domain.EatingEvent;
 import lt.pavilonis.cmm.canteen.domain.EatingType;
@@ -8,8 +10,6 @@ import lt.pavilonis.cmm.canteen.domain.PupilType;
 import lt.pavilonis.cmm.canteen.domain.UserEating;
 import lt.pavilonis.cmm.canteen.repository.EatingEventRepository;
 import lt.pavilonis.cmm.canteen.service.UserEatingService;
-import lt.pavilonis.cmm.user.domain.User;
-import lt.pavilonis.cmm.user.repository.UserRestRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,17 +32,18 @@ import static java.time.LocalTime.now;
 public class EatingController {
 
    private static final Logger LOG = LoggerFactory.getLogger(EatingController.class);
+   private static final long SCANNER_ID_CANTEEN = 6;
 
    private final UserEatingService eatingService;
    private final EatingEventRepository eventsRepo;
-   private final UserRestRepository userRestService;
+   private final ScanLogRepository scanLogRepository;
 
-   public EatingController(UserEatingService eatingService,
-                           EatingEventRepository eventsRepo,
-                           UserRestRepository userRestService) {
+   public EatingController(UserEatingService eatingService, EatingEventRepository eventsRepo,
+                           ScanLogRepository scanLogRepository) {
+
       this.eatingService = eatingService;
       this.eventsRepo = eventsRepo;
-      this.userRestService = userRestService;
+      this.scanLogRepository = scanLogRepository;
    }
 
    @ResponseBody
@@ -50,7 +51,7 @@ public class EatingController {
    public ResponseEntity<PupilRepresentation> process(@PathVariable String cardCode) {
       LOG.info("Processing STARTING [cardCode={}]", cardCode);
 
-      userRestService.logUserScan(cardCode);
+      scanLogRepository.writeScanLog(SCANNER_ID_CANTEEN, cardCode);
 
       Optional<UserEating> optionalUserEating = eatingService.find(cardCode);
 

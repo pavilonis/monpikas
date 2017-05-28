@@ -6,8 +6,8 @@ import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
+import lt.pavilonis.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +18,6 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +37,7 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
          "WHERE (:id IS NULL OR tc.id = :id) AND (:name IS NULL OR tc.name LIKE :name) ";
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Transactional
    @Override
@@ -56,20 +55,20 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
 
    private TechCard update(TechCard card, Map<String, Object> args) {
 
-      jdbc.update("UPDATE TechCard SET name = :name, techCardGroup_id = :groupId WHERE id = :id", args);
-      jdbc.update("DELETE FROM TechCardProduct WHERE techCard_id = :id", args);
+      jdbcNamed.update("UPDATE TechCard SET name = :name, techCardGroup_id = :groupId WHERE id = :id", args);
+      jdbcNamed.update("DELETE FROM TechCardProduct WHERE techCard_id = :id", args);
       saveTechCardProducts(card.getId(), card.getProductGroupOutputWeight());
 
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
-   private void saveTechCardProducts(long cardId, Map<ProductGroup, BigDecimal> outputWeights) {
+   private void saveTechCardProducts(long cardId, Map<ProductGroup, Integer> outputWeights) {
 
       String query = "INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) " +
             "VALUES (:cardId, :productGroupId, :outputWeight)";
 
-      outputWeights.forEach((productGroup, outputWeight) -> jdbc.update(query, ImmutableMap.of(
+      outputWeights.forEach((productGroup, outputWeight) -> jdbcNamed.update(query, ImmutableMap.of(
             "cardId", cardId,
             "productGroupId", productGroup.getId(),
             "outputWeight", outputWeight
@@ -80,7 +79,7 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
       KeyHolder keyHolder = new GeneratedKeyHolder();
       String query = "INSERT INTO TechCard (name, techCardGroup_id) VALUES (:name, :groupId)";
 
-      jdbc.update(query, new MapSqlParameterSource(args), keyHolder);
+      jdbcNamed.update(query, new MapSqlParameterSource(args), keyHolder);
       saveTechCardProducts(keyHolder.getKey().longValue(), card.getProductGroupOutputWeight());
 
       return find(keyHolder.getKey().longValue())
@@ -90,12 +89,12 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
 
    @Override
    public List<TechCard> load(IdTextFilter filter) {
-      List<TechCard> result = jdbc.query("" +
+      List<TechCard> result = jdbcNamed.query("" +
                   "SELECT " +
                   "  tc.id, tc.name, " +
                   "  tcg.id, tcg.name," +
                   "  tcp.outputWeight," +
-                  "  pg.id, pg.name " +
+                  "  pg.id, pg.name, pg.kcal100 " +
                   FROM_WHERE_BLOCK +
                   "ORDER BY tc.name",
             composeArgs(filter),
@@ -116,7 +115,7 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM TechCard WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM TechCard WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override
@@ -143,7 +142,7 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
                   .withLimit(query.getLimit());
 
             String sql = "SELECT COUNT(*) " + FROM_WHERE_BLOCK;
-            return jdbc.queryForObject(sql, composeArgs(updatedFilter), Integer.class);
+            return jdbcNamed.queryForObject(sql, composeArgs(updatedFilter), Integer.class);
          }
       };
       return Optional.of(provider);

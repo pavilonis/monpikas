@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 public final class TechCardProductGroupOutput extends Identified<Void> {
 
    private final ProductGroup productGroup;
-   private final BigDecimal outputWeight;
+   private final int outputWeight;
 
-   public TechCardProductGroupOutput(ProductGroup productGroup, BigDecimal outputWeight) {
+   public TechCardProductGroupOutput(ProductGroup productGroup, int outputWeight) {
       this.productGroup = productGroup;
       this.outputWeight = outputWeight;
    }
@@ -19,7 +19,7 @@ public final class TechCardProductGroupOutput extends Identified<Void> {
       return productGroup;
    }
 
-   public BigDecimal getOutputWeight() {
+   public int getOutputWeight() {
       return outputWeight;
    }
 }

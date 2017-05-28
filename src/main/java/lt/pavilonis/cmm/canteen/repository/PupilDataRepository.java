@@ -26,7 +26,7 @@ public class PupilDataRepository {
    private JdbcTemplate jdbc;
 
    @Autowired
-   private NamedParameterJdbcTemplate namedJdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    public Collection<EatingData> loadAll(boolean withEatingsAssignedOnly, EatingType eatingType) {
       return query(null, eatingType, withEatingsAssignedOnly).values();
@@ -47,7 +47,7 @@ public class PupilDataRepository {
       args.put("cardCode", cardCode);
       args.put("withEatingsAssigned", withEatingsAssigned);
       args.put("eatingType", eatingType == null ? null : eatingType.name());
-      return namedJdbc.query("" +
+      return jdbcNamed.query("" +
                   "SELECT " +
                   "  p.cardCode, p.comment, p.type, " +
                   "  e.id, e.name, e.type, e.price, e.startTime, e.endTime " +
@@ -69,7 +69,7 @@ public class PupilDataRepository {
       args.put("type", pupil.getType().name());
       args.put("comment", pupil.getComment());
 
-      namedJdbc.update("" +
+      jdbcNamed.update("" +
                   "INSERT INTO Pupil (cardCode, type, comment) " +
                   "VALUES (:cardCode, :type, :comment) " +
                   "ON DUPLICATE KEY UPDATE cardCode = :cardCode, type = :type, comment = :comment",

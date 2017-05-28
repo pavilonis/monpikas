@@ -16,6 +16,7 @@ import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.service.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -94,27 +95,37 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
 
    protected Consumer<Set<T>> createSelectionConsumer() {
       return items -> {
-            boolean duplicatesFound = false;
-            for (T item : items) {
-               if (grid.hasItem(item)) {
-                  duplicatesFound = true;
-               } else {
-                  grid.addItem(item);
-               }
+
+         ArrayList<T> oldValue = new ArrayList<>(grid.getItems());
+
+         boolean duplicatesFound = false;
+         for (T item : items) {
+            if (grid.hasItem(item)) {
+               duplicatesFound = true;
+            } else {
+               grid.addItem(item);
             }
-            if (duplicatesFound) {
-               Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
-            }
-         };
+         }
+         if (duplicatesFound) {
+            Notification.show("Some values not added (already in the list)", Type.WARNING_MESSAGE);
+         }
+
+         fireEvent(createValueChange(oldValue, true));
+      };
    }
 
    private void actionRemove() {
+
+      ArrayList<T> oldValue = new ArrayList<>(grid.getItems());
+
       Set<T> selectedItems = grid.getSelectedItems();
       if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
          selectedItems.forEach(grid::removeItem);
       }
+
+      fireEvent(createValueChange(oldValue, true));
    }
 
    protected List<T> getSelectionElements() {

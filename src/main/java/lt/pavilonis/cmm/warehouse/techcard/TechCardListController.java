@@ -47,7 +47,7 @@ public class TechCardListController extends AbstractListController<TechCard, Lon
 
          @Override
          protected List<String> columnOrder() {
-            return Arrays.asList("name", "techCardGroup");
+            return Arrays.asList("name", "techCardGroup", "caloricity");
          }
       };
    }
@@ -86,7 +86,7 @@ public class TechCardListController extends AbstractListController<TechCard, Lon
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.CROSS_CUTLERY;
+      return VaadinIcons.HEALTH_CARD;
    }
 
    @Override

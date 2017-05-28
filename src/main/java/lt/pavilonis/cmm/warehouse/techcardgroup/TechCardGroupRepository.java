@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.techcardgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class TechCardGroupRepository implements EntityRepository<TechCardGroup, Long, IdTextFilter> {
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public TechCardGroup saveOrUpdate(TechCardGroup entity) {
@@ -34,14 +34,14 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
    }
 
    private TechCardGroup update(Map<String, ?> args) {
-      jdbc.update("UPDATE TechCardGroup SET name = :name WHERE id = :id", args);
+      jdbcNamed.update("UPDATE TechCardGroup SET name = :name WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
    private TechCardGroup create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update(
+      jdbcNamed.update(
             "INSERT INTO TechCardGroup (name) VALUES (:name)",
             new MapSqlParameterSource(args),
             keyHolder
@@ -57,7 +57,7 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
       args.put("id", filter.getId());
       args.put("text", QueryUtils.likeArg(filter.getText()));
 
-      return jdbc.query("" +
+      return jdbcNamed.query("" +
                   "SELECT tcg.id, tcg.name " +
                   "FROM TechCardGroup tcg " +
                   "WHERE (:id IS NULL OR id = :id) AND (:text IS NULL OR name LIKE :text) " +
@@ -77,7 +77,7 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM TechCardGroup WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM TechCardGroup WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override

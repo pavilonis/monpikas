@@ -34,7 +34,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
    private JdbcTemplate jdbc;
 
    @Autowired
-   private NamedParameterJdbcTemplate namedJdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public List<Eating> load(IdTextFilter filter) {
@@ -54,7 +54,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
    public List<Eating> load(Collection ids) {
       return CollectionUtils.isEmpty(ids)
             ? Collections.emptyList()
-            : namedJdbc.query("SELECT e.* FROM Eating e WHERE e.id IN (:ids)", singletonMap("ids", ids), MAPPER);
+            : jdbcNamed.query("SELECT e.* FROM Eating e WHERE e.id IN (:ids)", singletonMap("ids", ids), MAPPER);
    }
 
    @Override
@@ -89,7 +89,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
 
    private Eating save(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      namedJdbc.update(
+      jdbcNamed.update(
             "INSERT INTO Eating (name, type, price, startTime, endTime) " +
                   "VALUES (:eatingName, :type, :price, :startTime, :endTime)",
             new MapSqlParameterSource(args),
@@ -100,7 +100,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
    }
 
    private Eating update(Map<String, Object> args) {
-      namedJdbc.update("" +
+      jdbcNamed.update("" +
                   "UPDATE " +
                   "  Eating " +
                   "SET " +

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.supplier;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -24,7 +24,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
          (rs, i) -> new Supplier(rs.getLong(1), rs.getString(2), rs.getString(3));
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public Supplier saveOrUpdate(Supplier entity) {
@@ -39,14 +39,14 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
    }
 
    private Supplier update(Map<String, ?> args) {
-      jdbc.update("UPDATE Supplier SET name = :name, code = :code WHERE id = :id", args);
+      jdbcNamed.update("UPDATE Supplier SET name = :name, code = :code WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
    private Supplier create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update(
+      jdbcNamed.update(
             "INSERT INTO Supplier (name, code) VALUES (:name, :code)",
             new MapSqlParameterSource(args),
             keyHolder
@@ -61,7 +61,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
       args.put("id", filter.getId());
       args.put("text", QueryUtils.likeArg(filter.getText()));
 
-      return jdbc.query("" +
+      return jdbcNamed.query("" +
                   "SELECT id, code, name " +
                   "FROM Supplier " +
                   "WHERE (:id IS NULL OR id = :id) " +
@@ -82,7 +82,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM Supplier WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM Supplier WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override

@@ -5,7 +5,7 @@ import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +33,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
    private static final RowMapper<Product> MAPPER = new ProductMapper();
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
    public Product saveOrUpdate(Product entity) {
@@ -50,7 +50,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
    }
 
    private Product update(Map<String, ?> args) {
-      jdbc.update("" +
+      jdbcNamed.update("" +
                   "UPDATE Product " +
                   "SET" +
                   "  name = :name, " +
@@ -66,7 +66,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
 
    private Product create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("" +
+      jdbcNamed.update("" +
                   "INSERT INTO Product (name, measureUnit, unitWeight, productGroup_id) " +
                   "VALUES (:name, :measureUnit, :unitWeight, :productGroupId)",
             new MapSqlParameterSource(args),
@@ -79,7 +79,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
 
    @Override
    public List<Product> load(IdTextFilter filter) {
-      List<Product> result = jdbc.query("" +
+      List<Product> result = jdbcNamed.query("" +
                   "SELECT p.id, p.name, p.measureUnit, p.unitWeight, p.productGroup_id," +
                   "       pg.id, pg.name, pg.kcal100 " +
                   FROM_WHERE_BLOCK +
@@ -101,7 +101,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM Product WHERE id = :id", Collections.singletonMap("id", id));
+      jdbcNamed.update("DELETE FROM Product WHERE id = :id", Collections.singletonMap("id", id));
    }
 
    @Override
@@ -127,7 +127,7 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
                   .withOffset(query.getOffset())
                   .withLimit(query.getLimit());
 
-            return jdbc.queryForObject(
+            return jdbcNamed.queryForObject(
                   "SELECT COUNT(p.id) " + FROM_WHERE_BLOCK,
                   composeArgs(updatedFilter),
                   Integer.class

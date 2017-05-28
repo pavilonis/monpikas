@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.techcard;
 
 import com.vaadin.data.Binder;
 import com.vaadin.ui.ComboBox;
-import com.vaadin.ui.ItemCaptionGenerator;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.FieldLayout;
@@ -13,8 +13,8 @@ import lt.pavilonis.cmm.warehouse.techcard.field.TechCardProductGroupOutputField
 import lt.pavilonis.cmm.warehouse.techcardgroup.TechCardGroup;
 import org.apache.commons.collections4.CollectionUtils;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +33,34 @@ public final class TechCardForm extends FieldLayout<TechCard> {
 
       productGroupOutputWeightField = new TechCardProductGroupOutputField(productGroups);
 
-      addComponents(name, techCardGroupComboBox, productGroupOutputWeightField);
+      TextField caloricityField = new TextField(App.translate(TechCard.class, "caloricity"), calculateCaloricity());
+      caloricityField.setReadOnly(true);
+      productGroupOutputWeightField.addValueChangeListener(
+            event -> caloricityField.setValue(calculateCaloricity()));
+
+      addComponents(
+            new HorizontalLayout(techCardGroupComboBox, name),
+            caloricityField,
+            productGroupOutputWeightField
+      );
+   }
+
+   private String calculateCaloricity() {
+      Collection<TechCardProductGroupOutput> value = productGroupOutputWeightField.getValue();
+      if (CollectionUtils.isEmpty(value)) {
+         return "0";
+      }
+
+      int sum = value.stream()
+            .mapToInt(card -> {
+               int kcal100 = card.getProductGroup().getKcal100();
+               Integer outputWeight = card.getOutputWeight();
+               Double result = outputWeight / 100d * kcal100;
+               return result.intValue();
+            })
+            .sum();
+
+      return String.valueOf(sum);
    }
 
    @Override
@@ -52,7 +79,7 @@ public final class TechCardForm extends FieldLayout<TechCard> {
                   techCard.setProductGroupOutputWeight(Collections.emptyMap());
                   return;
                }
-               Map<ProductGroup, BigDecimal> result = outputWeights.stream()
+               Map<ProductGroup, Integer> result = outputWeights.stream()
                      .collect(Collectors.toMap(
                            TechCardProductGroupOutput::getProductGroup,
                            TechCardProductGroupOutput::getOutputWeight

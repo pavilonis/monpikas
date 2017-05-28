@@ -4,7 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import lt.pavilonis.cmm.canteen.service.SecurityUserDetailsService;
+import lt.pavilonis.cmm.security.service.SecurityUserRepository;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
@@ -24,7 +24,7 @@ import java.util.Map;
 public class SecurityUserListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired
-   private SecurityUserDetailsService service;
+   private SecurityUserRepository repository;
 
    @Override
    protected ListGrid<SecurityUser> createGrid() {
@@ -53,7 +53,7 @@ public class SecurityUserListController extends AbstractListController<SecurityU
 
    @Override
    protected EntityRepository<SecurityUser, Long, SecurityUserFilter> getEntityRepository() {
-      return service;
+      return repository;
    }
 
    @Override
@@ -66,7 +66,7 @@ public class SecurityUserListController extends AbstractListController<SecurityU
       return new AbstractFormController<SecurityUser, Long>(SecurityUser.class) {
          @Override
          protected EntityRepository<SecurityUser, Long, ?> getEntityRepository() {
-            return service;
+            return repository;
          }
 
          @Override

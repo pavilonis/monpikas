@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.canteen.domain;
 
+import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.common.Identified;
-import lt.pavilonis.cmm.user.domain.User;
 
 public final class UserEating extends Identified<String> {
 
