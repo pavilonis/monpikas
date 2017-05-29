@@ -3,8 +3,8 @@
    <modelVersion>4.0.0</modelVersion>
 
    <groupId>org.springframework</groupId>
-   <artifactId>cmm-monpikas</artifactId>
-   <version>0.84</version>
+   <artifactId>monpikas</artifactId>
+   <version>0.85</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
