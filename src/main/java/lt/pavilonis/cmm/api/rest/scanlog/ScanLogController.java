@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@RequestMapping("/api/scanlog")
+@RequestMapping("/rest/scanlog")
 @RestController
 public class ScanLogController {
    private static final Logger LOG = LoggerFactory.getLogger(ScanLogController.class.getSimpleName());

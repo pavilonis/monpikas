@@ -23,7 +23,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RequestMapping("/api/keys")
+@RequestMapping("/rest/keys")
 @RestController
 public class KeyController {
 

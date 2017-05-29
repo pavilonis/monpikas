@@ -12,9 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@RequestMapping("/api/classrooms")
+@RequestMapping("/rest/classrooms")
 @RestController
 public class ClassroomController {
+
    private static final Logger LOG = LoggerFactory.getLogger(ClassroomController.class.getSimpleName());
 
    @Autowired
@@ -25,7 +26,16 @@ public class ClassroomController {
 
       LocalDateTime opStart = LocalDateTime.now();
       List<ClassroomOccupancy> result = repository.loadActive();
-      LOG.info("GET [number={}, duration={}]", result.size(), TimeUtils.duration(opStart));
+
+      long numberOfOccupied = result.stream()
+            .map(ClassroomOccupancy::isOccupied)
+            .count();
+
+      LOG.info("Loaded [occupied/free={}/{}, duration={}]",
+            numberOfOccupied,
+            result.size() - numberOfOccupied,
+            TimeUtils.duration(opStart)
+      );
 
       return ResponseEntity.ok().body(result);
    }

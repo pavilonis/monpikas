@@ -188,7 +188,7 @@ public class KeyRepository {
                   "  sc.name AS scannerName " +
                   "FROM mm_KeyLog kl " +
                   "  JOIN tb_Cards card ON card.ROMCode = kl.cardCode " +
-                  "  JOIN tb_Users usr ON usr.id_user = card.id_user " +
+                  "  JOIN tb_Users usr ON usr.Cardcode = card.Cardcode " +
                   "  JOIN mm_Scanner sc ON sc.id = kl.scanner_id " +
                   "WHERE " +
                   "  kl.dateTime >= :periodStart " +

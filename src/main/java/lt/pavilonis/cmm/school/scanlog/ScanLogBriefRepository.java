@@ -32,7 +32,7 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
          "FROM mm_ScanLog sl " +
          "  JOIN mm_Scanner sc ON sc.id = sl.scanner_id " +
          "  JOIN tb_Cards c ON c.Cardcode IS NOT NULL AND c.ROMCode = sl.cardCode " +
-         "  JOIN tb_Users u ON u.id_user = c.id_user " +
+         "  JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
          "WHERE sl.dateTime >= :periodStart " +
          "  AND (:periodEnd IS NULL OR sl.dateTime <= :periodEnd) " +
          "  AND (:scannerId IS NULL OR sc.id = :scannerId) " +
