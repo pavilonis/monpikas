@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-@RequestMapping("/api/scanner")
+@RequestMapping("/rest/scanner")
 @RestController
 public class ScannerController {
 

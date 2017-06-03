@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.controller;
+package lt.pavilonis.cmm.api.rest.eating;
 
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogRepository;
 import lt.pavilonis.cmm.api.rest.user.User;

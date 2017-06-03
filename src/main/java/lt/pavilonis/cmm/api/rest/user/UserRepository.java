@@ -25,7 +25,7 @@ public class UserRepository {
    private static final Logger LOG = getLogger(UserRepository.class.getSimpleName());
    private static final String BLOCKS_FROM_WHERE = "" +
          "FROM tb_Users u " +
-         "  JOIN tb_Cards c ON c.id_user = u.id_user " +
+         "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
          "WHERE " +
          "  u.Cardcode IS NOT NULL " +
          "  AND c.ROMCode IS NOT NULL " +
@@ -59,7 +59,7 @@ public class UserRepository {
                   "  Dummy4 = :role," +
                   picture +
                   "FROM tb_Users u " +
-                  "  JOIN tb_Cards c ON c.id_user = u.id_user " +
+                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
                   "WHERE c.ROMCode = :cardCode",
             args
       );
@@ -116,7 +116,7 @@ public class UserRepository {
                   "  END AS photo " +
 
                   "FROM tb_Users u " +
-                  "  JOIN tb_Cards c ON c.id_user = u.id_user " +
+                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
 
                   "WHERE u.Cardcode IS NOT NULL AND c.ROMCode = :cardCode ",
 
@@ -164,12 +164,12 @@ public class UserRepository {
       return jdbcSalto.queryForObject("" +
                   "SELECT " +
                   "  CASE " +
-                  "     WHEN COUNT(u.id_user) > 0 " +
+                  "     WHEN COUNT(u.Cardcode) > 0 " +
                   "     THEN 1 " +
                   "     ELSE 0 " +
                   "  END " +
                   "FROM tb_Users u " +
-                  "  JOIN tb_Cards c ON c.id_user = u.id_user " +
+                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
                   "WHERE u.Cardcode IS NOT NULL " +
                   "  AND c.ROMCode = :cardCode",
             Collections.singletonMap("cardCode", cardCode),
@@ -179,7 +179,7 @@ public class UserRepository {
 
    public int size(UserFilter filter) {
       return jdbcSalto.queryForObject(
-            "SELECT COUNT(u.id_user) " + BLOCKS_FROM_WHERE,
+            "SELECT COUNT(u.Cardcode) " + BLOCKS_FROM_WHERE,
             commonArgs(filter),
             Integer.class
       );
