@@ -1,5 +1,8 @@
 package lt.pavilonis.cmm.api.tcp;
 
+import com.google.common.collect.ImmutableMap;
+import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
+import lt.pavilonis.cmm.api.rest.scanlog.ScanLogRepository;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
@@ -7,32 +10,48 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 public class TcpEventStringProcessor {
 
    private final Logger LOG;
+   private static final Map<String, Boolean> CLASSROOM_OPS = ImmutableMap.of(
+         "Privacystarted", true,
+         "Endofprivacy", false
+   );
+   private static final int SCANNER_ID_DOORS = 5;
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
    private static final String FIELD_DOOR_NUMBER = "DoorName";
    private static final String FIELD_CARD_CODE = "UserCardSerialNumber";
    private static final String STRING_EMPTY = "";
    private static final byte LINES_SEARCH_MAX = 7;
-   private final TcpEventDao dao;
+   private final ScanLogRepository scanLogRepository;
+   private final ClassroomRepository classroomRepository;
 
    private String operation;
    private byte counter;
 
    @Autowired
-   public TcpEventStringProcessor(TcpEventDao dao) {
-      this.dao = dao;
-      this.LOG = LoggerFactory.getLogger(TcpEventStringProcessor.class.getSimpleName());
+   public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
+                                  ClassroomRepository classroomRepository) {
+      this(
+            scanLogRepository,
+            classroomRepository,
+            LoggerFactory.getLogger(TcpEventStringProcessor.class.getSimpleName())
+      );
    }
 
    /**
     * For testing
     */
-   public TcpEventStringProcessor(TcpEventDao mockDao, Logger mockLogger) {
+   public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
+                                  ClassroomRepository classroomRepository,
+                                  Logger mockLogger) {
+
+      this.scanLogRepository = scanLogRepository;
+      this.classroomRepository = classroomRepository;
       this.LOG = mockLogger;
-      this.dao = mockDao;
    }
 
    public void process(String inputNonNull) {
@@ -64,9 +83,17 @@ public class TcpEventStringProcessor {
       String number = clean(input, FIELD_DOOR_NUMBER);
 
       if (NumberUtils.isDigits(number) && NumberUtils.isParsable(number)) {
+
+         Boolean operationBooleanValue = CLASSROOM_OPS.get(operation);
+         if (operationBooleanValue == null) {
+            LOG.warn("Unknown operation: " + operation);
+            return;
+         }
+
          LOG.info("Classroom event [classroomNumber={}, operation={}]", number, operation);
          int classNumber = Integer.parseInt(number);
-         dao.storeClassroomOccupancyEvent(operation, classNumber);
+
+         classroomRepository.save(classNumber, operationBooleanValue);
 
       } else {
          LOG.warn("Bad number, skipping: " + input);
@@ -86,7 +113,8 @@ public class TcpEventStringProcessor {
       String cardCode = clean(input, FIELD_CARD_CODE);
 
       if (StringUtils.isNotBlank(cardCode)) {
-         dao.storeScanLogEvent(cardCode);
+
+         scanLogRepository.saveChecked(SCANNER_ID_DOORS, cardCode);
       } else {
          LOG.error("Blank cardCode!");
       }

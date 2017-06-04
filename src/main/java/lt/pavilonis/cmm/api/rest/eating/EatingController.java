@@ -51,14 +51,15 @@ public class EatingController {
    public ResponseEntity<PupilRepresentation> process(@PathVariable String cardCode) {
       LOG.info("Processing STARTING [cardCode={}]", cardCode);
 
-      scanLogRepository.writeScanLog(SCANNER_ID_CANTEEN, cardCode);
+      Long scanLogId = scanLogRepository.saveChecked(SCANNER_ID_CANTEEN, cardCode);
+      if (scanLogId == null) {
+         return responseNotFound(cardCode);
+      }
 
       Optional<UserEating> optionalUserEating = eatingService.find(cardCode);
 
-
       if (!optionalUserEating.isPresent()) {
-         LOG.info("Processing FINISHED: user not found [cardCode={}]", cardCode);
-         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+         return responseNotFound(cardCode);
       }
 
       UserEating userEating = optionalUserEating.get();
@@ -79,6 +80,11 @@ public class EatingController {
                .findFirst()
                .orElseGet(() -> new ResponseEntity<>(HttpStatus.MULTIPLE_CHOICES)); // TODO bad return status?
       }
+   }
+
+   private ResponseEntity<PupilRepresentation> responseNotFound(@PathVariable String cardCode) {
+      LOG.info("Processing FINISHED: user not found [cardCode={}]", cardCode);
+      return new ResponseEntity<>(HttpStatus.NOT_FOUND);
    }
 
    private ResponseEntity<PupilRepresentation> forbidden(UserEating userEating) {

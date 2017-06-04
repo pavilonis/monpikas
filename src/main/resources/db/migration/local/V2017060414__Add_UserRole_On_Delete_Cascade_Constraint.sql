@@ -1,0 +1,8 @@
+ALTER TABLE UserRole DROP FOREIGN KEY UserRole_ibfk_1;
+ALTER TABLE UserRole DROP FOREIGN KEY UserRole_ibfk_2;
+
+ALTER TABLE UserRole ADD FOREIGN KEY UserRole_Role (role_id) REFERENCES Role (id)
+   ON DELETE CASCADE;
+
+ALTER TABLE UserRole ADD FOREIGN KEY UserRole_User (user_id) REFERENCES User (id)
+   ON DELETE CASCADE;

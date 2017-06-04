@@ -1,23 +1,25 @@
 package lt.pavilonis.cmm.api.rest.classroom;
 
-import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.school.classroom.ClassroomFilter;
-import org.apache.commons.lang3.NotImplementedException;
+import com.google.common.collect.ImmutableMap;
+import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 @Repository
-public class ClassroomRepository implements EntityRepository<ClassroomOccupancy, Void, ClassroomFilter> {
+public class ClassroomRepository {
+
+   private static final Logger LOG = LoggerFactory.getLogger(ClassroomRepository.class.getSimpleName());
 
    private static final RowMapper<ClassroomOccupancy> ROW_MAPPER =
          (rs, i) -> new ClassroomOccupancy(
@@ -31,7 +33,9 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
 
    public List<ClassroomOccupancy> loadActive() {
 
-      return jdbcSalto.query("" +
+      LocalDateTime opStart = LocalDateTime.now();
+
+      List<ClassroomOccupancy> result = jdbcSalto.query("" +
                   "SELECT " +
                   "   co.dateTime, " +
                   "   co.occupied, " +
@@ -49,20 +53,26 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
             Collections.emptyMap(),
             ROW_MAPPER
       );
+
+
+      long numberOfOccupied = result.stream()
+            .filter(ClassroomOccupancy::isOccupied)
+            .count();
+
+      LOG.info("Loaded [occupied={}, free={}, duration={}]",
+            numberOfOccupied,
+            result.size() - numberOfOccupied,
+            TimeUtils.duration(opStart)
+      );
+
+      return result;
    }
 
-   @Override
-   public List<ClassroomOccupancy> load(ClassroomFilter filter) {
-
-      if (!filter.isHistoryMode()) {
-         return loadActive();
-      }
-
+   public List<ClassroomOccupancy> load(LocalDateTime periodStart, LocalDateTime periodEnd, String text) {
       Map<String, Object> args = new HashMap<>();
-      args.put("periodStart", filter.getPeriodStart().atTime(LocalTime.MIN));
-      args.put("periodEnd", filter.getPeriodEnd().atTime(LocalTime.MAX));
-      args.put("classroomNumber", StringUtils.stripToNull(filter.getText()));
-
+      args.put("periodStart", periodStart);
+      args.put("periodEnd", periodEnd);
+      args.put("classroomNumber", StringUtils.stripToNull(text));
 
       return jdbcSalto.query("" +
                   "SELECT " +
@@ -79,23 +89,10 @@ public class ClassroomRepository implements EntityRepository<ClassroomOccupancy,
       );
    }
 
-   @Override
-   public ClassroomOccupancy saveOrUpdate(ClassroomOccupancy entity) {
-      throw new NotImplementedException("Not needed");
-   }
-
-   @Override
-   public Optional<ClassroomOccupancy> find(Void s) {
-      throw new NotImplementedException("Not needed");
-   }
-
-   @Override
-   public void delete(Void s) {
-      throw new NotImplementedException("Not needed");
-   }
-
-   @Override
-   public Class<ClassroomOccupancy> entityClass() {
-      return ClassroomOccupancy.class;
+   public void save(int number, boolean occupied) {
+      jdbcSalto.update(
+            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, occupied) VALUES (:number, :operation)",
+            ImmutableMap.of("number", number, "operation", occupied)
+      );
    }
 }

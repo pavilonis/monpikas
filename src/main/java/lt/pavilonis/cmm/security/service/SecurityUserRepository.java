@@ -127,7 +127,7 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM User WHERE username = ?", id);
+      jdbc.update("DELETE FROM User WHERE id = ?", id);
    }
 
    @Override
