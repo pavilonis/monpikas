@@ -5,6 +5,7 @@ import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBrief;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.util.QueryUtils;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
@@ -68,8 +69,8 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
    }
 
    @Override
-   public Optional<BackEndDataProvider<ScanLogBrief, ScanLogBriefFilter>> lazyDataProvider(ScanLogBriefFilter filter) {
-      AbstractBackEndDataProvider<ScanLogBrief, ScanLogBriefFilter> provider = new AbstractBackEndDataProvider<ScanLogBrief, ScanLogBriefFilter>() {
+   public Optional<SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter>> lazyDataProvider(ScanLogBriefFilter filter) {
+      SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter> provider = new SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter>() {
          @Override
          protected Stream<ScanLogBrief> fetchFromBackEnd(Query<ScanLogBrief, ScanLogBriefFilter> query) {
             LocalDateTime opStart = LocalDateTime.now();
@@ -98,11 +99,11 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
          }
 
          @Override
-         protected int sizeInBackEnd(Query<ScanLogBrief, ScanLogBriefFilter> query) {
+         protected int sizeInBackEnd() {
             LocalDateTime opStart = LocalDateTime.now();
-            Map<String, Object> args = commonArgs(filter);
+
             Integer result = jdbcSalto.queryForObject(
-                  "SELECT COUNT(sl.id) " + FROM_WHERE_BLOCK, args, Integer.class);
+                  "SELECT COUNT(*) " + FROM_WHERE_BLOCK, commonArgs(filter), Integer.class);
 
             log("Loaded size", result, opStart);
             return result;

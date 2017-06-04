@@ -6,6 +6,8 @@ import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import org.apache.commons.codec.binary.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 public abstract class AbstractViewController implements MenuItemViewProvider {
 
    @Autowired
@@ -23,17 +25,15 @@ public abstract class AbstractViewController implements MenuItemViewProvider {
       Component mainArea = getMainArea();
       layout.addComponent(mainArea);
 
-      Component footer = getFooter();
-      if (footer != null) {
-         layout.addComponent(footer);
-      }
+      getFooter()
+            .ifPresent(layout::addComponent);
 
       layout.setExpandRatio(mainArea, 1f);
       return layout;
    }
 
-   protected Component getFooter() {
-      return null;
+   protected Optional<Component> getFooter() {
+      return Optional.empty();
    }
 
    protected Component getHeader() {

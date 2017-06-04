@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.school.scanlog;
 
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
@@ -45,12 +46,19 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
       result.add(textField = new ATextField(getClass(), "text"));
       result.add(scannerCombo = new ComboBox<>(App.translate(getClass(), "scanner")));
       result.add(roleCombo = new ComboBox<>(App.translate(getClass(), "role")));
+
+      result.forEach(field -> {
+         if (field instanceof AbstractComponent) {
+            ((AbstractComponent) field).setWidth(140, Unit.PIXELS);
+         }
+      });
+
       return result;
    }
 
    @Override
    protected void setDefaultValues() {
-      getPeriodStart().setValue(LocalDate.now().minusDays(2));
+      getPeriodStart().setValue(LocalDate.now().minusDays(1));
    }
 
    @Override
