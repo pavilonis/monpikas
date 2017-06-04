@@ -4,9 +4,9 @@ import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.TextField;
-import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -33,15 +33,13 @@ public class EatingEventFilterPanel extends FilterPanel<EatingEventFilter> {
       return Arrays.asList(
             periodStart = new ADateField(getClass(), "periodStart").withRequired(),
             periodEnd = new ADateField(getClass(), "periodEnd"),
-            textField = new ATextField(this.getClass(), "name")
+            textField = new ATextField(getClass(), "name")
       );
    }
 
    @Override
    protected void setDefaultValues() {
-      periodStart.setValue(
-            LocalDate.now().minusWeeks(2)
-      );
+      periodStart.setValue(LocalDate.now().minusWeeks(1));
    }
 
    @Override
