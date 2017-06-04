@@ -1,9 +1,8 @@
 package lt.pavilonis.cmm.warehouse.product;
 
-import com.vaadin.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.util.QueryUtils;
 import org.slf4j.Logger;
@@ -110,8 +109,8 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
    }
 
    @Override
-   public Optional<BackEndDataProvider<Product, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
-      BackEndDataProvider<Product, IdTextFilter> provider = new AbstractBackEndDataProvider<Product, IdTextFilter>() {
+   public Optional<SizeConsumingBackendDataProvider<Product, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
+      SizeConsumingBackendDataProvider<Product, IdTextFilter> provider = new SizeConsumingBackendDataProvider<Product, IdTextFilter>() {
          @Override
          protected Stream<Product> fetchFromBackEnd(Query<Product, IdTextFilter> query) {
             IdTextFilter updatedFilter = filter
@@ -122,14 +121,10 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
          }
 
          @Override
-         protected int sizeInBackEnd(Query<Product, IdTextFilter> query) {
-            IdTextFilter updatedFilter = filter
-                  .withOffset(query.getOffset())
-                  .withLimit(query.getLimit());
-
+         protected int sizeInBackEnd() {
             return jdbcNamed.queryForObject(
                   "SELECT COUNT(p.id) " + FROM_WHERE_BLOCK,
-                  composeArgs(updatedFilter),
+                  composeArgs(filter),
                   Integer.class
             );
          }

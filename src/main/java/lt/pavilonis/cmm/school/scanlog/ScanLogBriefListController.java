@@ -13,6 +13,8 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 @UIScope
 @SpringComponent
 public class ScanLogBriefListController extends AbstractListController<ScanLogBrief, Void, ScanLogBriefFilter> {
@@ -50,8 +52,8 @@ public class ScanLogBriefListController extends AbstractListController<ScanLogBr
    }
 
    @Override
-   protected Component getControlPanel() {
-      return null;
+   protected Optional<Component> getControlPanel() {
+      return Optional.empty();
    }
 
    @Override

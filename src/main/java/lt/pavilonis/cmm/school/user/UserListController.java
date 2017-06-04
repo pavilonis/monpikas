@@ -20,6 +20,7 @@ import lt.pavilonis.cmm.school.user.form.UserFormView;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
+import java.util.Optional;
 
 @SpringComponent
 @UIScope
@@ -79,8 +80,8 @@ public class UserListController extends AbstractListController<User, String, Use
    }
 
    @Override
-   protected Component getControlPanel() {
-      return null;
+   protected Optional<Component> getControlPanel() {
+      return Optional.empty();
    }
 
    @Override

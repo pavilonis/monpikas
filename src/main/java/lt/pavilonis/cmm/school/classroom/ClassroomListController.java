@@ -11,6 +11,8 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 @UIScope
 @SpringComponent
 public class ClassroomListController extends AbstractListController<ClassroomOccupancy, Void, ClassroomFilter> {
@@ -39,8 +41,8 @@ public class ClassroomListController extends AbstractListController<ClassroomOcc
    }
 
    @Override
-   protected Component getControlPanel() {
-      return null;
+   protected Optional<Component> getControlPanel() {
+      return Optional.empty();
    }
 
    @Override

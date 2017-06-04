@@ -15,6 +15,8 @@ import lt.pavilonis.cmm.common.service.ImageService;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.Optional;
+
 @UIScope
 @SpringComponent
 public class UserEatingListController extends AbstractListController<UserEating, String, UserEatingFilter> {
@@ -61,8 +63,8 @@ public class UserEatingListController extends AbstractListController<UserEating,
    }
 
    @Override
-   protected Component getControlPanel() {
-      return null;
+   protected Optional<Component> getControlPanel() {
+      return Optional.empty();
    }
 
    @Override

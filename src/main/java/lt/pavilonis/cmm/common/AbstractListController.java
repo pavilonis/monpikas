@@ -1,7 +1,11 @@
 package lt.pavilonis.cmm.common;
 
-import com.vaadin.data.provider.BackEndDataProvider;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Component;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.apache.commons.collections4.CollectionUtils;
@@ -9,6 +13,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
@@ -17,6 +22,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
    protected ListGrid<T> grid;
    protected FilterPanel<FILTER> filterPanel;
+   private final Label sizeLabel = new Label(null, ContentMode.HTML);
 
    @Override
    protected Component getMainArea() {
@@ -44,25 +50,42 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    }
 
    @Override
-   final protected Component getFooter() {
-      return getControlPanel();
+   final protected Optional<Component> getFooter() {
+      HorizontalLayout footerLayout = new HorizontalLayout();
+      footerLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
+      getControlPanel().ifPresent(panel -> {
+         footerLayout.addComponent(panel);
+         footerLayout.setComponentAlignment(panel, Alignment.MIDDLE_LEFT);
+      });
+      footerLayout.addComponent(sizeLabel);
+      footerLayout.setComponentAlignment(sizeLabel, Alignment.MIDDLE_RIGHT);
+      return Optional.of(footerLayout);
    }
 
-   protected Component getControlPanel() {
-      return new ControlPanel(click -> actionCreate(), click -> actionDelete());
+   protected Optional<Component> getControlPanel() {
+      ControlPanel controls = new ControlPanel(click -> actionCreate(), click -> actionDelete());
+      return Optional.of(controls);
    }
 
    private void loadGridData(ListGrid<T> grid) {
+
       FILTER filter = filterPanel.getFilter();
       EntityRepository<T, ID, FILTER> repository = getEntityRepository();
 
-      Optional<BackEndDataProvider<T, FILTER>> lazyDataProvider =
+      Optional<SizeConsumingBackendDataProvider<T, FILTER>> lazyDataProvider =
             repository.lazyDataProvider(filter);
 
       if (lazyDataProvider.isPresent()) {
+
+         Consumer<Integer> sizeConsumer = size -> sizeLabel.setValue(badgeHtml(size));
+         lazyDataProvider.get().setSizeConsumer(sizeConsumer);
+
          grid.setDataProvider(lazyDataProvider.get());
+
       } else {
+
          List<T> beans = repository.load(filter);
+         sizeLabel.setValue(badgeHtml(beans.size()));
          grid.setItems(beans);
       }
    }
@@ -121,4 +144,8 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    protected abstract EntityRepository<T, ID, FILTER> getEntityRepository();
 
    protected abstract Class<T> getEntityClass();
+
+   private String badgeHtml(int size) {
+      return "<span class='row-number-badge'>" + size + "</span>";
+   }
 }

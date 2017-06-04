@@ -1,10 +1,10 @@
 package lt.pavilonis.cmm.warehouse.techcard;
 
 import com.google.common.collect.ImmutableMap;
-import com.vaadin.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
+import com.vaadin.data.provider.QuerySortOrder;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import lt.pavilonis.util.QueryUtils;
@@ -124,8 +124,8 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
    }
 
    @Override
-   public Optional<BackEndDataProvider<TechCard, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
-      BackEndDataProvider<TechCard, IdTextFilter> provider = new AbstractBackEndDataProvider<TechCard, IdTextFilter>() {
+   public Optional<SizeConsumingBackendDataProvider<TechCard, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
+      SizeConsumingBackendDataProvider<TechCard, IdTextFilter> provider = new SizeConsumingBackendDataProvider<TechCard, IdTextFilter>() {
          @Override
          protected Stream<TechCard> fetchFromBackEnd(Query<TechCard, IdTextFilter> query) {
             IdTextFilter updatedFilter = filter
@@ -136,14 +136,11 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
          }
 
          @Override
-         protected int sizeInBackEnd(Query<TechCard, IdTextFilter> query) {
-            IdTextFilter updatedFilter = filter
-                  .withOffset(query.getOffset())
-                  .withLimit(query.getLimit());
-
+         protected int sizeInBackEnd() {
             String sql = "SELECT COUNT(*) " + FROM_WHERE_BLOCK;
-            return jdbcNamed.queryForObject(sql, composeArgs(updatedFilter), Integer.class);
+            return jdbcNamed.queryForObject(sql, composeArgs(filter), Integer.class);
          }
+
       };
       return Optional.of(provider);
    }

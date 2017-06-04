@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.school.key.ui;
 
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Button.ClickEvent;
@@ -60,12 +61,19 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
       activeKeysCheckBox.addValueChangeListener(value -> togglePeriodStartEnd());
 
       togglePeriodStartEnd();
+
+      result.forEach(field -> {
+         if (field instanceof AbstractComponent) {
+            ((AbstractComponent) field).setWidth(140, Unit.PIXELS);
+         }
+      });
+      activeKeysCheckBox.setWidthUndefined();
       return result;
    }
 
    @Override
    protected void setDefaultValues() {
-      getPeriodStart().setValue(LocalDate.now().minusDays(2));
+      getPeriodStart().setValue(LocalDate.now().minusDays(1));
    }
 
    @Override

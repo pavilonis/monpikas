@@ -1,11 +1,10 @@
 package lt.pavilonis.cmm.school.user;
 
-import com.vaadin.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
+import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -38,8 +37,8 @@ public class UserListRepository implements EntityRepository<User, String, UserFi
    }
 
    @Override
-   public Optional<BackEndDataProvider<User, UserFilter>> lazyDataProvider(UserFilter filter) {
-      AbstractBackEndDataProvider<User, UserFilter> provider = new AbstractBackEndDataProvider<User, UserFilter>() {
+   public Optional<SizeConsumingBackendDataProvider<User, UserFilter>> lazyDataProvider(UserFilter filter) {
+      SizeConsumingBackendDataProvider<User, UserFilter> provider = new SizeConsumingBackendDataProvider<User, UserFilter>() {
          @Override
          protected Stream<User> fetchFromBackEnd(Query<User, UserFilter> query) {
             List<User> result = load(
@@ -51,7 +50,7 @@ public class UserListRepository implements EntityRepository<User, String, UserFi
          }
 
          @Override
-         protected int sizeInBackEnd(Query<User, UserFilter> query) {
+         protected int sizeInBackEnd() {
             return userRepository.size(filter);
          }
       };
