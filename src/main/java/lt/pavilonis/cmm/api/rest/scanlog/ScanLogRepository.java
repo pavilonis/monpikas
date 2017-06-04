@@ -5,7 +5,8 @@ import lt.pavilonis.cmm.api.rest.key.Key;
 import lt.pavilonis.cmm.api.rest.key.KeyRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
-import lt.pavilonis.util.QueryUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -13,14 +14,13 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDate;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Repository
 public class ScanLogRepository {
+
+   private final Logger LOG = LoggerFactory.getLogger(ScanLogRepository.class.getSimpleName());
 
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
@@ -31,9 +31,13 @@ public class ScanLogRepository {
    @Autowired
    private UserRepository userRepository;
 
-   public ScanLog save(long scannerId, String cardCode) {
-      long scanLogId = writeScanLog(scannerId, cardCode);
-      return loadById(scannerId, scanLogId);
+   public ScanLog saveCheckedAndLoad(long scannerId, String cardCode) {
+
+      Long scanLogId = saveChecked(scannerId, cardCode);
+
+      return scanLogId == null
+            ? null
+            : loadById(scannerId, scanLogId);
    }
 
    private ScanLog loadById(long scannerId, long scanLogId) {
@@ -49,7 +53,14 @@ public class ScanLogRepository {
       );
    }
 
-   public long writeScanLog(long scannerId, String cardCode) {
+   public Long saveChecked(long scannerId, String cardCode) {
+
+      if (!userRepository.exists(cardCode)) {
+         LOG.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]",
+               scannerId, cardCode);
+         return null;
+      }
+
       KeyHolder holder = new GeneratedKeyHolder();
 
       jdbcSalto.update(

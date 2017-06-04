@@ -52,6 +52,7 @@ public final class SecurityUserResultSetExtractor implements ResultSetExtractor<
       boolean isNewRole = user.getAuthorities().stream()
             .map(Role::getId)
             .noneMatch(id::equals);
+
       if (!isNewRole) {
          return;
       }

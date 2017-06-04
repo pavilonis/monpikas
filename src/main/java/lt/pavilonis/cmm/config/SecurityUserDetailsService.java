@@ -19,9 +19,9 @@ public class SecurityUserDetailsService implements UserDetailsService {
    @Override
    public UserDetails loadUserByUsername(String username) {
 
-      SecurityUserFilter filter = new SecurityUserFilter(null, username, null);
-
-      List<SecurityUser> result = securityUserRepository.load(filter);
+      List<SecurityUser> result = securityUserRepository.load(
+            new SecurityUserFilter(null, username, null)
+      );
 
       if (result.size() > 1) {
          throw new IllegalStateException("Duplicate usernames?");

@@ -5,11 +5,10 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomOccupancy;
-import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 
 @UIScope
@@ -17,7 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ClassroomListController extends AbstractListController<ClassroomOccupancy, Void, ClassroomFilter> {
 
    @Autowired
-   private ClassroomRepository repository;
+   private ClassroomListRepository repository;
 
    @Override
    protected ListGrid<ClassroomOccupancy> createGrid() {
