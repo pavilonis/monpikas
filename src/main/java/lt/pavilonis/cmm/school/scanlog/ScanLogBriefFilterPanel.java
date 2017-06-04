@@ -50,7 +50,7 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
 
    @Override
    protected void setDefaultValues() {
-      getPeriodStart().setValue(LocalDate.now().minusDays(3));
+      getPeriodStart().setValue(LocalDate.now().minusDays(2));
    }
 
    @Override

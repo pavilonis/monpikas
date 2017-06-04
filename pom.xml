@@ -13,6 +13,7 @@
    </parent>
 
    <properties>
+      <swagger.version>2.7.0</swagger.version>
       <java.version>1.8</java.version>
    </properties>
 
@@ -71,11 +72,29 @@
          <version>2.5</version>
       </dependency>
 
+      <!--API DOC GEN-->
+      <dependency>
+         <groupId>io.springfox</groupId>
+         <artifactId>springfox-swagger2</artifactId>
+         <version>${swagger.version}</version>
+         <exclusions>
+            <exclusion>
+               <groupId>com.google.guava</groupId>
+               <artifactId>guava</artifactId>
+            </exclusion>
+         </exclusions>
+      </dependency>
+      <dependency>
+         <groupId>io.springfox</groupId>
+         <artifactId>springfox-swagger-ui</artifactId>
+         <version>${swagger.version}</version>
+      </dependency>
+
       <!-- JDBC -->
       <dependency>
          <groupId>mysql</groupId>
          <artifactId>mysql-connector-java</artifactId>
-         <version>5.1.41</version>
+         <version>5.1.42</version>
       </dependency>
       <!-- not available from public repo - downloaded manually and installed into local maven repo-->
       <!-- mvn install:install-file -Dfile=sqljdbc42.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.2 -Dpackaging=jar -->

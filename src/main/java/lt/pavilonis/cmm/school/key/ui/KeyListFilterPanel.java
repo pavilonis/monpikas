@@ -65,7 +65,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
    @Override
    protected void setDefaultValues() {
-      getPeriodStart().setValue(LocalDate.now().minusWeeks(1));
+      getPeriodStart().setValue(LocalDate.now().minusDays(2));
    }
 
    @Override

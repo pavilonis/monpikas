@@ -54,7 +54,7 @@ final class ClassroomFilterPanel extends PeriodFilterPanel<ClassroomFilter> {
 
    @Override
    protected void setDefaultValues() {
-      getPeriodStart().setValue(LocalDate.now().minusDays(5));
+      getPeriodStart().setValue(LocalDate.now().minusDays(2));
    }
 
    @Override
