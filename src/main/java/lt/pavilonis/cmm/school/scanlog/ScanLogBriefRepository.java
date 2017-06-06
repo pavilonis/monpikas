@@ -1,7 +1,5 @@
 package lt.pavilonis.cmm.school.scanlog;
 
-import com.vaadin.data.provider.AbstractBackEndDataProvider;
-import com.vaadin.data.provider.BackEndDataProvider;
 import com.vaadin.data.provider.Query;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBrief;
 import lt.pavilonis.cmm.common.EntityRepository;

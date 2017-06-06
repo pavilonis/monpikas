@@ -3,24 +3,26 @@ package lt.pavilonis.cmm.security.ui;
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.spring.annotation.SpringComponent;
+import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import lt.pavilonis.cmm.security.service.SecurityUserRepository;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
-import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.converter.BooleanValueProviderAdapter;
 import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
+import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
+import lt.pavilonis.cmm.security.service.SecurityUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-@Controller
+@SpringComponent
+@UIScope
 public class SecurityUserListController extends AbstractListController<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired

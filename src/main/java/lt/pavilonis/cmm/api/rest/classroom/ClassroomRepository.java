@@ -37,18 +37,18 @@ public class ClassroomRepository {
 
       List<ClassroomOccupancy> result = jdbcSalto.query("" +
                   "SELECT " +
-                  "   co.dateTime, " +
-                  "   co.occupied, " +
-                  "   co.classroomNumber " +
+                  "  co.dateTime, " +
+                  "  co.occupied, " +
+                  "  co.classroomNumber " +
                   "FROM mm_ClassroomOccupancy co " +
-                  "   JOIN ( " +
-                  "           SELECT " +
-                  "              MAX(co_inner.dateTime) AS dateTime, " +
-                  "              co_inner.classroomNumber " +
-                  "           FROM mm_ClassRoomOccupancy co_inner " +
-                  "           GROUP BY co_inner.classRoomNumber " +
-                  "        ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
-                  "                       AND latest.dateTime = co.dateTime " +
+                  "  JOIN ( " +
+                  "          SELECT " +
+                  "             MAX(co_inner.dateTime) AS dateTime, " +
+                  "             co_inner.classroomNumber " +
+                  "          FROM mm_ClassRoomOccupancy co_inner " +
+                  "          GROUP BY co_inner.classRoomNumber " +
+                  "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
+                  "                      AND latest.dateTime = co.dateTime " +
                   "ORDER BY co.dateTime DESC",
             Collections.emptyMap(),
             ROW_MAPPER

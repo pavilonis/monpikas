@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.warehouse.techcard;
 
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.provider.Query;
-import com.vaadin.data.provider.QuerySortOrder;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
@@ -28,7 +27,8 @@ import java.util.stream.Stream;
 @Repository
 public class TechCardRepository implements EntityRepository<TechCard, Long, IdTextFilter> {
 
-   private static final Logger LOG = LoggerFactory.getLogger(TechCardRepository.class);
+   private static final Logger LOG = LoggerFactory.getLogger(TechCardRepository.class.getSimpleName());
+
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM TechCard tc " +
          "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +

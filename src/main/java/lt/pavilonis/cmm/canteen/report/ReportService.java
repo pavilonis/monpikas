@@ -8,6 +8,7 @@ import lt.pavilonis.cmm.canteen.ui.event.EatingEventFilter;
 import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,12 +18,10 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
-import static org.slf4j.LoggerFactory.getLogger;
-
 @Service
 public class ReportService {
 
-   private static final Logger LOG = getLogger(UserEatingService.class);
+   private static final Logger LOG = LoggerFactory.getLogger(UserEatingService.class.getSimpleName());
 
    @Autowired
    private EatingEventRepository eatingEventRepo;
