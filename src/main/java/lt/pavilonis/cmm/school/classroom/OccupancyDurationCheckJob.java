@@ -20,12 +20,11 @@ import java.util.stream.Collectors;
 @Service
 public class OccupancyDurationCheckJob {
 
-   private static final Logger LOG = LoggerFactory.getLogger(OccupancyDurationCheckJob.class.getSimpleName());
-   private static final int DURATION_HOUR = 5000;
-//   private static final int DURATION_HOUR = 3_600_000;
+   private static final Logger LOG = LoggerFactory.getLogger(
+         OccupancyDurationCheckJob.class.getSimpleName());
 
-   @Value("${classrooms.occupancyDurationLimitHours}")
-   private int occupancyDurationLimit;
+   @Value("${classroom.occupancyDuration.limitMinutes}")
+   private int durationLimitMinutes;
 
    @Autowired
    private ClassroomRepository repository;
@@ -33,13 +32,13 @@ public class OccupancyDurationCheckJob {
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
 
-   @Scheduled(fixedRate = DURATION_HOUR)
-   public void freeOld() {
+   @Scheduled(fixedRateString = "${classroom.occupancyDuration.checkIntervalMillis}")
+   public void freeClassrooms() {
 
       List<ClassroomOccupancy> active = repository.loadActive();
 
       LocalDateTime earliestOccupancyEventDateAllowed = LocalDateTime.now()
-            .minusHours(occupancyDurationLimit);
+            .minusMinutes(durationLimitMinutes);
 
       Set<Integer> classroomNumbersToFree = active.stream()
             .filter(ClassroomOccupancy::isOccupied)
