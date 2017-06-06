@@ -31,7 +31,7 @@ import java.util.Optional;
 @Repository
 public class EatingEventRepository implements EntityRepository<EatingEvent, Long, EatingEventFilter> {
 
-   private static final Logger LOG = LoggerFactory.getLogger(EatingEventRepository.class);
+   private static final Logger LOG = LoggerFactory.getLogger(EatingEventRepository.class.getSimpleName());
    private final RowMapper<EatingEvent> MAPPER = (rs, i) -> new EatingEvent(
          rs.getLong("id"),
          rs.getString("cardCode"),

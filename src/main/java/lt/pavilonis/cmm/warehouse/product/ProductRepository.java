@@ -24,7 +24,9 @@ import java.util.stream.Stream;
 
 @Repository
 public class ProductRepository implements EntityRepository<Product, Long, IdTextFilter> {
-   private static final Logger LOG = LoggerFactory.getLogger(ProductRepository.class);
+
+   private static final Logger LOG = LoggerFactory.getLogger(ProductRepository.class.getSimpleName());
+
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM Product p " +
          "  JOIN ProductGroup pg ON pg.id = p.productGroup_id " +

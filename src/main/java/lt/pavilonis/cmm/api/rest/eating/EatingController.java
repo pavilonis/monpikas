@@ -31,7 +31,7 @@ import static java.time.LocalTime.now;
 @RestController
 public class EatingController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(EatingController.class);
+   private static final Logger LOG = LoggerFactory.getLogger(EatingController.class.getSimpleName());
    private static final long SCANNER_ID_CANTEEN = 6;
 
    private final UserEatingService eatingService;

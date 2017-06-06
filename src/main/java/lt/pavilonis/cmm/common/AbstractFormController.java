@@ -27,7 +27,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
-   private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class);
+   private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class.getSimpleName());
    private final Class<T> clazz;
    private Binder<T> binder;
    protected T model;

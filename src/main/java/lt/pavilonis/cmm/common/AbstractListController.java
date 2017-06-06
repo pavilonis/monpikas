@@ -53,10 +53,12 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    final protected Optional<Component> getFooter() {
       HorizontalLayout footerLayout = new HorizontalLayout();
       footerLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
+
       getControlPanel().ifPresent(panel -> {
          footerLayout.addComponent(panel);
          footerLayout.setComponentAlignment(panel, Alignment.MIDDLE_LEFT);
       });
+
       footerLayout.addComponent(sizeLabel);
       footerLayout.setComponentAlignment(sizeLabel, Alignment.MIDDLE_RIGHT);
       return Optional.of(footerLayout);
