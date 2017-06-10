@@ -4,7 +4,7 @@
 
    <groupId>org.springframework</groupId>
    <artifactId>monpikas</artifactId>
-   <version>0.93-SNAPSHOT</version>
+   <version>0.93</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
