@@ -86,6 +86,10 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
             .orElseThrow(IllegalStateException::new);
    }
 
+   @Override
+   public List<TechCard> load() {
+      return load(IdTextFilter.empty());
+   }
 
    @Override
    public List<TechCard> load(IdTextFilter filter) {

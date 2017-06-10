@@ -95,25 +95,34 @@ CREATE TABLE MealType (
    UNIQUE (name)
 );
 
-CREATE TABLE Meal (
-   id                 BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   mealType_id        BIGINT(20) NOT NULL,
-   menuRequirement_id BIGINT(20) NOT NULL,
-   dateCreated        DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (mealType_id) REFERENCES MealType (id),
-   FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id)
+CREATE TABLE TechCardSet (
+   id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   name        VARCHAR(255) NOT NULL,
+   mealType_id BIGINT(20)   NOT NULL,
+   dateCreated DATETIME     NOT NULL             DEFAULT NOW(),
+
+   FOREIGN KEY (mealType_id) REFERENCES MealType (id)
+);
+
+CREATE TABLE TechCardSetTechCard (
+   id             BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   techCardSet_id BIGINT(20) NOT NULL,
+   techCard_id    BIGINT(20) NOT NULL,
+   dateCreated    DATETIME   NOT NULL             DEFAULT NOW(),
+
+   FOREIGN KEY (techCard_id) REFERENCES TechCard (id),
+   FOREIGN KEY (techCardSet_id) REFERENCES TechCardSet (id)
       ON DELETE CASCADE
 );
 
-CREATE TABLE MealTechCard (
-   id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   meal_id     BIGINT(20) NOT NULL,
-   techCard_id BIGINT(20) NOT NULL,
-   dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
+CREATE TABLE MenuRequirementTechCardSet (
+   techCardSet_id     BIGINT(20) NOT NULL,
+   menuRequirement_id BIGINT(20) NOT NULL,
+   dateCreated        DATETIME   NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (techCard_id) REFERENCES TechCard (id),
-   FOREIGN KEY (meal_id) REFERENCES Meal (id)
+   FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
+   FOREIGN KEY (techCardSet_id) REFERENCES TechCardSet (id)
       ON DELETE CASCADE
 );
 
@@ -126,17 +135,17 @@ CREATE TABLE WriteOffStatement (
 );
 
 CREATE TABLE WriteOffItem (
-   id                   BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   quantity             DECIMAL(10, 3) NOT NULL,
-   receiptItem_id       BIGINT(20)     NOT NULL,
-   writeOffStatement_id BIGINT(20)     NOT NULL,
-   techCardProduct_id   BIGINT(20)     NOT NULL,
-   mealTechCard_id      BIGINT(20)     NOT NULL,
-   dateCreated          DATETIME       NOT NULL             DEFAULT NOW(),
+   id                     BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   quantity               DECIMAL(10, 3) NOT NULL,
+   receiptItem_id         BIGINT(20)     NOT NULL,
+   writeOffStatement_id   BIGINT(20)     NOT NULL,
+   techCardProduct_id     BIGINT(20)     NOT NULL,
+   techCardSetTechCard_id BIGINT(20)     NOT NULL,
+   dateCreated            DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
    FOREIGN KEY (techCardProduct_id) REFERENCES TechCardProduct (id),
-   FOREIGN KEY (mealTechCard_id) REFERENCES MealTechCard (id),
+   FOREIGN KEY (techCardSetTechCard_id) REFERENCES TechCardSetTechCard (id),
    FOREIGN KEY (writeOffStatement_id) REFERENCES WriteOffStatement (id)
       ON DELETE CASCADE
 );

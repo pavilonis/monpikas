@@ -1,19 +1,22 @@
-package lt.pavilonis.cmm.warehouse.meal;
+package lt.pavilonis.cmm.warehouse.techcardset;
 
-import lt.pavilonis.cmm.common.Identified;
+import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.warehouse.mealtype.MealType;
 import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 
-import java.util.List;
+import java.util.Set;
 
-public class Meal extends Identified<Long> {
+public final class TechCardSet extends Named<Long> {
 
    private MealType type;
-   private List<TechCard> techCards;
+   private Set<TechCard> techCards;
 //   private MenuRequirement menuRequirement;
 
-   public Meal(long id, MealType type, List<TechCard> techCards) {
+   public TechCardSet() {/**/}
+
+   public TechCardSet(long id, String name, MealType type, Set<TechCard> techCards) {
       this.setId(id);
+      this.setName(name);
       this.type = type;
       this.techCards = techCards;
    }
@@ -26,11 +29,11 @@ public class Meal extends Identified<Long> {
       this.type = type;
    }
 
-   public List<TechCard> getTechCards() {
+   public Set<TechCard> getTechCards() {
       return techCards;
    }
 
-   public void setTechCards(List<TechCard> techCards) {
+   public void setTechCards(Set<TechCard> techCards) {
       this.techCards = techCards;
    }
 }

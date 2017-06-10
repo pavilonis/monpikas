@@ -130,7 +130,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
 
    protected List<T> getSelectionElements() {
       EntityRepository<T, ?, ?> repository = RepositoryFinder.find(type);
-      return repository.load(null); //TODO null?
+      return repository.load();
    }
 
    @Override

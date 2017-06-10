@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
-import lt.pavilonis.cmm.warehouse.meal.Meal;
+import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -42,14 +42,14 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       jdbcNamed.update("UPDATE MenuRequirement SET date = :date WHERE id = :id", args);
       jdbcNamed.update("DELETE FROM Meal WHERE menuRequirement_id = :id", args);
 
-      saveMenuRequirementMeals(menuRequirement.getMeals(), menuReqId);
+      saveMenuRequirementMeals(menuRequirement.getTechCardSets(), menuReqId);
 
       return find(menuReqId)
             .orElseThrow(IllegalStateException::new);
    }
 
-   private void saveMenuRequirementMeals(List<Meal> meals, long id) {
-      meals.forEach(meal -> {
+   private void saveMenuRequirementMeals(List<TechCardSet> techCardSets, long id) {
+      techCardSets.forEach(meal -> {
 
          long insertedMealId = insertNewMeal(id, meal.getType().getId());
 
@@ -60,7 +60,7 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
 
    private void addTechCardToMeal(long insertedMealId, long techCardId) {
       jdbcNamed.update(
-            "INSERT INTO MealTechCard (meal_id, techCard_id) VALUES (:mealId, :cardId)",
+            "INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (:mealId, :cardId)",
             ImmutableMap.of("mealId", insertedMealId, "cardId", techCardId)
       );
    }
@@ -69,7 +69,7 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       KeyHolder keyHolder = new GeneratedKeyHolder();
 
       jdbcNamed.update(
-            "INSERT INTO Meal (menuRequirement_id, mealType_id) VALUES (:menuRequirementId, :mealTypeId)",
+            "INSERT INTO TechCardSet (menuRequirement_id, mealType_id) VALUES (:menuRequirementId, :mealTypeId)",
             new MapSqlParameterSource(
                   ImmutableMap.of("menuRequirementId", menuRequirementId, "mealTypeId", mealTypeId)
             ),
@@ -86,7 +86,7 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
             keyHolder
       );
 
-      saveMenuRequirementMeals(entity.getMeals(), entity.getId());
+      saveMenuRequirementMeals(entity.getTechCardSets(), entity.getId());
 
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
@@ -100,17 +100,17 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       args.put("periodEnd", filter.getPeriodEnd());
       return jdbcNamed.query("" +
                   "SELECT mr.id, mr.date ," +
-                  "  m.id, " +
+                  "  tcs.id, " +
                   "  mt.id, mt.name, " +
                   "  tc.id, tc.name, " +
                   "  tcg.id, tcg.name, " +
                   "  tcp.outputWeight, " +
                   "  pg.id, pg.name, pg.kcal100 " +
                   "FROM MenuRequirement mr " +
-                  "  JOIN Meal m ON m.menuRequirement_id = mr.id " +
-                  "  JOIN MealType mt ON mt.id = m.mealType_id " +
-                  "  JOIN MealTechCard mtc ON mtc.meal_id = m.id " +
-                  "  JOIN TechCard tc ON tc.id = mtc.techCard_id " +
+                  "  JOIN TechCardSet tcs ON tcs.menuRequirement_id = mr.id " +
+                  "  JOIN MealType mt ON mt.id = tcs.mealType_id " +
+                  "  JOIN TechCardSetTechCard tcstc ON tcstc.techCardSet_id = tcs.id " +
+                  "  JOIN TechCard tc ON tc.id = tcstc.techCard_id " +
                   "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +
                   "  JOIN TechCardProduct tcp ON tcp.techCard_id = tc.id " +
                   "  JOIN ProductGroup pg ON pg.id = tcp.productGroup_id " +

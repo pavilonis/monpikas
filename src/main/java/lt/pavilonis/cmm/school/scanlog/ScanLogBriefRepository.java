@@ -63,7 +63,7 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
 
    @Override
    public Class<ScanLogBrief> entityClass() {
-      throw new NotImplementedException("Not needed");
+      return ScanLogBrief.class;
    }
 
    @Override
