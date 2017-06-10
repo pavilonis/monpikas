@@ -18,7 +18,8 @@ import java.util.Map;
 @UIScope
 class KeyListGrid extends ListGrid<Key> {
 
-   private static final DateTimeFormatter DATE_TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm");
+   private static final DateTimeFormatter DATE_TIME_FORMAT =
+         DateTimeFormatter.ofPattern("yyyy-MM-dd  hh:mm");
 
    public KeyListGrid() {
       super(Key.class);
@@ -27,7 +28,7 @@ class KeyListGrid extends ListGrid<Key> {
    @Override
    protected List<String> columnOrder() {
       return Arrays.asList("scanner", "keyNumber", "dateTime",
-            "user.name", "user.group", "user.role", "keyAction");
+            "user.name", "user.role", "user.group", "keyAction");
    }
 
    @Override
