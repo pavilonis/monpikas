@@ -111,16 +111,12 @@ public class KeyRepository {
       );
    }
 
-   public List<Key> loadAssigned(Long scannerId, String cardCode, Integer keyNumber) {
-      return loadActive(scannerId, cardCode, keyNumber);
-   }
-
    public boolean isAvailable(long scannerId, int keyNumber) {
       List<Key> result = loadActive(scannerId, null, keyNumber);
       return result.isEmpty();
    }
 
-   private List<Key> loadActive(Long scannerId, String cardCode, Integer keyNumber) {
+   public List<Key> loadActive(Long scannerId, String cardCode, Integer keyNumber) {
       LocalDateTime opStart = LocalDateTime.now();
 
       Map<String, Object> args = new HashMap<>();
