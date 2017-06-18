@@ -23,7 +23,12 @@ public class AuthorityRepository implements EntityRepository<GrantedAuthority, S
    }
 
    @Override
-   public List<GrantedAuthority> load(Void aVoid) {
+   public List<GrantedAuthority> load() {
+      return load(null);
+   }
+
+   @Override
+   public List<GrantedAuthority> load(Void ignored) {
       return jdbcApi.query(
             "SELECT DISTINCT name FROM Role ORDER BY name",
             (rs, i) -> new SimpleGrantedAuthority(rs.getString(1))

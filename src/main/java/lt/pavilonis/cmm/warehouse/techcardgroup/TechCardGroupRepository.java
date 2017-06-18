@@ -52,6 +52,11 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
    }
 
    @Override
+   public List<TechCardGroup> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<TechCardGroup> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());

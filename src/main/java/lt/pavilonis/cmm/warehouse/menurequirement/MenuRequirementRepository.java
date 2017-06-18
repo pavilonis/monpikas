@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
+import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -93,6 +94,11 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
    }
 
    @Override
+   public List<MenuRequirement> load() {
+      throw new NotImplementedException("Not needed yet");
+   }
+
+   @Override
    public List<MenuRequirement> load(IdPeriodFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put(ID, filter.getId());
@@ -101,14 +107,14 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       return jdbcNamed.query("" +
                   "SELECT mr.id, mr.date ," +
                   "  tcs.id, " +
-                  "  mt.id, mt.name, " +
+                  "  tcst.id, tcst.name, " +
                   "  tc.id, tc.name, " +
                   "  tcg.id, tcg.name, " +
                   "  tcp.outputWeight, " +
                   "  pg.id, pg.name, pg.kcal100 " +
                   "FROM MenuRequirement mr " +
-                  "  JOIN TechCardSet tcs ON tcs.menuRequirement_id = mr.id " +
-                  "  JOIN MealType mt ON mt.id = tcs.mealType_id " +
+                  "  JOIN TechCardSet tcs ON tcs.menuRequirement_id = mr.id " +//TODO
+                  "  JOIN TechCardSetType tcst ON tcst.id = tcs.techCardSetType_id " +
                   "  JOIN TechCardSetTechCard tcstc ON tcstc.techCardSet_id = tcs.id " +
                   "  JOIN TechCard tc ON tc.id = tcstc.techCard_id " +
                   "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +

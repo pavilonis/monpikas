@@ -87,7 +87,7 @@ CREATE TABLE TechCardProduct (
       ON DELETE CASCADE
 );
 
-CREATE TABLE MealType (
+CREATE TABLE TechCardSetType (
    id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
    name        VARCHAR(255) NOT NULL,
    dateCreated DATETIME     NOT NULL             DEFAULT NOW(),
@@ -95,14 +95,13 @@ CREATE TABLE MealType (
    UNIQUE (name)
 );
 
-
 CREATE TABLE TechCardSet (
-   id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   name        VARCHAR(255) NOT NULL,
-   mealType_id BIGINT(20)   NOT NULL,
-   dateCreated DATETIME     NOT NULL             DEFAULT NOW(),
+   id                 BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   name               VARCHAR(255) NOT NULL,
+   techCardSetType_id BIGINT(20)   NOT NULL,
+   dateCreated        DATETIME     NOT NULL             DEFAULT NOW(),
 
-   FOREIGN KEY (mealType_id) REFERENCES MealType (id)
+   FOREIGN KEY (techCardSetType_id) REFERENCES TechCardSetType (id)
 );
 
 CREATE TABLE TechCardSetTechCard (

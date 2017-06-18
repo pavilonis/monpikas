@@ -32,6 +32,11 @@ public class UserListRepository implements EntityRepository<User, String, UserFi
    }
 
    @Override
+   public List<User> load() {
+      return load(new UserFilter(null, null, null, false));
+   }
+
+   @Override
    public List<User> load(UserFilter filter) {
       return userRepository.load(filter);
    }

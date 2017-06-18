@@ -37,6 +37,11 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
    private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
+   public List<Eating> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<Eating> load(IdTextFilter filter) {
       return jdbc.query("SELECT e.* FROM Eating e", MAPPER);
    }
@@ -50,6 +55,7 @@ public class EatingRepository implements EntityRepository<Eating, Long, IdTextFi
    public Class<Eating> entityClass() {
       return Eating.class;
    }
+
 
    public List<Eating> load(Collection ids) {
       return CollectionUtils.isEmpty(ids)

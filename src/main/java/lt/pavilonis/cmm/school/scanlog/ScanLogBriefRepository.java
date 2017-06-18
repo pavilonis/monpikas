@@ -47,8 +47,13 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
    }
 
    @Override
+   public List<ScanLogBrief> load() {
+      throw new NotImplementedException("Not needed yet");
+   }
+
+   @Override
    public List<ScanLogBrief> load(ScanLogBriefFilter scanLogBriefFilter) {
-      return null;
+      throw new NotImplementedException("Not needed yet");
    }
 
    @Override

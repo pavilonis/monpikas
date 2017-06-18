@@ -42,6 +42,11 @@ public class UserEatingService implements EntityRepository<UserEating, String, U
    private EatingEventRepository eventsRepository;
 
    @Override
+   public List<UserEating> load() {
+      return load(new UserEatingFilter(null, null, false));
+   }
+
+   @Override
    public List<UserEating> load(UserEatingFilter filter) {
       LocalDateTime opStart = LocalDateTime.now();
       Collection<EatingData> pupilDataCollection = pupilDataRepository.loadAll(

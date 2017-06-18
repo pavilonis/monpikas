@@ -61,7 +61,7 @@ INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) VALUES 
 INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) VALUES (3, 10, 5);
 #cukrus
 
-INSERT INTO MealType (name) VALUES ('Pusryčiai'), ('Priešpiečiai'), ('Pietus'), ('Vakariene ir pavakariai');
+INSERT INTO TechCardSetType (name) VALUES ('Pusryčiai'), ('Priešpiečiai'), ('Pietus'), ('Vakariene ir pavakariai');
 
 INSERT INTO ReceiptStatement (id, supplier_id, dateCreated) VALUE (1, 1, NOW() - INTERVAL 6 DAY);
 INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
@@ -136,15 +136,15 @@ VALUES (8, 4, 13, 1, 5, (SELECT name
                                                            WHERE id = 13));
 
 INSERT INTO MenuRequirement (id, date) VALUES (1, CURDATE());
-INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (1, 1, 1);
+INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (1, 'Pirmas rinkinys', 1);
 #pusryciai
-INSERT INTO MealTechCard (id, meal_id, techCard_id) VALUES (1, 1, 1);
+INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (1, 1, 1);
 #barsciai
-INSERT INTO MealTechCard (id, meal_id, techCard_id) VALUES (2, 1, 2);
+INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (2, 1, 2);
 #makaronai + kotletas
 
 INSERT INTO MenuRequirement (id, date) VALUES (2, CURDATE());
-INSERT INTO Meal (id, menuRequirement_id, mealType_id) VALUES (2, 2, 2);
+INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (2, 'Antras rinkinys', 2);
 #priespeciai
-INSERT INTO MealTechCard (id, meal_id, techCard_id) VALUES (3, 2, 3);
+INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (3, 2, 3);
 #kava su pienu

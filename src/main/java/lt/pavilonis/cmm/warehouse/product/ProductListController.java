@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.warehouse.product;
 
-import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
@@ -15,9 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 @Controller
 public class ProductListController extends AbstractListController<Product, Long, IdTextFilter> {
@@ -31,11 +28,6 @@ public class ProductListController extends AbstractListController<Product, Long,
    @Override
    protected ListGrid<Product> createGrid() {
       return new ListGrid<Product>(Product.class) {
-         @Override
-         protected Map<String, ValueProvider<Product, ?>> getCustomColumns() {
-            return Collections.singletonMap("productGroup", value -> value.getProductGroup().getName());
-         }
-
          @Override
          protected List<String> columnOrder() {
             return Arrays.asList("name", "unitWeight", "measureUnit", "productGroup");

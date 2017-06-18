@@ -8,6 +8,7 @@ import lt.pavilonis.cmm.canteen.ui.event.EatingEventFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.util.QueryUtils;
 import lt.pavilonis.util.TimeUtils;
+import org.apache.commons.lang3.NotImplementedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,6 +61,11 @@ public class EatingEventRepository implements EntityRepository<EatingEvent, Long
             Integer.class,
             periodStart, periodEnd, cardCode, eatingType.name()
       );
+   }
+
+   @Override
+   public List<EatingEvent> load() {
+      throw new NotImplementedException("Not needed yet");
    }
 
    @Override

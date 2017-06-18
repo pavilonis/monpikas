@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.warehouse.techcardset;
 
-import lt.pavilonis.cmm.warehouse.mealtype.MealTypeMapper;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeMapper;
 import lt.pavilonis.cmm.warehouse.techcard.TechCardRowMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
@@ -15,7 +15,7 @@ import java.util.Map;
 
 public final class TechCardSetResultSetExtractor implements ResultSetExtractor<List<TechCardSet>> {
 
-   private static final MealTypeMapper MEAL_TYPE_MAPPER = new MealTypeMapper();
+   private static final TechCardSetTypeMapper TECH_CARD_SET_TYPE_MAPPER = new TechCardSetTypeMapper();
    private static final TechCardRowMapper TECH_CARD_MAPPER = new TechCardRowMapper();
 
    @Override
@@ -41,7 +41,7 @@ public final class TechCardSetResultSetExtractor implements ResultSetExtractor<L
       return new TechCardSet(
             rs.getLong("tcs.id"),
             rs.getString("tcs.name"),
-            MEAL_TYPE_MAPPER.mapRow(rs),
+            TECH_CARD_SET_TYPE_MAPPER.mapRow(rs),
             new HashSet<>()
       );
    }

@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.warehouse.techcardset;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
@@ -11,8 +13,11 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
-import lt.pavilonis.cmm.warehouse.mealtype.MealTypeRepository;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Arrays;
+import java.util.List;
 
 @SpringComponent
 @UIScope
@@ -22,11 +27,16 @@ public class TechCardSetListController extends AbstractListController<TechCardSe
    private TechCardSetRepository repository;
 
    @Autowired
-   private MealTypeRepository mealTypeRepository;
+   private TechCardSetTypeRepository mealTypeRepository;
 
    @Override
    protected ListGrid<TechCardSet> createGrid() {
-      return new ListGrid<>(TechCardSet.class);
+      return new ListGrid<TechCardSet>(TechCardSet.class) {
+         @Override
+         protected List<String> columnOrder() {
+            return Arrays.asList("name", "type", "techCards", "caloricity");
+         }
+      };
    }
 
    @Override
@@ -45,6 +55,12 @@ public class TechCardSetListController extends AbstractListController<TechCardSe
          @Override
          protected FieldLayout<TechCardSet> createFieldLayout() {
             return new TechCardFields(mealTypeRepository.load(IdTextFilter.empty()));
+         }
+
+         @Override
+         protected void customizeWindow(Window window) {
+            window.setWidth(700, Sizeable.Unit.PIXELS);
+            window.setHeight(570, Sizeable.Unit.PIXELS);
          }
       };
    }

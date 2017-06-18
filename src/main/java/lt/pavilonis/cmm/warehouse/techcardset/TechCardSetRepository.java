@@ -26,17 +26,22 @@ public class TechCardSetRepository implements EntityRepository<TechCardSet, Long
    }
 
    @Override
+   public List<TechCardSet> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<TechCardSet> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("text", QueryUtils.likeArg(filter.getText()));
       return jdbcNamed.query("" +
                   "SELECT " +
                   "  tcs.id, tcs.name," +
-                  "  mt.id, mt.name," +
+                  "  tcst.id, tcst.name," +
                   "  tc.id, tc.name, " +
                   "  tcg.id, tcg.name " +
                   "FROM TechCardSet tcs " +
-                  "  JOIN MealType mt ON mt.id = tcs.mealType_id " +
+                  "  JOIN TechCardSetType tcst ON tcst.id = tcs.techCardSetType_id " +
                   "  JOIN TechCardSetTechCard tcstc ON tcs.id = tcstc.techCardSet_id " +
                   "  JOIN TechCard tc ON tc.id = tcstc.techCard_id " +
                   "  JOIN TechCardGroup tcg ON tcg.id = tc.techCardGroup_id " +
@@ -47,8 +52,8 @@ public class TechCardSetRepository implements EntityRepository<TechCardSet, Long
    }
 
    @Override
-   public Optional<TechCardSet> find(Long aLong) {
-      List<TechCardSet> result = load(new IdTextFilter(aLong));
+   public Optional<TechCardSet> find(Long id) {
+      List<TechCardSet> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));

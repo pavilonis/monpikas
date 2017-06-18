@@ -15,8 +15,8 @@ import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
 import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
-import lt.pavilonis.cmm.warehouse.mealtype.MealType;
-import lt.pavilonis.cmm.warehouse.mealtype.MealTypeRepository;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetType;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -32,7 +32,7 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
    private MenuRequirementRepository repository;
 
    @Autowired
-   private MealTypeRepository mealTypeRepository;
+   private TechCardSetTypeRepository techCardSetTypeRepository;
 
    @Override
    protected ListGrid<MenuRequirement> createGrid() {
@@ -67,7 +67,7 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
 
          @Override
          protected FieldLayout<MenuRequirement> createFieldLayout() {
-            List<MealType> types = mealTypeRepository.load(IdTextFilter.empty());
+            List<TechCardSetType> types = techCardSetTypeRepository.load(IdTextFilter.empty());
             return new MenuRequirementForm(types);
          }
       };

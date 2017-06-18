@@ -6,7 +6,14 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.BeanUtils;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -16,6 +23,7 @@ import java.util.stream.Collectors;
 
 public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
+   private static final Logger LOG = LoggerFactory.getLogger(ListGrid.class.getSimpleName());
    private static final String PROPERTY_ID = "ID";
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
    private List<T> items = new ArrayList<>();
@@ -33,6 +41,8 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
                   (!properties.isEmpty() && !properties.contains(column)) || customColumns.containsKey(column))
             .forEach(this::removeColumn);
 
+      configureNamedEntityColumns();
+
       addColumns(properties, customColumns);
 
       if (!properties.isEmpty()) {
@@ -45,6 +55,41 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
       defaultConfiguration();
       customize();
       collapseColumns();
+   }
+
+   private void configureNamedEntityColumns() {
+      getColumns().stream()
+            .map(Column::getId)
+            .forEach(property -> {
+               Field field = getClassField(property);
+
+               if (field != null && Named.class.isAssignableFrom(field.getType())) {
+
+                  removeColumn(property);
+
+                  addColumn(property, entity -> {
+
+                     String propertyGetterName = "get" + StringUtils.capitalize(property);
+
+                     Method propertyGetter = BeanUtils.findMethod(getBeanType(), propertyGetterName);
+
+                     Object propertyValue = extractProperty(entity, propertyGetter);
+
+                     Method nameGetter = BeanUtils.findMethod(Named.class, "getName");
+
+                     return extractProperty(propertyValue, nameGetter);
+                  });
+               }
+            });
+   }
+
+   private Object extractProperty(Object object, Method propertyGetter) {
+      try {
+         return propertyGetter.invoke(object);
+      } catch (IllegalAccessException | InvocationTargetException e) {
+         e.printStackTrace();
+         return null;
+      }
    }
 
    protected String[] translateHeaders(Class<T> type) {
@@ -100,8 +145,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
       customColumns.forEach((id, valueProvider) -> {
          if (properties.isEmpty() || properties.contains(id)) {
-            Column<T, ?> column = addColumn(valueProvider);
-            column.setId(id);
+            addColumn(id, valueProvider);
          }
       });
 
@@ -112,6 +156,19 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
       properties.stream()
             .filter(property -> !existingColumns.contains(property))
             .forEach(this::addColumn);
+   }
+
+   private void addColumn(String id, ValueProvider<T, ?> valueProvider) {
+      Column<T, ?> column = addColumn(valueProvider);
+      column.setId(id);
+   }
+
+   private Field getClassField(String property) {
+      try {
+         return getBeanType().getDeclaredField(property);
+      } catch (NoSuchFieldException e) {
+         return null;
+      }
    }
 
    public void setHeaders(String... headers) {

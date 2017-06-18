@@ -26,6 +26,11 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
    }
 
    @Override
+   public List<Key> load() {
+      throw new NotImplementedException("Not needed yet");
+   }
+
+   @Override
    public List<Key> load(KeyListFilter filter) {
       String text = filter.getText();
       boolean filterByNumber = NumberUtils.isNumber(text);

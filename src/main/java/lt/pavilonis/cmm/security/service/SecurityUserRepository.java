@@ -5,6 +5,7 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.config.SecurityUserResultSetExtractor;
 import lt.pavilonis.cmm.security.Role;
 import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
+import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -90,6 +91,11 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
       saveRoles(userId, user.getAuthorities());
 
       return find(userId).orElseThrow(IllegalStateException::new);
+   }
+
+   @Override
+   public List<SecurityUser> load() {
+      throw new NotImplementedException("Not needed yet");
    }
 
    @Override
