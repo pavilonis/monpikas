@@ -68,7 +68,7 @@ public class EatingEventListController extends AbstractListController<EatingEven
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.CUTLERY;
+      return VaadinIcons.OPEN_BOOK;
    }
 
    @Override

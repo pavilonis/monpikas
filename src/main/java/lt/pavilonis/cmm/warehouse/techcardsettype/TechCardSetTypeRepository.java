@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.mealtype;
+package lt.pavilonis.cmm.warehouse.techcardsettype;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
@@ -19,15 +19,15 @@ import java.util.Optional;
 
 
 @Repository
-public class MealTypeRepository implements EntityRepository<MealType, Long, IdTextFilter> {
+public class TechCardSetTypeRepository implements EntityRepository<TechCardSetType, Long, IdTextFilter> {
 
-   private static final RowMapper<MealType> MAPPER = new MealTypeMapper();
+   private static final RowMapper<TechCardSetType> MAPPER = new TechCardSetTypeMapper();
 
    @Autowired
    private NamedParameterJdbcTemplate jdbcNamed;
 
    @Override
-   public MealType saveOrUpdate(MealType entity) {
+   public TechCardSetType saveOrUpdate(TechCardSetType entity) {
       Map<String, Object> args = new HashMap<>();
       args.put(ID, entity.getId());
       args.put("name", entity.getName());
@@ -37,38 +37,43 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
             : update(args);
    }
 
-   private MealType update(Map<String, ?> args) {
-      jdbcNamed.update("UPDATE MealType SET name = :name WHERE id = :id", args);
+   private TechCardSetType update(Map<String, ?> args) {
+      jdbcNamed.update("UPDATE TechCardSetType SET name = :name WHERE id = :id", args);
       return find((Long) args.get(ID))
             .orElseThrow(IllegalStateException::new);
    }
 
-   private MealType create(Map<String, Object> args) {
+   private TechCardSetType create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcNamed.update("INSERT INTO MealType (name) VALUE (:name)", new MapSqlParameterSource(args), keyHolder);
+      jdbcNamed.update("INSERT INTO TechCardSetType (name) VALUE (:name)", new MapSqlParameterSource(args), keyHolder);
 
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
    }
 
    @Override
-   public List<MealType> load(IdTextFilter filter) {
+   public List<TechCardSetType> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
+   public List<TechCardSetType> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("name", QueryUtils.likeArg(filter.getText()));
       return jdbcNamed.query("" +
-                  "SELECT mt.id, mt.name " +
-                  "FROM MealType mt " +
-                  "WHERE (:id IS NULL OR mt.id = :id) AND (:name IS NULL OR mt.name LIKE :name) " +
-                  "ORDER BY mt.name",
+                  "SELECT tcst.id, tcst.name " +
+                  "FROM TechCardSetType tcst " +
+                  "WHERE (:id IS NULL OR tcst.id = :id) AND (:name IS NULL OR tcst.name LIKE :name) " +
+                  "ORDER BY tcst.name",
             args,
             MAPPER
       );
    }
 
    @Override
-   public Optional<MealType> find(Long id) {
-      List<MealType> result = load(new IdTextFilter(id));
+   public Optional<TechCardSetType> find(Long id) {
+      List<TechCardSetType> result = load(new IdTextFilter(id));
       return result.isEmpty()
             ? Optional.empty()
             : Optional.of(result.get(0));
@@ -80,8 +85,8 @@ public class MealTypeRepository implements EntityRepository<MealType, Long, IdTe
    }
 
    @Override
-   public Class<MealType> entityClass() {
-      return MealType.class;
+   public Class<TechCardSetType> entityClass() {
+      return TechCardSetType.class;
    }
 //
 //   public List<ProductRecord> items(long groupId) {

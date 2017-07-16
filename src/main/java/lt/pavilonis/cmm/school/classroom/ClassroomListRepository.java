@@ -23,6 +23,11 @@ public class ClassroomListRepository implements EntityRepository<ClassroomOccupa
    }
 
    @Override
+   public List<ClassroomOccupancy> load() {
+      throw new NotImplementedException("Not needed yet");
+   }
+
+   @Override
    public List<ClassroomOccupancy> load(ClassroomFilter filter) {
       if (!filter.isHistoryMode()) {
          return repository.loadActive();

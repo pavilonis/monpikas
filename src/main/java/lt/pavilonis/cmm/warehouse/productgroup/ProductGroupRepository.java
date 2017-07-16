@@ -56,6 +56,11 @@ public class ProductGroupRepository implements EntityRepository<ProductGroup, Lo
    }
 
    @Override
+   public List<ProductGroup> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<ProductGroup> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());

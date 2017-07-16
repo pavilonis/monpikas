@@ -77,6 +77,10 @@ public class ProductRepository implements EntityRepository<Product, Long, IdText
             .orElseThrow(IllegalStateException::new);
    }
 
+   @Override
+   public List<Product> load() {
+      return load(IdTextFilter.empty());
+   }
 
    @Override
    public List<Product> load(IdTextFilter filter) {

@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.security.ui;
 
 import com.vaadin.data.HasValue;
+import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
@@ -20,5 +21,10 @@ final class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
    @Override
    public SecurityUserFilter getFilter() {
       return new SecurityUserFilter(null, null, text.getValue());
+   }
+
+   @Override
+   protected AbstractField<?> getFieldToFocus() {
+      return text;
    }
 }

@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.warehouse.mealtype;
+package lt.pavilonis.cmm.warehouse.techcardsettype;
 
 import com.vaadin.icons.VaadinIcons;
 import lt.pavilonis.cmm.common.AbstractFormController;
@@ -13,27 +13,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 @Controller
-public class MealTypeListController extends AbstractListController<MealType, Long, IdTextFilter> {
+public class TechCardSetTypeListController extends AbstractListController<TechCardSetType, Long, IdTextFilter> {
 
    @Autowired
-   private MealTypeRepository repository;
+   private TechCardSetTypeRepository repository;
 
    @Override
-   protected ListGrid<MealType> createGrid() {
-      return new ListGrid<>(MealType.class);
+   protected ListGrid<TechCardSetType> createGrid() {
+      return new ListGrid<>(TechCardSetType.class);
    }
 
    @Override
-   protected AbstractFormController<MealType, Long> getFormController() {
-      return new AbstractFormController<MealType, Long>(MealType.class) {
+   protected AbstractFormController<TechCardSetType, Long> getFormController() {
+      return new AbstractFormController<TechCardSetType, Long>(TechCardSetType.class) {
          @Override
-         protected EntityRepository<MealType, Long, ?> getEntityRepository() {
+         protected EntityRepository<TechCardSetType, Long, ?> getEntityRepository() {
             return repository;
          }
 
          @Override
-         protected FieldLayout<MealType> createFieldLayout() {
-            return new MealTypeForm();
+         protected FieldLayout<TechCardSetType> createFieldLayout() {
+            return new TechCardSetTypeFields();
          }
       };
    }
@@ -44,13 +44,13 @@ public class MealTypeListController extends AbstractListController<MealType, Lon
    }
 
    @Override
-   protected EntityRepository<MealType, Long, IdTextFilter> getEntityRepository() {
+   protected EntityRepository<TechCardSetType, Long, IdTextFilter> getEntityRepository() {
       return repository;
    }
 
    @Override
-   protected Class<MealType> getEntityClass() {
-      return MealType.class;
+   protected Class<TechCardSetType> getEntityClass() {
+      return TechCardSetType.class;
    }
 
    @Override

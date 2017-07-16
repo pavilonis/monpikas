@@ -23,6 +23,11 @@ public class RoleRepository implements EntityRepository<Role, Long, IdTextFilter
    }
 
    @Override
+   public List<Role> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<Role> load(IdTextFilter ignored) {
       return jdbc.query(
             "SELECT id, name FROM Role",

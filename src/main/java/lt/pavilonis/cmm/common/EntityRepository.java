@@ -11,6 +11,9 @@ public interface EntityRepository<T, ID, FILTER> {
 
    List<T> load(FILTER filter);
 
+   // Repository implementation should decide what default filter is
+   List<T> load();
+
    Optional<T> find(ID id);
 
    void delete(ID id);

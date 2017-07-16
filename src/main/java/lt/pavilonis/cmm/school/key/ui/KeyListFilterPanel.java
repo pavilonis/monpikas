@@ -22,7 +22,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
    private TextField text;
    private ComboBox<Scanner> scannerCombo;
-   private CheckBox activeKeysCheckBox;
+   private CheckBox checkBoxHistory;
 
    public KeyListFilterPanel(List<Scanner> scanners) {
       scannerCombo.setItems(scanners);
@@ -30,13 +30,13 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
    }
 
    private void togglePeriodStartEnd() {
-      boolean mode = isLogMode();
+      boolean mode = isHistoryMode();
       getPeriodStart().setEnabled(mode);
       getPeriodEnd().setEnabled(mode);
    }
 
-   boolean isLogMode() {
-      return activeKeysCheckBox.getValue() != Boolean.TRUE;
+   boolean isHistoryMode() {
+      return checkBoxHistory.getValue() == Boolean.TRUE;
    }
 
    @Override
@@ -46,7 +46,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
             getPeriodEnd().getValue(),
             scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId(),
             text.getValue(),
-            isLogMode()
+            isHistoryMode()
       );
    }
 
@@ -56,9 +56,9 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
       result.add(scannerCombo = new ComboBox<>(App.translate(this, "scanner")));
       result.add(text = new ATextField(this.getClass(), "text"));
-      result.add(activeKeysCheckBox = new ACheckBox(this.getClass(), "active"));
+      result.add(checkBoxHistory = new ACheckBox(this.getClass(), "log"));
 
-      activeKeysCheckBox.addValueChangeListener(value -> togglePeriodStartEnd());
+      checkBoxHistory.addValueChangeListener(value -> togglePeriodStartEnd());
 
       togglePeriodStartEnd();
 
@@ -67,7 +67,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
             ((AbstractComponent) field).setWidth(140, Unit.PIXELS);
          }
       });
-      activeKeysCheckBox.setWidthUndefined();
+      checkBoxHistory.setWidthUndefined();
       return result;
    }
 
@@ -79,8 +79,8 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
    @Override
    public void addSearchClickListener(Button.ClickListener clickListener) {
       super.addSearchClickListener(clickListener);
-      activeKeysCheckBox.addValueChangeListener(
-            change -> clickListener.buttonClick(new ClickEvent(activeKeysCheckBox))
+      checkBoxHistory.addValueChangeListener(
+            change -> clickListener.buttonClick(new ClickEvent(checkBoxHistory))
       );
    }
 

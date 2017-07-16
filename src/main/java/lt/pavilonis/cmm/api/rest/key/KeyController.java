@@ -75,7 +75,7 @@ public class KeyController {
    public ResponseEntity<List<Key>> loadActive(@RequestParam(required = false) Long scannerId,
                                                @RequestParam(required = false) String cardCode,
                                                @RequestParam(required = false) String keyNumber) {
-      List<Key> keysTaken = keyRepository.loadAssigned(
+      List<Key> keysTaken = keyRepository.loadActive(
             scannerId,
             cardCode,
             parseInteger(keyNumber)

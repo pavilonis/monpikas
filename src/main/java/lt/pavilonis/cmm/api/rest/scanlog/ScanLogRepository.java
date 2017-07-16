@@ -47,7 +47,7 @@ public class ScanLogRepository {
             (rs, i) -> {
                String loadedCardCode = rs.getString(1);
                User user = userRepository.load(loadedCardCode, true);
-               List<Key> keys = keyRepository.loadAssigned(scannerId, loadedCardCode, null);
+               List<Key> keys = keyRepository.loadActive(scannerId, loadedCardCode, null);
                return new ScanLog(rs.getTimestamp(2).toLocalDateTime(), user, keys);
             }
       );

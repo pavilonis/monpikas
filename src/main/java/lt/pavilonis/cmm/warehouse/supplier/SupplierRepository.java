@@ -56,6 +56,11 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
    }
 
    @Override
+   public List<Supplier> load() {
+      return load(IdTextFilter.empty());
+   }
+
+   @Override
    public List<Supplier> load(IdTextFilter filter) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());

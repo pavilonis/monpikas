@@ -8,14 +8,22 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
+import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
+import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
+import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetType;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 public class MenuRequirementListController extends AbstractListController<MenuRequirement, Long, IdPeriodFilter> {
@@ -23,13 +31,27 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
    @Autowired
    private MenuRequirementRepository repository;
 
+   @Autowired
+   private TechCardSetTypeRepository techCardSetTypeRepository;
+
    @Override
    protected ListGrid<MenuRequirement> createGrid() {
       return new ListGrid<MenuRequirement>(MenuRequirement.class) {
+
+         @Override
+         protected List<String> columnOrder() {
+            return Arrays.asList("date", "meals", "caloricity");
+         }
+
          @Override
          protected Map<String, ValueProvider<MenuRequirement, ?>> getCustomColumns() {
             return ImmutableMap.of(
-               "meals", new CollectionValueProviderAdapter<>(MenuRequirement::getMeals)
+                  "meals", new CollectionValueProviderAdapter<>(
+                        menuRequirement -> menuRequirement.getTechCardSets().stream()
+                              .map(TechCardSet::getType)
+                              .map(Named::getName)
+                              .collect(Collectors.toList())
+                  )
             );
          }
       };
@@ -45,14 +67,15 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
 
          @Override
          protected FieldLayout<MenuRequirement> createFieldLayout() {
-            return new MenuRequirementForm();
+            List<TechCardSetType> types = techCardSetTypeRepository.load(IdTextFilter.empty());
+            return new MenuRequirementForm(types);
          }
       };
    }
 
    @Override
    protected FilterPanel<IdPeriodFilter> createFilterPanel() {
-      return new PeriodFilterPanel();
+      return new PeriodFilterPanel<>();
    }
 
    @Override

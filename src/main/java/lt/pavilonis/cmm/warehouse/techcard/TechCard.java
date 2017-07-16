@@ -12,8 +12,7 @@ public final class TechCard extends Named<Long> {
    private TechCardGroup group;
    private Map<ProductGroup, Integer> productGroupOutputWeight = new HashMap<>();
 
-   public TechCard() {
-   }
+   public TechCard() {/**/}
 
    public TechCard(long id, String name, TechCardGroup group,
                    Map<ProductGroup, Integer> productGroupOutputWeight) {

@@ -4,7 +4,7 @@
 
    <groupId>org.springframework</groupId>
    <artifactId>monpikas</artifactId>
-   <version>0.93</version>
+   <version>0.94</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
@@ -35,6 +35,17 @@
          <groupId>org.springframework.boot</groupId>
          <artifactId>spring-boot-starter-actuator</artifactId>
       </dependency>
+      <!--<dependency>-->
+         <!--<groupId>org.springframework.boot</groupId>-->
+         <!--<artifactId>spring-boot-starter-integration</artifactId>-->
+      <!--</dependency>-->
+      <dependency>
+         <groupId>org.springframework.integration</groupId>
+         <artifactId>spring-integration-ip</artifactId>
+         <version>4.3.10.RELEASE</version>
+      </dependency>
+
+
 
       <!--SERIALIZATION-->
       <dependency>
