@@ -113,7 +113,8 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
                   "  tcp.outputWeight, " +
                   "  pg.id, pg.name, pg.kcal100 " +
                   "FROM MenuRequirement mr " +
-                  "  JOIN TechCardSet tcs ON tcs.menuRequirement_id = mr.id " +//TODO
+                  "  JOIN MenuRequirementTechCardSet mrtcs ON mrtcs.menuRequirement_id = mr.id " +
+                  "  JOIN TechCardSet tcs ON mrtcs.techCardSet_id = tcs.id " +
                   "  JOIN TechCardSetType tcst ON tcst.id = tcs.techCardSetType_id " +
                   "  JOIN TechCardSetTechCard tcstc ON tcstc.techCardSet_id = tcs.id " +
                   "  JOIN TechCard tc ON tc.id = tcstc.techCard_id " +

@@ -8,12 +8,17 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.MessageHandler;
+import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 @Service
-public class TcpEventStringProcessor {
+public class TcpEventStringProcessor implements MessageHandler {
 
    private final Logger LOG;
    private static final Map<String, Boolean> CLASSROOM_OPS = ImmutableMap.of(
@@ -54,7 +59,24 @@ public class TcpEventStringProcessor {
       this.LOG = mockLogger;
    }
 
-   public void process(String inputNonNull) {
+   @Override
+   public void handleMessage(Message<?> message) throws MessagingException {
+      String string = convertMessage(message);
+
+      if (StringUtils.isNotBlank(string)) {
+         process(string);
+      } else {
+         LOG.warn("empty message");
+      }
+   }
+
+   protected String convertMessage(Message<?> message) {
+      return message == null || message.getPayload() == null
+            ? null
+            : new String((byte[]) message.getPayload());
+   }
+
+   void process(String inputNonNull) {
 
       if (counter < LINES_SEARCH_MAX) {
          counter++;
@@ -121,13 +143,11 @@ public class TcpEventStringProcessor {
    }
 
    private String clean(String string, String fieldName) {
-      string = string
-            .replace(" ", STRING_EMPTY)
-            .replace("\"", STRING_EMPTY)
-            .replace(",", STRING_EMPTY)
-            .replace("\\n", STRING_EMPTY)
-            .replace(":", STRING_EMPTY);
+      List<String> badChars = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r", ":", fieldName);
 
-      return string.replace(fieldName, STRING_EMPTY);
+      for (String toReplace : badChars) {
+         string = string.replace(toReplace, STRING_EMPTY);
+      }
+      return string;
    }
 }
