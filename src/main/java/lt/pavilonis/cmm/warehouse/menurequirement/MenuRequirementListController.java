@@ -9,7 +9,6 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.Named;
-import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
@@ -45,14 +44,10 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
 
          @Override
          protected Map<String, ValueProvider<MenuRequirement, ?>> getCustomColumns() {
-            return ImmutableMap.of(
-                  "meals", new CollectionValueProviderAdapter<>(
-                        menuRequirement -> menuRequirement.getTechCardSets().stream()
-                              .map(TechCardSet::getType)
-                              .map(Named::getName)
-                              .collect(Collectors.toList())
-                  )
-            );
+            return ImmutableMap.of("meals", item -> item.getTechCardSets().stream()
+                  .map(TechCardSet::getType)
+                  .map(Named::getName)
+                  .collect(Collectors.toList()));
          }
       };
    }
