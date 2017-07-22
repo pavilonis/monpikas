@@ -59,7 +59,7 @@ public class TechCardSetListController extends AbstractListController<TechCardSe
 
          @Override
          protected void customizeWindow(Window window) {
-            window.setWidth(700, Sizeable.Unit.PIXELS);
+            window.setWidth(920, Sizeable.Unit.PIXELS);
             window.setHeight(570, Sizeable.Unit.PIXELS);
          }
       };

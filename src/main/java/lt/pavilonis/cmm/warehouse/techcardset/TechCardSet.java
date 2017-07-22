@@ -4,17 +4,18 @@ import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetType;
 
+import java.util.Collection;
 import java.util.Set;
 
 public final class TechCardSet extends Named<Long> {
 
    private TechCardSetType type;
-   private Set<TechCard> techCards;
+   private Collection<TechCard> techCards;
 //   private MenuRequirement menuRequirement;
 
    public TechCardSet() {/**/}
 
-   public TechCardSet(long id, String name, TechCardSetType type, Set<TechCard> techCards) {
+   public TechCardSet(long id, String name, TechCardSetType type, Collection<TechCard> techCards) {
       this.setId(id);
       this.setName(name);
       this.type = type;
@@ -29,11 +30,11 @@ public final class TechCardSet extends Named<Long> {
       this.type = type;
    }
 
-   public Set<TechCard> getTechCards() {
+   public Collection<TechCard> getTechCards() {
       return techCards;
    }
 
-   public void setTechCards(Set<TechCard> techCards) {
+   public void setTechCards(Collection<TechCard> techCards) {
       this.techCards = techCards;
    }
 
