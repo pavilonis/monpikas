@@ -31,22 +31,25 @@ public final class TechCardSetResultSetExtractor implements ResultSetExtractor<L
             result.put(id, cardSet = mapRow(rs));
          }
 
-         Collection<TechCard> techCards = cardSet.getTechCards();
-
-         Long techCardId = (Long) rs.getObject("tc.id");
-
-         if (techCardId != null
-               && techCards.stream().noneMatch(tc -> techCardId.equals(tc.getId()))) {
-
-            TechCard newTechCard = TECH_CARD_MAPPER.mapRow(rs);
-            TechCardResultSetExtractor.addOutputWeight(rs, newTechCard.getProductGroupOutputWeight());
-            techCards.add(newTechCard);
-         }
+         maybeAddTechCard(rs, cardSet.getTechCards());
       }
       return new ArrayList<>(result.values());
    }
 
-   private TechCardSet mapRow(ResultSet rs) throws SQLException {
+   public static void maybeAddTechCard(ResultSet rs, Collection<TechCard> techCards) throws SQLException {
+
+      Long techCardId = (Long) rs.getObject("tc.id");
+
+      if (techCardId != null
+            && techCards.stream().noneMatch(tc -> techCardId.equals(tc.getId()))) {
+
+         TechCard newTechCard = TECH_CARD_MAPPER.mapRow(rs);
+         TechCardResultSetExtractor.addOutputWeight(rs, newTechCard.getProductGroupOutputWeight());
+         techCards.add(newTechCard);
+      }
+   }
+
+   public static TechCardSet mapRow(ResultSet rs) throws SQLException {
       return new TechCardSet(
             rs.getLong("tcs.id"),
             rs.getString("tcs.name"),

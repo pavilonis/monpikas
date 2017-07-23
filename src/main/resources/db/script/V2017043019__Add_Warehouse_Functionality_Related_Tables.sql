@@ -116,8 +116,8 @@ CREATE TABLE TechCardSetTechCard (
 );
 
 CREATE TABLE MenuRequirementTechCardSet (
-   techCardSet_id     BIGINT(20) NOT NULL,
    menuRequirement_id BIGINT(20) NOT NULL,
+   techCardSet_id     BIGINT(20) NOT NULL,
    dateCreated        DATETIME   NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),

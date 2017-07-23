@@ -72,8 +72,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
             return columnOrder;
          }
       };
-      grid.setWidth(512, Unit.PIXELS);
-      grid.setHeight(330, Unit.PIXELS);
+      grid.setSizeFull();
       return grid;
    }
 
@@ -143,7 +142,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
       private SelectionPopup(Consumer<Set<T>> selectionConsumer) {
 
          setCaption(App.translate(SelectionPopup.class, "caption"));
-         setWidth(700, Unit.PIXELS);
+         setWidth(900, Unit.PIXELS);
          setHeight(490, Unit.PIXELS);
 
          ListGrid<T> selectionTable = new ListGrid<T>(type) {
