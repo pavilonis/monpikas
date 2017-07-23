@@ -63,8 +63,8 @@ INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) VALUES 
 
 INSERT INTO TechCardSetType (name) VALUES ('Pusryčiai'), ('Priešpiečiai'), ('Pietus'), ('Vakariene ir pavakariai');
 
-INSERT INTO ReceiptStatement (id, supplier_id, dateCreated) VALUE (1, 1, NOW() - INTERVAL 6 DAY);
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO Receipt (id, supplier_id, dateCreated) VALUE (1, 1, NOW() - INTERVAL 6 DAY);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (1, 1, 2, 0.45, 15, (SELECT name
                             FROM Product
                             WHERE id = 2), (SELECT measureUnit
@@ -72,7 +72,7 @@ VALUES (1, 1, 2, 0.45, 15, (SELECT name
                                             WHERE id = 2), (SELECT unitWeight
                                                             FROM Product
                                                             WHERE id = 2));
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (2, 1, 9, 0.8, 8, (SELECT name
                           FROM Product
                           WHERE id = 9), (SELECT measureUnit
@@ -81,8 +81,8 @@ VALUES (2, 1, 9, 0.8, 8, (SELECT name
                                                           FROM Product
                                                           WHERE id = 9));
 
-INSERT INTO ReceiptStatement (id, supplier_id, dateCreated) VALUE (2, 2, NOW() - INTERVAL 4 DAY);
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO Receipt (id, supplier_id, dateCreated) VALUE (2, 2, NOW() - INTERVAL 4 DAY);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (3, 2, 6, 1.17, 8, (SELECT name
                            FROM Product
                            WHERE id = 6), (SELECT measureUnit
@@ -91,8 +91,8 @@ VALUES (3, 2, 6, 1.17, 8, (SELECT name
                                                            FROM Product
                                                            WHERE id = 6));
 
-INSERT INTO ReceiptStatement (id, supplier_id, dateCreated) VALUE (3, 3, NOW() - INTERVAL 2 DAY);
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO Receipt (id, supplier_id, dateCreated) VALUE (3, 3, NOW() - INTERVAL 2 DAY);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (4, 3, 11, 3.65, 5.5, (SELECT name
                               FROM Product
                               WHERE id = 11), (SELECT measureUnit
@@ -100,7 +100,7 @@ VALUES (4, 3, 11, 3.65, 5.5, (SELECT name
                                                WHERE id = 11), (SELECT unitWeight
                                                                 FROM Product
                                                                 WHERE id = 11));
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (5, 3, 3, 1, 2, (SELECT name
                         FROM Product
                         WHERE id = 3), (SELECT measureUnit
@@ -108,7 +108,7 @@ VALUES (5, 3, 3, 1, 2, (SELECT name
                                         WHERE id = 3), (SELECT unitWeight
                                                         FROM Product
                                                         WHERE id = 3));
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (6, 3, 5, 1.3, 3, (SELECT name
                           FROM Product
                           WHERE id = 5), (SELECT measureUnit
@@ -117,8 +117,8 @@ VALUES (6, 3, 5, 1.3, 3, (SELECT name
                                                           FROM Product
                                                           WHERE id = 5));
 
-INSERT INTO ReceiptStatement (id, supplier_id, dateCreated) VALUE (4, 2, NOW());
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO Receipt (id, supplier_id, dateCreated) VALUE (4, 2, NOW());
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (7, 4, 12, 2.5, 2, (SELECT name
                            FROM Product
                            WHERE id = 12), (SELECT measureUnit
@@ -126,7 +126,7 @@ VALUES (7, 4, 12, 2.5, 2, (SELECT name
                                             WHERE id = 12), (SELECT unitWeight
                                                              FROM Product
                                                              WHERE id = 12));
-INSERT INTO ReceiptItem (id, receiptStatement_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot)
 VALUES (8, 4, 13, 1, 5, (SELECT name
                          FROM Product
                          WHERE id = 13), (SELECT measureUnit
