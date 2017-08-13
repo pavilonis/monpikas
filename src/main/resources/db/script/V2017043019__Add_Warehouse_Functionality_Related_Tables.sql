@@ -76,7 +76,6 @@ CREATE TABLE TechCard (
 );
 
 CREATE TABLE TechCardProduct (
-   id              BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    techCard_id     BIGINT(20) NOT NULL,
    productGroup_id BIGINT(20) NOT NULL,
    outputWeight    INTEGER    NOT NULL,
@@ -84,7 +83,8 @@ CREATE TABLE TechCardProduct (
 
    FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id),
    FOREIGN KEY (techCard_id) REFERENCES TechCard (id)
-      ON DELETE CASCADE
+      ON DELETE CASCADE,
+   CONSTRAINT UNIQUE_TECH_CARD_PRODUCT_GROUP UNIQUE (techCard_id, productGroup_id)
 );
 
 CREATE TABLE TechCardSetType (
@@ -105,7 +105,6 @@ CREATE TABLE TechCardSet (
 );
 
 CREATE TABLE TechCardSetTechCard (
-   id             BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    techCardSet_id BIGINT(20) NOT NULL,
    techCard_id    BIGINT(20) NOT NULL,
    dateCreated    DATETIME   NOT NULL             DEFAULT NOW(),
@@ -129,22 +128,19 @@ CREATE TABLE WriteOff (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    periodStart DATE       NOT NULL,
    periodEnd   DATE       NOT NULL,
-   confirmed   BIT(1)     NOT NULL             DEFAULT b'0',
    dateCreated DATETIME   NOT NULL             DEFAULT NOW()
 );
 
 CREATE TABLE WriteOffItem (
-   id                     BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   quantity               DECIMAL(10, 3) NOT NULL,
-   receiptItem_id         BIGINT(20)     NOT NULL,
-   writeOff_id            BIGINT(20)     NOT NULL,
-   techCardProduct_id     BIGINT(20)     NOT NULL,
-   techCardSetTechCard_id BIGINT(20)     NOT NULL,
-   dateCreated            DATETIME       NOT NULL             DEFAULT NOW(),
+   id                 BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   quantity           DECIMAL(10, 3) NOT NULL,
+   receiptItem_id     BIGINT(20)     NOT NULL,
+   writeOff_id        BIGINT(20)     NOT NULL,
+#    menuRequirement_id BIGINT(20)     NOT NULL,
+   dateCreated        DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
-   FOREIGN KEY (techCardProduct_id) REFERENCES TechCardProduct (id),
-   FOREIGN KEY (techCardSetTechCard_id) REFERENCES TechCardSetTechCard (id),
+#    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
    FOREIGN KEY (writeOff_id) REFERENCES WriteOff (id)
       ON DELETE CASCADE
 );

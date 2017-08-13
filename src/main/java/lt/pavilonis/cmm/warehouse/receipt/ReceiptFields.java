@@ -15,9 +15,9 @@ public class ReceiptFields extends FieldLayout<Receipt> {
    private final ComboBox<Supplier> supplier = new ComboBox<>(App.translate(Receipt.class, "supplier"));
    private final OneToManyField<ReceiptItem> items;
 
-   ReceiptFields(List<Supplier> techCardSetTypes, List<Product> products) {
+   ReceiptFields(List<Supplier> suppliers, List<Product> products) {
       this.items = new ReceiptItemsField(products);
-      supplier.setItems(techCardSetTypes);
+      supplier.setItems(suppliers);
       supplier.setItemCaptionGenerator(Supplier::getName);
       supplier.setWidth(300, Unit.PIXELS);
 
