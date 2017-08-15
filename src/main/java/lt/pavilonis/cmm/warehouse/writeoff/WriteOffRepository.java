@@ -28,7 +28,8 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
    public WriteOff saveOrUpdate(WriteOff entity) {
       Map<String, Object> args = new HashMap<>();
       args.put("id", entity.getId());
-      args.put("supplierId", null);//entity.getSupplier().getId());
+      args.put("periodStart", entity.getPeriodStart());
+      args.put("periodEnd", entity.getPeriodEnd());
 
       return entity.getId() == null
             ? save(entity, args)
@@ -49,16 +50,16 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
    private WriteOff save(WriteOff entity, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
-            "INSERT INTO Receipt (supplier_id) VALUE (:supplierId)",
+            "INSERT INTO WriteOff (periodStart, periodEnd) VALUES (:periodStart, :periodEnd)",
             new MapSqlParameterSource(args),
             keyHolder
       );
 
-      long receiptId = keyHolder.getKey().longValue();
+      long writeOffId = keyHolder.getKey().longValue();
 
-      saveItems(receiptId, entity.getItems());
+      saveItems(writeOffId, entity.getItems());
 
-      return find(receiptId)
+      return find(writeOffId)
             .orElseThrow(() -> new RuntimeException("Could not load saved object"));
    }
 

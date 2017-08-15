@@ -72,30 +72,37 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       window.close();
    }
 
-   private Component createControlLayout(Consumer<T> persistedItemConsumer, FieldLayout<T> fieldLayout) {
+   private Component createControlLayout(Consumer<T> persistedItemConsumer, FieldLayout<T> fieldLayout, boolean readOnly) {
 
-      AButton buttonSave = new AButton(AbstractFormController.class.getSimpleName() + ".buttonSave")
-            .withIcon(VaadinIcons.CHECK)
-            .withClickListener(click -> {
-               Optional<T> entity = actionSave(fieldLayout);
-               entity.ifPresent(persistedItem -> {
-                  persistedItemConsumer.accept(persistedItem);
-                  actionClose();
-                  Notification.show(
-                        App.translate(AbstractFormController.class, "saved"),
-                        Type.TRAY_NOTIFICATION
-                  );
+      AButton buttonSave = new AButton(AbstractFormController.class, "buttonSave");
+
+      if (readOnly) {
+         buttonSave.setEnabled(false);
+
+      } else {
+         buttonSave = buttonSave
+               .withIcon(VaadinIcons.CHECK)
+               .withClickListener(click -> {
+                  Optional<T> entity = actionSave(fieldLayout);
+                  entity.ifPresent(persistedItem -> {
+                     persistedItemConsumer.accept(persistedItem);
+                     actionClose();
+                     Notification.show(
+                           App.translate(AbstractFormController.class, "saved"),
+                           Type.TRAY_NOTIFICATION
+                     );
+                  });
                });
-            });
+      }
 
-      AButton buttonCancel = new AButton(AbstractFormController.class.getSimpleName() + ".buttonClose")
+      AButton buttonCancel = new AButton(AbstractFormController.class, "buttonClose")
             .withIcon(VaadinIcons.CLOSE)
             .withClickListener(click -> actionClose());
 
       return new HorizontalLayout(buttonSave, buttonCancel);
    }
 
-   protected void edit(T itemToEdit, ListGrid<T> listGrid) {
+   protected void edit(T itemToEdit, ListGrid<T> listGrid, boolean readOnly) {
 
       model = itemToEdit.getId() == null
             ? itemToEdit
@@ -107,12 +114,9 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
       FieldLayout<T> fieldLayout = createFieldLayout();
 
-      Component controlLayout = createControlLayout(persistedItemConsumer, fieldLayout);
+      Component controlLayout = createControlLayout(persistedItemConsumer, fieldLayout, readOnly);
 
-      window = new Window(
-            fieldLayout.getFormCaption(clazz),
-            new VerticalLayout(fieldLayout, controlLayout)
-      );
+      window = createWindow(fieldLayout, controlLayout);
 
       fieldLayout.manualBinding(binder);
       try {
@@ -131,6 +135,12 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       window.center();
       window.setModal(true);
       UI.getCurrent().addWindow(window);
+   }
+
+   protected Window createWindow(FieldLayout<T> fieldLayout, Component controlLayout) {
+      String formCaption = fieldLayout.getFormCaption(clazz);
+      VerticalLayout layout = new VerticalLayout(fieldLayout, controlLayout);
+      return new Window(formCaption, layout);
    }
 
    private T loadExisting(T itemToEdit) {

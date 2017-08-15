@@ -3,7 +3,9 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
+import org.hibernate.validator.constraints.NotEmpty;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,7 +13,11 @@ import java.util.List;
 
 public class MenuRequirement extends Identified<Long> {
 
+   @NotNull
    private LocalDate date;
+
+   @NotNull
+   @NotEmpty
    private Collection<TechCardSet> techCardSets = new ArrayList<>();
 
    public MenuRequirement(long id, LocalDate date, List<TechCardSet> techCardSets) {

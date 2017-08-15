@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.warehouse.writeoff;
 
-import lt.pavilonis.cmm.warehouse.product.ProductMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -14,37 +13,38 @@ import java.util.Map;
 
 public final class WriteOffResultSetExtractor implements ResultSetExtractor<List<WriteOff>> {
 
-   private final static ProductMapper MAPPER_PRODUCT = new ProductMapper();
+   private final ReceiptItemMapper receiptItemMapper = new ReceiptItemMapper();
 
    @Override
    public List<WriteOff> extractData(ResultSet rs) throws SQLException, DataAccessException {
       Map<Long, WriteOff> result = new HashMap<>();
 
       while (rs.next()) {
-         long id = rs.getLong("r.id");
-         WriteOff receipt = result.get(id);
+         long id = rs.getLong("wo.id");
+         WriteOff writeOff = result.get(id);
 
-         if (receipt == null) {
-            result.put(id, receipt = mapRow(rs));
+         if (writeOff == null) {
+            result.put(id, writeOff = mapRow(rs));
          }
 
-         maybeAddReceiptItem(rs, receipt.getItems());
+         maybeAddReceiptItem(rs, writeOff.getItems());
       }
       return new ArrayList<>(result.values());
    }
 
-   public static void maybeAddReceiptItem(ResultSet rs, Collection<WriteOffItem> items) throws SQLException {
+   public void maybeAddReceiptItem(ResultSet rs, Collection<WriteOffItem> items) throws SQLException {
 
       Long itemId = (Long) rs.getObject("woi.id");
 
       if (itemId != null
             && items.stream().noneMatch(item -> itemId.equals(item.getId()))) {
 
-         items.add(new WriteOffItem(
+         WriteOffItem item = new WriteOffItem(
                itemId,
-               null, //TODO
+               receiptItemMapper.mapRow(rs),
                rs.getBigDecimal("woi.quantity")
-         ));
+         );
+         items.add(item);
       }
    }
 
@@ -53,7 +53,7 @@ public final class WriteOffResultSetExtractor implements ResultSetExtractor<List
             rs.getLong("wo.id"),
             rs.getDate("wo.periodStart").toLocalDate(),
             rs.getDate("wo.periodEnd").toLocalDate(),
-            rs.getTimestamp("r.dateCreated").toLocalDateTime()
+            rs.getTimestamp("wo.dateCreated").toLocalDateTime()
       );
    }
 }

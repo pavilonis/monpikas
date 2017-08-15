@@ -54,7 +54,7 @@ public final class ReceiptResultSetExtractor implements ResultSetExtractor<List<
       return new Receipt(
             rs.getLong("r.id"),
             MAPPER_SUPPLIER.mapRow(rs),
-            rs.getTimestamp("r.dateCreated"),
+            rs.getTimestamp("r.dateCreated").toLocalDateTime(),
             new ArrayList<>()
       );
    }

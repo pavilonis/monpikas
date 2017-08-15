@@ -38,4 +38,13 @@ public class WriteOffItem extends Identified<Long> {
    public void setQuantity(BigDecimal quantity) {
       this.quantity = quantity;
    }
+
+   public BigDecimal getUnitPrice() {
+      return receiptItem.getUnitPrice();
+   }
+
+   public BigDecimal getCost() {
+      return receiptItem.getUnitPrice()
+            .multiply(quantity);
+   }
 }

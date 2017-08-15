@@ -102,7 +102,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
       table.addItemClickListener(click -> {
          if (click.getMouseEventDetails().isDoubleClick()) {
-            formController.edit(click.getItem(), table);
+            formController.edit(click.getItem(), table, false);
          }
       });
    }
@@ -111,7 +111,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
    protected void actionCreate() {
       T entity = createNewInstance();
-      getFormController().edit(entity, grid);
+      getFormController().edit(entity, grid, false);
    }
 
    protected T createNewInstance() {

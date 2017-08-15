@@ -4,20 +4,20 @@ import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.warehouse.supplier.Supplier;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Date;
 
 public final class Receipt extends Identified<Long> {
 
    private long number;
    private Supplier supplier;
-   private Date dateTime;
+   private LocalDateTime dateTime;
    private Collection<ReceiptItem> items = new ArrayList<>();
 
    public Receipt() {/**/}
 
-   public Receipt(long id, Supplier supplier, Date dateTime, Collection<ReceiptItem> items) {
+   public Receipt(long id, Supplier supplier, LocalDateTime dateTime, Collection<ReceiptItem> items) {
       this.setId(id);
       this.number = id;
       this.supplier = supplier;
@@ -38,11 +38,11 @@ public final class Receipt extends Identified<Long> {
       this.supplier = supplier;
    }
 
-   public Date getDateTime() {
+   public LocalDateTime getDateTime() {
       return dateTime;
    }
 
-   public void setDateTime(Date dateTime) {
+   public void setDateTime(LocalDateTime dateTime) {
       this.dateTime = dateTime;
    }
 

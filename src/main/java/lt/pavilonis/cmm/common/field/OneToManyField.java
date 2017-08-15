@@ -78,13 +78,16 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
 
    @Override
    protected Component initContent() {
-      GridControlPanel controls = new GridControlPanel(
+      VerticalLayout layout = new VerticalLayout(grid, createControls());
+      layout.setMargin(false);
+      return layout;
+   }
+
+   protected Component createControls() {
+      return new GridControlPanel(
             eventAdd -> actionAdd(),
             eventRemove -> actionRemove()
       );
-      VerticalLayout layout = new VerticalLayout(grid, controls);
-      layout.setMargin(false);
-      return layout;
    }
 
    protected void actionAdd() {

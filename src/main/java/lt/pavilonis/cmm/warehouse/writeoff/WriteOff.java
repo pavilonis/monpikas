@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.warehouse.writeoff;
 
 import lt.pavilonis.cmm.common.Identified;
 
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -9,9 +10,14 @@ import java.util.Collection;
 
 public final class WriteOff extends Identified<Long> {
 
+   @NotNull
    private LocalDate periodStart;
+
+   @NotNull
    private LocalDate periodEnd;
+
    private Collection<WriteOffItem> items = new ArrayList<>();
+
    private LocalDateTime created;
 
    public WriteOff() {/**/}
@@ -23,6 +29,7 @@ public final class WriteOff extends Identified<Long> {
 
    public WriteOff(long id, LocalDate periodStart, LocalDate periodEnd, LocalDateTime created) {
       this.setId(id);
+      this.setCreated(created);
       this.periodStart = periodStart;
       this.periodEnd = periodEnd;
    }

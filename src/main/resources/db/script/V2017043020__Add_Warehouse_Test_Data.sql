@@ -136,15 +136,15 @@ VALUES (8, 4, 13, 1, 5, (SELECT name
                                                            WHERE id = 13));
 
 INSERT INTO MenuRequirement (id, date) VALUES (1, CURDATE());
-INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (1, 'Pirmas rinkinys', 1);
+INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (1, 'Pigus pusryčiai', 1);
 #pusryciai
-INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (1, 1, 1);
+INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (1, 1);
 #barsciai
-INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (2, 1, 2);
+INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (1, 2);
 #makaronai + kotletas
 
 INSERT INTO MenuRequirement (id, date) VALUES (2, CURDATE());
-INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (2, 'Antras rinkinys', 2);
+INSERT INTO TechCardSet (id, name, techCardSetType_id) VALUES (2, 'Kava', 2);
 #priespeciai
-INSERT INTO TechCardSetTechCard (id, techCardSet_id, techCard_id) VALUES (3, 2, 3);
+INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (2, 3);
 #kava su pienu
