@@ -6,6 +6,7 @@ import com.vaadin.data.ValidationException;
 import com.vaadin.data.ValidationResult;
 import com.vaadin.data.Validator;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Notification;
@@ -74,14 +75,14 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
    private Component createControlLayout(Consumer<T> persistedItemConsumer, FieldLayout<T> fieldLayout, boolean readOnly) {
 
-      AButton buttonSave = new AButton(AbstractFormController.class, "buttonSave");
+      AButton buttonSave = new AButton(AbstractFormController.class, "buttonSave")
+            .withIcon(VaadinIcons.CHECK);
 
       if (readOnly) {
          buttonSave.setEnabled(false);
 
       } else {
          buttonSave = buttonSave
-               .withIcon(VaadinIcons.CHECK)
                .withClickListener(click -> {
                   Optional<T> entity = actionSave(fieldLayout);
                   entity.ifPresent(persistedItem -> {
@@ -153,7 +154,9 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       return Collections.emptyList();
    }
 
-   protected void customizeWindow(Window window) {/*hook*/}
+   protected void customizeWindow(Window window) {
+      window.setWidth(999, Sizeable.Unit.PIXELS);
+   }
 
    protected abstract EntityRepository<T, ID, ?> getEntityRepository();
 

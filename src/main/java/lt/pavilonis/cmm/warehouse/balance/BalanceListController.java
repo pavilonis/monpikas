@@ -23,16 +23,14 @@ public class BalanceListController extends AbstractViewController {
    @Override
    protected Component getMainArea() {
 
-//      TreeData<BalanceNode> treeData = new TreeData<>();
-//      Collection<BalanceNode> items = loadTreeData();
-//      treeData.addRootItems(items);
-//
       TreeGrid<BalanceNode> tree = new TreeGrid<>();
+
       tree.setItems(loadTreeData(), BalanceNode::getChildren);
       tree.addColumn(BalanceNode::getName)
             .setCaption(App.translate(BalanceNode.class, "name"));
       tree.addColumn(BalanceNode::getQuantity)
             .setCaption(App.translate(BalanceNode.class, "quantity"));
+
 
       tree.setSizeFull();
       return tree;

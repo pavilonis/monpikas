@@ -36,17 +36,24 @@ public final class TechCardSetResultSetExtractor implements ResultSetExtractor<L
       return new ArrayList<>(result.values());
    }
 
-   public static void maybeAddTechCard(ResultSet rs, Collection<TechCard> techCards) throws SQLException {
+   private void maybeAddTechCard(ResultSet rs, Collection<TechCard> techCards) throws SQLException {
 
       Long techCardId = (Long) rs.getObject("tc.id");
-
-      if (techCardId != null
-            && techCards.stream().noneMatch(tc -> techCardId.equals(tc.getId()))) {
-
-         TechCard newTechCard = TECH_CARD_MAPPER.mapRow(rs);
-         TechCardResultSetExtractor.addOutputWeight(rs, newTechCard.getProductGroupOutputWeight());
-         techCards.add(newTechCard);
+      if (techCardId == null) {
+         return;
       }
+
+      TechCard techCard = techCards.stream()
+            .filter(tc -> techCardId.equals(tc.getId()))
+            .findFirst()
+            .orElseGet(() -> {
+               TechCard tc = TECH_CARD_MAPPER.mapRow(rs);
+               techCards.add(tc);
+               return tc;
+            });
+
+      TechCardResultSetExtractor.addOutputWeight(rs, techCard.getProductGroupOutputWeight());
+      techCards.add(techCard);
    }
 
    public static TechCardSet mapRow(ResultSet rs) throws SQLException {

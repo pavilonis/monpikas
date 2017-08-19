@@ -60,12 +60,6 @@ public class ReceiptListController extends AbstractListController<Receipt, Long,
          protected FieldLayout<Receipt> createFieldLayout() {
             return new ReceiptFields(supplierRepository.load(), productRepository.load());
          }
-
-         @Override
-         protected void customizeWindow(Window window) {
-            window.setWidth(920, Sizeable.Unit.PIXELS);
-//            window.setHeight(570, Sizeable.Unit.PIXELS);
-         }
       };
    }
 

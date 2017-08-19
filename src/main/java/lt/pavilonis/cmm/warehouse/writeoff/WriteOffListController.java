@@ -56,12 +56,6 @@ public class WriteOffListController extends AbstractListController<WriteOff, Lon
          }
 
          @Override
-         protected void customizeWindow(Window window) {
-            window.setWidth(920, Sizeable.Unit.PIXELS);
-//            window.setHeight(570, Sizeable.Unit.PIXELS);
-         }
-
-         @Override
          protected void edit(WriteOff itemToEdit, ListGrid<WriteOff> listGrid, boolean readOnly) {
             super.edit(itemToEdit, listGrid, itemToEdit.getId() != null);
          }

@@ -9,7 +9,7 @@ import java.util.List;
 
 public class NameFilterPanel extends FilterPanel<IdTextFilter> {
 
-   private TextField textField;
+   protected TextField textField;
 
    @Override
    public IdTextFilter getFilter() {

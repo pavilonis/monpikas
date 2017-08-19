@@ -64,7 +64,7 @@ public class TechCardListController extends AbstractListController<TechCard, Lon
          protected FieldLayout<TechCard> createFieldLayout() {
             List<TechCardGroup> cardGroups = techCardGroupRepository.load(IdTextFilter.empty());
             List<ProductGroup> productGroups = productGroupRepository.load(IdTextFilter.empty());
-            return new TechCardForm(cardGroups, productGroups);
+            return new TechCardFields(cardGroups, productGroups);
          }
       };
    }

@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 
 import static lt.pavilonis.cmm.App.translate;
 
-public class TechCardFields extends FieldLayout<TechCardSet> {
+public class TechCardSetFields extends FieldLayout<TechCardSet> {
 
    private final TextField name = new TextField(translate(TechCardSet.class, "name"));
    private final ComboBox<TechCardSetType> type = new ComboBox<>(translate(TechCardSet.class, "type"));
@@ -29,7 +29,7 @@ public class TechCardFields extends FieldLayout<TechCardSet> {
          "name", "group", "caloricity", "productGroupOutputWeight"
    );
 
-   TechCardFields(List<TechCardSetType> techCardSetTypes) {
+   TechCardSetFields(List<TechCardSetType> techCardSetTypes) {
       type.setItems(techCardSetTypes);
       type.setItemCaptionGenerator(TechCardSetType::getName);
       type.setWidth(300, Unit.PIXELS);

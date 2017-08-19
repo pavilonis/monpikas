@@ -26,10 +26,14 @@ public class WriteOffFields extends FieldLayout<WriteOff> {
    private final OneToManyField<WriteOffItem> items = new OneToManyField<WriteOffItem>(
          WriteOffItem.class,
          ImmutableMap.of(
-               "receiptItem", item -> item.getReceiptItem().getProduct().getName(),
-               "productGroup", item -> item.getReceiptItem().getProduct().getProductGroup().getName()
+               "receiptItem", item -> item.getReceiptItem() == null
+                     ? "-"
+                     : item.getReceiptItem().getProduct().getName(),
+
+               "productGroup", item -> item.getProductGroup().getName()
          ),
-         "productGroup", "receiptItem", "quantity", "unitPrice", "cost"
+         "productGroup", "receiptItem", "quantityAvailableBefore", "quantityConsumed",
+         "quantity", "quantityAvailableAfter", "unitPrice", "cost"
    ) {
       @Override
       protected Component createControls() {

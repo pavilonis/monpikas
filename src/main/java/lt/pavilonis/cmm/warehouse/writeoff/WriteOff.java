@@ -22,7 +22,8 @@ public final class WriteOff extends Identified<Long> {
 
    public WriteOff() {/**/}
 
-   public WriteOff(LocalDate periodStart, LocalDate periodEnd) {
+   public WriteOff(LocalDate periodStart, LocalDate periodEnd, Collection<WriteOffItem> items) {
+      this.items = items;
       this.periodStart = periodStart;
       this.periodEnd = periodEnd;
    }

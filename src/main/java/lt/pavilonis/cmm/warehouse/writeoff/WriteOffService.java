@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.warehouse.writeoff;
 
+import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupRepository;
 import lt.pavilonis.cmm.warehouse.receipt.ReceiptItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,8 +9,10 @@ import org.springframework.util.CollectionUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -21,6 +24,9 @@ public class WriteOffService {
    @Autowired
    private ReceiptItemRepository receiptItemRepository;
 
+   @Autowired
+   private ProductGroupRepository productGroupRepository;
+
    public WriteOff preview(LocalDate periodStart, LocalDate periodEnd) {
 
       Map<Long, BigDecimal> productGroupConsumption = findConsumption(periodStart, periodEnd);
@@ -28,22 +34,59 @@ public class WriteOffService {
       // Map<Product Group, Map<Receipt Item, Quantity>>
       Map<Long, Map<Long, BigDecimal>> availableByProductGroupAndReceiptItem = findAvailable();
 
-      WriteOff result = new WriteOff(periodStart, periodEnd);
-      Collection<WriteOffItem> writeOffItems = result.getItems();
+      List<WriteOffItem> items = new ArrayList<>();
+      WriteOff result = new WriteOff(periodStart, periodEnd, items);
 
       productGroupConsumption.forEach((productGroupId, consumption) -> {
+
          Map<Long, BigDecimal> receiptItemAvailability = availableByProductGroupAndReceiptItem.get(productGroupId);
 
-         if (!CollectionUtils.isEmpty(receiptItemAvailability)) {
+         if (CollectionUtils.isEmpty(receiptItemAvailability)) {
+
+            WriteOffItem emptyItem = new WriteOffItem(
+                  null,
+                  BigDecimal.ZERO,
+                  consumption,
+                  BigDecimal.ZERO,
+                  BigDecimal.ZERO,
+                  productGroupRepository.find(productGroupId)
+                        .orElseThrow(() -> new RuntimeException("Could not load Product Group " + productGroupId))
+            );
+            items.add(emptyItem);
+
+         } else {
+            Map<Long, BigDecimal> receiptItemAvailabilityCopy = new HashMap<>(receiptItemAvailability);
+
             Map<Long, BigDecimal> receiptItemUsageExtracted =
                   BigDecimalMapValueExtractor.extract(consumption, receiptItemAvailability);
 
-            receiptItemUsageExtracted.forEach((receiptItemId, usageExtract) -> {
+            receiptItemUsageExtracted.forEach((receiptItemId, quantityExtracted) -> {
+
                ReceiptItem receiptItem = receiptItemRepository.load(receiptItemId);
-               writeOffItems.add(new WriteOffItem(receiptItem, usageExtract));
+
+               BigDecimal availabilityBefore = receiptItemAvailabilityCopy.get(receiptItemId);
+               BigDecimal availabilityAfter = receiptItemAvailability.get(receiptItemId);
+
+               WriteOffItem item = new WriteOffItem(
+                     receiptItem,
+                     availabilityBefore,
+                     consumption,
+                     quantityExtracted,
+                     availabilityAfter,
+                     receiptItem.getProduct().getProductGroup()
+               );
+
+               items.add(item);
             });
          }
       });
+
+      items.sort(Comparator.comparing(
+                  i -> i.getReceiptItem() == null
+                        ? ""
+                        : i.getReceiptItem().getProduct().getProductGroup().getName()
+            )
+      );
       return result;
    }
 

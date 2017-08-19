@@ -20,14 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public final class TechCardForm extends FieldLayout<TechCard> {
+public final class TechCardFields extends FieldLayout<TechCard> {
 
    private final TextField name = new ATextField(TechCard.class, "name");
 
    private final ComboBox<TechCardGroup> techCardGroupComboBox;
    private final TechCardProductGroupOutputField productGroupOutputWeightField;
 
-   public TechCardForm(List<TechCardGroup> techCardGroups, List<ProductGroup> productGroups) {
+   public TechCardFields(List<TechCardGroup> techCardGroups, List<ProductGroup> productGroups) {
       techCardGroupComboBox = new ComboBox<>(App.translate(TechCard.class, "techCardGroup"), techCardGroups);
       techCardGroupComboBox.setItemCaptionGenerator(TechCardGroup::getName);
 
@@ -39,8 +39,7 @@ public final class TechCardForm extends FieldLayout<TechCard> {
             event -> caloricityField.setValue(calculateCaloricity()));
 
       addComponents(
-            new HorizontalLayout(techCardGroupComboBox, name),
-            caloricityField,
+            new HorizontalLayout(name, techCardGroupComboBox, caloricityField),
             productGroupOutputWeightField
       );
    }

@@ -38,7 +38,7 @@ public class BalanceRepository implements EntityRepository<Balance, Void, IdText
                   "SELECT " +
                   "  p.id, p.name, p.measureUnit, p.unitWeight, " +
                   "  pg.id, pg.name, pg.kcal100," +
-                  "  SUM(ri.quantity) - SUM(COALESCE(woi.quantity, 0)) AS balance " +
+                  "  SUM(IF(p.measureUnit = 'GRAM', ri.quantity * p.unitWeight, ri.quantity)) - SUM(COALESCE(woi.quantity, 0)) AS balance " +
                   "FROM Product p " +
                   "  JOIN ProductGroup pg ON pg.id = p.productGroup_id " +
                   "  JOIN ReceiptItem ri ON ri.product_id = p.id " +

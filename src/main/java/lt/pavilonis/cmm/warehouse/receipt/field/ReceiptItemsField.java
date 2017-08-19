@@ -1,12 +1,14 @@
 package lt.pavilonis.cmm.warehouse.receipt.field;
 
 import com.google.common.collect.ImmutableMap;
+import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.field.OneToManyField;
+import lt.pavilonis.cmm.warehouse.MeasureUnit;
 import lt.pavilonis.cmm.warehouse.product.Product;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import lt.pavilonis.cmm.warehouse.receipt.ReceiptItem;
-import lt.pavilonis.cmm.warehouse.techcard.field.TechCardProductGroupOutput;
 
+import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -19,8 +21,14 @@ public class ReceiptItemsField extends OneToManyField<ReceiptItem> {
    public ReceiptItemsField(List<Product> products) {
       super(
             ReceiptItem.class,
-            ImmutableMap.of("productName", item -> item.getProduct().getName()),
-            "productName", "quantity", "unitPrice", "cost"
+            ImmutableMap.of(
+                  "productName", item -> item.getProduct().getName(),
+                  "unitWeight", item -> item.getProduct().getUnitWeight(),
+                  "measureUnit", item -> App.translate(MeasureUnit.class, item.getProduct().getMeasureUnit().name()),
+                  "receiptItemWeight", item -> item.getQuantity()
+                        .multiply(new BigDecimal(item.getProduct().getUnitWeight()))
+            ),
+            "productName", "measureUnit", "quantity", "unitWeight", "receiptItemWeight", "unitPrice", "cost"
       );
       this.products = products;
       this.productGroups = products.stream()
