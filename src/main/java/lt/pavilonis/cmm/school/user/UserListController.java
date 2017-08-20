@@ -80,7 +80,7 @@ public class UserListController extends AbstractListController<User, String, Use
    }
 
    @Override
-   protected Optional<Component> getControlPanel() {
+   protected Optional<Component> getControlPanel(Component mainArea) {
       return Optional.empty();
    }
 
