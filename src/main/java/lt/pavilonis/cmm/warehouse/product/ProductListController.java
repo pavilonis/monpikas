@@ -8,7 +8,6 @@ import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.cmm.common.ui.filter.NameFilterPanel;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,7 +16,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Controller
-public class ProductListController extends AbstractListController<Product, Long, IdTextFilter> {
+public class ProductListController extends AbstractListController<Product, Long, ProductFilter> {
 
    @Autowired
    private ProductRepository repository;
@@ -30,7 +29,7 @@ public class ProductListController extends AbstractListController<Product, Long,
       return new ListGrid<Product>(Product.class) {
          @Override
          protected List<String> columnOrder() {
-            return Arrays.asList("name", "unitWeight", "measureUnit", "productGroup");
+            return Arrays.asList("productGroup", "name", "unitWeight", "measureUnit");
          }
       };
    }
@@ -44,19 +43,19 @@ public class ProductListController extends AbstractListController<Product, Long,
          }
 
          @Override
-         protected FieldLayout<Product> createFieldLayout() {
+         protected FieldLayout<Product> createFieldLayout(Product model) {
             return new ProductForm(productGroupRepo.load(new IdTextFilter()));
          }
       };
    }
 
    @Override
-   protected FilterPanel<IdTextFilter> createFilterPanel() {
-      return new NameFilterPanel();
+   protected FilterPanel<ProductFilter> createFilterPanel() {
+      return new ProductFilterPanel(productGroupRepo.load());
    }
 
    @Override
-   protected EntityRepository<Product, Long, IdTextFilter> getEntityRepository() {
+   protected EntityRepository<Product, Long, ProductFilter> getEntityRepository() {
       return repository;
    }
 
@@ -67,7 +66,7 @@ public class ProductListController extends AbstractListController<Product, Long,
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.PACKAGE;
+      return VaadinIcons.CUBE;
    }
 
    @Override

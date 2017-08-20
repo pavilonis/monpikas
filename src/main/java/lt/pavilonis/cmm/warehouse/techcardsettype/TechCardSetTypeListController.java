@@ -32,7 +32,7 @@ public class TechCardSetTypeListController extends AbstractListController<TechCa
          }
 
          @Override
-         protected FieldLayout<TechCardSetType> createFieldLayout() {
+         protected FieldLayout<TechCardSetType> createFieldLayout(TechCardSetType model) {
             return new TechCardSetTypeFields();
          }
       };

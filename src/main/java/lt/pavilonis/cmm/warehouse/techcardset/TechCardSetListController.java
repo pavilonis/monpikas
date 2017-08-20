@@ -53,13 +53,13 @@ public class TechCardSetListController extends AbstractListController<TechCardSe
          }
 
          @Override
-         protected FieldLayout<TechCardSet> createFieldLayout() {
-            return new TechCardFields(mealTypeRepository.load(IdTextFilter.empty()));
+         protected FieldLayout<TechCardSet> createFieldLayout(TechCardSet model) {
+            return new TechCardSetFields(mealTypeRepository.load(IdTextFilter.empty()));
          }
 
          @Override
          protected void customizeWindow(Window window) {
-            window.setWidth(700, Sizeable.Unit.PIXELS);
+            super.customizeWindow(window);
             window.setHeight(570, Sizeable.Unit.PIXELS);
          }
       };

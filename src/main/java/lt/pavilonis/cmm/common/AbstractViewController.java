@@ -25,14 +25,13 @@ public abstract class AbstractViewController implements MenuItemViewProvider {
       Component mainArea = getMainArea();
       layout.addComponent(mainArea);
 
-      getFooter()
-            .ifPresent(layout::addComponent);
+      getFooter(mainArea).ifPresent(layout::addComponent);
 
       layout.setExpandRatio(mainArea, 1f);
       return layout;
    }
 
-   protected Optional<Component> getFooter() {
+   protected Optional<Component> getFooter(Component mainArea) {
       return Optional.empty();
    }
 

@@ -41,7 +41,7 @@ public class ClassroomListController extends AbstractListController<ClassroomOcc
    }
 
    @Override
-   protected Optional<Component> getControlPanel() {
+   protected Optional<Component> getControlPanel(Component mainArea) {
       return Optional.empty();
    }
 

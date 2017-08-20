@@ -35,7 +35,7 @@ public final class TechCardResultSetExtractor implements ResultSetExtractor<List
       addOutputWeight(rs, techCard.getProductGroupOutputWeight());
    }
 
-   private void addOutputWeight(ResultSet rs, Map<ProductGroup, Integer> weightMap) throws SQLException {
+   public static void addOutputWeight(ResultSet rs, Map<ProductGroup, Integer> weightMap) throws SQLException {
       Integer outputWeight = (Integer) rs.getObject("tcp.outputWeight");
       if (outputWeight != null) {
          ProductGroup productGroup = PRODUCT_GROUP_MAPPER.mapRow(rs);

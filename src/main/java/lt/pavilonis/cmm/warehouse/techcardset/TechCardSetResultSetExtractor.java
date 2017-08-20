@@ -1,13 +1,16 @@
 package lt.pavilonis.cmm.warehouse.techcardset;
 
-import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeMapper;
+import lt.pavilonis.cmm.warehouse.techcard.TechCard;
+import lt.pavilonis.cmm.warehouse.techcard.TechCardResultSetExtractor;
 import lt.pavilonis.cmm.warehouse.techcard.TechCardRowMapper;
+import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeMapper;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -28,16 +31,32 @@ public final class TechCardSetResultSetExtractor implements ResultSetExtractor<L
             result.put(id, cardSet = mapRow(rs));
          }
 
-         Long techCardId = (Long) rs.getObject("tc.id");
-         if (techCardId != null
-               && cardSet.getTechCards().stream().noneMatch(c -> techCardId.equals(c.getId()))) {
-            cardSet.getTechCards().add(TECH_CARD_MAPPER.mapRow(rs));
-         }
+         maybeAddTechCard(rs, cardSet.getTechCards());
       }
       return new ArrayList<>(result.values());
    }
 
-   private TechCardSet mapRow(ResultSet rs) throws SQLException {
+   private void maybeAddTechCard(ResultSet rs, Collection<TechCard> techCards) throws SQLException {
+
+      Long techCardId = (Long) rs.getObject("tc.id");
+      if (techCardId == null) {
+         return;
+      }
+
+      TechCard techCard = techCards.stream()
+            .filter(tc -> techCardId.equals(tc.getId()))
+            .findFirst()
+            .orElseGet(() -> {
+               TechCard tc = TECH_CARD_MAPPER.mapRow(rs);
+               techCards.add(tc);
+               return tc;
+            });
+
+      TechCardResultSetExtractor.addOutputWeight(rs, techCard.getProductGroupOutputWeight());
+      techCards.add(techCard);
+   }
+
+   public static TechCardSet mapRow(ResultSet rs) throws SQLException {
       return new TechCardSet(
             rs.getLong("tcs.id"),
             rs.getString("tcs.name"),

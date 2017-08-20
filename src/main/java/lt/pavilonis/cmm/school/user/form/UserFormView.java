@@ -29,7 +29,7 @@ public class UserFormView extends FieldLayout<User> {
    private final TextField base16photo = new TextField();
 
    public UserFormView(List<PresenceTime> presenceTimeData, Resource userImage) {
-      setWidth(550, Unit.PIXELS);
+//      setWidth(550, Unit.PIXELS);
       TabSheet sheet = new TabSheet();
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);

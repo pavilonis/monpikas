@@ -50,11 +50,11 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    }
 
    @Override
-   final protected Optional<Component> getFooter() {
+   final protected Optional<Component> getFooter(Component mainArea) {
       HorizontalLayout footerLayout = new HorizontalLayout();
       footerLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
-      getControlPanel().ifPresent(panel -> {
+      getControlPanel(mainArea).ifPresent(panel -> {
          footerLayout.addComponent(panel);
          footerLayout.setComponentAlignment(panel, Alignment.MIDDLE_LEFT);
       });
@@ -64,7 +64,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
       return Optional.of(footerLayout);
    }
 
-   protected Optional<Component> getControlPanel() {
+   protected Optional<Component> getControlPanel(Component mainArea) {
       ControlPanel controls = new ControlPanel(click -> actionCreate(), click -> actionDelete());
       return Optional.of(controls);
    }
@@ -102,7 +102,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
       table.addItemClickListener(click -> {
          if (click.getMouseEventDetails().isDoubleClick()) {
-            formController.edit(click.getItem(), table);
+            formController.edit(click.getItem(), table, false);
          }
       });
    }
@@ -111,7 +111,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
    protected void actionCreate() {
       T entity = createNewInstance();
-      getFormController().edit(entity, grid);
+      getFormController().edit(entity, grid, false);
    }
 
    protected T createNewInstance() {

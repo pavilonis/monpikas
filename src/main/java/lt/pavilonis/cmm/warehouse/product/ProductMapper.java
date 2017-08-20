@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.warehouse.product;
 
+import lt.pavilonis.cmm.common.util.SimpleRowMapper;
 import lt.pavilonis.cmm.warehouse.MeasureUnit;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupMapper;
@@ -8,7 +9,7 @@ import org.springframework.jdbc.core.RowMapper;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class ProductMapper implements RowMapper<Product> {
+public final class ProductMapper extends SimpleRowMapper<Product> {
 
    private static final RowMapper<ProductGroup> PRODUCT_GROUP_MAPPER = new ProductGroupMapper();
 

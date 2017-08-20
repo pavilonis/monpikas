@@ -34,13 +34,14 @@ public class TcpListener {
 
    @Bean
    public TcpInboundGateway tcpInGate(AbstractServerConnectionFactory connectionFactory) {
-      TcpInboundGateway inGate = new TcpInboundGateway();
-      inGate.setConnectionFactory(connectionFactory);
 
       SubscribableChannel channel = new DirectChannel();
       channel.subscribe(tcpEventProcessor);
-      inGate.setRequestChannel(channel);
 
+      TcpInboundGateway inGate = new TcpInboundGateway();
+      inGate.setReplyTimeout(0); // Need no replies
+      inGate.setConnectionFactory(connectionFactory);
+      inGate.setRequestChannel(channel);
       return inGate;
    }
 }

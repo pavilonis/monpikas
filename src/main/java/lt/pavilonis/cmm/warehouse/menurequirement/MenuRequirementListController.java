@@ -3,20 +3,18 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.Sizeable;
+import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.Named;
-import lt.pavilonis.cmm.common.converter.CollectionValueProviderAdapter;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
-import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
 import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
-import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetType;
-import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetTypeRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -31,28 +29,21 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
    @Autowired
    private MenuRequirementRepository repository;
 
-   @Autowired
-   private TechCardSetTypeRepository techCardSetTypeRepository;
-
    @Override
    protected ListGrid<MenuRequirement> createGrid() {
       return new ListGrid<MenuRequirement>(MenuRequirement.class) {
 
          @Override
          protected List<String> columnOrder() {
-            return Arrays.asList("date", "meals", "caloricity");
+            return Arrays.asList("date", "techCardSets", "caloricity");
          }
 
          @Override
          protected Map<String, ValueProvider<MenuRequirement, ?>> getCustomColumns() {
-            return ImmutableMap.of(
-                  "meals", new CollectionValueProviderAdapter<>(
-                        menuRequirement -> menuRequirement.getTechCardSets().stream()
-                              .map(TechCardSet::getType)
-                              .map(Named::getName)
-                              .collect(Collectors.toList())
-                  )
-            );
+            return ImmutableMap.of("techCardSets", item -> item.getTechCardSets().stream()
+                  .map(TechCardSet::getType)
+                  .map(Named::getName)
+                  .collect(Collectors.joining(", ")));
          }
       };
    }
@@ -66,9 +57,8 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
          }
 
          @Override
-         protected FieldLayout<MenuRequirement> createFieldLayout() {
-            List<TechCardSetType> types = techCardSetTypeRepository.load(IdTextFilter.empty());
-            return new MenuRequirementForm(types);
+         protected FieldLayout<MenuRequirement> createFieldLayout(MenuRequirement model) {
+            return new MenuRequirementFields();
          }
       };
    }

@@ -13,6 +13,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,59 +36,43 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
             : update(entity);
    }
 
-   private MenuRequirement update(MenuRequirement menuRequirement) {
-      long menuReqId = menuRequirement.getId();
+   private MenuRequirement update(MenuRequirement entity) {
+
       ImmutableMap<String, Object> args =
-            ImmutableMap.of("id", menuReqId, "date", menuRequirement.getDate());
+            ImmutableMap.of("id", entity.getId(), "date", entity.getDate());
 
       jdbcNamed.update("UPDATE MenuRequirement SET date = :date WHERE id = :id", args);
-      jdbcNamed.update("DELETE FROM Meal WHERE menuRequirement_id = :id", args);
+      jdbcNamed.update("DELETE FROM MenuRequirementTechCardSet WHERE menuRequirement_id = :id", args);
 
-      saveMenuRequirementMeals(menuRequirement.getTechCardSets(), menuReqId);
+      saveMenuRequirementTechCardSets(entity.getId(), entity.getTechCardSets());
 
-      return find(menuReqId)
+      return find(entity.getId())
             .orElseThrow(IllegalStateException::new);
    }
 
-   private void saveMenuRequirementMeals(List<TechCardSet> techCardSets, long id) {
-      techCardSets.forEach(meal -> {
+   private void saveMenuRequirementTechCardSets(long menuRequirementId, Collection<TechCardSet> techCardSets) {
+      @SuppressWarnings("unchecked")
+      Map<String, ?>[] batchArgs = techCardSets.stream()
+            .map(TechCardSet::getId)
+            .map(id -> ImmutableMap.of("menuReqId", menuRequirementId, "setId", id))
+            .toArray(Map[]::new);
 
-         long insertedMealId = insertNewMeal(id, meal.getType().getId());
-
-         meal.getTechCards()
-               .forEach(card -> addTechCardToMeal(insertedMealId, card.getId()));
-      });
-   }
-
-   private void addTechCardToMeal(long insertedMealId, long techCardId) {
-      jdbcNamed.update(
-            "INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (:mealId, :cardId)",
-            ImmutableMap.of("mealId", insertedMealId, "cardId", techCardId)
+      jdbcNamed.batchUpdate(
+            "INSERT INTO MenuRequirementTechCardSet (menuRequirement_id, techCardSet_id) " +
+                  "VALUES (:menuReqId, :setId)",
+            batchArgs
       );
-   }
-
-   private long insertNewMeal(long menuRequirementId, long mealTypeId) {
-      KeyHolder keyHolder = new GeneratedKeyHolder();
-
-      jdbcNamed.update(
-            "INSERT INTO TechCardSet (menuRequirement_id, mealType_id) VALUES (:menuRequirementId, :mealTypeId)",
-            new MapSqlParameterSource(
-                  ImmutableMap.of("menuRequirementId", menuRequirementId, "mealTypeId", mealTypeId)
-            ),
-            keyHolder
-      );
-      return keyHolder.getKey().longValue();
    }
 
    private MenuRequirement create(MenuRequirement entity) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
             "INSERT INTO MenuRequirement (date) VALUE (:date)",
-            new MapSqlParameterSource(Collections.singletonMap("date", entity.getDate())),
+            new MapSqlParameterSource("date", entity.getDate()),
             keyHolder
       );
 
-      saveMenuRequirementMeals(entity.getTechCardSets(), entity.getId());
+      saveMenuRequirementTechCardSets(keyHolder.getKey().longValue(), entity.getTechCardSets());
 
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
@@ -106,7 +91,7 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       args.put("periodEnd", filter.getPeriodEnd());
       return jdbcNamed.query("" +
                   "SELECT mr.id, mr.date ," +
-                  "  tcs.id, " +
+                  "  tcs.id, tcs.name, " +
                   "  tcst.id, tcst.name, " +
                   "  tc.id, tc.name, " +
                   "  tcg.id, tcg.name, " +

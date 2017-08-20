@@ -52,7 +52,7 @@ public class ScanLogBriefListController extends AbstractListController<ScanLogBr
    }
 
    @Override
-   protected Optional<Component> getControlPanel() {
+   protected Optional<Component> getControlPanel(Component mainArea) {
       return Optional.empty();
    }
 

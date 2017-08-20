@@ -35,7 +35,7 @@ public class EatingListController extends AbstractListController<Eating, Long, I
          }
 
          @Override
-         protected FieldLayout<Eating> createFieldLayout() {
+         protected FieldLayout<Eating> createFieldLayout(Eating model) {
             return new EatingFormView();
          }
       };

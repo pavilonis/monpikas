@@ -33,7 +33,7 @@ public class EatingEventFormController extends AbstractFormController<EatingEven
    private UserEatingService service;
 
    @Override
-   protected FieldLayout<EatingEvent> createFieldLayout() {
+   protected FieldLayout<EatingEvent> createFieldLayout(EatingEvent model) {
       return new EatingEventFormView(service);
    }
 

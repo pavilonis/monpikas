@@ -32,7 +32,7 @@ public class ProductGroupListController extends AbstractListController<ProductGr
          }
 
          @Override
-         protected FieldLayout<ProductGroup> createFieldLayout() {
+         protected FieldLayout<ProductGroup> createFieldLayout(ProductGroup model) {
             return new ProductGroupForm();
          }
       };
@@ -55,7 +55,7 @@ public class ProductGroupListController extends AbstractListController<ProductGr
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.STOCK;
+      return VaadinIcons.CUBES;
    }
 
    @Override

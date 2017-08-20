@@ -20,9 +20,6 @@ import java.util.Optional;
 @Repository
 public class SupplierRepository implements EntityRepository<Supplier, Long, IdTextFilter> {
 
-   private static final RowMapper<Supplier> MAPPER =
-         (rs, i) -> new Supplier(rs.getLong(1), rs.getString(2), rs.getString(3));
-
    @Autowired
    private NamedParameterJdbcTemplate jdbcNamed;
 
@@ -67,13 +64,13 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
       args.put("text", QueryUtils.likeArg(filter.getText()));
 
       return jdbcNamed.query("" +
-                  "SELECT id, code, name " +
-                  "FROM Supplier " +
+                  "SELECT s.id, s.code, s.name " +
+                  "FROM Supplier s " +
                   "WHERE (:id IS NULL OR id = :id) " +
                   "  AND (:text IS NULL OR name LIKE :text OR code LIKE :text) " +
                   "ORDER BY name",
             args,
-            MAPPER
+            new SupplierRowMapper()
       );
    }
 

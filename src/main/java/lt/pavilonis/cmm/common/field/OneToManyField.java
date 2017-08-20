@@ -3,8 +3,10 @@ package lt.pavilonis.cmm.common.field;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
+import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.StyleGenerator;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -72,20 +74,22 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
             return columnOrder;
          }
       };
-      grid.setWidth(512, Unit.PIXELS);
-      grid.setHeight(330, Unit.PIXELS);
+      grid.setSizeFull();
       return grid;
    }
 
    @Override
    protected Component initContent() {
-      GridControlPanel controls = new GridControlPanel(
+      VerticalLayout layout = new VerticalLayout(grid, createControls());
+      layout.setMargin(false);
+      return layout;
+   }
+
+   protected Component createControls() {
+      return new GridControlPanel(
             eventAdd -> actionAdd(),
             eventRemove -> actionRemove()
       );
-      VerticalLayout layout = new VerticalLayout(grid, controls);
-      layout.setMargin(false);
-      return layout;
    }
 
    protected void actionAdd() {
@@ -143,7 +147,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
       private SelectionPopup(Consumer<Set<T>> selectionConsumer) {
 
          setCaption(App.translate(SelectionPopup.class, "caption"));
-         setWidth(700, Unit.PIXELS);
+         setWidth(900, Unit.PIXELS);
          setHeight(490, Unit.PIXELS);
 
          ListGrid<T> selectionTable = new ListGrid<T>(type) {
@@ -192,5 +196,13 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
 
    public void setTableWidth(int size, Unit units) {
       grid.setWidth(size, units);
+   }
+
+   public void addStyleGenerator(StyleGenerator<T> styleGenerator) {
+      this.grid.setStyleGenerator(styleGenerator);
+   }
+
+   public Grid.Column<T, ?> getColumn(String columnName) {
+      return grid.getColumn(columnName);
    }
 }

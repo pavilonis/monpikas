@@ -16,7 +16,7 @@ public class FieldLayout<T> extends VerticalLayout {
       validationStatusLabel.setVisible(false);
    }
 
-   public void manualBinding(Binder<T> binding) {
+   public void manualBinding(Binder<T> binder) {
    }
 
    public void initCustomFieldValues(T entity) {

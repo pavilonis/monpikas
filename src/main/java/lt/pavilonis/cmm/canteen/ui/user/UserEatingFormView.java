@@ -42,7 +42,7 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
    public UserEatingFormView(ImageService imageService) {
       this.imageService = imageService;
       setWidth(852, Unit.PIXELS);
-      setHeight(460, Unit.PIXELS);
+//      setHeight(460, Unit.PIXELS);
       eatingsField.setTableWidth(600, Unit.PIXELS);
 
       name.setWidth(348, Unit.PIXELS);

@@ -10,10 +10,13 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -24,6 +27,7 @@ import java.util.stream.Collectors;
 public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
    private static final Logger LOG = LoggerFactory.getLogger(ListGrid.class.getSimpleName());
+   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
    private static final String PROPERTY_ID = "ID";
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
    private List<T> items = new ArrayList<>();
@@ -63,24 +67,80 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
             .forEach(property -> {
                Field field = getClassField(property);
 
-               if (field != null && Named.class.isAssignableFrom(field.getType())) {
+               if (field != null) {
+                  Class<?> classFieldType = field.getType();
 
-                  removeColumn(property);
+                  Method propertyGetter = BeanUtils.findMethod(
+                        getBeanType(),
+                        "get" + StringUtils.capitalize(property)
+                  );
 
-                  addColumn(property, entity -> {
+                  if (Named.class.isAssignableFrom(classFieldType)) {
 
-                     String propertyGetterName = "get" + StringUtils.capitalize(property);
+                     replaceColumn(property, namedPrinter(propertyGetter));
 
-                     Method propertyGetter = BeanUtils.findMethod(getBeanType(), propertyGetterName);
+                  } else if (Collection.class.isAssignableFrom(classFieldType)) {
 
-                     Object propertyValue = extractProperty(entity, propertyGetter);
+                     replaceColumn(property, collectionPrinter(propertyGetter));
 
-                     Method nameGetter = BeanUtils.findMethod(Named.class, "getName");
+                  } else if (Boolean.class.isAssignableFrom(classFieldType)
+                        || boolean.class.isAssignableFrom(classFieldType)) {
 
-                     return extractProperty(propertyValue, nameGetter);
-                  });
+                     replaceColumn(property, entity ->
+                           Boolean.TRUE.equals(extractProperty(entity, propertyGetter)) ? "✔" : "");
+
+                  } else if (LocalDateTime.class.isAssignableFrom(classFieldType)) {
+
+                     replaceColumn(property, dateTimePrinter(propertyGetter));
+                  }
                }
             });
+   }
+
+   private void replaceColumn(String property, ValueProvider<T, Object> valueProvider) {
+      removeColumn(property);
+      addColumn(property, valueProvider);
+   }
+
+   private ValueProvider<T, Object> collectionPrinter(Method propertyGetter) {
+      return entity -> {
+
+         Collection<?> collection = (Collection) extractProperty(entity, propertyGetter);
+         if (CollectionUtils.isEmpty(collection)) {
+            return "";
+         }
+
+         if (collection.iterator().next() instanceof Named) {
+            String result = collection.stream()
+                  .map(value -> (Named) value)
+                  .map(Named::getName)
+                  .collect(Collectors.joining(", "));
+
+            return result.length() <= 50
+                  ? result
+                  : result.substring(0, 49) + "...";
+         }
+
+         return collection.toString();
+      };
+   }
+
+   private ValueProvider<T, Object> namedPrinter(Method propertyGetter) {
+      return entity -> {
+
+         Object propertyValue = extractProperty(entity, propertyGetter);
+
+         Method nameGetter = BeanUtils.findMethod(Named.class, "getName");
+
+         return extractProperty(propertyValue, nameGetter);
+      };
+   }
+
+   private ValueProvider<T, Object> dateTimePrinter(Method propertyGetter) {
+      return entity -> {
+         LocalDateTime value = (LocalDateTime) extractProperty(entity, propertyGetter);
+         return value == null ? null : DATE_TIME_FORMATTER.format(value);
+      };
    }
 
    private Object extractProperty(Object object, Method propertyGetter) {

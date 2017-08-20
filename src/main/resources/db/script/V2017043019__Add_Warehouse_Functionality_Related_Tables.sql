@@ -27,7 +27,7 @@ CREATE TABLE Product (
    FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id)
 );
 
-CREATE TABLE ReceiptStatement (
+CREATE TABLE Receipt (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    supplier_id BIGINT(20) NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
@@ -40,15 +40,15 @@ CREATE TABLE ReceiptItem (
    unitPrice                  DECIMAL(10, 3) NOT NULL,
    quantity                   DECIMAL(10, 3) NOT NULL,
    product_id                 BIGINT(20)     NOT NULL,
-   receiptStatement_id        BIGINT(20)     NOT NULL,
+   receipt_id                 BIGINT(20)     NOT NULL,
    productNameSnapshot        VARCHAR(255)   NOT NULL,
    productMeasureUnitSnapshot VARCHAR(15)    NOT NULL,
    productUnitWeightSnapshot  MEDIUMINT      NOT NULL,
    dateCreated                DATETIME       NOT NULL             DEFAULT NOW(),
 
-   UNIQUE (product_id, receiptStatement_id),
+   UNIQUE (product_id, receipt_id),
    FOREIGN KEY (product_id) REFERENCES Product (id),
-   FOREIGN KEY (receiptStatement_id) REFERENCES ReceiptStatement (id)
+   FOREIGN KEY (receipt_id) REFERENCES Receipt (id)
       ON DELETE CASCADE
 );
 
@@ -58,7 +58,6 @@ CREATE TABLE MenuRequirement (
    date        DATE       NOT NULL,
    dateCreated DATETIME   NOT NULL             DEFAULT NOW()
 );
-
 
 CREATE TABLE TechCardGroup (
    id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -76,7 +75,6 @@ CREATE TABLE TechCard (
 );
 
 CREATE TABLE TechCardProduct (
-   id              BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    techCard_id     BIGINT(20) NOT NULL,
    productGroup_id BIGINT(20) NOT NULL,
    outputWeight    INTEGER    NOT NULL,
@@ -84,7 +82,8 @@ CREATE TABLE TechCardProduct (
 
    FOREIGN KEY (productGroup_id) REFERENCES ProductGroup (id),
    FOREIGN KEY (techCard_id) REFERENCES TechCard (id)
-      ON DELETE CASCADE
+      ON DELETE CASCADE,
+   CONSTRAINT UNIQUE_TECH_CARD_PRODUCT_GROUP UNIQUE (techCard_id, productGroup_id)
 );
 
 CREATE TABLE TechCardSetType (
@@ -105,7 +104,6 @@ CREATE TABLE TechCardSet (
 );
 
 CREATE TABLE TechCardSetTechCard (
-   id             BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    techCardSet_id BIGINT(20) NOT NULL,
    techCard_id    BIGINT(20) NOT NULL,
    dateCreated    DATETIME   NOT NULL             DEFAULT NOW(),
@@ -116,8 +114,8 @@ CREATE TABLE TechCardSetTechCard (
 );
 
 CREATE TABLE MenuRequirementTechCardSet (
-   techCardSet_id     BIGINT(20) NOT NULL,
    menuRequirement_id BIGINT(20) NOT NULL,
+   techCardSet_id     BIGINT(20) NOT NULL,
    dateCreated        DATETIME   NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
@@ -125,39 +123,38 @@ CREATE TABLE MenuRequirementTechCardSet (
       ON DELETE CASCADE
 );
 
-CREATE TABLE WriteOffStatement (
+CREATE TABLE WriteOff (
    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
    periodStart DATE       NOT NULL,
    periodEnd   DATE       NOT NULL,
-   confirmed   BIT(1)     NOT NULL             DEFAULT b'0',
    dateCreated DATETIME   NOT NULL             DEFAULT NOW()
 );
 
 CREATE TABLE WriteOffItem (
-   id                     BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   quantity               DECIMAL(10, 3) NOT NULL,
-   receiptItem_id         BIGINT(20)     NOT NULL,
-   writeOffStatement_id   BIGINT(20)     NOT NULL,
-   techCardProduct_id     BIGINT(20)     NOT NULL,
-   techCardSetTechCard_id BIGINT(20)     NOT NULL,
-   dateCreated            DATETIME       NOT NULL             DEFAULT NOW(),
+   id                      BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   quantityAvailableBefore DECIMAL(10, 3) NOT NULL,
+   quantityConsumed        DECIMAL(10, 3) NOT NULL,
+   quantity                DECIMAL(10, 3) NOT NULL,
+   quantityAvailableAfter  DECIMAL(10, 3) NOT NULL,
+   receiptItem_id          BIGINT(20)     NOT NULL,
+   writeOff_id             BIGINT(20)     NOT NULL,
+   dateCreated             DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
-   FOREIGN KEY (techCardProduct_id) REFERENCES TechCardProduct (id),
-   FOREIGN KEY (techCardSetTechCard_id) REFERENCES TechCardSetTechCard (id),
-   FOREIGN KEY (writeOffStatement_id) REFERENCES WriteOffStatement (id)
+   #    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
+   FOREIGN KEY (writeOff_id) REFERENCES WriteOff (id)
       ON DELETE CASCADE
 );
 
-CREATE TABLE Tax (
-   id          BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   dateCreated DATETIME       NOT NULL             DEFAULT NOW(),
-   percent     DECIMAL(10, 3) NOT NULL
-);
-
-CREATE TABLE TaxCurrent (
-   id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   tax_id      BIGINT(20) NOT NULL,
-   dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
-   FOREIGN KEY (tax_id) REFERENCES Tax (id)
-);
+# CREATE TABLE Tax (
+#    id          BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+#    dateCreated DATETIME       NOT NULL             DEFAULT NOW(),
+#    percent     DECIMAL(10, 3) NOT NULL
+# );
+#
+# CREATE TABLE TaxCurrent (
+#    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+#    tax_id      BIGINT(20) NOT NULL,
+#    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
+#    FOREIGN KEY (tax_id) REFERENCES Tax (id)
+# );

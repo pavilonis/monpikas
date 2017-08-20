@@ -71,13 +71,12 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
    }
 
    private SecurityUser save(SecurityUser user) {
-      String temporaryPassword = passwordEncoder.encode(user.getUsername());
       Map<String, Object> args = new HashMap<>();
       args.put("username", user.getUsername());
       args.put("name", user.getName());
       args.put("email", user.getEmail());
       args.put("enabled", user.isEnabled());
-      args.put("password", temporaryPassword);
+      args.put("password", passwordEncoder.encode(user.getPassword()));
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update("" +
