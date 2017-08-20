@@ -66,7 +66,7 @@ public class ProductListController extends AbstractListController<Product, Long,
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.PACKAGE;
+      return VaadinIcons.CUBE;
    }
 
    @Override

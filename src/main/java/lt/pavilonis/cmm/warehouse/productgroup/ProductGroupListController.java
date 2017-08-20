@@ -55,7 +55,7 @@ public class ProductGroupListController extends AbstractListController<ProductGr
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.STOCK;
+      return VaadinIcons.CUBES;
    }
 
    @Override

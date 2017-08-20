@@ -60,11 +60,6 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
          protected FieldLayout<MenuRequirement> createFieldLayout(MenuRequirement model) {
             return new MenuRequirementFields();
          }
-
-         @Override
-         protected void customizeWindow(Window window) {
-            window.setWidth(900, Sizeable.Unit.PIXELS);
-         }
       };
    }
 
