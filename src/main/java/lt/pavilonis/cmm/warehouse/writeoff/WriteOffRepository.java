@@ -67,19 +67,22 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
 
       @SuppressWarnings("unchecked")
       Map<String, ?>[] batchArgs = items.stream()
+            .filter(item -> item.getReceiptItem() != null)
             .map(item -> ImmutableMap.builder()
                   .put("writeOffId", writeOffId)
                   .put("receiptItemId", item.getReceiptItem().getId())
+                  .put("quantityAvailableBefore", item.getQuantityAvailableBefore())
+                  .put("quantityConsumed", item.getQuantityConsumed())
                   .put("quantity", item.getQuantity())
-//                  .put("productNameSnapshot", item.getProduct().getName())
-//                  .put("productMeasureUnitSnapshot", item.getProduct().getMeasureUnit().name())
-//                  .put("productUnitWeightSnapshot", item.getProduct().getUnitWeight())
+                  .put("quantityAvailableAfter", item.getQuantityAvailableAfter())
                   .build())
             .toArray(Map[]::new);
 
       jdbcNamed.batchUpdate("" +
-                  "INSERT INTO WriteOffItem (writeOff_id, receiptItem_id, quantity) " +
-                  "VALUES (:writeOffId, :receiptItemId, :quantity)",
+                  "INSERT INTO WriteOffItem (writeOff_id, receiptItem_id," +
+                  "  quantityAvailableBefore, quantityConsumed, quantity, quantityAvailableAfter) " +
+                  "VALUES (:writeOffId, :receiptItemId," +
+                  "  :quantityAvailableBefore, :quantityConsumed, :quantity, :quantityAvailableAfter)",
             batchArgs
       );
    }
@@ -99,7 +102,7 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
       return jdbcNamed.query("" +
                   "SELECT " +
                   "  wo.id, wo.periodStart, wo.periodEnd, wo.dateCreated, " +
-                  "  woi.id, woi.quantity, " +
+                  "  woi.id, woi.quantityAvailableBefore, woi.quantityConsumed, woi.quantity, woi.quantityAvailableAfter, " +
                   "  ri.id, ri.unitPrice, ri.quantity, " +
                   "  p.id, p.name, p.measureUnit, p.unitWeight, " +
                   "  pg.id, pg.name, pg.kcal100 " +

@@ -31,7 +31,7 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
    private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class.getSimpleName());
    private final Class<T> clazz;
    private Binder<T> binder;
-   protected T model;
+   private T model;
    private Window window;
 
    @Autowired
@@ -113,7 +113,7 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
       binder = new BeanValidationBinder<>(clazz);
 
-      FieldLayout<T> fieldLayout = createFieldLayout();
+      FieldLayout<T> fieldLayout = createFieldLayout(model);
 
       Component controlLayout = createControlLayout(persistedItemConsumer, fieldLayout, readOnly);
 
@@ -160,5 +160,5 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
    protected abstract EntityRepository<T, ID, ?> getEntityRepository();
 
-   protected abstract FieldLayout<T> createFieldLayout();
+   protected abstract FieldLayout<T> createFieldLayout(T model);
 }

@@ -57,7 +57,7 @@ public class ReceiptListController extends AbstractListController<Receipt, Long,
          }
 
          @Override
-         protected FieldLayout<Receipt> createFieldLayout() {
+         protected FieldLayout<Receipt> createFieldLayout(Receipt model) {
             return new ReceiptFields(supplierRepository.load(), productRepository.load());
          }
       };

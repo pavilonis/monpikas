@@ -43,7 +43,7 @@ public class ProductListController extends AbstractListController<Product, Long,
          }
 
          @Override
-         protected FieldLayout<Product> createFieldLayout() {
+         protected FieldLayout<Product> createFieldLayout(Product model) {
             return new ProductForm(productGroupRepo.load(new IdTextFilter()));
          }
       };

@@ -12,27 +12,30 @@ public class WriteOffItem extends Identified<Long> {
    private BigDecimal quantityAvailableBefore;
    private BigDecimal quantityConsumed;
    private BigDecimal quantity; // writeOff
-   private BigDecimal QuantityAvailableAfter;
+   private BigDecimal quantityAvailableAfter;
    private ProductGroup productGroup;
 
    public WriteOffItem() {/**/}
 
    public WriteOffItem(ReceiptItem receiptItem, BigDecimal quantityAvailableBefore,
                        BigDecimal quantityConsumed, BigDecimal quantity,
-                       BigDecimal QuantityAvailableAfter, ProductGroup productGroup) {
+                       BigDecimal quantityAvailableAfter, ProductGroup productGroup) {
 
+      this(null, receiptItem, quantityAvailableBefore, quantityConsumed,
+            quantity, quantityAvailableAfter, productGroup);
+   }
+
+   public WriteOffItem(Long id, ReceiptItem receiptItem, BigDecimal quantityAvailableBefore,
+                       BigDecimal quantityConsumed, BigDecimal quantity,
+                       BigDecimal quantityAvailableAfter, ProductGroup productGroup) {
+
+      this.setId(id);
       this.receiptItem = receiptItem;
       this.quantityAvailableBefore = quantityAvailableBefore;
       this.quantityConsumed = quantityConsumed;
       this.quantity = quantity;
-      this.QuantityAvailableAfter = QuantityAvailableAfter;
+      this.quantityAvailableAfter = quantityAvailableAfter;
       this.productGroup = productGroup;
-   }
-
-   public WriteOffItem(long id, ReceiptItem receiptItem, BigDecimal quantity) {
-      this.setId(id);
-      this.receiptItem = receiptItem;
-      this.quantity = quantity;
    }
 
    public ReceiptItem getReceiptItem() {
@@ -72,11 +75,11 @@ public class WriteOffItem extends Identified<Long> {
    }
 
    public BigDecimal getQuantityAvailableAfter() {
-      return QuantityAvailableAfter;
+      return quantityAvailableAfter;
    }
 
    public void setQuantityAvailableAfter(BigDecimal quantityAvailableAfter) {
-      this.QuantityAvailableAfter = quantityAvailableAfter;
+      this.quantityAvailableAfter = quantityAvailableAfter;
    }
 
    public BigDecimal getQuantityConsumed() {

@@ -1,9 +1,11 @@
 package lt.pavilonis.cmm.warehouse.writeoff;
 
+import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroupRepository;
 import lt.pavilonis.cmm.warehouse.receipt.ReceiptItem;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
@@ -20,6 +22,9 @@ public class WriteOffService {
 
    @Autowired
    private JdbcTemplate jdbc;
+
+   @Autowired
+   private NamedParameterJdbcTemplate jdbcNamed;
 
    @Autowired
    private ReceiptItemRepository receiptItemRepository;
@@ -142,5 +147,20 @@ public class WriteOffService {
       );
 
       return productGroupConsumption;
+   }
+
+   public boolean overlaps(LocalDate periodStart, LocalDate periodEnd) {
+      return jdbcNamed.queryForObject("" +
+                  "SELECT EXISTS(" +
+                  "  SELECT 1 " +
+                  "  FROM WriteOff " +
+                  "  WHERE :newPeriodStart BETWEEN periodStart AND periodEnd " +
+                  "     OR :newPeriodEnd BETWEEN periodStart AND periodEnd " +
+                  "     OR periodStart BETWEEN :newPeriodStart AND :newPeriodEnd " +
+                  "     OR periodEnd BETWEEN :newPeriodStart AND :newPeriodEnd " +
+                  ")",
+            ImmutableMap.of("newPeriodStart", periodStart, "newPeriodEnd", periodEnd),
+            Boolean.class
+      );
    }
 }

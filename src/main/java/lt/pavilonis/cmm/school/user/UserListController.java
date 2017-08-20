@@ -53,7 +53,7 @@ public class UserListController extends AbstractListController<User, String, Use
          }
 
          @Override
-         protected FieldLayout<User> createFieldLayout() {
+         protected FieldLayout<User> createFieldLayout(User model) {
             List<PresenceTime> presenceTimeData = presenceTimeRepository.load(model.getCardCode());
             Resource image = imageService.imageResource(model.getBase16photo());
             return new UserFormView(presenceTimeData, image);

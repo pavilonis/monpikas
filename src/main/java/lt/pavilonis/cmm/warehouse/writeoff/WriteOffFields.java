@@ -7,6 +7,7 @@ import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ADateField;
@@ -14,6 +15,7 @@ import lt.pavilonis.cmm.common.field.OneToManyField;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 
 public class WriteOffFields extends FieldLayout<WriteOff> {
@@ -41,16 +43,29 @@ public class WriteOffFields extends FieldLayout<WriteOff> {
       }
    };
 
-   WriteOffFields(WriteOffService writeOffService) {
+   WriteOffFields(WriteOffService writeOffService, boolean readOnly) {
+
+      items.getColumn("quantity").setStyleGenerator(item ->
+            item.getQuantityConsumed().compareTo(item.getQuantity()) > 0 ? "red" : "");
+
       periodStart.setRequiredIndicatorVisible(true);
       periodEnd.setRequiredIndicatorVisible(true);
 
       HasValue.ValueChangeListener<LocalDate> previewListener = event -> {
          LocalDate periodStartValue = periodStart.getValue();
          LocalDate periodEndValue = periodEnd.getValue();
-         if (periodStartValue != null && periodEndValue != null) {
-            WriteOff writeOffPreview = writeOffService.preview(periodStartValue, periodEndValue);
-            items.setValue(writeOffPreview.getItems());
+
+         if (!readOnly && periodStartValue != null && periodEndValue != null) {
+
+            if (writeOffService.overlaps(periodStartValue, periodEndValue)) {
+
+               Notification.show(App.translate(WriteOffFields.class, "validation.overlaps"), Notification.Type.WARNING_MESSAGE);
+               items.setValue(new ArrayList<>());
+            } else {
+
+               WriteOff writeOffPreview = writeOffService.preview(periodStartValue, periodEndValue);
+               items.setValue(writeOffPreview.getItems());
+            }
          }
       };
 

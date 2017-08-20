@@ -1,6 +1,3 @@
-INSERT INTO Tax (id, percent) VALUES (1, 21);
-INSERT INTO TaxCurrent (tax_id) VALUE (1);
-
 INSERT INTO Supplier (id, code, name) VALUE (1, 'M1', 'Maxima');
 INSERT INTO Supplier (id, code, name) VALUE (2, 'N1', 'Norfa');
 INSERT INTO Supplier (id, code, name) VALUE (3, 'R1', 'Rimi');

@@ -32,7 +32,7 @@ public class SupplierListController extends AbstractListController<Supplier, Lon
          }
 
          @Override
-         protected FieldLayout<Supplier> createFieldLayout() {
+         protected FieldLayout<Supplier> createFieldLayout(Supplier model) {
             return new SupplierForm();
          }
       };

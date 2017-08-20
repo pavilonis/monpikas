@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.warehouse.writeoff;
 
+import lt.pavilonis.cmm.warehouse.receipt.ReceiptItem;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
 
@@ -39,10 +40,16 @@ public final class WriteOffResultSetExtractor implements ResultSetExtractor<List
       if (itemId != null
             && items.stream().noneMatch(item -> itemId.equals(item.getId()))) {
 
+         ReceiptItem receiptItem = receiptItemMapper.mapRow(rs);
+
          WriteOffItem item = new WriteOffItem(
                itemId,
-               receiptItemMapper.mapRow(rs),
-               rs.getBigDecimal("woi.quantity")
+               receiptItem,
+               rs.getBigDecimal("woi.quantityAvailableBefore"),
+               rs.getBigDecimal("woi.quantityConsumed"),
+               rs.getBigDecimal("woi.quantity"),
+               rs.getBigDecimal("woi.quantityAvailableAfter"),
+               receiptItem.getProduct().getProductGroup()
          );
          items.add(item);
       }

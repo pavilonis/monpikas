@@ -59,7 +59,7 @@ public class SecurityUserListController extends AbstractListController<SecurityU
          }
 
          @Override
-         protected FieldLayout<SecurityUser> createFieldLayout() {
+         protected FieldLayout<SecurityUser> createFieldLayout(SecurityUser model) {
             return new SecurityUserForm();
          }
       };

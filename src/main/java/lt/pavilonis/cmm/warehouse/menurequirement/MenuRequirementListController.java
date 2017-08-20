@@ -57,7 +57,7 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
          }
 
          @Override
-         protected FieldLayout<MenuRequirement> createFieldLayout() {
+         protected FieldLayout<MenuRequirement> createFieldLayout(MenuRequirement model) {
             return new MenuRequirementFields();
          }
 

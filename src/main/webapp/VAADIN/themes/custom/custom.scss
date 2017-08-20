@@ -53,14 +53,14 @@
     text-align: left;
   }
 
-  .v-table-cell-content-red {
-    background-color: rgba(255, 0, 0, 0.1);
+  .red {
+    background-color: rgba(255, 0, 0, 0.17) !important;
   }
-  .v-table-cell-content-yellow {
-    background-color: rgba(255, 249, 0, 0.1);
+  .yellow {
+    background-color: rgba(255, 249, 0, 0.17) !important;
   }
-  .v-table-cell-content-green {
-    background-color: rgba(0, 255, 3, 0.1);
+  .green {
+    background-color: rgba(0, 255, 3, 0.17) !important;
   }
   .valo-menu {
     font-size: 16px;

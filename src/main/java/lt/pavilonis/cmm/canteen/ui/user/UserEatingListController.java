@@ -46,7 +46,7 @@ public class UserEatingListController extends AbstractListController<UserEating,
          }
 
          @Override
-         protected FieldLayout<UserEating> createFieldLayout() {
+         protected FieldLayout<UserEating> createFieldLayout(UserEating model) {
             return new UserEatingFormView(imageService);
          }
       };

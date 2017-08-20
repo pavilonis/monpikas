@@ -51,8 +51,8 @@ public class WriteOffListController extends AbstractListController<WriteOff, Lon
          }
 
          @Override
-         protected FieldLayout<WriteOff> createFieldLayout() {
-            return new WriteOffFields(writeOffService);
+         protected FieldLayout<WriteOff> createFieldLayout(WriteOff model) {
+            return new WriteOffFields(writeOffService, model.getId() != null);
          }
 
          @Override

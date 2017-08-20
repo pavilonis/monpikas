@@ -59,7 +59,6 @@ CREATE TABLE MenuRequirement (
    dateCreated DATETIME   NOT NULL             DEFAULT NOW()
 );
 
-
 CREATE TABLE TechCardGroup (
    id          BIGINT(20)   NOT NULL PRIMARY KEY AUTO_INCREMENT,
    name        VARCHAR(255) NOT NULL,
@@ -132,28 +131,30 @@ CREATE TABLE WriteOff (
 );
 
 CREATE TABLE WriteOffItem (
-   id                 BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   quantity           DECIMAL(10, 3) NOT NULL,
-   receiptItem_id     BIGINT(20)     NOT NULL,
-   writeOff_id        BIGINT(20)     NOT NULL,
-#    menuRequirement_id BIGINT(20)     NOT NULL,
-   dateCreated        DATETIME       NOT NULL             DEFAULT NOW(),
+   id                      BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+   quantityAvailableBefore DECIMAL(10, 3) NOT NULL,
+   quantityConsumed        DECIMAL(10, 3) NOT NULL,
+   quantity                DECIMAL(10, 3) NOT NULL,
+   quantityAvailableAfter  DECIMAL(10, 3) NOT NULL,
+   receiptItem_id          BIGINT(20)     NOT NULL,
+   writeOff_id             BIGINT(20)     NOT NULL,
+   dateCreated             DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
-#    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
+   #    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
    FOREIGN KEY (writeOff_id) REFERENCES WriteOff (id)
       ON DELETE CASCADE
 );
 
-CREATE TABLE Tax (
-   id          BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   dateCreated DATETIME       NOT NULL             DEFAULT NOW(),
-   percent     DECIMAL(10, 3) NOT NULL
-);
-
-CREATE TABLE TaxCurrent (
-   id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-   tax_id      BIGINT(20) NOT NULL,
-   dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
-   FOREIGN KEY (tax_id) REFERENCES Tax (id)
-);
+# CREATE TABLE Tax (
+#    id          BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
+#    dateCreated DATETIME       NOT NULL             DEFAULT NOW(),
+#    percent     DECIMAL(10, 3) NOT NULL
+# );
+#
+# CREATE TABLE TaxCurrent (
+#    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
+#    tax_id      BIGINT(20) NOT NULL,
+#    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
+#    FOREIGN KEY (tax_id) REFERENCES Tax (id)
+# );

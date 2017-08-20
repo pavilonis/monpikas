@@ -32,7 +32,7 @@ public class TechCardGroupListController extends AbstractListController<TechCard
          }
 
          @Override
-         protected FieldLayout<TechCardGroup> createFieldLayout() {
+         protected FieldLayout<TechCardGroup> createFieldLayout(TechCardGroup model) {
             return new TechCardGroupForm();
          }
       };

@@ -61,7 +61,7 @@ public class TechCardListController extends AbstractListController<TechCard, Lon
          }
 
          @Override
-         protected FieldLayout<TechCard> createFieldLayout() {
+         protected FieldLayout<TechCard> createFieldLayout(TechCard model) {
             List<TechCardGroup> cardGroups = techCardGroupRepository.load(IdTextFilter.empty());
             List<ProductGroup> productGroups = productGroupRepository.load(IdTextFilter.empty());
             return new TechCardFields(cardGroups, productGroups);
