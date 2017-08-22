@@ -5,7 +5,6 @@ import com.vaadin.server.Resource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
-import lt.pavilonis.cmm.api.rest.presence.PresenceTime;
 import lt.pavilonis.cmm.api.rest.presence.PresenceTimeRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
@@ -19,7 +18,6 @@ import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.school.user.form.UserFormView;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.List;
 import java.util.Optional;
 
 @SpringComponent
@@ -54,9 +52,8 @@ public class UserListController extends AbstractListController<User, String, Use
 
          @Override
          protected FieldLayout<User> createFieldLayout(User model) {
-            List<PresenceTime> presenceTimeData = presenceTimeRepository.load(model.getCardCode());
             Resource image = imageService.imageResource(model.getBase16photo());
-            return new UserFormView(presenceTimeData, image);
+            return new UserFormView(presenceTimeRepository, model.getCardCode(), image);
          }
       };
    }

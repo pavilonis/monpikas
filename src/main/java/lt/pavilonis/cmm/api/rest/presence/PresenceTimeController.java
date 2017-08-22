@@ -18,6 +18,6 @@ public class PresenceTimeController {
    @GetMapping("/{cardCode}")
    public List<PresenceTime> load(@PathVariable String cardCode) {
 
-      return workTimeRepository.load(cardCode);
+      return workTimeRepository.load(cardCode, null, null);
    }
 }

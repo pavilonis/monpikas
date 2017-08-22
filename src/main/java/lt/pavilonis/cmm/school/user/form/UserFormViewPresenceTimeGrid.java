@@ -14,12 +14,9 @@ final class UserFormViewPresenceTimeGrid extends ListGrid<PresenceTime> {
 
    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("HH:mm");
 
-   UserFormViewPresenceTimeGrid(List<PresenceTime> items) {
+   UserFormViewPresenceTimeGrid() {
       super(PresenceTime.class);
-
-      setItems(items);
-
-      setHeight(430, Unit.PIXELS);
+      setHeight(362, Unit.PIXELS);
       addStyleName("table-border-less");
    }
 
@@ -41,5 +38,8 @@ final class UserFormViewPresenceTimeGrid extends ListGrid<PresenceTime> {
    protected void customize() {
       getColumn("hourDifference").setStyleGenerator(new PresenceTimeCellStyleGenerator());
       getColumn("date").setWidth(130);
+      getColumn("startTime").setWidth(100);
+      getColumn("endTime").setWidth(100);
+      getColumn("hourDifference").setWidth(600);
    }
 }

@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.school.user.form;
 
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
 import com.vaadin.ui.TabSheet;
@@ -11,10 +12,14 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.api.rest.presence.PresenceTime;
+import lt.pavilonis.cmm.api.rest.presence.PresenceTimeRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
+import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
+import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -28,13 +33,18 @@ public class UserFormView extends FieldLayout<User> {
    private final TextField birthDate = new ATextField(this.getClass(), "birthDate");
    private final TextField base16photo = new TextField();
 
-   public UserFormView(List<PresenceTime> presenceTimeData, Resource userImage) {
-//      setWidth(550, Unit.PIXELS);
+   public UserFormView(PresenceTimeRepository presenceTimeRepository, String cardCode, Resource userImage) {
       TabSheet sheet = new TabSheet();
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
+
+      UserFormViewPresenceTimeGrid presenceTimeGrid = new UserFormViewPresenceTimeGrid();
+
       sheet.addTab(
-            new UserFormViewPresenceTimeGrid(presenceTimeData),
+            new VerticalLayout(
+                  createFilterPanel(presenceTimeRepository, cardCode, presenceTimeGrid),
+                  presenceTimeGrid
+            ),
             App.translate(this, "hoursOfPresence")
       );
 
@@ -44,6 +54,31 @@ public class UserFormView extends FieldLayout<User> {
       );
 
       addComponent(sheet);
+   }
+
+   protected PeriodFilterPanel<IdPeriodFilter> createFilterPanel(PresenceTimeRepository presenceTimeRepository,
+                                                                 String cardCode,
+                                                                 UserFormViewPresenceTimeGrid presenceTimeGrid) {
+
+      PeriodFilterPanel<IdPeriodFilter> filterPanel = new PeriodFilterPanel<>();
+
+      DateField periodStart = filterPanel.getPeriodStart();
+      DateField periodEnd = filterPanel.getPeriodEnd();
+      periodStart.setValue(LocalDate.now().minusMonths(1));
+
+      Runnable updateGrid = () -> {
+         List<PresenceTime> items = presenceTimeRepository.load(
+               cardCode,
+               periodStart.getValue(),
+               periodEnd.getValue()
+         );
+         presenceTimeGrid.setItems(items);
+      };
+
+      filterPanel.addResetClickListener(click -> filterPanel.fieldReset());
+      filterPanel.addSearchClickListener(event -> updateGrid.run());
+      updateGrid.run();
+      return filterPanel;
    }
 
    private final class UserEditWindowDetailsTab extends HorizontalLayout {
@@ -80,7 +115,7 @@ public class UserFormView extends FieldLayout<User> {
 
          updateUserPhoto(imageResource);
 
-         setHeight(430, Unit.PIXELS);
+         setHeight(460, Unit.PIXELS);
       }
 
       private void updateUserPhoto(Resource imageResource) {
