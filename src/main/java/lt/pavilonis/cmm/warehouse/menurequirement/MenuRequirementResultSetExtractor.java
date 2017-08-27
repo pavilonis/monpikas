@@ -32,13 +32,22 @@ public class MenuRequirementResultSetExtractor implements ResultSetExtractor<Lis
          MenuRequirement menu = result.get(id);
          if (menu == null) {
             LocalDate date = rs.getDate("mr.date").toLocalDate();
-            result.put(id, menu = new MenuRequirement(id, date, new ArrayList<>()));
+            result.put(id, menu = new MenuRequirement(id, date));
          }
 
-         Collection<TechCardSet> techCardSets = menu.getTechCardSets();
-         TechCardSet techCardSet = findById(techCardSets, rs.getLong("tcs.id"));
+         Collection<TechCardSetNumber> techCardSets = menu.getTechCardSets();
+         long techCardSetId = rs.getLong("tcs.id");
+
+         TechCardSet techCardSet = techCardSets.stream()
+               .map(TechCardSetNumber::getTechCardSet)
+               .filter(tcs -> tcs.getId().equals(techCardSetId))
+               .findFirst()
+               .orElse(null);
+
          if (techCardSet == null) {
-            techCardSets.add(techCardSet = TechCardSetResultSetExtractor.mapRow(rs));
+            techCardSet = TechCardSetResultSetExtractor.mapRow(rs);
+            int numberOfTechCardSets = rs.getInt("mrtcs.number");
+            techCardSets.add(new TechCardSetNumber(techCardSet, numberOfTechCardSets));
          }
 
          Collection<TechCard> cards = techCardSet.getTechCards();

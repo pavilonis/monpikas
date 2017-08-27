@@ -7,6 +7,7 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
+import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -158,7 +159,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
 
             @Override
             protected List<String> columnOrder() {
-               return columnOrder;
+               return getSelectionPopupColumnOrder();
             }
          };
          selectionTable.setItems(getSelectionElements());
@@ -188,6 +189,10 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
          }
          close();
       }
+   }
+
+   protected List<String> getSelectionPopupColumnOrder() {
+      return columnOrder;
    }
 
    public void setTableHeight(float value, Unit unit) {

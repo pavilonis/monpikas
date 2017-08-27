@@ -6,9 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -20,8 +22,13 @@ public class PresenceTimeRepository {
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
 
-   public List<PresenceTime> load(String cardCode) {
+   public List<PresenceTime> load(String cardCode, LocalDate periodStart, LocalDate periodEnd) {
+
       LocalDateTime opStart = LocalDateTime.now();
+      Map<String, Object> args = new HashMap<>();
+      args.put("cardCode", cardCode);
+      args.put("periodStart", periodStart);
+      args.put("periodEnd", periodEnd);
 
       List<PresenceTime> result = jdbcSalto.query("" +
                   "SELECT " +
@@ -31,12 +38,16 @@ public class PresenceTimeRepository {
                   "   ROUND( " +
                   "         ABS(DATEDIFF(SECOND, max([DATETIME]), min([DATETIME])) / 3600.0), " +
                   "         1 " +
-                  "   )                              AS hourDiff " +
+                  "   )                               AS hourDiff " +
                   "FROM mm_ScanLog " +
                   "WHERE cardCode = :cardCode " +
+                  "  AND (:periodStart IS NULL OR :periodStart <= CAST([dateTime] AS DATE))" +
+                  "  AND (:periodEnd IS NULL OR :periodEnd >= CAST([dateTime] AS DATE)) " +
                   "GROUP BY CAST([DATETIME] AS DATE) " +
                   "ORDER BY CAST([DATETIME] AS DATE) DESC",
-            Collections.singletonMap("cardCode", cardCode),
+
+            args,
+
             (rs, i) -> new PresenceTime(
                   rs.getTimestamp(1).toLocalDateTime().toLocalDate(),
                   rs.getTime(2).toLocalTime(),

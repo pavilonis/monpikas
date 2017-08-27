@@ -122,7 +122,7 @@ public class WriteOffService {
       Map<Long, BigDecimal> productGroupConsumption = new HashMap<>();
 
       jdbc.query("" +
-                  "SELECT pg.id, tcp.outputWeight " +
+                  "SELECT pg.id, tcp.outputWeight, mrtcs.number " +
                   "FROM MenuRequirement mr " +
                   "  JOIN MenuRequirementTechCardSet mrtcs ON mrtcs.menuRequirement_id = mr.id " +
                   "  JOIN TechCardSet tcs ON tcs.id = mrtcs.techCardSet_id " +
@@ -135,10 +135,14 @@ public class WriteOffService {
             rs -> {
                long productGroup = rs.getLong(1);
                BigDecimal weight = rs.getBigDecimal(2);
+               int menuRequirementNumberOfTechCardSets = rs.getInt(3);
+
+               BigDecimal overallWeight = new BigDecimal(menuRequirementNumberOfTechCardSets)
+                     .multiply(weight);
 
                BigDecimal updatedValue = productGroupConsumption
                      .getOrDefault(productGroup, BigDecimal.ZERO)
-                     .add(weight);
+                     .add(overallWeight);
 
                productGroupConsumption.put(productGroup, updatedValue);
             },
