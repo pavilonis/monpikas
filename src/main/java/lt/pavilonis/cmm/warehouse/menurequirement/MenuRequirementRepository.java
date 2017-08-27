@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -56,13 +57,14 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
                         ImmutableMap.of(
                               "menuReqId", menuRequirementId,
                               "setId", entry.getTechCardSet().getId(),
-                              "number", entry.getNumber()
+                              "number", entry.getNumber(),
+                              "dateCreated", new Date()
                         )
             ).toArray(Map[]::new);
 
       jdbcNamed.batchUpdate(
-            "INSERT INTO MenuRequirementTechCardSet (menuRequirement_id, techCardSet_id, number) " +
-                  "VALUES (:menuReqId, :setId, :number)",
+            "INSERT INTO MenuRequirementTechCardSet (menuRequirement_id, techCardSet_id, number, dateCreated) " +
+                  "VALUES (:menuReqId, :setId, :number, :dateCreated)",
             batchArgs
       );
    }
@@ -70,8 +72,11 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
    private MenuRequirement create(MenuRequirement entity) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
-            "INSERT INTO MenuRequirement (date) VALUE (:date)",
-            new MapSqlParameterSource("date", entity.getDate()),
+            "INSERT INTO MenuRequirement (date, dateCreated) VALUE (:date, :dateCreated)",
+            new MapSqlParameterSource(ImmutableMap.of(
+                  "date", entity.getDate(),
+                  "dateCreated", new Date()
+            )),
             keyHolder
       );
 

@@ -11,6 +11,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
       Map<String, Object> args = new HashMap<>();
       args.put(ID, entity.getId());
       args.put("name", entity.getName());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? create(args)
@@ -42,7 +44,7 @@ public class TechCardGroupRepository implements EntityRepository<TechCardGroup, 
    private TechCardGroup create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
-            "INSERT INTO TechCardGroup (name) VALUES (:name)",
+            "INSERT INTO TechCardGroup (name, dateCreated) VALUES (:name, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );

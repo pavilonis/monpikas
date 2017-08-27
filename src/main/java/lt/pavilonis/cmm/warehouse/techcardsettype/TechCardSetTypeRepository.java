@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +32,7 @@ public class TechCardSetTypeRepository implements EntityRepository<TechCardSetTy
       Map<String, Object> args = new HashMap<>();
       args.put(ID, entity.getId());
       args.put("name", entity.getName());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? create(args)
@@ -44,8 +46,13 @@ public class TechCardSetTypeRepository implements EntityRepository<TechCardSetTy
    }
 
    private TechCardSetType create(Map<String, Object> args) {
+
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcNamed.update("INSERT INTO TechCardSetType (name) VALUE (:name)", new MapSqlParameterSource(args), keyHolder);
+      jdbcNamed.update(
+            "INSERT INTO TechCardSetType (name, dateCreated) VALUES (:name, :dateCreated)",
+            new MapSqlParameterSource(args),
+            keyHolder
+      );
 
       return find(keyHolder.getKey().longValue())
             .orElseThrow(IllegalStateException::new);
