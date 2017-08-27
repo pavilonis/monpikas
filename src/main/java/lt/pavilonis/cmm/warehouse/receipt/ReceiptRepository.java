@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class ReceiptRepository implements EntityRepository<Receipt, Long, Receip
       Map<String, Object> args = new HashMap<>();
       args.put("id", entity.getId());
       args.put("supplierId", entity.getSupplier().getId());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? save(entity, args)
@@ -49,7 +51,7 @@ public class ReceiptRepository implements EntityRepository<Receipt, Long, Receip
    private Receipt save(Receipt entity, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
-            "INSERT INTO Receipt (supplier_id) VALUE (:supplierId)",
+            "INSERT INTO Receipt (supplier_id, dateCreated) VALUE (:supplierId, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );
@@ -64,6 +66,7 @@ public class ReceiptRepository implements EntityRepository<Receipt, Long, Receip
 
    private void saveItems(long receiptId, Collection<ReceiptItem> items) {
 
+      Date now = new Date();
       @SuppressWarnings("unchecked")
       Map<String, ?>[] batchArgs = items.stream()
             .map(item -> ImmutableMap.builder()
@@ -74,16 +77,17 @@ public class ReceiptRepository implements EntityRepository<Receipt, Long, Receip
                   .put("productNameSnapshot", item.getProduct().getName())
                   .put("productMeasureUnitSnapshot", item.getProduct().getMeasureUnit().name())
                   .put("productUnitWeightSnapshot", item.getProduct().getUnitWeight())
+                  .put("dateCreated", now)
                   .build())
             .toArray(Map[]::new);
 
       jdbcNamed.batchUpdate("" +
                   "INSERT INTO ReceiptItem (" +
-                  "  receipt_id, product_id, unitPrice, quantity, " +
-                  "  productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot" +
+                  "  receipt_id, product_id, unitPrice, quantity, productNameSnapshot, " +
+                  "  productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated" +
                   ") VALUES (" +
-                  "  :receiptId, :productId, :unitPrice, :quantity, " +
-                  "  :productNameSnapshot, :productMeasureUnitSnapshot, :productUnitWeightSnapshot" +
+                  "  :receiptId, :productId, :unitPrice, :quantity, :productNameSnapshot, " +
+                  "  :productMeasureUnitSnapshot, :productUnitWeightSnapshot, :dateCreated" +
                   ")",
             batchArgs
       );

@@ -15,6 +15,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class ProductRepository implements EntityRepository<Product, Long, Produc
       args.put("measureUnit", entity.getMeasureUnit().name());
       args.put("unitWeight", entity.getUnitWeight());
       args.put("productGroupId", entity.getProductGroup().getId());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? create(args)
@@ -69,8 +71,8 @@ public class ProductRepository implements EntityRepository<Product, Long, Produc
    private Product create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update("" +
-                  "INSERT INTO Product (name, measureUnit, unitWeight, productGroup_id) " +
-                  "VALUES (:name, :measureUnit, :unitWeight, :productGroupId)",
+                  "INSERT INTO Product (name, measureUnit, unitWeight, productGroup_id, dateCreated) " +
+                  "VALUES (:name, :measureUnit, :unitWeight, :productGroupId, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );

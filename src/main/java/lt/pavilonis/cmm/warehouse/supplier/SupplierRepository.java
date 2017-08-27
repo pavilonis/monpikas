@@ -12,6 +12,7 @@ import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
       args.put(ID, entity.getId());
       args.put("code", entity.getCode());
       args.put("name", entity.getName());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? create(args)
@@ -44,7 +46,7 @@ public class SupplierRepository implements EntityRepository<Supplier, Long, IdTe
    private Supplier create(Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcNamed.update(
-            "INSERT INTO Supplier (name, code) VALUES (:name, :code)",
+            "INSERT INTO Supplier (name, code, dateCreated) VALUES (:name, :code, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );

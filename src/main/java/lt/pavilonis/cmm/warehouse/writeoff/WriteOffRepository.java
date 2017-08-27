@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +31,7 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
       args.put("id", entity.getId());
       args.put("periodStart", entity.getPeriodStart());
       args.put("periodEnd", entity.getPeriodEnd());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? save(entity, args)
@@ -49,8 +51,9 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
 
    private WriteOff save(WriteOff entity, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcNamed.update(
-            "INSERT INTO WriteOff (periodStart, periodEnd) VALUES (:periodStart, :periodEnd)",
+      jdbcNamed.update("" +
+                  "INSERT INTO WriteOff (periodStart, periodEnd, dateCreated) " +
+                  "VALUES (:periodStart, :periodEnd, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );
@@ -65,6 +68,8 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
 
    private void saveItems(long writeOffId, Collection<WriteOffItem> items) {
 
+      Date now = new Date();
+
       @SuppressWarnings("unchecked")
       Map<String, ?>[] batchArgs = items.stream()
             .filter(item -> item.getReceiptItem() != null)
@@ -75,14 +80,15 @@ public class WriteOffRepository implements EntityRepository<WriteOff, Long, Writ
                   .put("quantityConsumed", item.getQuantityConsumed())
                   .put("quantity", item.getQuantity())
                   .put("quantityAvailableAfter", item.getQuantityAvailableAfter())
+                  .put("dateCreated", now)
                   .build())
             .toArray(Map[]::new);
 
       jdbcNamed.batchUpdate("" +
-                  "INSERT INTO WriteOffItem (writeOff_id, receiptItem_id," +
-                  "  quantityAvailableBefore, quantityConsumed, quantity, quantityAvailableAfter) " +
-                  "VALUES (:writeOffId, :receiptItemId," +
-                  "  :quantityAvailableBefore, :quantityConsumed, :quantity, :quantityAvailableAfter)",
+                  "INSERT INTO WriteOffItem (writeOff_id, receiptItem_id, quantityAvailableBefore, " +
+                  "  quantityConsumed, quantity, quantityAvailableAfter, dateCreated) " +
+                  "VALUES (:writeOffId, :receiptItemId, :quantityAvailableBefore, " +
+                  "  :quantityConsumed, :quantity, :quantityAvailableAfter, :dateCreated)",
             batchArgs
       );
    }

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,6 +35,7 @@ public class TechCardSetRepository implements EntityRepository<TechCardSet, Long
       args.put("id", entity.getId());
       args.put("name", entity.getName());
       args.put("typeId", entity.getType().getId());
+      args.put("dateCreated", new Date());
 
       return entity.getId() == null
             ? save(entity, args)
@@ -54,8 +56,9 @@ public class TechCardSetRepository implements EntityRepository<TechCardSet, Long
 
    private TechCardSet save(TechCardSet entity, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcNamed.update(
-            "INSERT INTO TechCardSet(name, techCardSetType_id) VALUES (:name, :typeId)",
+      jdbcNamed.update("" +
+                  "INSERT INTO TechCardSet(name, techCardSetType_id, dateCreated) " +
+                  "VALUES (:name, :typeId, :dateCreated)",
             new MapSqlParameterSource(args),
             keyHolder
       );
@@ -69,14 +72,18 @@ public class TechCardSetRepository implements EntityRepository<TechCardSet, Long
    }
 
    private void saveTechCards(Collection<TechCard> techCards, long cardSetId) {
+
+      Date now = new Date();
+
       @SuppressWarnings("unchecked")
       Map<String, ?>[] batchArgs = techCards.stream()
             .map(Identified::getId)
-            .map(cardId -> ImmutableMap.of("cardSetId", cardSetId, "cardId", cardId))
+            .map(cardId -> ImmutableMap.of("cardSetId", cardSetId, "cardId", cardId, "dateCreated", now))
             .toArray(Map[]::new);
 
-      jdbcNamed.batchUpdate(
-            "INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id) VALUES (:cardSetId, :cardId)",
+      jdbcNamed.batchUpdate("" +
+                  "INSERT INTO TechCardSetTechCard (techCardSet_id, techCard_id, dateCreated) " +
+                  "VALUES (:cardSetId, :cardId, :dateCreated)",
             batchArgs
       );
    }

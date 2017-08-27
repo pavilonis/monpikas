@@ -18,6 +18,7 @@ import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -47,6 +48,7 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
       args.put(ID, card.getId());
       args.put("name", card.getName());
       args.put("groupId", card.getGroup().getId());
+      args.put("dateCreated", new Date());
 
       return card.getId() == null
             ? create(card, args)
@@ -65,21 +67,27 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
 
    private void saveTechCardProducts(long cardId, Map<ProductGroup, Integer> outputWeights) {
 
-      String query = "INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight) " +
-            "VALUES (:cardId, :productGroupId, :outputWeight)";
+      String query = "INSERT INTO TechCardProduct (techCard_id, productGroup_id, outputWeight, dateCreated) " +
+            "VALUES (:cardId, :productGroupId, :outputWeight, :dateCreated)";
 
+      Date now = new Date();
       outputWeights.forEach((productGroup, outputWeight) -> jdbcNamed.update(query, ImmutableMap.of(
             "cardId", cardId,
             "productGroupId", productGroup.getId(),
-            "outputWeight", outputWeight
+            "outputWeight", outputWeight,
+            "dateCreated", now
       )));
    }
 
    private TechCard create(TechCard card, Map<String, Object> args) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      String query = "INSERT INTO TechCard (name, techCardGroup_id) VALUES (:name, :groupId)";
 
-      jdbcNamed.update(query, new MapSqlParameterSource(args), keyHolder);
+      jdbcNamed.update("" +
+                  "INSERT INTO TechCard (name, techCardGroup_id, dateCreated) " +
+                  "VALUES (:name, :groupId, :dateCreated)",
+            new MapSqlParameterSource(args),
+            keyHolder
+      );
       saveTechCardProducts(keyHolder.getKey().longValue(), card.getProductGroupOutputWeight());
 
       return find(keyHolder.getKey().longValue())
@@ -129,23 +137,24 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
 
    @Override
    public Optional<SizeConsumingBackendDataProvider<TechCard, IdTextFilter>> lazyDataProvider(IdTextFilter filter) {
-      SizeConsumingBackendDataProvider<TechCard, IdTextFilter> provider = new SizeConsumingBackendDataProvider<TechCard, IdTextFilter>() {
-         @Override
-         protected Stream<TechCard> fetchFromBackEnd(Query<TechCard, IdTextFilter> query) {
-            IdTextFilter updatedFilter = filter
-                  .withOffset(query.getOffset())
-                  .withLimit(query.getLimit());
+      SizeConsumingBackendDataProvider<TechCard, IdTextFilter> provider =
+            new SizeConsumingBackendDataProvider<TechCard, IdTextFilter>() {
+               @Override
+               protected Stream<TechCard> fetchFromBackEnd(Query<TechCard, IdTextFilter> query) {
+                  IdTextFilter updatedFilter = filter
+                        .withOffset(query.getOffset())
+                        .withLimit(query.getLimit());
 
-            return load(updatedFilter).stream();
-         }
+                  return load(updatedFilter).stream();
+               }
 
-         @Override
-         protected int sizeInBackEnd() {
-            String sql = "SELECT COUNT(*) " + FROM_WHERE_BLOCK;
-            return jdbcNamed.queryForObject(sql, composeArgs(filter), Integer.class);
-         }
+               @Override
+               protected int sizeInBackEnd() {
+                  String sql = "SELECT COUNT(*) " + FROM_WHERE_BLOCK;
+                  return jdbcNamed.queryForObject(sql, composeArgs(filter), Integer.class);
+               }
 
-      };
+            };
       return Optional.of(provider);
    }
 
@@ -157,30 +166,4 @@ public class TechCardRepository implements EntityRepository<TechCard, Long, IdTe
       args.put("limit", filter.getLimit());
       return args;
    }
-
-   //TODO
-//   @Override
-//   public List<DishItemRecord> items(long dishId) {
-//      return dsl().selectFrom(DISHITEM)
-//            .where(DISHITEM.DISHID.eq(dishId))
-//            .fetch();
-//   }
-//
-//   @Override
-//   public BigDecimal totalWeight(long dishId) {
-//      return dsl().select(coalesce(sum(DISHITEM.OUTPUTWEIGHT), 0).coerce(BigDecimal.class))
-//            .from(DISHITEM)
-//            .where(DISHITEM.DISHID.eq(dishId))
-//            .fetchOne()
-//            .value1();
-//   }
-//
-//   @Override
-//   public int kcal(long dishId) {
-//      return dsl().select(coalesce(sum(PRODUCTGROUP.KCAL100.mul(DISHITEM.OUTPUTWEIGHT).div(100)), 0).coerce(int.class))
-//            .from(DISHITEM)
-//            .join(PRODUCTGROUP).on(DISHITEM.PRODUCTGROUPID.eq(PRODUCTGROUP.ID)).and(DISHITEM.DISHID.eq(dishId))
-//            .fetchOne()
-//            .value1();
-//   }
 }
