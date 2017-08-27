@@ -3,7 +3,6 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
-import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
 import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -50,16 +49,20 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
             .orElseThrow(IllegalStateException::new);
    }
 
-   private void saveMenuRequirementTechCardSets(long menuRequirementId, Collection<TechCardSet> techCardSets) {
+   private void saveMenuRequirementTechCardSets(long menuRequirementId, Collection<TechCardSetNumber> techCardSetNumbers) {
       @SuppressWarnings("unchecked")
-      Map<String, ?>[] batchArgs = techCardSets.stream()
-            .map(TechCardSet::getId)
-            .map(id -> ImmutableMap.of("menuReqId", menuRequirementId, "setId", id))
-            .toArray(Map[]::new);
+      Map<String, ?>[] batchArgs = techCardSetNumbers.stream()
+            .map(entry ->
+                        ImmutableMap.of(
+                              "menuReqId", menuRequirementId,
+                              "setId", entry.getTechCardSet().getId(),
+                              "number", entry.getNumber()
+                        )
+            ).toArray(Map[]::new);
 
       jdbcNamed.batchUpdate(
-            "INSERT INTO MenuRequirementTechCardSet (menuRequirement_id, techCardSet_id) " +
-                  "VALUES (:menuReqId, :setId)",
+            "INSERT INTO MenuRequirementTechCardSet (menuRequirement_id, techCardSet_id, number) " +
+                  "VALUES (:menuReqId, :setId, :number)",
             batchArgs
       );
    }
@@ -91,6 +94,7 @@ public class MenuRequirementRepository implements EntityRepository<MenuRequireme
       args.put("periodEnd", filter.getPeriodEnd());
       return jdbcNamed.query("" +
                   "SELECT mr.id, mr.date ," +
+                  "  mrtcs.number, " +
                   "  tcs.id, tcs.name, " +
                   "  tcst.id, tcst.name, " +
                   "  tc.id, tc.name, " +

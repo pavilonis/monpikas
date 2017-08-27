@@ -3,18 +3,14 @@ package lt.pavilonis.cmm.warehouse.menurequirement;
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
-import lt.pavilonis.cmm.warehouse.techcardset.TechCardSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
@@ -40,9 +36,9 @@ public class MenuRequirementListController extends AbstractListController<MenuRe
 
          @Override
          protected Map<String, ValueProvider<MenuRequirement, ?>> getCustomColumns() {
-            return ImmutableMap.of("techCardSets", item -> item.getTechCardSets().stream()
-                  .map(TechCardSet::getType)
-                  .map(Named::getName)
+            return ImmutableMap.of("techCardSets", item -> item.getTechCardSets()
+                  .stream()
+                  .map(tscn -> tscn.getTechCardSet().getType().getName() + ":" + tscn.getNumber())
                   .collect(Collectors.joining(", ")));
          }
       };
