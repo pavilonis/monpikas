@@ -142,20 +142,6 @@ CREATE TABLE WriteOffItem (
    dateCreated             DATETIME       NOT NULL             DEFAULT NOW(),
 
    FOREIGN KEY (receiptItem_id) REFERENCES ReceiptItem (id),
-   #    FOREIGN KEY (menuRequirement_id) REFERENCES MenuRequirement (id),
    FOREIGN KEY (writeOff_id) REFERENCES WriteOff (id)
       ON DELETE CASCADE
 );
-
-# CREATE TABLE Tax (
-#    id          BIGINT(20)     NOT NULL PRIMARY KEY AUTO_INCREMENT,
-#    dateCreated DATETIME       NOT NULL             DEFAULT NOW(),
-#    percent     DECIMAL(10, 3) NOT NULL
-# );
-#
-# CREATE TABLE TaxCurrent (
-#    id          BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT,
-#    tax_id      BIGINT(20) NOT NULL,
-#    dateCreated DATETIME   NOT NULL             DEFAULT NOW(),
-#    FOREIGN KEY (tax_id) REFERENCES Tax (id)
-# );

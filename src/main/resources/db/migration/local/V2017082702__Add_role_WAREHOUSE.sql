@@ -1,0 +1,2 @@
+INSERT INTO Role (name) VALUE ('WAREHOUSE');
+
