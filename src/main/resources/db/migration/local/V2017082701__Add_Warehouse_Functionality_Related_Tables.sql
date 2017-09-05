@@ -41,9 +41,9 @@ CREATE TABLE ReceiptItem (
    quantity                   DECIMAL(10, 3) NOT NULL,
    product_id                 BIGINT(20)     NOT NULL,
    receipt_id                 BIGINT(20)     NOT NULL,
-   productNameSnapshot        VARCHAR(255)   NOT NULL,
-   productMeasureUnitSnapshot VARCHAR(15)    NOT NULL,
-   productUnitWeightSnapshot  MEDIUMINT      NOT NULL,
+#    productNameSnapshot        VARCHAR(255)   NOT NULL,
+#    productMeasureUnitSnapshot VARCHAR(15)    NOT NULL,
+#    productUnitWeightSnapshot  MEDIUMINT      NOT NULL,
    dateCreated                DATETIME       NOT NULL,
 
    UNIQUE (product_id, receipt_id),

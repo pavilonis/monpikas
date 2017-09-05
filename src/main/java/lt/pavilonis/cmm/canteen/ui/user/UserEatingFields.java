@@ -20,10 +20,11 @@ import lt.pavilonis.cmm.common.field.OneToManyField;
 import lt.pavilonis.cmm.common.service.ImageService;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 //TODO add validator to ensure that user has no more than one eating for each type
-public class UserEatingFormView extends FieldLayout<UserEating> {
+public class UserEatingFields extends FieldLayout<UserEating> {
    private final ImageService imageService;
    private final ATextField name = new ATextField(this.getClass(), "name");
    private final ATextField birthDate = new ATextField(this.getClass(), "birthDate");
@@ -39,7 +40,7 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
          )
    );
 
-   public UserEatingFormView(ImageService imageService) {
+   public UserEatingFields(ImageService imageService) {
       this.imageService = imageService;
       setWidth(852, Unit.PIXELS);
 //      setHeight(460, Unit.PIXELS);
@@ -78,8 +79,12 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
 
    @Override
    public void initCustomFieldValues(UserEating entity) {
-      name.setValue(entity.getUser().getName());
-      birthDate.setValue(entity.getUser().getBirthDate());
+      Optional.ofNullable(entity.getUser().getName())
+            .ifPresent(name::setValue);
+
+      Optional.ofNullable(entity.getUser().getBirthDate())
+            .ifPresent(birthDate::setValue);
+
       updateImage(entity.getUser().getBase16photo());
    }
 
