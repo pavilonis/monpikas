@@ -84,78 +84,30 @@ INSERT INTO TechCardSetType (name, dateCreated) VALUES
 
 INSERT INTO Receipt (id, supplier_id, dateCreated)
 VALUES (1, 1, NOW() - INTERVAL 6 DAY);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (1, 1, 2, 0.45, 15, (SELECT name
-                            FROM Product
-                            WHERE id = 2), (SELECT measureUnit
-                                            FROM Product
-                                            WHERE id = 2), (SELECT unitWeight
-                                                            FROM Product
-                                                            WHERE id = 2), CURRENT_TIMESTAMP);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (2, 1, 9, 0.8, 8, (SELECT name
-                          FROM Product
-                          WHERE id = 9), (SELECT measureUnit
-                                          FROM Product
-                                          WHERE id = 9), (SELECT unitWeight
-                                                          FROM Product
-                                                          WHERE id = 9), CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (1, 1, 2, 0.45, 15, CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (2, 1, 9, 0.8, 8, CURRENT_TIMESTAMP);
 
 INSERT INTO Receipt (id, supplier_id, dateCreated)
 VALUES (2, 2, NOW() - INTERVAL 4 DAY);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (3, 2, 6, 1.17, 8, (SELECT name
-                           FROM Product
-                           WHERE id = 6), (SELECT measureUnit
-                                           FROM Product
-                                           WHERE id = 6), (SELECT unitWeight
-                                                           FROM Product
-                                                           WHERE id = 6), CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (3, 2, 6, 1.17, 8, CURRENT_TIMESTAMP);
 
 INSERT INTO Receipt (id, supplier_id, dateCreated)
 VALUES (3, 3, NOW() - INTERVAL 2 DAY);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (4, 3, 11, 3.65, 5.5, (SELECT name
-                              FROM Product
-                              WHERE id = 11), (SELECT measureUnit
-                                               FROM Product
-                                               WHERE id = 11), (SELECT unitWeight
-                                                                FROM Product
-                                                                WHERE id = 11), CURRENT_TIMESTAMP);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (5, 3, 3, 1, 2, (SELECT name
-                        FROM Product
-                        WHERE id = 3), (SELECT measureUnit
-                                        FROM Product
-                                        WHERE id = 3), (SELECT unitWeight
-                                                        FROM Product
-                                                        WHERE id = 3), CURRENT_TIMESTAMP);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (6, 3, 5, 1.3, 3, (SELECT name
-                          FROM Product
-                          WHERE id = 5), (SELECT measureUnit
-                                          FROM Product
-                                          WHERE id = 5), (SELECT unitWeight
-                                                          FROM Product
-                                                          WHERE id = 5), CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (4, 3, 11, 3.65, 5.5, CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (5, 3, 3, 1, 2, CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (6, 3, 5, 1.3, 3, CURRENT_TIMESTAMP);
 
 INSERT INTO Receipt (id, supplier_id, dateCreated) VALUES (4, 2, NOW());
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (7, 4, 12, 2.5, 2, (SELECT name
-                           FROM Product
-                           WHERE id = 12), (SELECT measureUnit
-                                            FROM Product
-                                            WHERE id = 12), (SELECT unitWeight
-                                                             FROM Product
-                                                             WHERE id = 12), CURRENT_TIMESTAMP);
-INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, productNameSnapshot, productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated)
-VALUES (8, 4, 13, 1, 5, (SELECT name
-                         FROM Product
-                         WHERE id = 13), (SELECT measureUnit
-                                          FROM Product
-                                          WHERE id = 13), (SELECT unitWeight
-                                                           FROM Product
-                                                           WHERE id = 13), CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (7, 4, 12, 2.5, 2, CURRENT_TIMESTAMP);
+INSERT INTO ReceiptItem (id, receipt_id, product_id, unitPrice, quantity, dateCreated)
+VALUES (8, 4, 13, 1, 5, CURRENT_TIMESTAMP);
 
 INSERT INTO MenuRequirement (id, date, dateCreated) VALUES (1, CURDATE(), CURRENT_TIMESTAMP);
 INSERT INTO TechCardSet (id, name, techCardSetType_id, dateCreated) VALUES (1, 'Pigus pusryčiai', 1, CURRENT_TIMESTAMP);

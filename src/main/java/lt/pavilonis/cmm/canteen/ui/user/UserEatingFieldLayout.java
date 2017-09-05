@@ -3,6 +3,7 @@ package lt.pavilonis.cmm.canteen.ui.user;
 import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.Binder;
 import com.vaadin.server.Resource;
+import com.vaadin.ui.Alignment;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -20,10 +21,11 @@ import lt.pavilonis.cmm.common.field.OneToManyField;
 import lt.pavilonis.cmm.common.service.ImageService;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 //TODO add validator to ensure that user has no more than one eating for each type
-public class UserEatingFormView extends FieldLayout<UserEating> {
+public class UserEatingFieldLayout extends FieldLayout<UserEating> {
    private final ImageService imageService;
    private final ATextField name = new ATextField(this.getClass(), "name");
    private final ATextField birthDate = new ATextField(this.getClass(), "birthDate");
@@ -39,23 +41,29 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
          )
    );
 
-   public UserEatingFormView(ImageService imageService) {
+   public UserEatingFieldLayout(ImageService imageService) {
       this.imageService = imageService;
-      setWidth(852, Unit.PIXELS);
-//      setHeight(460, Unit.PIXELS);
-      eatingsField.setTableWidth(600, Unit.PIXELS);
-
-      name.setWidth(348, Unit.PIXELS);
-      Stream.of(birthDate, typeField).forEach(field -> field.setWidth(240, Unit.PIXELS));
+      eatingsField.setTableWidth(710, Unit.PIXELS);
+      comment.setWidth(250, Unit.PIXELS);
+      comment.setHeight(179, Unit.PIXELS);
+      name.setWidth(286, Unit.PIXELS);
+      Stream.of(birthDate, typeField).forEach(field -> field.setWidth(200, Unit.PIXELS));
       Stream.of(name, birthDate).forEach(field -> field.setEnabled(false));
 
-      HorizontalLayout row1 = new HorizontalLayout(name, birthDate, typeField);
-      VerticalLayout photoAndComment = new VerticalLayout(photoLayout, comment);
-      photoAndComment.setMargin(false);
-      HorizontalLayout row2 = new HorizontalLayout(eatingsField, photoAndComment);
+      VerticalLayout rightSide = new VerticalLayout(photoLayout, comment);
+      rightSide.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
+      rightSide.setMargin(false);
 
-      addComponents(row1, row2);
-      setExpandRatio(row2, 1f);
+      VerticalLayout leftSide = new VerticalLayout(
+            new HorizontalLayout(name, birthDate, typeField),
+            eatingsField
+      );
+      leftSide.setMargin(false);
+
+      HorizontalLayout layout = new HorizontalLayout(leftSide, rightSide);
+      layout.setMargin(false);
+
+      addComponents(layout);
    }
 
    @Override
@@ -78,8 +86,12 @@ public class UserEatingFormView extends FieldLayout<UserEating> {
 
    @Override
    public void initCustomFieldValues(UserEating entity) {
-      name.setValue(entity.getUser().getName());
-      birthDate.setValue(entity.getUser().getBirthDate());
+      Optional.ofNullable(entity.getUser().getName())
+            .ifPresent(name::setValue);
+
+      Optional.ofNullable(entity.getUser().getBirthDate())
+            .ifPresent(birthDate::setValue);
+
       updateImage(entity.getUser().getBase16photo());
    }
 

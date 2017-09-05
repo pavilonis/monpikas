@@ -1,0 +1,15 @@
+DROP TABLE WriteOffItem;
+DROP TABLE WriteOff;
+DROP TABLE ReceiptItem;
+DROP TABLE Receipt;
+DROP TABLE TechCardSet;
+DROP TABLE TechCard;
+DROP TABLE Product;
+DROP TABLE ProductGroup;
+DROP TABLE Supplier;
+DROP TABLE TechCardGroup;
+DROP TABLE TechCardSetType;
+DROP TABLE MenuRequirement;
+DROP TABLE TechCardProduct;
+DROP TABLE TechCardSetTechCard;
+DROP TABLE MenuRequirementTechCardSet;
