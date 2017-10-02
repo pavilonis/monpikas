@@ -151,15 +151,6 @@ public class UserRepository {
       return args;
    }
 
-//   public void delete(String cardCode) {
-//      jdbcSalto.update("" +
-//                  "DELETE u FROM tb_Users u " +
-//                  "  JOIN tb_Cards c ON c.id_user = u.id_user " +
-//                  "WHERE c.ROMCode = :cardCode",
-//            Collections.singletonMap("cardCode", cardCode)
-//      );
-//   }
-
    public boolean exists(String cardCode) {
       return jdbcSalto.queryForObject("" +
                   "SELECT " +
@@ -208,43 +199,4 @@ public class UserRepository {
             String.class
       );
    }
-
-   //   @Transactional
-//   public UserRepresentation save(UserRepresentation user) {
-//      Map<String, Object> args = collectArgs(user);
-//      KeyHolder keyHolder = new GeneratedKeyHolder();
-//      jdbcSalto.update("" +
-//                  "INSERT INTO tb_Users (" +
-//                  "  name, FirstName, LastName, dtActivation, Dummy2, Dummy3, Dummy4, Picture " +
-//                  ") VALUES (" +
-//                  "  :name," +
-//                  "  :firstName, " +
-//                  "  :lastName, " +
-//                  "  getdate(), " +
-//                  "  :birthDate, " +
-//                  "  :group, " +
-//                  "  :role, " +
-//                  "  CONVERT(VARBINARY(MAX), ISNULL(:base16photo, ''))" +
-//                  ") ",
-//            new MapSqlParameterSource(args),
-//            keyHolder
-//      );
-//
-//      jdbcSalto.update("" +
-//                  "INSERT INTO tb_Cards (Cardcode, id_user, ROMCode, ActivationDate, EditionDate) " +
-//                  "VALUES (" +
-//                  "  (SELECT MAX(Cardcode) + 1 FROM tb_Cards), " +
-//                  "  :userId, " +
-//                  "  :cardCode, " +
-//                  "  :now, " +
-//                  "  :now" +
-//                  ")",
-//            ImmutableMap.of(
-//                  "userId", keyHolder.getKey().longValue(),
-//                  "cardCode", user.cardCode,
-//                  "now", new Date()
-//            )
-//      );
-//      return load(user.cardCode, false);
-//   }
 }

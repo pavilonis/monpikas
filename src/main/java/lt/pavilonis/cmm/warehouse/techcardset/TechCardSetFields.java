@@ -35,7 +35,7 @@ public class TechCardSetFields extends FieldLayout<TechCardSet> {
       type.setWidth(300, Unit.PIXELS);
       name.setWidth(300, Unit.PIXELS);
       HorizontalLayout top = new HorizontalLayout(name, type);
-      techCards.setTableWidth(900, Unit.PIXELS);
+      techCards.setTableHeight(336, Unit.PIXELS);
       addComponents(top, techCards);
    }
 }

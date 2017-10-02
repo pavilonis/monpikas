@@ -4,7 +4,7 @@
 
    <groupId>org.springframework</groupId>
    <artifactId>monpikas</artifactId>
-   <version>0.98</version>
+   <version>0.99</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
@@ -132,7 +132,7 @@
          <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-bom</artifactId>
-            <version>8.1.1</version>
+            <version>8.1.5</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>

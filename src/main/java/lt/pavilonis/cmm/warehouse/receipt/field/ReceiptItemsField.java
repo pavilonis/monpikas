@@ -2,6 +2,7 @@ package lt.pavilonis.cmm.warehouse.receipt.field;
 
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.common.field.OneToManyField;
 import lt.pavilonis.cmm.warehouse.MeasureUnit;
 import lt.pavilonis.cmm.warehouse.product.Product;
@@ -33,6 +34,11 @@ public class ReceiptItemsField extends OneToManyField<ReceiptItem> {
       this.products = products;
       this.productGroups = products.stream()
             .map(Product::getProductGroup)
+            .collect(Collectors.groupingBy(Identified::getId))
+            .values()
+            .stream()
+            .map(a -> a.iterator().next())
+            .sorted((a, b) -> a.getName().compareTo(b.getName()))
             .collect(Collectors.toList());
    }
 

@@ -74,20 +74,18 @@ public class ReceiptRepository implements EntityRepository<Receipt, Long, Receip
                   .put("productId", item.getProduct().getId())
                   .put("unitPrice", item.getUnitPrice())
                   .put("quantity", item.getQuantity())
-                  .put("productNameSnapshot", item.getProduct().getName())
-                  .put("productMeasureUnitSnapshot", item.getProduct().getMeasureUnit().name())
-                  .put("productUnitWeightSnapshot", item.getProduct().getUnitWeight())
+//                  .put("productNameSnapshot", item.getProduct().getName())
+//                  .put("productMeasureUnitSnapshot", item.getProduct().getMeasureUnit().name())
+//                  .put("productUnitWeightSnapshot", item.getProduct().getUnitWeight())
                   .put("dateCreated", now)
                   .build())
             .toArray(Map[]::new);
 
       jdbcNamed.batchUpdate("" +
                   "INSERT INTO ReceiptItem (" +
-                  "  receipt_id, product_id, unitPrice, quantity, productNameSnapshot, " +
-                  "  productMeasureUnitSnapshot, productUnitWeightSnapshot, dateCreated" +
+                  "  receipt_id, product_id, unitPrice, quantity, dateCreated" +
                   ") VALUES (" +
-                  "  :receiptId, :productId, :unitPrice, :quantity, :productNameSnapshot, " +
-                  "  :productMeasureUnitSnapshot, :productUnitWeightSnapshot, :dateCreated" +
+                  "  :receiptId, :productId, :unitPrice, :quantity, :dateCreated" +
                   ")",
             batchArgs
       );
