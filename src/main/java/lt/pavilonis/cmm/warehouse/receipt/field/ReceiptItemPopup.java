@@ -40,8 +40,14 @@ public class ReceiptItemPopup extends Window {
    public ReceiptItemPopup(Collection<Product> products, Collection<ProductGroup> productGroups,
                            Consumer<Set<ReceiptItem>> selectionConsumer) {
 
-      this.productGroupComboBox = new ComboBox<>(App.translate(ReceiptItemPopup.class, "productGroupFilter"), productGroups);
-      this.productComboBox = new ComboBox<>(App.translate(ReceiptItemPopup.class, "product"), products);
+      this.productGroupComboBox = new ComboBox<>(
+            App.translate(ReceiptItemPopup.class, "productGroupFilter"),
+            productGroups
+      );
+      this.productComboBox = new ComboBox<>(
+            App.translate(ReceiptItemPopup.class, "product"),
+            products
+      );
       this.selectionConsumer = selectionConsumer;
 
       productGroupComboBox.setItemCaptionGenerator(ProductGroup::getName);

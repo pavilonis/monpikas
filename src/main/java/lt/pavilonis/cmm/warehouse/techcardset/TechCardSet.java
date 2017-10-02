@@ -5,12 +5,12 @@ import lt.pavilonis.cmm.warehouse.techcard.TechCard;
 import lt.pavilonis.cmm.warehouse.techcardsettype.TechCardSetType;
 
 import java.util.Collection;
-import java.util.Set;
+import java.util.HashSet;
 
 public final class TechCardSet extends Named<Long> {
 
    private TechCardSetType type;
-   private Collection<TechCard> techCards;
+   private Collection<TechCard> techCards = new HashSet<>();
 //   private MenuRequirement menuRequirement;
 
    public TechCardSet() {/**/}
