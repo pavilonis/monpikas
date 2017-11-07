@@ -4,6 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -16,9 +17,9 @@ public class ClassroomController {
    private ClassroomRepository repository;
 
    @GetMapping
-   public ResponseEntity<List<ClassroomOccupancy>> load() {
+   public ResponseEntity<List<ClassroomOccupancy>> load(@RequestParam(required = false) Integer level) {
 
-      List<ClassroomOccupancy> result = repository.loadActive();
+      List<ClassroomOccupancy> result = repository.loadActive(level);
 
       return ResponseEntity.ok().body(result);
    }

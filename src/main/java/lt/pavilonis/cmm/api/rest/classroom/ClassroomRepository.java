@@ -31,7 +31,7 @@ public class ClassroomRepository {
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
 
-   public List<ClassroomOccupancy> loadActive() {
+   public List<ClassroomOccupancy> loadActive(Integer level) {
 
       LocalDateTime opStart = LocalDateTime.now();
 
@@ -46,11 +46,12 @@ public class ClassroomRepository {
                   "             MAX(co_inner.dateTime) AS dateTime, " +
                   "             co_inner.classroomNumber " +
                   "          FROM mm_ClassRoomOccupancy co_inner " +
+                  "          WHERE :lvl IS NULL OR :lvl = (co_inner.classroomNumber % 100) " +
                   "          GROUP BY co_inner.classRoomNumber " +
                   "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
                   "                      AND latest.dateTime = co.dateTime " +
                   "ORDER BY co.dateTime DESC",
-            Collections.emptyMap(),
+             Collections.singletonMap("lvl", level),
             ROW_MAPPER
       );
 

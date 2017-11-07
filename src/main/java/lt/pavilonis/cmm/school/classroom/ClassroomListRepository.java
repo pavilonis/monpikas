@@ -30,7 +30,8 @@ public class ClassroomListRepository implements EntityRepository<ClassroomOccupa
    @Override
    public List<ClassroomOccupancy> load(ClassroomFilter filter) {
       if (!filter.isHistoryMode()) {
-         return repository.loadActive();
+         // null param => all levels
+         return repository.loadActive(null);
       }
 
       return repository.load(
