@@ -92,7 +92,7 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
                         ? ""
                         : DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodEnd()),
                   StringUtils.stripToEmpty(filter.getText()),
-                  filter.getScanner() == null ? "" : filter.getScanner().getId(),
+                  filter.getScannerId(),
                   StringUtils.stripToEmpty(filter.getRole()),
                   size,
                   TimeUtils.duration(opStart)

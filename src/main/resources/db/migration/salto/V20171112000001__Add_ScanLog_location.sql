@@ -1,0 +1,1 @@
+ALTER TABLE mm_ScanLog ADD location VARCHAR(255) NULL;

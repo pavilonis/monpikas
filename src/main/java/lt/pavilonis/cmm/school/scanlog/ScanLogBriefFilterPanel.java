@@ -36,7 +36,7 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
             filter.getPeriodStart(),
             filter.getPeriodEnd(),
             textField.getValue(),
-            scannerCombo.getValue(),
+            scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId(),
             roleCombo.getValue()
       );
    }

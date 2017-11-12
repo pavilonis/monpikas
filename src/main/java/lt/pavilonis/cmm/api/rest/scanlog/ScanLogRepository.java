@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.rest.scanlog;
 
-import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.key.Key;
 import lt.pavilonis.cmm.api.rest.key.KeyRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
@@ -47,7 +46,7 @@ public class ScanLogRepository {
 
    public ScanLog saveCheckedAndLoad(long scannerId, String cardCode) {
 
-      Long scanLogId = saveChecked(scannerId, cardCode);
+      Long scanLogId = saveChecked(scannerId, cardCode, null);
 
       return scanLogId == null
             ? null
@@ -67,24 +66,28 @@ public class ScanLogRepository {
       );
    }
 
-   public Long saveChecked(long scannerId, String cardCode) {
+   public Long saveChecked(long scannerId, String cardCode, String location) {
 
       if (!userRepository.exists(cardCode)) {
-         LOG.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]",
-               scannerId, cardCode);
+         LOG.warn("Skipping scan log: user not found [scannerId={}, cardCode={}, location={}]",
+               scannerId, cardCode, location);
          return null;
       }
 
+      Map<String, Object> args = new HashMap<>();
+      args.put("cardCode", cardCode);
+      args.put("scannerId", scannerId);
+      args.put("location", location);
+
       KeyHolder holder = new GeneratedKeyHolder();
 
-      jdbcSalto.update(
-            "INSERT INTO mm_ScanLog (cardCode, scanner_id) VALUES (:cardCode, :scannerId)",
-            new MapSqlParameterSource(ImmutableMap.<String, Object>of(
-                  "cardCode", cardCode,
-                  "scannerId", scannerId
-            )),
+      jdbcSalto.update("" +
+                  "INSERT INTO mm_ScanLog (cardCode, scanner_id, location) " +
+                  "VALUES (:cardCode, :scannerId, :location)",
+            new MapSqlParameterSource(args),
             holder
       );
+      LOG.info("ScanLog saved");
       return holder.getKey().longValue();
    }
 
@@ -100,7 +103,8 @@ public class ScanLogRepository {
       List<ScanLogBrief> result = jdbcSalto.query("" +
                   "SELECT " +
                   "  sl.dateTime AS dateTime, " +
-                  "  sl.cardCode AS cardCode, " +
+                  "  sl.cardCode AS cardCode," +
+                  "  sl.location AS location, " +
                   "  sc.name AS scannerName, " +
                   "  CONCAT(u.FirstName, ' ', u.LastName) AS userName, " +
                   "  u.dummy3 AS userGroup, " +
