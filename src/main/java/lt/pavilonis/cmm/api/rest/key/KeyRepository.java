@@ -5,6 +5,7 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.api.rest.user.User;
+import lt.pavilonis.cmm.api.rest.user.UserMapper;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -123,6 +124,51 @@ public class KeyRepository {
       args.put("cardCode", cardCode);
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
+
+//      UserMapper userMapper = new UserMapper();
+
+//      SELECT kl.keyNumber, MAX(kl.dateTime) AS lastTimeTaken, kl.scanner_id , KL.assigned
+//      FROM CMM2.dbo.mm_KeyLog kl
+//
+//      GROUP BY kl.keyNumbeR, KL.scanner_id, KL.assigned
+//      ORDER BY KL.keyNumber, KL.scanner_id
+//
+//
+//      List<Key> result1 = jdbcSalto.query("" +
+//                  "SELECT " +
+//                  "  keyLog.keyNumber, " +
+//                  "  keyLog.lastTimeTaken, " +
+//                  "  scan.id, " +
+//                  "  scan.name, " +
+//                  "  c.ROMCode AS cardCode, " +
+//                  "  u.FirstName AS firstName, " +
+//                  "  u.LastName AS lastName, " +
+//                  "  u.dummy2 AS birthDate, " +
+//                  "  u.dummy3 AS userGroup, " +
+//                  "  u.dummy4 AS userRole " +
+//
+//                  "FROM tb_Users u " +
+//                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
+//                  "  JOIN (" +
+//                  "     SELECT kl.keyNumber, MAX(kl.dateTime) AS lastTimeTaken, kl.scanner_id , KL.assigned " +
+//                  "     FROM mm_KeyLog kl " +
+//                  "     WHERE kl.assigned = 1 " +
+//                  "        AND (:scannerId IS NULL OR :scannerId = kl.scanner_id) " +
+//                  "        AND (:keyNumber IS NULL OR :keyNumber = kl.keyNumber) " +
+//                  "        AND (:cardCode IS NULL OR :cardCode = kl.cardCode)" +
+//                  "     GROUP BY kl.keyNumbeR, KL.scanner_id, KL.assigned " +
+//                  "  ) AS keyLog ON keyLog.cardCode = c.ROMCode " +
+//                  "  JOIN mm_Scanner scan ON scan.id = keyLog.scanner_id " +
+//                  "WHERE u.Cardcode IS NOT NULL",
+//            args,
+//            (rs, i) -> new Key(
+//                  rs.getInt(1),
+//                  rs.getTimestamp(2).toLocalDateTime(),
+//                  userMapper.mapRow(rs),
+//                  new Scanner(rs.getLong(3), rs.getString(4)),
+//                  KeyAction.ASSIGNED
+//            )
+//      );
 
       List<Key> result = jdbcSalto.query("" +
                   "SELECT " +

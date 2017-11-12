@@ -6,6 +6,7 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
+import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBriefFilter;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;

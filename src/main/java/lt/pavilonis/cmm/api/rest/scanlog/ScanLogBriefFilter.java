@@ -1,6 +1,5 @@
-package lt.pavilonis.cmm.school.scanlog;
+package lt.pavilonis.cmm.api.rest.scanlog;
 
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 
 import java.time.LocalDate;
@@ -8,15 +7,15 @@ import java.time.LocalDate;
 public final class ScanLogBriefFilter extends IdPeriodFilter {
 
    private final String text;
-   private final Scanner scanner;
+   private final Long scannerId;
    private final String role;
 
    public ScanLogBriefFilter(LocalDate periodStart, LocalDate periodEnd,
-                             String text, Scanner scanner, String role) {
+                             String text, Long scannerId, String role) {
 
       super(periodStart, periodEnd);
       this.text = text;
-      this.scanner = scanner;
+      this.scannerId = scannerId;
       this.role = role;
    }
 
@@ -24,8 +23,8 @@ public final class ScanLogBriefFilter extends IdPeriodFilter {
       return text;
    }
 
-   public Scanner getScanner() {
-      return scanner;
+   public Long getScannerId() {
+      return scannerId;
    }
 
    public String getRole() {

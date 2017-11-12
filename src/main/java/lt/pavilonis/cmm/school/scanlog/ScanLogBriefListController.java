@@ -5,6 +5,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBrief;
+import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBriefFilter;
 import lt.pavilonis.cmm.api.rest.scanner.ScannerRepository;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.cmm.common.AbstractListController;
