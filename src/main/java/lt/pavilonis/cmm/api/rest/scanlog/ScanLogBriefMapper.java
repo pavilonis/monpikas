@@ -1,12 +1,11 @@
-package lt.pavilonis.cmm.school.scanlog;
+package lt.pavilonis.cmm.api.rest.scanlog;
 
-import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBrief;
 import lt.pavilonis.cmm.common.util.SimpleRowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public final class ScanLogBriefMapper extends SimpleRowMapper<ScanLogBrief> {
+final class ScanLogBriefMapper extends SimpleRowMapper<ScanLogBrief> {
 
    @Override
    public ScanLogBrief mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -16,7 +15,8 @@ public final class ScanLogBriefMapper extends SimpleRowMapper<ScanLogBrief> {
             rs.getString("cardCode"),
             rs.getString("userName"),
             rs.getString("userGroup"),
-            rs.getString("userRole")
+            rs.getString("userRole"),
+            rs.getString("location")
       );
    }
 

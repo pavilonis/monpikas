@@ -13,6 +13,7 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -27,15 +28,15 @@ public class TcpEventStringProcessor implements MessageHandler {
    );
    private static final int SCANNER_ID_DOORS = 5;
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
-   private static final String FIELD_DOOR_NUMBER = "DoorName";
+   private static final String FIELD_DOOR_NAME = "DoorName";
    private static final String FIELD_CARD_CODE = "UserCardSerialNumber";
    private static final String STRING_EMPTY = "";
-   private static final byte LINES_SEARCH_MAX = 7;
    private final ScanLogRepository scanLogRepository;
    private final ClassroomRepository classroomRepository;
 
    private String operation;
-   private byte counter;
+   private String location;
+   private String cardCode;
 
    @Autowired
    public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
@@ -63,11 +64,39 @@ public class TcpEventStringProcessor implements MessageHandler {
    public void handleMessage(Message<?> message) throws MessagingException {
       String string = convertMessage(message);
 
-      if (StringUtils.isNotBlank(string)) {
-         process(string);
-      } else {
+      if (StringUtils.isBlank(string)) {
          LOG.warn("empty message");
+         return;
       }
+
+      if (string.contains("][") || string.contains("[")) {
+         return;
+      }
+
+      if (string.contains("{")) {
+         LOG.info("=== MESSAGE START ===");
+         clearFields();
+         return;
+      }
+
+      if (string.contains("}")) {
+         LOG.info("=== MESSAGE END ===");
+         processCollectedData();
+         clearFields();
+         return;
+      }
+
+      if (string.contains(FIELD_CARD_CODE)) {
+         cardCode = clean(string, FIELD_CARD_CODE);
+
+      } else if (string.contains(FIELD_OPERATION_DESCRIPTION)) {
+         operation = clean(string, FIELD_OPERATION_DESCRIPTION);
+
+      } else if (string.contains(FIELD_DOOR_NAME)) {
+         location = clean(string, FIELD_DOOR_NAME);
+      }
+
+      LOG.info(">>> " + string);
    }
 
    protected String convertMessage(Message<?> message) {
@@ -76,70 +105,33 @@ public class TcpEventStringProcessor implements MessageHandler {
             : new String((byte[]) message.getPayload());
    }
 
-   void process(String inputNonNull) {
-
-      if (counter < LINES_SEARCH_MAX) {
-         counter++;
+   private void processCollectedData() {
+      if (StringUtils.isNotBlank(cardCode)) {
+         scanLogRepository.saveChecked(SCANNER_ID_DOORS, cardCode, location);
       }
 
-      if (inputNonNull.contains(FIELD_CARD_CODE)) {
-
-         processScanLog(inputNonNull);
-
-      } else if (inputNonNull.contains(FIELD_OPERATION_DESCRIPTION)) {
-
-         processOperationStart(inputNonNull);
-
-      } else if (counter < LINES_SEARCH_MAX && inputNonNull.contains(FIELD_DOOR_NUMBER)) {
-
-         processOperationFinish(inputNonNull);
-
-      } else {
-
-         LOG.warn("Skip: " + inputNonNull);
-
-      }
-   }
-
-   private void processOperationFinish(String input) {
-      String number = clean(input, FIELD_DOOR_NUMBER);
-
-      if (NumberUtils.isDigits(number) && NumberUtils.isParsable(number)) {
-
+      if (StringUtils.isNotBlank(operation)) {
+         LOG.info("Parsing class-occupancy operation");
          Boolean operationBooleanValue = CLASSROOM_OPS.get(operation);
          if (operationBooleanValue == null) {
             LOG.warn("Unknown operation: " + operation);
             return;
          }
 
-         LOG.info("Classroom event [classroomNumber={}, operation={}]", number, operation);
-         int classNumber = Integer.parseInt(number);
+         if (!NumberUtils.isDigits(location) || !NumberUtils.isParsable(location)) {
+            LOG.warn("Could not parse class number: " + location);
+            return;
+         }
 
-         classroomRepository.save(classNumber, operationBooleanValue);
-
-      } else {
-         LOG.warn("Bad number, skipping: " + input);
+         LOG.info("Classroom event [classroomNumber={}, operation={}]", location, operation);
+         classroomRepository.save(Integer.parseInt(location), operationBooleanValue);
       }
    }
 
-   private void processOperationStart(String input) {
-      String operationString = clean(input, FIELD_OPERATION_DESCRIPTION);
-
-      if (StringUtils.isNotBlank(operationString)) {
-         operation = operationString;
-         counter = 0;
-      }
-   }
-
-   private void processScanLog(String input) {
-      String cardCode = clean(input, FIELD_CARD_CODE);
-
-      if (StringUtils.isNotBlank(cardCode)) {
-
-         scanLogRepository.saveChecked(SCANNER_ID_DOORS, cardCode);
-      } else {
-         LOG.error("Blank cardCode!");
-      }
+   private void clearFields() {
+      operation = null;
+      location = null;
+      cardCode = null;
    }
 
    private String clean(String string, String fieldName) {

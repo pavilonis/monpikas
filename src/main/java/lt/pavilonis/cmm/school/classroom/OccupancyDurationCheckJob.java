@@ -35,7 +35,7 @@ public class OccupancyDurationCheckJob {
    @Scheduled(fixedRateString = "${classroom.occupancyDuration.checkIntervalMillis}")
    public void freeClassrooms() {
 
-      List<ClassroomOccupancy> active = repository.loadActive();
+      List<ClassroomOccupancy> active = repository.loadActive(Collections.emptyList());
 
       LocalDateTime earliestOccupancyEventDateAllowed = LocalDateTime.now()
             .minusMinutes(durationLimitMinutes);

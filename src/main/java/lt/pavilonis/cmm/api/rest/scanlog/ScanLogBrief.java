@@ -7,21 +7,23 @@ import java.time.LocalDateTime;
 public class ScanLogBrief extends Identified<Void> {
 
    private final LocalDateTime dateTime;
-   private final String scannerName;
+   private final String scanner;
    private final String cardCode;
    private final String name;
    private final String group;
    private final String role;
+   private final String location;
 
-   public ScanLogBrief(LocalDateTime dateTime, String scannerName,
-                       String cardCode, String name, String group, String role) {
+   public ScanLogBrief(LocalDateTime dateTime, String scannerName, String cardCode,
+                       String name, String group, String role, String location) {
 
       this.dateTime = dateTime;
-      this.scannerName = scannerName;
+      this.scanner = scannerName;
       this.cardCode = cardCode;
       this.name = name;
       this.group = group;
       this.role = role;
+      this.location = location;
    }
 
    public LocalDateTime getDateTime() {
@@ -45,6 +47,10 @@ public class ScanLogBrief extends Identified<Void> {
    }
 
    public String getScanner() {
-      return scannerName;
+      return scanner;
+   }
+
+   public String getLocation() {
+      return location;
    }
 }

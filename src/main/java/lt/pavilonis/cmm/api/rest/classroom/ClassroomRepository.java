@@ -31,9 +31,11 @@ public class ClassroomRepository {
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
 
-   public List<ClassroomOccupancy> loadActive() {
+   public List<ClassroomOccupancy> loadActive(List<Integer> levels) {
 
       LocalDateTime opStart = LocalDateTime.now();
+
+      String innerWhere = levels.isEmpty() ? "" : "WHERE co_inner.classroomNumber / 100 IN(:levels)";
 
       List<ClassroomOccupancy> result = jdbcSalto.query("" +
                   "SELECT " +
@@ -46,11 +48,14 @@ public class ClassroomRepository {
                   "             MAX(co_inner.dateTime) AS dateTime, " +
                   "             co_inner.classroomNumber " +
                   "          FROM mm_ClassRoomOccupancy co_inner " +
+                  innerWhere +
                   "          GROUP BY co_inner.classRoomNumber " +
                   "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
                   "                      AND latest.dateTime = co.dateTime " +
                   "ORDER BY co.dateTime DESC",
-            Collections.emptyMap(),
+            levels.isEmpty()
+                  ? Collections.emptyMap()
+                  : Collections.singletonMap("levels", levels),
             ROW_MAPPER
       );
 
@@ -59,9 +64,10 @@ public class ClassroomRepository {
             .filter(ClassroomOccupancy::isOccupied)
             .count();
 
-      LOG.info("Loaded [occupied={}, free={}, duration={}]",
+      LOG.info("Loaded [occupied={}, free={}, levels={}, duration={}]",
             numberOfOccupied,
             result.size() - numberOfOccupied,
+            levels,
             TimeUtils.duration(opStart)
       );
 
