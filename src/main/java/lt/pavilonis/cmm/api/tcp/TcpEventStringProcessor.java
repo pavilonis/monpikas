@@ -13,6 +13,7 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +69,7 @@ public class TcpEventStringProcessor implements MessageHandler {
          return;
       }
 
-      if (string.contains("][")) {
+      if (string.contains("][") || string.contains("[")) {
          return;
       }
 

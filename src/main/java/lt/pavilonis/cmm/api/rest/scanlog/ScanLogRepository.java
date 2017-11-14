@@ -5,6 +5,7 @@ import lt.pavilonis.cmm.api.rest.key.KeyRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.util.QueryUtils;
+import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,15 +16,21 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Repository
 public class ScanLogRepository {
 
-   private final Logger LOG = LoggerFactory.getLogger(ScanLogRepository.class.getSimpleName());
+   private static final Logger LOG = LoggerFactory.getLogger(ScanLogRepository.class.getSimpleName());
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM mm_ScanLog sl " +
          "  JOIN mm_Scanner sc ON sc.id = sl.scanner_id " +
@@ -100,7 +107,7 @@ public class ScanLogRepository {
       args.put("argOffset", offset);
       args.put("argLimit", limit);
 
-      List<ScanLogBrief> result = jdbcSalto.query("" +
+      return jdbcSalto.query("" +
                   "SELECT " +
                   "  sl.dateTime AS dateTime, " +
                   "  sl.cardCode AS cardCode," +
@@ -115,8 +122,6 @@ public class ScanLogRepository {
             args,
             new ScanLogBriefMapper()
       );
-
-      return result;
    }
 
    private Map<String, Object> commonArgs(ScanLogBriefFilter filter) {
@@ -127,5 +132,68 @@ public class ScanLogRepository {
       args.put("role", StringUtils.stripToNull(filter.getRole()));
       args.put("text", QueryUtils.likeArg(filter.getText()));
       return args;
+   }
+
+   public List<ScanLogBrief> loadLastUserLocations(String text) {
+      LocalDateTime opStart = LocalDateTime.now();
+
+      Map<String, Object> args = new HashMap<>();
+      args.put("text", QueryUtils.likeArg(text));
+      args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+
+      List<ScanLogBrief> result = jdbcSalto.query(
+            "SELECT " +
+                  "  sl.dateTime AS dateTime, " +
+                  "  sl.cardCode AS cardCode," +
+                  "  sl.location AS location, " +
+                  "  NULL AS scannerName, " +
+                  "  CONCAT(u.FirstName, ' ', u.LastName) AS userName, " +
+                  "  u.dummy3 AS userGroup, " +
+                  "  NULL AS userRole " +
+                  "FROM mm_ScanLog sl " +
+                  "  JOIN tb_Cards c ON c.Cardcode IS NOT NULL AND c.ROMCode = sl.cardCode " +
+                  "  JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
+                  "WHERE sl.dateTime > :today " +
+                  "  AND sl.scanner_id = 5 " +
+                  "  AND ISNUMERIC(sl.location) = 1 " +
+                  "  AND u.dummy4 = 'Darbuotojas' " +
+                  "  AND u.dummy3 IN('Mokytojas', 'Mokytoja', 'Koncertmeistris', 'Koncertmeistrė') " +
+                  "  AND (:text IS NULL OR u.FirstName LIKE :text OR u.LastName LIKE :text OR sl.location LIKE :text) ",
+            args,
+            new ScanLogBriefMapper()
+      );
+
+      List<ScanLogBrief> filteredResult = result
+            .stream()
+            .collect(Collectors.groupingBy(ScanLogBrief::getName))
+            .values()
+            .stream()
+            .flatMap(this::composeUserLogs)
+            .collect(Collectors.toList());
+
+      LOG.info("Loaded last user locations [text={}, number={}, filtered={}, duration={}]",
+            text, result.size(), filteredResult.size(), TimeUtils.duration(opStart));
+
+      return filteredResult;
+
+   }
+
+   protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
+      return groupedByName
+            .stream()
+            .collect(Collectors.groupingBy(ScanLogBrief::getLocation))
+            .values()
+            .stream()
+            .map(groupedByLocation -> {
+                     // Taking single latest entry for location user was in
+                     ScanLogBrief scanLogBrief = groupedByLocation
+                           .stream()
+                           .max(Comparator.comparing(ScanLogBrief::getDateTime))
+                           .orElseThrow(RuntimeException::new);
+                     return scanLogBrief;
+                  }
+            )
+            .sorted(Comparator.comparing(ScanLogBrief::getDateTime).reversed())
+            .limit(3);
    }
 }

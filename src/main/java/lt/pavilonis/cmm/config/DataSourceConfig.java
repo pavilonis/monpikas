@@ -31,10 +31,10 @@ public class DataSourceConfig {
       return new NamedParameterJdbcTemplate(dataSourceLocal());
    }
 
-//   @Bean
-//   public NamedParameterJdbcTemplate jdbcSalto() {
-//      return new NamedParameterJdbcTemplate(dataSourceSalto());
-//   }
+   @Bean
+   public NamedParameterJdbcTemplate jdbcSalto() {
+      return new NamedParameterJdbcTemplate(dataSourceSalto());
+   }
 
    @Bean
    @Primary
@@ -42,12 +42,12 @@ public class DataSourceConfig {
    public DataSource dataSourceLocal() {
       return DataSourceBuilder.create().build();
    }
-//
-//   @Bean
-//   @ConfigurationProperties(prefix = "spring.datasource.salto")
-//   public DataSource dataSourceSalto() {
-//      return DataSourceBuilder.create().build();
-//   }
+
+   @Bean
+   @ConfigurationProperties(prefix = "spring.datasource.salto")
+   public DataSource dataSourceSalto() {
+      return DataSourceBuilder.create().build();
+   }
 
    @Bean
    public Flyway flywayLocal() {
@@ -59,14 +59,14 @@ public class DataSourceConfig {
       return flyway;
    }
 
-//   @Bean
-//   public Flyway flywaySalto() {
-//      Flyway flyway = new Flyway();
-//      flyway.setValidateOnMigrate(false);
-//      flyway.setDataSource(dataSourceSalto());
-//      flyway.setTable("mm_SchemaVersion");
-//      flyway.setLocations("classpath:db/migration/salto");
-//      flyway.migrate();
-//      return flyway;
-//   }
+   @Bean
+   public Flyway flywaySalto() {
+      Flyway flyway = new Flyway();
+      flyway.setValidateOnMigrate(false);
+      flyway.setDataSource(dataSourceSalto());
+      flyway.setTable("mm_SchemaVersion");
+      flyway.setLocations("classpath:db/migration/salto");
+      flyway.migrate();
+      return flyway;
+   }
 }
