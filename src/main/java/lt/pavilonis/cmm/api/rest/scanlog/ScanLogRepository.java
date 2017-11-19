@@ -156,8 +156,7 @@ public class ScanLogRepository {
                   "WHERE sl.dateTime > :today " +
                   "  AND sl.scanner_id = 5 " +
                   "  AND ISNUMERIC(sl.location) = 1 " +
-                  "  AND u.dummy4 = 'Darbuotojas' " +
-                  "  AND u.dummy3 IN('Mokytojas', 'Mokytoja', 'Koncertmeistris', 'Koncertmeistrė') " +
+                  "  AND (u.dummy3 LIKE 'Moky%' OR u.dummy3 LIKE 'Koncertm%') " +
                   "  AND (:text IS NULL OR u.FirstName LIKE :text OR u.LastName LIKE :text OR sl.location LIKE :text) ",
             args,
             new ScanLogBriefMapper()
