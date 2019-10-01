@@ -5,7 +5,6 @@ import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.api.rest.user.User;
-import lt.pavilonis.cmm.api.rest.user.UserMapper;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,7 +42,7 @@ public class KeyRepository {
    @Autowired
    private UserRepository userRepository;
 
-   public Key assign(long scannerId, String cardCode, int keyNumber) {
+   Key assign(long scannerId, String cardCode, int keyNumber) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcSalto.update("" +
                   "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) " +
@@ -59,7 +58,7 @@ public class KeyRepository {
       return loadSingleKey(keyHolder.getKey().longValue());
    }
 
-   public Key unassign(long scannerId, int keyNumber) {
+   Key unassign(long scannerId, int keyNumber) {
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcSalto.update("" +
@@ -112,7 +111,7 @@ public class KeyRepository {
       );
    }
 
-   public boolean isAvailable(long scannerId, int keyNumber) {
+   boolean isAvailable(long scannerId, int keyNumber) {
       List<Key> result = loadActive(scannerId, null, keyNumber);
       return result.isEmpty();
    }
@@ -125,81 +124,75 @@ public class KeyRepository {
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
 
-//      UserMapper userMapper = new UserMapper();
-
-//      SELECT kl.keyNumber, MAX(kl.dateTime) AS lastTimeTaken, kl.scanner_id , KL.assigned
-//      FROM CMM2.dbo.mm_KeyLog kl
-//
-//      GROUP BY kl.keyNumbeR, KL.scanner_id, KL.assigned
-//      ORDER BY KL.keyNumber, KL.scanner_id
-//
-//
-//      List<Key> result1 = jdbcSalto.query("" +
-//                  "SELECT " +
-//                  "  keyLog.keyNumber, " +
-//                  "  keyLog.lastTimeTaken, " +
-//                  "  scan.id, " +
-//                  "  scan.name, " +
-//                  "  c.ROMCode AS cardCode, " +
-//                  "  u.FirstName AS firstName, " +
-//                  "  u.LastName AS lastName, " +
-//                  "  u.dummy2 AS birthDate, " +
-//                  "  u.dummy3 AS userGroup, " +
-//                  "  u.dummy4 AS userRole " +
-//
-//                  "FROM tb_Users u " +
-//                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
-//                  "  JOIN (" +
-//                  "     SELECT kl.keyNumber, MAX(kl.dateTime) AS lastTimeTaken, kl.scanner_id , KL.assigned " +
-//                  "     FROM mm_KeyLog kl " +
-//                  "     WHERE kl.assigned = 1 " +
-//                  "        AND (:scannerId IS NULL OR :scannerId = kl.scanner_id) " +
-//                  "        AND (:keyNumber IS NULL OR :keyNumber = kl.keyNumber) " +
-//                  "        AND (:cardCode IS NULL OR :cardCode = kl.cardCode)" +
-//                  "     GROUP BY kl.keyNumbeR, KL.scanner_id, KL.assigned " +
-//                  "  ) AS keyLog ON keyLog.cardCode = c.ROMCode " +
-//                  "  JOIN mm_Scanner scan ON scan.id = keyLog.scanner_id " +
-//                  "WHERE u.Cardcode IS NOT NULL",
-//            args,
-//            (rs, i) -> new Key(
-//                  rs.getInt(1),
-//                  rs.getTimestamp(2).toLocalDateTime(),
-//                  userMapper.mapRow(rs),
-//                  new Scanner(rs.getLong(3), rs.getString(4)),
-//                  KeyAction.ASSIGNED
-//            )
-//      );
-
       List<Key> result = jdbcSalto.query("" +
                   "SELECT " +
-                  "  kl.keyNumber, " +
-                  "  max(kl.dateTime) AS lastTimeTaken," +
-                  "  kl.cardCode, " +
-                  "  scan.id AS scannerId, " +
-                  "  scan.name AS scannerName " +
-                  "FROM mm_KeyLog kl " +
-                  "  JOIN mm_Scanner scan ON scan.id = kl.scanner_id " +
-                  "WHERE " +
-                  "  :scannerId IS NULL OR :scannerId = kl.scanner_id " +
-                  "GROUP BY " +
-                  "  kl.keyNumber, kl.cardCode, scan.id, scan.name " +
-                  "HAVING " +
-                  "  SUM(CASE WHEN kl.assigned = 1 THEN 1 ELSE 0 END) > " +
-                  "  SUM(CASE WHEN kl.assigned = 0 THEN 1 ELSE 0 END) " +
-                  "     AND (:keyNumber IS NULL OR :keyNumber = kl.keyNumber) " +
-                  "     AND (:cardCode IS NULL OR :cardCode = kl.cardCode)",
+                  "     kl.keyNumber, " +
+                  "     kl.dateTime AS lastTimeTaken " +
+                  "     s.id AS scannerId, " +
+                  "     s.name AS scannerName, " +
+
+                  "     c.ROMCode AS cardCode, " +
+                  "     u.FirstName AS firstName, " +
+                  "     u.LastName AS lastName, " +
+                  "     u.dummy2 AS birthDate, " +
+                  "     u.dummy3 AS userGroup, " +
+                  "     u.dummy4 AS userRole " +
+
+                  "FROM CMM2.dbo.mm_KeyLog kl " +
+                  "     JOIN CMM2.dbo.mm_Scanner s ON s.id = kl.scanner_id " +
+
+                  "     JOIN ( " +
+                  "         SELECT keyNumber, MAX(dateTime) AS lastOperationMoment " +
+                  "         FROM CMM2.dbo.mm_KeyLog " +
+                  whereSection(cardCode, keyNumber, scannerId) +
+                  "         GROUP BY keyNumber " +
+                  "     ) AS lastState ON lastState.keyNumber = kl.keyNumber " +
+                  "         AND lastState.lastOperationMoment = kl.dateTime " +
+
+                  "     JOIN tb_Users u ON u.Cardcode = kl.cardCode " +
+                  "     JOIN tb_Cards c ON c.Cardcode = kl.cardCode AND c.ROMCode = kl.cardCode " +
+
+                  "WHERE kl.assigned = 1 " +
+                  "     AND c.ROMCode = :cardCode ",
             args,
             (rs, i) -> new Key(
-                  rs.getInt(1),
-                  rs.getTimestamp(2).toLocalDateTime(),
-                  userRepository.load(rs.getString(3), false),
-                  new Scanner(rs.getLong(4), rs.getString(5)),
+                  rs.getInt("keyNumber"),
+                  rs.getTimestamp("lastTimeTaken").toLocalDateTime(),
+                  new User(
+                        rs.getString("cardCode"),
+                        rs.getString("firstName"),
+                        rs.getString("lastName"),
+                        rs.getString("userGroup"),
+                        rs.getString("userRole"),
+                        null,
+                        rs.getString("birthDate")
+                  ),
+                  new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
                   KeyAction.ASSIGNED
             )
       );
       LOG.info("Loaded assigned keys [number={}, cardCode={}, duration={}]",
             result.size(), cardCode, TimeUtils.duration(opStart));
       return result;
+   }
+
+   private String whereSection(String cardCode, Integer keyNumber, Long scannerId) {
+
+      String result = scannerId == null
+            ? StringUtils.EMPTY
+            : "scanner_id = :scannerId";
+
+      if (cardCode != null) {
+         String check = "cardCode = :cardCode";
+         result = result.isEmpty() ? check : " AND " + check;
+      }
+
+      if (keyNumber != null) {
+         String check = "keyNumber = :keyNumber";
+         result = result.isEmpty() ? check : " AND " + check;
+      }
+
+      return result.isEmpty() ? result : "WHERE " + result;
    }
 
    public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd, Long scannerId,
