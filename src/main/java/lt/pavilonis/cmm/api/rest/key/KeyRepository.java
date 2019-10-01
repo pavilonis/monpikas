@@ -127,7 +127,7 @@ public class KeyRepository {
       List<Key> result = jdbcSalto.query("" +
                   "SELECT " +
                   "     kl.keyNumber, " +
-                  "     kl.dateTime AS lastTimeTaken " +
+                  "     kl.dateTime AS lastTimeTaken, " +
                   "     s.id AS scannerId, " +
                   "     s.name AS scannerName, " +
 
