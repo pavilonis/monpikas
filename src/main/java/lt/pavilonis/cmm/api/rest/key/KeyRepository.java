@@ -149,10 +149,11 @@ public class KeyRepository {
                   "     ) AS lastState ON lastState.keyNumber = kl.keyNumber " +
                   "         AND lastState.lastOperationMoment = kl.dateTime " +
 
-                  "     JOIN tb_Users u ON u.Cardcode = kl.cardCode " +
-                  "     JOIN tb_Cards c ON c.Cardcode = kl.cardCode AND c.ROMCode = kl.cardCode " +
+                  "     JOIN tb_Cards c ON c.ROMCode = kl.cardCode " +
+                  "     JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
 
-                  "WHERE kl.assigned = 1",
+                  "WHERE kl.assigned = 1 " +
+                  "  AND u.CardCode IS NOT NULL",
             args,
             (rs, i) -> new Key(
                   rs.getInt("keyNumber"),
