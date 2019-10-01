@@ -152,8 +152,7 @@ public class KeyRepository {
                   "     JOIN tb_Users u ON u.Cardcode = kl.cardCode " +
                   "     JOIN tb_Cards c ON c.Cardcode = kl.cardCode AND c.ROMCode = kl.cardCode " +
 
-                  "WHERE kl.assigned = 1 " +
-                  "     AND c.ROMCode = :cardCode ",
+                  "WHERE kl.assigned = 1",
             args,
             (rs, i) -> new Key(
                   rs.getInt("keyNumber"),
