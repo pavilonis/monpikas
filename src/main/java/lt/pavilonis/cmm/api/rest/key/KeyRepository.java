@@ -30,7 +30,7 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Repository
 public class KeyRepository {
 
-   private static final Logger LOG = getLogger(KeyRepository.class.getSimpleName());
+   private static final Logger LOGGER = getLogger(KeyRepository.class.getSimpleName());
    private static final BiMap<KeyAction, Integer> KEY_ACTION_INTEGER_MAP = HashBiMap.create(ImmutableMap.of(
          KeyAction.ASSIGNED, 1,
          KeyAction.UNASSIGNED, 0
@@ -67,7 +67,7 @@ public class KeyRepository {
                   "  (" +
                   "     SELECT TOP 1 cardCode " +
                   "     FROM mm_KeyLog " +
-                  "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber " +
+                  "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber AND assigned = 1 " +
                   "     ORDER BY DATETIME DESC" +
                   "  )," +
                   "  :keyNumber, " +
@@ -124,36 +124,40 @@ public class KeyRepository {
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
 
-      List<Key> result = jdbcSalto.query("" +
-                  "SELECT " +
-                  "     kl.keyNumber, " +
-                  "     kl.dateTime AS lastTimeTaken, " +
-                  "     s.id AS scannerId, " +
-                  "     s.name AS scannerName, " +
+      String query = "SELECT \n\n" +
+            "     kl.keyNumber, \n" +
+            "     kl.dateTime AS lastTimeTaken, \n" +
+            "     s.id AS scannerId, \n" +
+            "     s.name AS scannerName, \n" +
 
-                  "     c.ROMCode AS cardCode, " +
-                  "     u.FirstName AS firstName, " +
-                  "     u.LastName AS lastName, " +
-                  "     u.dummy2 AS birthDate, " +
-                  "     u.dummy3 AS userGroup, " +
-                  "     u.dummy4 AS userRole " +
+            "     c.ROMCode AS cardCode, \n" +
+            "     u.FirstName AS firstName, \n" +
+            "     u.LastName AS lastName, \n" +
+            "     u.dummy2 AS birthDate, \n" +
+            "     u.dummy3 AS userGroup, \n" +
+            "     u.dummy4 AS userRole \n" +
 
-                  "FROM CMM2.dbo.mm_KeyLog kl " +
-                  "     JOIN CMM2.dbo.mm_Scanner s ON s.id = kl.scanner_id " +
+            "FROM CMM2.dbo.mm_KeyLog kl \n" +
+            "     JOIN CMM2.dbo.mm_Scanner s ON s.id = kl.scanner_id \n" +
 
-                  "     JOIN ( " +
-                  "         SELECT keyNumber, MAX(dateTime) AS lastOperationMoment " +
-                  "         FROM CMM2.dbo.mm_KeyLog " +
-                  whereSection(cardCode, keyNumber, scannerId) +
-                  "         GROUP BY keyNumber " +
-                  "     ) AS lastState ON lastState.keyNumber = kl.keyNumber " +
-                  "         AND lastState.lastOperationMoment = kl.dateTime " +
+            "     JOIN ( \n" +
+            "         SELECT keyNumber, MAX(dateTime) AS lastOperationMoment \n" +
+            "         FROM CMM2.dbo.mm_KeyLog \n" +
+            whereSection(cardCode, keyNumber, scannerId) +
+            "         GROUP BY keyNumber \n" +
+            "     ) AS lastState ON lastState.keyNumber = kl.keyNumber \n" +
+            "         AND lastState.lastOperationMoment = kl.dateTime \n" +
 
-                  "     JOIN tb_Cards c ON c.ROMCode = kl.cardCode " +
-                  "     JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
+            "     JOIN tb_Cards c ON c.ROMCode = kl.cardCode \n" +
+            "     JOIN tb_Users u ON u.Cardcode = c.Cardcode \n" +
 
-                  "WHERE kl.assigned = 1 " +
-                  "  AND u.CardCode IS NOT NULL",
+            "WHERE kl.assigned = 1 \n" +
+            "  AND u.CardCode IS NOT NULL";
+
+      LOGGER.info("Querying active keys: \n" + query);
+
+      List<Key> result = jdbcSalto.query(
+            query,
             args,
             (rs, i) -> new Key(
                   rs.getInt("keyNumber"),
@@ -171,7 +175,7 @@ public class KeyRepository {
                   KeyAction.ASSIGNED
             )
       );
-      LOG.info("Loaded assigned keys [number={}, cardCode={}, duration={}]",
+      LOGGER.info("Loaded assigned keys [number={}, cardCode={}, duration={}]",
             result.size(), cardCode, TimeUtils.duration(opStart));
       return result;
    }
@@ -180,23 +184,27 @@ public class KeyRepository {
 
       String result = scannerId == null
             ? StringUtils.EMPTY
-            : "scanner_id = :scannerId";
+            : ("scanner_id = " + scannerId);
 
       if (cardCode != null) {
-         String check = "cardCode = :cardCode";
-         result = result.isEmpty() ? check : " AND " + check;
-      }
-
-      if (keyNumber != null) {
-         String check = "keyNumber = :keyNumber";
+         String check = "cardCode = '" + cardCode + "'";
          if (result.isEmpty()) {
             result = check;
          } else {
-            result += (" AND " + check);
+            result += ("\n  AND " + check);
          }
       }
 
-      return result.isEmpty() ? StringUtils.EMPTY : "WHERE " + result;
+      if (keyNumber != null) {
+         String check = "keyNumber = " + keyNumber;
+         if (result.isEmpty()) {
+            result = check;
+         } else {
+            result += ("\n  AND " + check);
+         }
+      }
+
+      return result.isEmpty() ? "\n" : "\nWHERE " + result;
    }
 
    public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd, Long scannerId,
@@ -253,7 +261,7 @@ public class KeyRepository {
                   new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
                   KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt("assigned"))
             ));
-      LOG.info(
+      LOGGER.info(
             "Loaded log [periodStart={}, periodEnd={}, scannerId={}," +
                   " keyNumber={}, keyAction={}, name={}, size={}, duration={}]",
             periodStart == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
