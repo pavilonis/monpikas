@@ -25,9 +25,9 @@ import java.util.List;
 
 @RequestMapping("/rest/keys")
 @RestController
-public class KeyController {
+public class KeyRestController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(KeyController.class.getSimpleName());
+   private static final Logger LOG = LoggerFactory.getLogger(KeyRestController.class.getSimpleName());
 
    @Autowired
    private KeyRepository keyRepository;
@@ -58,11 +58,11 @@ public class KeyController {
 
 
    @DeleteMapping("/{scannerId}/{keyNumber}")
-   public ResponseEntity<Key> unassignKey(@PathVariable long scannerId, @PathVariable int keyNumber) {
+   public ResponseEntity<Key> unAssignKey(@PathVariable long scannerId, @PathVariable int keyNumber) {
 
       LocalDateTime opStart = LocalDateTime.now();
 
-      Key savedKey = keyRepository.unassign(scannerId, keyNumber);
+      Key savedKey = keyRepository.unAssign(scannerId, keyNumber);
 
       LOG.info("Key unassigned [scannerId={}, key={}, duration={}]",
             scannerId, keyNumber, TimeUtils.duration(opStart));

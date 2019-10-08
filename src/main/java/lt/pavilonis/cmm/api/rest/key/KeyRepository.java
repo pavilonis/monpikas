@@ -58,7 +58,7 @@ public class KeyRepository {
       return loadSingleKey(keyHolder.getKey().longValue());
    }
 
-   Key unassign(long scannerId, int keyNumber) {
+   Key unAssign(long scannerId, int keyNumber) {
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
       jdbcSalto.update("" +
@@ -189,10 +189,14 @@ public class KeyRepository {
 
       if (keyNumber != null) {
          String check = "keyNumber = :keyNumber";
-         result = result.isEmpty() ? check : " AND " + check;
+         if (result.isEmpty()) {
+            result = check;
+         } else {
+            result += (" AND " + check);
+         }
       }
 
-      return result.isEmpty() ? result : "WHERE " + result;
+      return result.isEmpty() ? StringUtils.EMPTY : "WHERE " + result;
    }
 
    public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd, Long scannerId,

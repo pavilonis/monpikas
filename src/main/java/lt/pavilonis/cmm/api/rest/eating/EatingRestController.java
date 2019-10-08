@@ -29,17 +29,17 @@ import static java.time.LocalTime.now;
 
 @RequestMapping("rest")
 @RestController
-public class EatingController {
+public class EatingRestController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(EatingController.class.getSimpleName());
+   private static final Logger LOG = LoggerFactory.getLogger(EatingRestController.class.getSimpleName());
    private static final long SCANNER_ID_CANTEEN = 6;
 
    private final UserEatingService eatingService;
    private final EatingEventRepository eventsRepo;
    private final ScanLogRepository scanLogRepository;
 
-   public EatingController(UserEatingService eatingService, EatingEventRepository eventsRepo,
-                           ScanLogRepository scanLogRepository) {
+   public EatingRestController(UserEatingService eatingService, EatingEventRepository eventsRepo,
+                               ScanLogRepository scanLogRepository) {
 
       this.eatingService = eatingService;
       this.eventsRepo = eventsRepo;

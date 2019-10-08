@@ -14,9 +14,9 @@ import java.util.List;
 
 @RequestMapping("/rest/classrooms")
 @RestController
-public class ClassroomController {
+public class ClassroomRestController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ClassroomController.class.getSimpleName());
+   private static final Logger LOG = LoggerFactory.getLogger(ClassroomRestController.class.getSimpleName());
 
    @Autowired
    private ClassroomRepository repository;
