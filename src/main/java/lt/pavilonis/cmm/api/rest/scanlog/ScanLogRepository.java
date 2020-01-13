@@ -156,7 +156,7 @@ public class ScanLogRepository {
                   "WHERE sl.dateTime > :today " +
                   "  AND sl.scanner_id = 5 " +
                   "  AND ISNUMERIC(sl.location) = 1 " +
-                  "  AND (u.dummy3 LIKE 'Moky%' OR u.dummy3 LIKE 'Koncertm%') " +
+//                  "  AND (u.dummy3 LIKE 'Moky%' OR u.dummy3 LIKE 'Koncertm%') " +
                   "  AND (:text IS NULL OR u.FirstName LIKE :text OR u.LastName LIKE :text OR sl.location LIKE :text) ",
             args,
             new ScanLogBriefMapper()
@@ -174,7 +174,6 @@ public class ScanLogRepository {
             text, result.size(), filteredResult.size(), TimeUtils.duration(opStart));
 
       return filteredResult;
-
    }
 
    protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
@@ -183,14 +182,11 @@ public class ScanLogRepository {
             .collect(Collectors.groupingBy(ScanLogBrief::getLocation))
             .values()
             .stream()
-            .map(groupedByLocation -> {
-                     // Taking single latest entry for location user was in
-                     ScanLogBrief scanLogBrief = groupedByLocation
-                           .stream()
-                           .max(Comparator.comparing(ScanLogBrief::getDateTime))
-                           .orElseThrow(RuntimeException::new);
-                     return scanLogBrief;
-                  }
+            // Taking single latest entry for location user was in
+            .map(groupedByLocation -> groupedByLocation
+                  .stream()
+                  .max(Comparator.comparing(ScanLogBrief::getDateTime))
+                  .orElseThrow(RuntimeException::new)
             )
             .sorted(Comparator.comparing(ScanLogBrief::getDateTime).reversed())
             .limit(3);

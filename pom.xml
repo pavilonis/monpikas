@@ -4,7 +4,7 @@
 
    <groupId>org.springframework</groupId>
    <artifactId>monpikas</artifactId>
-   <version>0.101</version>
+   <version>0.102</version>
 
    <parent>
       <groupId>org.springframework.boot</groupId>
@@ -110,11 +110,11 @@
          <version>5.1.44</version>
       </dependency>
       <!-- not available from public repo - downloaded manually and installed into local maven repo-->
-      <!-- mvn install:install-file -Dfile=sqljdbc42.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.2 -Dpackaging=jar -->
+      <!-- mvn install:install-file -Dfile=sqljdbc42.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.2.8112.200 -Dpackaging=jar -->
       <dependency>
          <groupId>com.microsoft.sqlserver</groupId>
          <artifactId>sqljdbc4</artifactId>
-         <version>4.2</version>
+         <version>4.2.8112.200</version>
       </dependency>
 
       <!-- TESTING-->
