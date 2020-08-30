@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.tcp;
 
-import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -10,27 +9,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
-import org.springframework.messaging.MessagingException;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 @Service
 public class TcpEventStringProcessor implements MessageHandler {
 
-   private final Logger LOG;
-   private static final Map<String, Boolean> CLASSROOM_OPS = ImmutableMap.of(
-         "Privacystarted", true,
-         "Endofprivacy", false
-   );
+   private final Logger logger;
    private static final int SCANNER_ID_DOORS = 5;
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
    private static final String FIELD_DOOR_NAME = "DoorName";
    private static final String FIELD_CARD_CODE = "UserCardSerialNumber";
-   private static final String STRING_EMPTY = "";
    private final ScanLogRepository scanLogRepository;
    private final ClassroomRepository classroomRepository;
 
@@ -52,20 +44,19 @@ public class TcpEventStringProcessor implements MessageHandler {
     * For testing
     */
    public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
-                                  ClassroomRepository classroomRepository,
-                                  Logger mockLogger) {
+                                  ClassroomRepository classroomRepository, Logger mockLogger) {
 
       this.scanLogRepository = scanLogRepository;
       this.classroomRepository = classroomRepository;
-      this.LOG = mockLogger;
+      this.logger = mockLogger;
    }
 
    @Override
-   public void handleMessage(Message<?> message) throws MessagingException {
+   public void handleMessage(Message<?> message) {
       String string = convertMessage(message);
 
       if (StringUtils.isBlank(string)) {
-         LOG.warn("empty message");
+         logger.warn("empty message");
          return;
       }
 
@@ -74,13 +65,13 @@ public class TcpEventStringProcessor implements MessageHandler {
       }
 
       if (string.contains("{")) {
-         LOG.info("=== MESSAGE START ===");
+         logger.info("=== MESSAGE START ===");
          clearFields();
          return;
       }
 
       if (string.contains("}")) {
-         LOG.info("=== MESSAGE END ===");
+         logger.info("=== MESSAGE END ===");
          processCollectedData();
          clearFields();
          return;
@@ -96,13 +87,7 @@ public class TcpEventStringProcessor implements MessageHandler {
          location = clean(string, FIELD_DOOR_NAME);
       }
 
-      LOG.info(">>> " + string);
-   }
-
-   protected String convertMessage(Message<?> message) {
-      return message == null || message.getPayload() == null
-            ? null
-            : new String((byte[]) message.getPayload());
+      logger.info(">>> {}", string);
    }
 
    private void processCollectedData() {
@@ -110,22 +95,45 @@ public class TcpEventStringProcessor implements MessageHandler {
          scanLogRepository.saveChecked(SCANNER_ID_DOORS, cardCode, location);
       }
 
-      if (StringUtils.isNotBlank(operation)) {
-         LOG.info("Parsing class-occupancy operation");
-         Boolean operationBooleanValue = CLASSROOM_OPS.get(operation);
-         if (operationBooleanValue == null) {
-            LOG.warn("Unknown operation: " + operation);
-            return;
-         }
-
-         if (!NumberUtils.isDigits(location) || !NumberUtils.isParsable(location)) {
-            LOG.warn("Could not parse class number: " + location);
-            return;
-         }
-
-         LOG.info("Classroom event [classroomNumber={}, operation={}]", location, operation);
-         classroomRepository.save(Integer.parseInt(location), operationBooleanValue);
+      if (StringUtils.isBlank(operation)) {
+         return;
       }
+
+      logger.info("Parsing class-occupancy operation");
+      Optional<ClassroomAction> action = ClassroomAction.forCode(operation);
+      if (!action.isPresent()) {
+         logger.warn("Unknown operation: {}", operation);
+         return;
+      }
+
+      Optional<Classroom> classroom = findClassroom(location);
+      if (classroom.isPresent()) {
+         logger.info("Classroom event [classroomNumber={}, operation={}]", location, operation);
+         classroomRepository.save(classroom.get(), action.get().getBooleanValue());
+      } else {
+         logger.warn("Could not find building/class number from: {}", location);
+      }
+   }
+
+   private Optional<Classroom> findClassroom(String location) {
+      if (StringUtils.isBlank(location)) {
+         logger.warn("Location is empty!");
+         return Optional.empty();
+      }
+
+      if (isNumber(location)) {
+         return Optional.of(new Classroom(Building.SCHOOL, Integer.parseInt(location)));
+      }
+
+      char buildingCode = location.charAt(0);
+      Optional<Building> optBuilding = Building.forCode(buildingCode);
+
+      return optBuilding.flatMap(building -> {
+         String remainingString = location.substring(1);
+         return isNumber(remainingString)
+               ? Optional.of(new Classroom(building, Integer.parseInt(remainingString)))
+               : Optional.empty();
+      });
    }
 
    private void clearFields() {
@@ -138,8 +146,18 @@ public class TcpEventStringProcessor implements MessageHandler {
       List<String> badChars = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r", ":", fieldName);
 
       for (String toReplace : badChars) {
-         string = string.replace(toReplace, STRING_EMPTY);
+         string = string.replace(toReplace, StringUtils.EMPTY);
       }
       return string;
+   }
+
+   private boolean isNumber(String string) {
+      return NumberUtils.isDigits(string) && NumberUtils.isParsable(string);
+   }
+
+   protected String convertMessage(Message<?> message) {
+      return message == null || message.getPayload() == null
+            ? null
+            : new String((byte[]) message.getPayload());
    }
 }

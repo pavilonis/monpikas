@@ -1,6 +1,7 @@
 package lt.pavilonis.cmm.api.rest.classroom;
 
 import com.google.common.collect.ImmutableMap;
+import lt.pavilonis.cmm.api.tcp.Classroom;
 import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -47,7 +48,7 @@ public class ClassroomRepository {
                   "          SELECT " +
                   "             MAX(co_inner.dateTime) AS dateTime, " +
                   "             co_inner.classroomNumber " +
-                  "          FROM mm_ClassRoomOccupancy co_inner " +
+                  "          FROM mm_ClassroomOccupancy co_inner " +
                   innerWhere +
                   "          GROUP BY co_inner.classRoomNumber " +
                   "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
@@ -95,10 +96,14 @@ public class ClassroomRepository {
       );
    }
 
-   public void save(int number, boolean occupied) {
+   public void save(Classroom classroom, boolean occupied) {
       jdbcSalto.update(
             "INSERT INTO mm_ClassroomOccupancy (classroomNumber, occupied) VALUES (:number, :operation)",
-            ImmutableMap.of("number", number, "operation", occupied)
+            ImmutableMap.of(
+                  "number", classroom.getClassNumber(),
+                  "buildingCode", classroom.getBuilding().getCode(),
+                  "operation", occupied
+            )
       );
    }
 }

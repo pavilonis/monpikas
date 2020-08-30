@@ -1,0 +1,1 @@
+ALTER TABLE mm_ClassroomOccupancy ADD buildingCode CHAR(1) NOT NULL;
