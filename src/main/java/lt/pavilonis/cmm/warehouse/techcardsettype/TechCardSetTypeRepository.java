@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.techcardsettype;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.util.QueryUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -23,9 +23,11 @@ import java.util.Optional;
 public class TechCardSetTypeRepository implements EntityRepository<TechCardSetType, Long, IdTextFilter> {
 
    private static final RowMapper<TechCardSetType> MAPPER = new TechCardSetTypeMapper();
+   private final NamedParameterJdbcTemplate jdbcNamed;
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcNamed;
+   public TechCardSetTypeRepository(NamedParameterJdbcTemplate jdbcNamed) {
+      this.jdbcNamed = jdbcNamed;
+   }
 
    @Override
    public TechCardSetType saveOrUpdate(TechCardSetType entity) {

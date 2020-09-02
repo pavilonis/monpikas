@@ -44,6 +44,26 @@
          <artifactId>spring-integration-ip</artifactId>
          <version>4.3.10.RELEASE</version>
       </dependency>
+      <dependency>
+         <groupId>org.apache.commons</groupId>
+         <artifactId>commons-lang3</artifactId>
+         <version>3.4</version>
+      </dependency>
+      <dependency>
+         <groupId>com.google.guava</groupId>
+         <artifactId>guava</artifactId>
+         <version>21.0</version>
+      </dependency>
+      <dependency>
+         <groupId>joda-time</groupId>
+         <artifactId>joda-time</artifactId>
+         <version>2.9.7</version>
+      </dependency>
+      <dependency>
+         <groupId>org.imgscalr</groupId>
+         <artifactId>imgscalr-lib</artifactId>
+         <version>4.2</version>
+      </dependency>
 
       <!--SERIALIZATION-->
       <dependency>
@@ -61,12 +81,6 @@
       <dependency>
          <groupId>com.fasterxml.jackson.datatype</groupId>
          <artifactId>jackson-datatype-jsr310</artifactId>
-      </dependency>
-
-      <dependency>
-         <groupId>lt.pavilonis</groupId>
-         <artifactId>utils</artifactId>
-         <version>0.13</version>
       </dependency>
 
       <dependency>
@@ -118,6 +132,11 @@
       </dependency>
 
       <!-- TESTING-->
+      <dependency>
+         <groupId>junit</groupId>
+         <artifactId>junit</artifactId>
+         <version>4.12</version>
+      </dependency>
       <dependency>
          <groupId>org.hamcrest</groupId>
          <artifactId>hamcrest-library</artifactId>

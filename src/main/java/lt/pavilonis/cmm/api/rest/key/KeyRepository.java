@@ -6,10 +6,9 @@ import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -25,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Repository
@@ -35,12 +35,13 @@ public class KeyRepository {
          KeyAction.ASSIGNED, 1,
          KeyAction.UNASSIGNED, 0
    ));
+   private final NamedParameterJdbcTemplate jdbcSalto;
+   private final UserRepository userRepository;
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
-
-   @Autowired
-   private UserRepository userRepository;
+   public KeyRepository(NamedParameterJdbcTemplate jdbcSalto, UserRepository userRepository) {
+      this.jdbcSalto = jdbcSalto;
+      this.userRepository = userRepository;
+   }
 
    Key assign(long scannerId, String cardCode, int keyNumber) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
@@ -154,8 +155,6 @@ public class KeyRepository {
             "WHERE kl.assigned = 1 \n" +
             "  AND u.CardCode IS NOT NULL";
 
-      LOGGER.info("Querying active keys: \n" + query);
-
       List<Key> result = jdbcSalto.query(
             query,
             args,
@@ -175,8 +174,7 @@ public class KeyRepository {
                   KeyAction.ASSIGNED
             )
       );
-      LOGGER.info("Loaded assigned keys [number={}, cardCode={}, duration={}]",
-            result.size(), cardCode, TimeUtils.duration(opStart));
+      LOGGER.info("Loaded assigned keys [number={}, cardCode={}, t={}]", result.size(), cardCode, duration(opStart));
       return result;
    }
 
@@ -218,7 +216,7 @@ public class KeyRepository {
       args.put("periodStart", periodStart == null ? null : periodStart.atStartOfDay());
       args.put("periodEnd", periodEnd == null ? null : periodEnd.atTime(LocalTime.MAX));
       args.put("keyAction", keyAction == null ? null : KEY_ACTION_INTEGER_MAP.get(keyAction));
-      args.put("nameLike", StringUtils.isBlank(nameLike) ? null : "%" + nameLike + "%");
+      args.put("nameLike", QueryUtils.likeArg(nameLike));
 
       List<Key> result = jdbcSalto.query("" +
                   "SELECT " +
@@ -262,8 +260,7 @@ public class KeyRepository {
                   KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt("assigned"))
             ));
       LOGGER.info(
-            "Loaded log [periodStart={}, periodEnd={}, scannerId={}," +
-                  " keyNumber={}, keyAction={}, name={}, size={}, duration={}]",
+            "Loaded log [periodStart={}, periodEnd={}, scannerId={}, key={}, action={}, name={}, size={}, t={}]",
             periodStart == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
             periodEnd == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),
             scannerId == null ? "" : scannerId,
@@ -271,7 +268,7 @@ public class KeyRepository {
             keyAction == null ? "" : keyAction.name(),
             StringUtils.stripToEmpty(nameLike),
             result.size(),
-            TimeUtils.duration(opStart)
+            duration(opStart)
       );
       return result;
    }

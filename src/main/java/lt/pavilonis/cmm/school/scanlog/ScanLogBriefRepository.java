@@ -6,13 +6,12 @@ import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBriefFilter;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
-import lt.pavilonis.util.QueryUtils;
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -24,10 +23,12 @@ import java.util.stream.Stream;
 @Repository
 public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Void, ScanLogBriefFilter> {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ScanLogBriefRepository.class);
+   private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogBriefRepository.class);
+   private final ScanLogRepository scanLogRepository;
 
-   @Autowired
-   private ScanLogRepository scanLogRepository;
+   public ScanLogBriefRepository(ScanLogRepository scanLogRepository) {
+      this.scanLogRepository = scanLogRepository;
+   }
 
    @Override
    public ScanLogBrief saveOrUpdate(ScanLogBrief entity) {
@@ -85,7 +86,7 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
          }
 
          private void log(String action, int size, LocalDateTime opStart) {
-            LOG.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, duration={}]",
+            LOGGER.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, t={}]",
                   action,
                   DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodStart()),
                   filter.getPeriodEnd() == null

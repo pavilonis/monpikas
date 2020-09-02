@@ -24,17 +24,18 @@ import java.util.Optional;
 @UIScope
 public class UserListController extends AbstractListController<User, String, UserFilter> {
 
-   @Autowired
-   private UserListRepository userListRepository;
+   private final UserListRepository userListRepository;
+   private final UserRepository userRepository;
+   private final PresenceTimeRepository presenceTimeRepository;
+   private final ImageService imageService;
 
-   @Autowired
-   private UserRepository userRepository;
-
-   @Autowired
-   private PresenceTimeRepository presenceTimeRepository;
-
-   @Autowired
-   private ImageService imageService;
+   public UserListController(UserListRepository userListRepository, UserRepository userRepository,
+                             PresenceTimeRepository presenceTimeRepository, ImageService imageService) {
+      this.userListRepository = userListRepository;
+      this.userRepository = userRepository;
+      this.presenceTimeRepository = presenceTimeRepository;
+      this.imageService = imageService;
+   }
 
    @Override
    protected ListGrid<User> createGrid() {

@@ -4,8 +4,8 @@ import lt.pavilonis.cmm.api.rest.key.Key;
 import lt.pavilonis.cmm.api.rest.key.KeyRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
-import lt.pavilonis.util.QueryUtils;
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
+import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,17 +42,17 @@ public class ScanLogRepository {
          "  AND (:role IS NULL OR u.dummy4 = :role) " +
          "  AND (:text IS NULL OR sl.cardCode LIKE :text OR u.FirstName LIKE :text OR u.LastName LIKE :text)";
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   private final NamedParameterJdbcTemplate jdbcSalto;
+   private final KeyRepository keyRepository;
+   private final UserRepository userRepository;
 
-   @Autowired
-   private KeyRepository keyRepository;
-
-   @Autowired
-   private UserRepository userRepository;
+   public ScanLogRepository(NamedParameterJdbcTemplate jdbcSalto, KeyRepository keyRepository, UserRepository userRepository) {
+      this.jdbcSalto = jdbcSalto;
+      this.keyRepository = keyRepository;
+      this.userRepository = userRepository;
+   }
 
    public ScanLog saveCheckedAndLoad(long scannerId, String cardCode) {
-
       Long scanLogId = saveChecked(scannerId, cardCode, null);
 
       return scanLogId == null
@@ -136,7 +136,6 @@ public class ScanLogRepository {
 
    public List<ScanLogBrief> loadLastUserLocations(String text) {
       LocalDateTime opStart = LocalDateTime.now();
-
       Map<String, Object> args = new HashMap<>();
       args.put("text", QueryUtils.likeArg(text));
       args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
@@ -170,7 +169,7 @@ public class ScanLogRepository {
             .flatMap(this::composeUserLogs)
             .collect(Collectors.toList());
 
-      LOG.info("Loaded last user locations [text={}, number={}, filtered={}, duration={}]",
+      LOG.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
             text, result.size(), filteredResult.size(), TimeUtils.duration(opStart));
 
       return filteredResult;

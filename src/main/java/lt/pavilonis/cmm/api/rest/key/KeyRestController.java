@@ -1,13 +1,11 @@
 package lt.pavilonis.cmm.api.rest.key;
 
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
-import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,29 +21,30 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
+
 @RequestMapping("/rest/keys")
 @RestController
 public class KeyRestController {
 
    private static final Logger LOG = LoggerFactory.getLogger(KeyRestController.class.getSimpleName());
+   private final KeyRepository keyRepository;
+   private final UserRepository userRepository;
 
-   @Autowired
-   private KeyRepository keyRepository;
-
-   @Autowired
-   private UserRepository userRepository;
+   public KeyRestController(KeyRepository keyRepository, UserRepository userRepository) {
+      this.keyRepository = keyRepository;
+      this.userRepository = userRepository;
+   }
 
    @PostMapping("/{scannerId}/{keyNumber}/{cardCode}")
-   public ResponseEntity<Key> assignKey(@PathVariable long scannerId,
-                                        @PathVariable String cardCode,
+   public ResponseEntity<Key> assignKey(@PathVariable long scannerId, @PathVariable String cardCode,
                                         @PathVariable int keyNumber) {
 
       if (!userRepository.exists(cardCode)) {
          LOG.warn("Key assign fail - user not found [cardCode={}]", cardCode);
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-      }
 
-      if (!keyRepository.isAvailable(scannerId, keyNumber)) {
+      } else if (!keyRepository.isAvailable(scannerId, keyNumber)) {
          LOG.warn("Key assign fail - key already assigned [scannerId={}, keyNumber={}]", scannerId, keyNumber);
          return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
       }
@@ -61,12 +60,9 @@ public class KeyRestController {
    public ResponseEntity<Key> unAssignKey(@PathVariable long scannerId, @PathVariable int keyNumber) {
 
       LocalDateTime opStart = LocalDateTime.now();
-
       Key savedKey = keyRepository.unAssign(scannerId, keyNumber);
 
-      LOG.info("Key unassigned [scannerId={}, key={}, duration={}]",
-            scannerId, keyNumber, TimeUtils.duration(opStart));
-
+      LOG.info("Key unassigned [scannerId={}, key={}, t={}]", scannerId, keyNumber, duration(opStart));
       return ResponseEntity.ok().body(savedKey);
    }
 
@@ -75,11 +71,9 @@ public class KeyRestController {
    public ResponseEntity<List<Key>> loadActive(@RequestParam(required = false) Long scannerId,
                                                @RequestParam(required = false) String cardCode,
                                                @RequestParam(required = false) String keyNumber) {
-      List<Key> keysTaken = keyRepository.loadActive(
-            scannerId,
-            cardCode,
-            parseInteger(keyNumber)
-      );
+      Integer keyNum = parseInteger(keyNumber);
+      List<Key> keysTaken = keyRepository.loadActive(scannerId, cardCode, keyNum);
+
       return ResponseEntity.ok().body(keysTaken);
    }
 
@@ -92,18 +86,12 @@ public class KeyRestController {
                                             @RequestParam(required = false) String keyNumber,
                                             @RequestParam(required = false) String keyAction,
                                             @RequestParam(required = false) String nameLike) {
-
       LocalDateTime opStart = LocalDateTime.now();
-      List<Key> result = keyRepository.loadLog(
-            periodStart,
-            periodEnd,
-            scannerId,
-            parseInteger(keyNumber),
-            parseKeyAction(keyAction),
-            nameLike
-      );
+      Integer keyNum = parseInteger(keyNumber);
+      KeyAction action = parseKeyAction(keyAction);
 
-      LOG.info("Returning keyLogs [number={}, duration={}]", result.size(), TimeUtils.duration(opStart));
+      List<Key> result = keyRepository.loadLog(periodStart, periodEnd, scannerId, keyNum, action, nameLike);
+      LOG.info("Returning keyLogs [number={}, t={}]", result.size(), duration(opStart));
       return ResponseEntity.ok().body(result);
    }
 

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.api.rest.classroom;
 
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.tcp.Classroom;
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,7 +12,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,42 +20,43 @@ import java.util.Map;
 public class ClassroomRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(ClassroomRepository.class.getSimpleName());
-
    private static final RowMapper<ClassroomOccupancy> ROW_MAPPER =
          (rs, i) -> new ClassroomOccupancy(
                rs.getTimestamp(1).toLocalDateTime(),
                rs.getBoolean(2),
-               rs.getInt(3)
+               rs.getInt(3),
+               rs.getString(4)
          );
 
    @Autowired
    private NamedParameterJdbcTemplate jdbcSalto;
 
-   public List<ClassroomOccupancy> loadActive(List<Integer> levels) {
+   public List<ClassroomOccupancy> loadActive(List<Integer> levels, String building) {
 
       LocalDateTime opStart = LocalDateTime.now();
-
-      String innerWhere = levels.isEmpty() ? "" : "WHERE co_inner.classroomNumber / 100 IN(:levels)";
+      Map<String, Object> params = new HashMap<>();
+      params.put("building", StringUtils.stripToNull(building));
+      params.put("levels", levels.isEmpty() ? null : levels);
 
       List<ClassroomOccupancy> result = jdbcSalto.query("" +
                   "SELECT " +
                   "  co.dateTime, " +
                   "  co.occupied, " +
-                  "  co.classroomNumber " +
+                  "  co.classroomNumber, " +
+                  "  co.building " +
                   "FROM mm_ClassroomOccupancy co " +
                   "  JOIN ( " +
                   "          SELECT " +
                   "             MAX(co_inner.dateTime) AS dateTime, " +
                   "             co_inner.classroomNumber " +
                   "          FROM mm_ClassroomOccupancy co_inner " +
-                  innerWhere +
+                  "          WHERE (:levels IS NULL OR co_inner.classroomNumber / 100 IN(:levels))" +
+                  "             AND (:building IS NULL OR co_inner.building = :building) " +
                   "          GROUP BY co_inner.classRoomNumber " +
                   "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
                   "                      AND latest.dateTime = co.dateTime " +
                   "ORDER BY co.dateTime DESC",
-            levels.isEmpty()
-                  ? Collections.emptyMap()
-                  : Collections.singletonMap("levels", levels),
+            params,
             ROW_MAPPER
       );
 
@@ -65,7 +65,7 @@ public class ClassroomRepository {
             .filter(ClassroomOccupancy::isOccupied)
             .count();
 
-      LOG.info("Loaded [occupied={}, free={}, levels={}, duration={}]",
+      LOG.info("Loaded [occupied={}, free={}, levels={}, t={}]",
             numberOfOccupied,
             result.size() - numberOfOccupied,
             levels,
@@ -98,10 +98,11 @@ public class ClassroomRepository {
 
    public void save(Classroom classroom, boolean occupied) {
       jdbcSalto.update(
-            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, occupied) VALUES (:number, :operation)",
+            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, building, occupied) " +
+                  "VALUES (:number, :building, :operation)",
             ImmutableMap.of(
                   "number", classroom.getClassNumber(),
-                  "buildingCode", classroom.getBuilding().getCode(),
+                  "building", classroom.getBuilding().name(),
                   "operation", occupied
             )
       );

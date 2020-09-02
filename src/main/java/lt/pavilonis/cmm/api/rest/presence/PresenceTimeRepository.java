@@ -1,8 +1,7 @@
 package lt.pavilonis.cmm.api.rest.presence;
 
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.slf4j.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -17,10 +16,12 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Repository
 public class PresenceTimeRepository {
 
-   private static final Logger LOG = getLogger(PresenceTimeRepository.class.getSimpleName());
+   private static final Logger LOGGER = getLogger(PresenceTimeRepository.class.getSimpleName());
+   private final NamedParameterJdbcTemplate jdbcSalto;
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   public PresenceTimeRepository(NamedParameterJdbcTemplate jdbcSalto) {
+      this.jdbcSalto = jdbcSalto;
+   }
 
    public List<PresenceTime> load(String cardCode, LocalDate periodStart, LocalDate periodEnd) {
 
@@ -55,7 +56,7 @@ public class PresenceTimeRepository {
                   rs.getDouble(4)
             )
       );
-      LOG.info("Loaded work time entries [number={}, cardCode={}, duration={}]",
+      LOGGER.info("Loaded work time entries [number={}, cardCode={}, t={}]",
             result.size(), cardCode, TimeUtils.duration(opStart));
       return result;
    }

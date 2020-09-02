@@ -7,6 +7,7 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -21,8 +22,7 @@ public class MenuItemsLayout extends CssLayout {
          addComponent(groupLabel);
 
          groupedMenuItems.stream()
-               .sorted((i1, i2) -> App.translate(MenuItem.class, i1.getCodeName())
-                     .compareTo(App.translate(MenuItem.class, i2.getCodeName())))
+               .sorted(Comparator.comparing(i -> App.translate(MenuItem.class, i.getCodeName())))
                .map(item -> createButton(item, navigator))
                .forEach(this::addComponent);
       });

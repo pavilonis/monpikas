@@ -4,7 +4,7 @@ import com.google.common.io.BaseEncoding;
 import com.vaadin.server.Resource;
 import com.vaadin.server.StreamResource;
 import com.vaadin.ui.Upload;
-import lt.pavilonis.util.ImageUtils;
+import lt.pavilonis.cmm.common.util.ImageUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.ByteArrayInputStream;
@@ -14,7 +14,7 @@ import java.util.function.BiConsumer;
 
 public class UserFormViewImageUploader implements Upload.Receiver, Upload.SucceededListener {
 
-   private BiConsumer<Resource, String> imageResourceConsumer;
+   private final BiConsumer<Resource, String> imageResourceConsumer;
    private ByteArrayOutputStream baos;
    private byte[] scaledImageBytes;
 

@@ -8,12 +8,15 @@ public class ClassroomOccupancy extends Identified<Void> {
 
    private final LocalDateTime dateTime;
    private final int classroomNumber;
+   private final String building;
    private final boolean occupied;
 
-   public ClassroomOccupancy(LocalDateTime dateTime, boolean occupied, int classroomNumber) {
+   public ClassroomOccupancy(LocalDateTime dateTime, boolean occupied,
+                             int classroomNumber, String building) {
       this.dateTime = dateTime;
       this.classroomNumber = classroomNumber;
       this.occupied = occupied;
+      this.building = building;
    }
 
    public boolean isOccupied() {
@@ -26,5 +29,9 @@ public class ClassroomOccupancy extends Identified<Void> {
 
    public LocalDateTime getDateTime() {
       return dateTime;
+   }
+
+   public String getBuilding() {
+      return building;
    }
 }

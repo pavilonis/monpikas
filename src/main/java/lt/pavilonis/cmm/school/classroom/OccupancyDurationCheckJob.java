@@ -4,7 +4,6 @@ import lt.pavilonis.cmm.api.rest.classroom.ClassroomOccupancy;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -20,22 +19,22 @@ import java.util.stream.Collectors;
 @Service
 public class OccupancyDurationCheckJob {
 
-   private static final Logger LOG = LoggerFactory.getLogger(
-         OccupancyDurationCheckJob.class.getSimpleName());
+   private static final Logger LOG = LoggerFactory.getLogger(OccupancyDurationCheckJob.class.getSimpleName());
+   private final int durationLimitMinutes;
+   private final ClassroomRepository repository;
+   private final NamedParameterJdbcTemplate jdbcSalto;
 
-   @Value("${classroom.occupancyDuration.limitMinutes}")
-   private int durationLimitMinutes;
-
-   @Autowired
-   private ClassroomRepository repository;
-
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   public OccupancyDurationCheckJob(@Value("${classroom.occupancyDuration.limitMinutes}") int durationLimitMinutes,
+                                    ClassroomRepository repository, NamedParameterJdbcTemplate jdbcSalto) {
+      this.durationLimitMinutes = durationLimitMinutes;
+      this.repository = repository;
+      this.jdbcSalto = jdbcSalto;
+   }
 
    @Scheduled(fixedRateString = "${classroom.occupancyDuration.checkIntervalMillis}")
    public void freeClassrooms() {
 
-      List<ClassroomOccupancy> active = repository.loadActive(Collections.emptyList());
+      List<ClassroomOccupancy> active = repository.loadActive(Collections.emptyList(), null);
 
       LocalDateTime earliestOccupancyEventDateAllowed = LocalDateTime.now()
             .minusMinutes(durationLimitMinutes);

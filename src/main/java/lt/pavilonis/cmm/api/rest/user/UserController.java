@@ -2,11 +2,9 @@ package lt.pavilonis.cmm.api.rest.user;
 
 
 import lt.pavilonis.cmm.school.user.UserFilter;
-import lt.pavilonis.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,14 +18,19 @@ import org.springframework.web.bind.annotation.RestController;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
+import static org.apache.commons.lang3.StringUtils.stripToEmpty;
+
 @RequestMapping("/rest/users")
 @RestController
 public class UserController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(UserController.class.getSimpleName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class.getSimpleName());
+   private final UserRepository userRepository;
 
-   @Autowired
-   private UserRepository userRepository;
+   public UserController(UserRepository userRepository) {
+      this.userRepository = userRepository;
+   }
 
    @GetMapping
    public List<User> loadAll(@RequestParam(required = false) String name,
@@ -42,13 +45,8 @@ public class UserController {
             .withLimit(limit);
       List<User> result = userRepository.load(filter);
 
-      LOG.info("GET [number={}, filterName={}, filterRole={}, filterGroup={}, duration={}]",
-            result.size(),
-            StringUtils.stripToEmpty(name),
-            StringUtils.stripToEmpty(role),
-            StringUtils.stripToEmpty(group),
-            TimeUtils.duration(opStart)
-      );
+      LOGGER.info("GET [number={}, filterName={}, filterRole={}, filterGroup={}, t={}]",
+            result.size(), stripToEmpty(name), stripToEmpty(role), stripToEmpty(group), duration(opStart));
       return result;
    }
 
@@ -65,18 +63,18 @@ public class UserController {
 
       if (StringUtils.isBlank(user.getCardCode())) {
 
-         LOG.error("User update FAIL: cardCode is blank [user={}]", user);
+         LOGGER.error("User update FAIL: cardCode is blank [user={}]", user);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
       } else if (!userRepository.exists(user.getCardCode())) {
 
-         LOG.error("User update FAIL: no matching user found [user={}]", user);
+         LOGGER.error("User update FAIL: no matching user found [user={}]", user);
          return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
 
       } else {
 
          User result = userRepository.update(user);
-         LOG.info("User updated [user={}]", result);
+         LOGGER.info("User updated [user={}]", result);
          return ResponseEntity.ok().body(result);
       }
    }

@@ -2,7 +2,7 @@ package lt.pavilonis.cmm.warehouse.techcardgroup;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
-import lt.pavilonis.util.QueryUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -20,8 +20,11 @@ import java.util.Optional;
 @Repository
 public class TechCardGroupRepository implements EntityRepository<TechCardGroup, Long, IdTextFilter> {
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcNamed;
+   private final NamedParameterJdbcTemplate jdbcNamed;
+
+   public TechCardGroupRepository(NamedParameterJdbcTemplate jdbcNamed) {
+      this.jdbcNamed = jdbcNamed;
+   }
 
    @Override
    public TechCardGroup saveOrUpdate(TechCardGroup entity) {

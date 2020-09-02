@@ -6,7 +6,7 @@ import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.cmm.common.ui.filter.IdTextFilter;
 import lt.pavilonis.cmm.warehouse.productgroup.ProductGroup;
-import lt.pavilonis.util.QueryUtils;
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

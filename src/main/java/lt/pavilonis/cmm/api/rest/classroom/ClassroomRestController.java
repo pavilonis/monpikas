@@ -16,21 +16,22 @@ import java.util.List;
 @RestController
 public class ClassroomRestController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ClassroomRestController.class.getSimpleName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomRestController.class);
+   private final ClassroomRepository repository;
 
-   @Autowired
-   private ClassroomRepository repository;
+   public ClassroomRestController(ClassroomRepository repository) {
+      this.repository = repository;
+   }
 
    @GetMapping
-   public ResponseEntity<List<ClassroomOccupancy>> load(@RequestParam(required = false) List<Integer> levels) {
-
+   public ResponseEntity<List<ClassroomOccupancy>> load(@RequestParam(required = false) List<Integer> levels,
+                                                        @RequestParam(required = false) String building) {
       if (levels == null) {
-         LOG.warn("'levels' param was NULL");
+         LOGGER.warn("'levels' param was NULL");
          levels = Collections.emptyList();
       }
 
-      List<ClassroomOccupancy> result = repository.loadActive(levels);
-
+      List<ClassroomOccupancy> result = repository.loadActive(levels, building);
       return ResponseEntity.ok().body(result);
    }
 }

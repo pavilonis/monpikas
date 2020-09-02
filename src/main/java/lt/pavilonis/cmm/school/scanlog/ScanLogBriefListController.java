@@ -20,14 +20,16 @@ import java.util.Optional;
 @SpringComponent
 public class ScanLogBriefListController extends AbstractListController<ScanLogBrief, Void, ScanLogBriefFilter> {
 
-   @Autowired
-   private ScanLogBriefRepository repository;
+   private final ScanLogBriefRepository repository;
+   private final ScannerRepository scannerRepository;
+   private final UserRepository userRepository;
 
-   @Autowired
-   private ScannerRepository scannerRepository;
-
-   @Autowired
-   private UserRepository userRepository;
+   public ScanLogBriefListController(ScanLogBriefRepository repository, ScannerRepository scannerRepository,
+                                     UserRepository userRepository) {
+      this.repository = repository;
+      this.scannerRepository = scannerRepository;
+      this.userRepository = userRepository;
+   }
 
    @Override
    protected ListGrid<ScanLogBrief> createGrid() {

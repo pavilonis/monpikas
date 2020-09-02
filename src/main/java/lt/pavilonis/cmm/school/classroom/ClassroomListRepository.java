@@ -4,7 +4,6 @@ import lt.pavilonis.cmm.api.rest.classroom.ClassroomOccupancy;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
 import org.apache.commons.lang3.NotImplementedException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
@@ -15,8 +14,11 @@ import java.util.Optional;
 @Repository
 public class ClassroomListRepository implements EntityRepository<ClassroomOccupancy, Void, ClassroomFilter> {
 
-   @Autowired
-   private ClassroomRepository repository;
+   private final ClassroomRepository repository;
+
+   public ClassroomListRepository(ClassroomRepository repository) {
+      this.repository = repository;
+   }
 
    @Override
    public ClassroomOccupancy saveOrUpdate(ClassroomOccupancy entity) {
@@ -31,7 +33,7 @@ public class ClassroomListRepository implements EntityRepository<ClassroomOccupa
    @Override
    public List<ClassroomOccupancy> load(ClassroomFilter filter) {
       if (!filter.isHistoryMode()) {
-         return repository.loadActive(Collections.emptyList());
+         return repository.loadActive(Collections.emptyList(), null);
       }
 
       return repository.load(

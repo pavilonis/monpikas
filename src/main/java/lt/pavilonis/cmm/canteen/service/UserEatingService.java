@@ -10,7 +10,7 @@ import lt.pavilonis.cmm.canteen.repository.PupilDataRepository;
 import lt.pavilonis.cmm.canteen.ui.user.UserEatingFilter;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.school.user.UserFilter;
-import lt.pavilonis.util.TimeUtils;
+import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.apache.commons.lang3.NotImplementedException;
 import org.joda.time.LocalDate;
 import org.slf4j.Logger;
@@ -53,11 +53,11 @@ public class UserEatingService implements EntityRepository<UserEating, String, U
             filter.isWithEatingAssigned(),
             filter.getEatingType()
       );
-      LOG.info("Loaded pupil eating data [duration={}]", TimeUtils.duration(opStart));
+      LOG.info("Loaded pupil eating data [t={}]", TimeUtils.duration(opStart));
 
       opStart = LocalDateTime.now();
       List<User> users = usersRepository.load(new UserFilter(filter.getText(), ROLE_PUPIL, null, false));
-      LOG.info("Loaded user data [duration={}]", TimeUtils.duration(opStart));
+      LOG.info("Loaded user data [t={}]", TimeUtils.duration(opStart));
 
       return filter.isWithEatingAssigned()
             ? mergeByEatings(pupilDataCollection, users)
@@ -110,7 +110,7 @@ public class UserEatingService implements EntityRepository<UserEating, String, U
                return new UserEating(user, eatingData);
             })
             .collect(toList());
-      LOG.info("Composed dtos [duration={}]", TimeUtils.duration(opStart));
+      LOG.info("Composed dtos [t={}]", TimeUtils.duration(opStart));
       return result;
    }
 
