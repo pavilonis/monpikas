@@ -1,1 +1,1 @@
-ALTER TABLE mm_ClassroomOccupancy ADD building VARCHAR(255) NOT NULL;
+ALTER TABLE mm_ClassroomOccupancy ADD building VARCHAR(255) NULL;

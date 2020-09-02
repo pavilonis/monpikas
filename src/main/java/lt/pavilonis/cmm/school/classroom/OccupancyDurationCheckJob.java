@@ -19,7 +19,7 @@ import java.util.stream.Collectors;
 @Service
 public class OccupancyDurationCheckJob {
 
-   private static final Logger LOG = LoggerFactory.getLogger(OccupancyDurationCheckJob.class.getSimpleName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(OccupancyDurationCheckJob.class.getSimpleName());
    private final int durationLimitMinutes;
    private final ClassroomRepository repository;
    private final NamedParameterJdbcTemplate jdbcSalto;
@@ -46,7 +46,7 @@ public class OccupancyDurationCheckJob {
             .collect(Collectors.toSet());
 
       if (classroomNumbersToFree.isEmpty()) {
-         LOG.info("No classrooms exceeding occupancy limit found [checked={}]", active.size());
+         LOGGER.info("No classrooms exceeding occupancy limit found [checked={}]", active.size());
          return;
       }
 
@@ -59,7 +59,7 @@ public class OccupancyDurationCheckJob {
             "INSERT INTO mm_ClassroomOccupancy (classroomNumber, occupied) VALUES (:number, '0')",
             args
       );
-      LOG.info("Mark classrooms exceeding occupancy limit as free [numbers={}]",
+      LOGGER.info("Mark classrooms exceeding occupancy limit as free [numbers={}]",
             classroomNumbersToFree);
    }
 }

@@ -6,7 +6,6 @@ import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -19,17 +18,19 @@ import java.util.Map;
 @Repository
 public class ClassroomRepository {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ClassroomRepository.class.getSimpleName());
-   private static final RowMapper<ClassroomOccupancy> ROW_MAPPER =
-         (rs, i) -> new ClassroomOccupancy(
-               rs.getTimestamp(1).toLocalDateTime(),
-               rs.getBoolean(2),
-               rs.getInt(3),
-               rs.getString(4)
-         );
+   private static final Logger LOGGER = LoggerFactory.getLogger(ClassroomRepository.class.getSimpleName());
+   private static final RowMapper<ClassroomOccupancy> ROW_MAPPER = (rs, i) -> new ClassroomOccupancy(
+         rs.getTimestamp(1).toLocalDateTime(),
+         rs.getBoolean(2),
+         rs.getInt(3),
+         rs.getString(4)
+   );
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   private final NamedParameterJdbcTemplate jdbcSalto;
+
+   public ClassroomRepository(NamedParameterJdbcTemplate jdbcSalto) {
+      this.jdbcSalto = jdbcSalto;
+   }
 
    public List<ClassroomOccupancy> loadActive(List<Integer> levels, String building) {
 
@@ -40,37 +41,34 @@ public class ClassroomRepository {
 
       List<ClassroomOccupancy> result = jdbcSalto.query("" +
                   "SELECT " +
-                  "  co.dateTime, " +
-                  "  co.occupied, " +
-                  "  co.classroomNumber, " +
-                  "  co.building " +
-                  "FROM mm_ClassroomOccupancy co " +
+                  "  occ.dateTime, " +
+                  "  occ.occupied, " +
+                  "  occ.classroomNumber, " +
+                  "  occ.building " +
+                  "FROM mm_ClassroomOccupancy occ " +
                   "  JOIN ( " +
                   "          SELECT " +
-                  "             MAX(co_inner.dateTime) AS dateTime, " +
-                  "             co_inner.classroomNumber " +
-                  "          FROM mm_ClassroomOccupancy co_inner " +
-                  "          WHERE (:levels IS NULL OR co_inner.classroomNumber / 100 IN(:levels))" +
-                  "             AND (:building IS NULL OR co_inner.building = :building) " +
-                  "          GROUP BY co_inner.classRoomNumber " +
-                  "       ) AS latest ON latest.classRoomNumber = co.classRoomNumber " +
-                  "                      AND latest.dateTime = co.dateTime " +
-                  "ORDER BY co.dateTime DESC",
+                  "             MAX(occ_inner.dateTime) AS dateTime, " +
+                  "             occ_inner.classroomNumber, " +
+                  "             occ_inner.building " +
+                  "          FROM mm_ClassroomOccupancy occ_inner " +
+                  "          WHERE (:building IS NULL OR occ_inner.building = :building) " +
+                  (levels.isEmpty() ? "" : "AND occ_inner.classroomNumber / 100 IN(:levels) ") +
+                  "          GROUP BY occ_inner.building, occ_inner.classRoomNumber " +
+                  "       ) AS occ_latest ON occ_latest.building = occ.building " +
+                  "                      AND occ_latest.classRoomNumber = occ.classRoomNumber " +
+                  "                      AND occ_latest.dateTime = occ.dateTime " +
+                  "ORDER BY occ.dateTime DESC",
             params,
             ROW_MAPPER
       );
 
-
-      long numberOfOccupied = result.stream()
+      long free = result.stream()
             .filter(ClassroomOccupancy::isOccupied)
             .count();
 
-      LOG.info("Loaded [occupied={}, free={}, levels={}, t={}]",
-            numberOfOccupied,
-            result.size() - numberOfOccupied,
-            levels,
-            TimeUtils.duration(opStart)
-      );
+      LOGGER.info("Loaded [occupied={}/{}, building={}, levels={}, t={}]",
+            free, result.size(), building, levels, TimeUtils.duration(opStart));
 
       return result;
    }
