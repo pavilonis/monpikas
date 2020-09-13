@@ -99,7 +99,6 @@ public class TcpEventStringProcessor implements MessageHandler {
          return;
       }
 
-      logger.info("Parsing class-occupancy operation");
       Optional<ClassroomAction> action = ClassroomAction.forCode(operation);
       if (!action.isPresent()) {
          logger.warn("Unknown operation: {}", operation);
@@ -108,8 +107,11 @@ public class TcpEventStringProcessor implements MessageHandler {
 
       Optional<Classroom> classroom = findClassroom(location);
       if (classroom.isPresent()) {
-         logger.info("Classroom event [classroomNumber={}, operation={}]", location, operation);
-         classroomRepository.save(classroom.get(), action.get().getBooleanValue());
+         boolean occupied = action.get().getBooleanValue();
+         logger.info("Classroom event [classroom={}, operation={}]",
+               classroom.get().getClassNumber(), occupied ? "occupied" : "freed");
+         classroomRepository.save(classroom.get(), occupied);
+
       } else {
          logger.warn("Could not find building/class number from: {}", location);
       }
@@ -121,19 +123,22 @@ public class TcpEventStringProcessor implements MessageHandler {
          return Optional.empty();
       }
 
-      if (isNumber(location)) {
-         return Optional.of(new Classroom(Building.SCHOOL, Integer.parseInt(location)));
-      }
+      return isNumber(location)
+            ? Optional.of(new Classroom(Building.SCHOOL, Integer.parseInt(location)))
+            : parseClassroomWithBuilding(location);
+   }
+
+   private Optional<Classroom> parseClassroomWithBuilding(String location) {
 
       char buildingCode = location.charAt(0);
-      Optional<Building> optBuilding = Building.forCode(buildingCode);
 
-      return optBuilding.flatMap(building -> {
-         String remainingString = location.substring(1);
-         return isNumber(remainingString)
-               ? Optional.of(new Classroom(building, Integer.parseInt(remainingString)))
-               : Optional.empty();
-      });
+      return Building.forCode(buildingCode)
+            .flatMap(building -> {
+               String remainingString = location.substring(1);
+               return isNumber(remainingString)
+                     ? Optional.of(new Classroom(building, Integer.parseInt(remainingString)))
+                     : Optional.empty();
+            });
    }
 
    private void clearFields() {

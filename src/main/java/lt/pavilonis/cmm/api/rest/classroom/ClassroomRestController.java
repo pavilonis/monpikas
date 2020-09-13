@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.api.rest.classroom;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,7 +27,7 @@ public class ClassroomRestController {
                                                         @RequestParam(required = false) String building) {
       if (levels == null) {
          LOGGER.warn("'levels' param was NULL");
-         levels = Collections.emptyList();
+         return ResponseEntity.ok().body(Collections.emptyList());
       }
 
       List<ClassroomOccupancy> result = repository.loadActive(levels, building);

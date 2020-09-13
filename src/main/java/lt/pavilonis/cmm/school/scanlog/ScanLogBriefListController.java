@@ -12,7 +12,6 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 

@@ -13,10 +13,13 @@ public enum Building {
       this.code = code;
    }
 
-   public static Optional<Building> forCode(char code) {
+   public static Optional<Building> forCode(char searchCode) {
+
+      char lowerCaseSearchCode = Character.toLowerCase(searchCode);
+
       return EnumSet.allOf(Building.class)
             .stream()
-            .filter(building -> building.code == code)
+            .filter(building -> building.code == lowerCaseSearchCode)
             .findFirst();
    }
 
