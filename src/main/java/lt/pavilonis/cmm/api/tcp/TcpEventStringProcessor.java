@@ -52,7 +52,7 @@ public class TcpEventStringProcessor implements MessageHandler {
    }
 
    @Override
-   public void handleMessage(Message<?> message) {
+   public synchronized void handleMessage(Message<?> message) {
       String string = convertMessage(message);
 
       if (StringUtils.isBlank(string)) {
@@ -78,13 +78,13 @@ public class TcpEventStringProcessor implements MessageHandler {
       }
 
       if (string.contains(FIELD_CARD_CODE)) {
-         cardCode = clean(string, FIELD_CARD_CODE);
+         cardCode = cleaned(string, FIELD_CARD_CODE);
 
       } else if (string.contains(FIELD_OPERATION_DESCRIPTION)) {
-         operation = clean(string, FIELD_OPERATION_DESCRIPTION);
+         operation = cleaned(string, FIELD_OPERATION_DESCRIPTION);
 
       } else if (string.contains(FIELD_DOOR_NAME)) {
-         location = clean(string, FIELD_DOOR_NAME);
+         location = cleaned(string, FIELD_DOOR_NAME);
       }
 
       logger.info(">>> {}", string);
@@ -147,7 +147,7 @@ public class TcpEventStringProcessor implements MessageHandler {
       cardCode = null;
    }
 
-   private String clean(String string, String fieldName) {
+   private String cleaned(String string, String fieldName) {
       List<String> badChars = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r", ":", fieldName);
 
       for (String toReplace : badChars) {

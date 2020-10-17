@@ -12,13 +12,12 @@ import org.apache.poi.ss.usermodel.Sheet;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static java.util.Collections.reverseOrder;
+import static java.util.stream.Collectors.groupingBy;
 import static org.apache.poi.hssf.usermodel.HSSFPrintSetup.A4_PAPERSIZE;
 
 public final class Report {
@@ -51,7 +50,7 @@ public final class Report {
 
          Map<String, List<EatingEvent>> pupilEatingsMap = events.stream()
                .filter(event -> event.getEatingType() == eatingType)
-               .collect(Collectors.groupingBy(EatingEvent::getCardCode));
+               .collect(groupingBy(EatingEvent::getCardCode));
 
          if (!pupilEatingsMap.isEmpty()) {
             int rowNum = lastRow(2);
@@ -124,7 +123,7 @@ public final class Report {
       int eatingDaysCount = 0;
       BigDecimal priceSum = BigDecimal.ZERO;
 
-      Collections.sort(events, reverseOrder());
+      events.sort(reverseOrder());
 
       for (EatingEvent event : events) {
          Calendar c = Calendar.getInstance();
