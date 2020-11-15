@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.school.classroom;
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomOccupancy;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
@@ -16,7 +15,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
 
 @Service
 public class OccupancyDurationCheckJob {
@@ -41,20 +41,22 @@ public class OccupancyDurationCheckJob {
       LocalDateTime earliestOccupancyEventDateAllowed = LocalDateTime.now()
             .minusMinutes(durationLimitMinutes);
 
-      Map<String, Integer> classroomNumbersToFree = active.stream()
+      List<ClassroomOccupancy> classroomsToFree = active.stream()
             .filter(ClassroomOccupancy::isOccupied)
             .filter(co -> co.getDateTime().isBefore(earliestOccupancyEventDateAllowed))
-            .collect(toMap(ClassroomOccupancy::getBuilding, ClassroomOccupancy::getClassroomNumber));
+            .collect(toList());
 
-      if (classroomNumbersToFree.isEmpty()) {
+      if (classroomsToFree.isEmpty()) {
          LOGGER.info("No classrooms exceeding occupancy limit found [checked={}]", active.size());
          return;
       }
 
       @SuppressWarnings("unchecked")
-      Map<String, ?>[] args = classroomNumbersToFree.entrySet()
-            .stream()
-            .map(entry -> ImmutableMap.of("building", entry.getKey(), "number", entry.getValue()))
+      Map<String, ?>[] args = classroomsToFree.stream()
+            .map(room -> ImmutableMap.of(
+                  "building", room.getBuilding(),
+                  "number", room.getClassroomNumber()
+            ))
             .toArray(Map[]::new);
 
       jdbcSalto.batchUpdate(
@@ -62,10 +64,10 @@ public class OccupancyDurationCheckJob {
                   "VALUES (:building, :number, '0')",
             args
       );
-      LOGGER.info("Marked classrooms exceeding occupancy limit as free [numbers={}]",
-            Joiner.on(",")
-                  .withKeyValueSeparator("-")
-                  .join(classroomNumbersToFree)
+      LOGGER.info("Marked classrooms exceeding occupancy limit as free [classrooms={}]",
+            classroomsToFree.stream()
+                  .map(room -> room.getBuilding() + "-" + room.getClassroomNumber())
+                  .collect(joining(","))
       );
    }
 }
