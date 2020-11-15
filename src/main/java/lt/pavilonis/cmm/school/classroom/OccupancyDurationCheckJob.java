@@ -1,5 +1,7 @@
 package lt.pavilonis.cmm.school.classroom;
 
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomOccupancy;
 import lt.pavilonis.cmm.api.rest.classroom.ClassroomRepository;
 import org.slf4j.Logger;
@@ -13,8 +15,8 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toMap;
 
 @Service
 public class OccupancyDurationCheckJob {
@@ -39,11 +41,10 @@ public class OccupancyDurationCheckJob {
       LocalDateTime earliestOccupancyEventDateAllowed = LocalDateTime.now()
             .minusMinutes(durationLimitMinutes);
 
-      Set<Integer> classroomNumbersToFree = active.stream()
+      Map<String, Integer> classroomNumbersToFree = active.stream()
             .filter(ClassroomOccupancy::isOccupied)
             .filter(co -> co.getDateTime().isBefore(earliestOccupancyEventDateAllowed))
-            .map(ClassroomOccupancy::getClassroomNumber)
-            .collect(Collectors.toSet());
+            .collect(toMap(ClassroomOccupancy::getBuilding, ClassroomOccupancy::getClassroomNumber));
 
       if (classroomNumbersToFree.isEmpty()) {
          LOGGER.info("No classrooms exceeding occupancy limit found [checked={}]", active.size());
@@ -51,15 +52,20 @@ public class OccupancyDurationCheckJob {
       }
 
       @SuppressWarnings("unchecked")
-      Map<String, ?>[] args = classroomNumbersToFree.stream()
-            .map(number -> Collections.singletonMap("number", number))
+      Map<String, ?>[] args = classroomNumbersToFree.entrySet()
+            .stream()
+            .map(entry -> ImmutableMap.of("building", entry.getKey(), "number", entry.getValue()))
             .toArray(Map[]::new);
 
       jdbcSalto.batchUpdate(
-            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, occupied) VALUES (:number, '0')",
+            "INSERT INTO mm_ClassroomOccupancy (building, classroomNumber, occupied) " +
+                  "VALUES (:building, :number, '0')",
             args
       );
-      LOGGER.info("Mark classrooms exceeding occupancy limit as free [numbers={}]",
-            classroomNumbersToFree);
+      LOGGER.info("Marked classrooms exceeding occupancy limit as free [numbers={}]",
+            Joiner.on(",")
+                  .withKeyValueSeparator("-")
+                  .join(classroomNumbersToFree)
+      );
    }
 }
