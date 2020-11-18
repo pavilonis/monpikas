@@ -51,7 +51,7 @@ public class EatingRestController {
    public ResponseEntity<PupilRepresentation> process(@PathVariable String cardCode) {
       LOG.info("Processing STARTING [cardCode={}]", cardCode);
 
-      Long scanLogId = scanLogRepository.saveChecked(SCANNER_ID_CANTEEN, cardCode, null);
+      Long scanLogId = scanLogRepository.saveChecked(SCANNER_ID_CANTEEN, cardCode);
       if (scanLogId == null) {
          return responseNotFound(cardCode);
       }

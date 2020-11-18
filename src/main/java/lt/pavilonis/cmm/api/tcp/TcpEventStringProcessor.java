@@ -11,6 +11,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
+import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -23,12 +25,14 @@ public class TcpEventStringProcessor implements MessageHandler {
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
    private static final String FIELD_DOOR_NAME = "DoorName";
    private static final String FIELD_CARD_CODE = "UserCardSerialNumber";
+   private static final String FIELD_DATE_TIME = "EventDateTime";
    private final ScanLogRepository scanLogRepository;
    private final ClassroomRepository classroomRepository;
 
    private String operation;
    private String location;
    private String cardCode;
+   private Instant dateTime;
 
    @Autowired
    public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
@@ -78,16 +82,34 @@ public class TcpEventStringProcessor implements MessageHandler {
       }
 
       if (string.contains(FIELD_CARD_CODE)) {
-         cardCode = cleaned(string, FIELD_CARD_CODE);
+         cardCode = extract(string, FIELD_CARD_CODE);
 
       } else if (string.contains(FIELD_OPERATION_DESCRIPTION)) {
-         operation = cleaned(string, FIELD_OPERATION_DESCRIPTION);
+         operation = extract(string, FIELD_OPERATION_DESCRIPTION);
 
       } else if (string.contains(FIELD_DOOR_NAME)) {
-         location = cleaned(string, FIELD_DOOR_NAME);
+         location = extract(string, FIELD_DOOR_NAME);
+
+      } else if (string.contains(FIELD_DATE_TIME)) {
+         dateTime = extractDateTime(string);
       }
 
       logger.info(">>> {}", string);
+   }
+
+   private Instant extractDateTime(String string) {
+      List<String> charsToRemove = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r");
+      int index = string.indexOf(":") + 1;
+      string = string.substring(index);
+      for (String toRemove : charsToRemove) {
+         string = string.replace(toRemove, StringUtils.EMPTY);
+      }
+      try {
+         return Instant.parse(string + "Z");
+      } catch (DateTimeParseException e) {
+         logger.error("Could not parse date: " + string);
+         return Instant.now();
+      }
    }
 
    private void processCollectedData() {
@@ -106,13 +128,13 @@ public class TcpEventStringProcessor implements MessageHandler {
       }
 
       Optional<Classroom> classroom = findClassroom(location);
-      if (classroom.isPresent()) {
+      classroom.ifPresent(room -> {
          boolean occupied = action.get().getBooleanValue();
-         logger.info("Classroom event [classroom={}, operation={}]",
-               classroom.get().getClassNumber(), occupied ? "occupied" : "freed");
-         classroomRepository.save(classroom.get(), occupied);
-
-      } else {
+         String number = room.getBuilding() + "-" + room.getClassNumber();
+         logger.info("Classroom event [classroom={}, operation={}]", number, occupied ? "occupied" : "freed");
+         classroomRepository.save(room, occupied, dateTime);
+      });
+      if (!classroom.isPresent()) {
          logger.warn("Could not find building/class number from: {}", location);
       }
    }
@@ -147,7 +169,7 @@ public class TcpEventStringProcessor implements MessageHandler {
       cardCode = null;
    }
 
-   private String cleaned(String string, String fieldName) {
+   private String extract(String string, String fieldName) {
       List<String> badChars = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r", ":", fieldName);
 
       for (String toReplace : badChars) {

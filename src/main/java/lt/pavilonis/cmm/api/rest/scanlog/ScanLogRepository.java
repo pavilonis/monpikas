@@ -52,7 +52,7 @@ public class ScanLogRepository {
    }
 
    public ScanLog saveCheckedAndLoad(long scannerId, String cardCode) {
-      Long scanLogId = saveChecked(scannerId, cardCode, null);
+      Long scanLogId = saveChecked(scannerId, cardCode);
 
       return scanLogId == null
             ? null
@@ -70,6 +70,10 @@ public class ScanLogRepository {
                return new ScanLog(rs.getTimestamp(2).toLocalDateTime(), user, keys);
             }
       );
+   }
+
+   public Long saveChecked(long scannerId, String cardCode) {
+      return saveChecked(scannerId, cardCode, null);
    }
 
    public Long saveChecked(long scannerId, String cardCode, String location) {

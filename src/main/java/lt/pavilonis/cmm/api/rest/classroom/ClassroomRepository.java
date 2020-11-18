@@ -10,6 +10,8 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Timestamp;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -94,14 +96,15 @@ public class ClassroomRepository {
       );
    }
 
-   public void save(Classroom classroom, boolean occupied) {
+   public void save(Classroom classroom, boolean occupied, Instant dateTime) {
       jdbcSalto.update(
-            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, building, occupied) " +
-                  "VALUES (:number, :building, :operation)",
+            "INSERT INTO mm_ClassroomOccupancy (classroomNumber, building, occupied, dateTime) " +
+                  "VALUES (:number, :building, :operation, :dateTime)",
             ImmutableMap.of(
                   "number", classroom.getClassNumber(),
                   "building", classroom.getBuilding().name(),
-                  "operation", occupied
+                  "operation", occupied,
+                  "dateTime", Timestamp.from(dateTime)
             )
       );
    }
