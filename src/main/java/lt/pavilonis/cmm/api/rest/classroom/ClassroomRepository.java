@@ -11,7 +11,6 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -96,7 +95,7 @@ public class ClassroomRepository {
       );
    }
 
-   public void save(Classroom classroom, boolean occupied, Instant dateTime) {
+   public void save(Classroom classroom, boolean occupied, LocalDateTime dateTime) {
       jdbcSalto.update(
             "INSERT INTO mm_ClassroomOccupancy (classroomNumber, building, occupied, dateTime) " +
                   "VALUES (:number, :building, :operation, :dateTime)",
@@ -104,7 +103,7 @@ public class ClassroomRepository {
                   "number", classroom.getClassNumber(),
                   "building", classroom.getBuilding().name(),
                   "operation", occupied,
-                  "dateTime", Timestamp.from(dateTime)
+                  "dateTime", Timestamp.valueOf(dateTime)
             )
       );
    }

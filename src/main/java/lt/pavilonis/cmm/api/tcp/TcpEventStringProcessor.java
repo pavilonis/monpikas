@@ -11,7 +11,8 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Service;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
@@ -21,6 +22,7 @@ import java.util.Optional;
 public class TcpEventStringProcessor implements MessageHandler {
 
    private final Logger logger;
+   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
    private static final int SCANNER_ID_DOORS = 5;
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
    private static final String FIELD_DOOR_NAME = "DoorName";
@@ -32,7 +34,7 @@ public class TcpEventStringProcessor implements MessageHandler {
    private String operation;
    private String location;
    private String cardCode;
-   private Instant dateTime;
+   private LocalDateTime dateTime;
 
    @Autowired
    public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
@@ -97,7 +99,7 @@ public class TcpEventStringProcessor implements MessageHandler {
       logger.info(">>> {}", string);
    }
 
-   private Instant extractDateTime(String string) {
+   private LocalDateTime extractDateTime(String string) {
       List<String> charsToRemove = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r");
       int index = string.indexOf(":") + 1;
       string = string.substring(index);
@@ -105,10 +107,10 @@ public class TcpEventStringProcessor implements MessageHandler {
          string = string.replace(toRemove, StringUtils.EMPTY);
       }
       try {
-         return Instant.parse(string + "Z");
+         return LocalDateTime.parse(string, DATE_TIME_FORMATTER);
       } catch (DateTimeParseException e) {
          logger.error("Could not parse date: " + string);
-         return Instant.now();
+         return LocalDateTime.now();
       }
    }
 
@@ -167,6 +169,7 @@ public class TcpEventStringProcessor implements MessageHandler {
       operation = null;
       location = null;
       cardCode = null;
+      dateTime = null;
    }
 
    private String extract(String string, String fieldName) {
