@@ -12,8 +12,6 @@ import org.springframework.messaging.MessageHandler;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -22,12 +20,12 @@ import java.util.Optional;
 public class TcpEventStringProcessor implements MessageHandler {
 
    private final Logger logger;
-   private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
    private static final int SCANNER_ID_DOORS = 5;
    private static final String FIELD_OPERATION_DESCRIPTION = "OperationDescription";
    private static final String FIELD_DOOR_NAME = "DoorName";
    private static final String FIELD_CARD_CODE = "UserCardSerialNumber";
    private static final String FIELD_DATE_TIME = "EventDateTime";
+   private final DateTimeExtractor dateTimeExtractor = new DateTimeExtractor();
    private final ScanLogRepository scanLogRepository;
    private final ClassroomRepository classroomRepository;
 
@@ -50,11 +48,11 @@ public class TcpEventStringProcessor implements MessageHandler {
     * For testing
     */
    public TcpEventStringProcessor(ScanLogRepository scanLogRepository,
-                                  ClassroomRepository classroomRepository, Logger mockLogger) {
+                                  ClassroomRepository classroomRepository, Logger logger) {
 
       this.scanLogRepository = scanLogRepository;
       this.classroomRepository = classroomRepository;
-      this.logger = mockLogger;
+      this.logger = logger;
    }
 
    @Override
@@ -93,25 +91,10 @@ public class TcpEventStringProcessor implements MessageHandler {
          location = extract(string, FIELD_DOOR_NAME);
 
       } else if (string.contains(FIELD_DATE_TIME)) {
-         dateTime = extractDateTime(string);
+         dateTime = dateTimeExtractor.extract(string);
       }
 
       logger.info(">>> {}", string);
-   }
-
-   private LocalDateTime extractDateTime(String string) {
-      List<String> charsToRemove = Arrays.asList(" ", "\"", ",", "\\n", "\n", "\\r", "\r");
-      int index = string.indexOf(":") + 1;
-      string = string.substring(index);
-      for (String toRemove : charsToRemove) {
-         string = string.replace(toRemove, StringUtils.EMPTY);
-      }
-      try {
-         return LocalDateTime.parse(string, DATE_TIME_FORMATTER);
-      } catch (DateTimeParseException e) {
-         logger.error("Could not parse date: " + string);
-         return LocalDateTime.now();
-      }
    }
 
    private void processCollectedData() {
