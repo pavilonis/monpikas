@@ -35,17 +35,17 @@ public class KeyRepository {
          KeyAction.ASSIGNED, 1,
          KeyAction.UNASSIGNED, 0
    ));
-   private final NamedParameterJdbcTemplate jdbcSalto;
+   private final NamedParameterJdbcTemplate jdbc;
    private final UserRepository userRepository;
 
-   public KeyRepository(NamedParameterJdbcTemplate jdbcSalto, UserRepository userRepository) {
-      this.jdbcSalto = jdbcSalto;
+   public KeyRepository(NamedParameterJdbcTemplate jdbc, UserRepository userRepository) {
+      this.jdbc = jdbc;
       this.userRepository = userRepository;
    }
 
    Key assign(long scannerId, String cardCode, int keyNumber) {
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcSalto.update("" +
+      jdbc.update("" +
                   "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) " +
                   "VALUES (:scannerId,  :cardCode, :keyNumber, :keyAction)",
             new MapSqlParameterSource(ImmutableMap.of(
@@ -62,7 +62,7 @@ public class KeyRepository {
    Key unAssign(long scannerId, int keyNumber) {
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcSalto.update("" +
+      jdbc.update("" +
                   "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) VALUES (" +
                   "  :scannerId," +
                   "  (" +
@@ -86,7 +86,7 @@ public class KeyRepository {
    }
 
    private Key loadSingleKey(long id) {
-      return jdbcSalto.queryForObject("" +
+      return jdbc.queryForObject("" +
                   "SELECT " +
                   "  kl.keyNumber, " +
                   "  kl.dateTime, " +
@@ -155,7 +155,7 @@ public class KeyRepository {
             "WHERE kl.assigned = 1 \n" +
             "  AND u.CardCode IS NOT NULL";
 
-      List<Key> result = jdbcSalto.query(
+      List<Key> result = jdbc.query(
             query,
             args,
             (rs, i) -> new Key(
@@ -218,7 +218,7 @@ public class KeyRepository {
       args.put("keyAction", keyAction == null ? null : KEY_ACTION_INTEGER_MAP.get(keyAction));
       args.put("nameLike", QueryUtils.likeArg(nameLike));
 
-      List<Key> result = jdbcSalto.query("" +
+      List<Key> result = jdbc.query("" +
                   "SELECT " +
                   "  kl.keyNumber AS keyNumber," +
                   "  kl.dateTime AS dateTime," +

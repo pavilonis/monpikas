@@ -1,1 +1,0 @@
-DELETE FROM mm_ClassroomOccupancy WHERE building IS NULL;

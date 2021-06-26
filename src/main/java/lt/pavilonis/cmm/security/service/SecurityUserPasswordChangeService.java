@@ -1,9 +1,11 @@
 package lt.pavilonis.cmm.security.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 @Service
 public class SecurityUserPasswordChangeService {
@@ -12,13 +14,10 @@ public class SecurityUserPasswordChangeService {
    private PasswordEncoder passwordEncoder;
 
    @Autowired
-   private JdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbc;
 
    public void changePassword(long userId, String newPassword) {
-      jdbc.update(
-            "UPDATE User SET password = ? WHERE id = ?",
-            passwordEncoder.encode(newPassword),
-            userId
-      );
+      var sql = "UPDATE User SET password = :pass WHERE id = :id";
+      jdbc.update(sql, Map.of("id", userId, "pass", passwordEncoder.encode(newPassword)));
    }
 }

@@ -41,12 +41,12 @@ public class ScanLogRepository {
          "  AND (:role IS NULL OR u.dummy4 = :role) " +
          "  AND (:text IS NULL OR sl.cardCode LIKE :text OR u.FirstName LIKE :text OR u.LastName LIKE :text)";
 
-   private final NamedParameterJdbcTemplate jdbcSalto;
+   private final NamedParameterJdbcTemplate jdbc;
    private final KeyRepository keyRepository;
    private final UserRepository userRepository;
 
-   public ScanLogRepository(NamedParameterJdbcTemplate jdbcSalto, KeyRepository keyRepository, UserRepository userRepository) {
-      this.jdbcSalto = jdbcSalto;
+   public ScanLogRepository(NamedParameterJdbcTemplate jdbc, KeyRepository keyRepository, UserRepository userRepository) {
+      this.jdbc = jdbc;
       this.keyRepository = keyRepository;
       this.userRepository = userRepository;
    }
@@ -60,7 +60,7 @@ public class ScanLogRepository {
    }
 
    private ScanLog loadById(long scannerId, long scanLogId) {
-      return jdbcSalto.queryForObject(
+      return jdbc.queryForObject(
             "SELECT cardCode, dateTime FROM mm_ScanLog WHERE id = :id",
             Collections.singletonMap("id", scanLogId),
             (rs, i) -> {
@@ -91,7 +91,7 @@ public class ScanLogRepository {
 
       KeyHolder holder = new GeneratedKeyHolder();
 
-      jdbcSalto.update("" +
+      jdbc.update("" +
                   "INSERT INTO mm_ScanLog (cardCode, scanner_id, location) " +
                   "VALUES (:cardCode, :scannerId, :location)",
             new MapSqlParameterSource(args),
@@ -102,7 +102,7 @@ public class ScanLogRepository {
    }
 
    public int loadBriefSize(ScanLogBriefFilter filter) {
-      return jdbcSalto.queryForObject("SELECT COUNT(*) " + FROM_WHERE_BLOCK, commonArgs(filter), Integer.class);
+      return jdbc.queryForObject("SELECT COUNT(*) " + FROM_WHERE_BLOCK, commonArgs(filter), Integer.class);
    }
 
    public List<ScanLogBrief> loadBrief(ScanLogBriefFilter filter, long offset, long limit) {
@@ -110,7 +110,7 @@ public class ScanLogRepository {
       args.put("argOffset", offset);
       args.put("argLimit", limit);
 
-      return jdbcSalto.query("" +
+      return jdbc.query("" +
                   "SELECT " +
                   "  sl.dateTime AS dateTime, " +
                   "  sl.cardCode AS cardCode," +
@@ -143,7 +143,7 @@ public class ScanLogRepository {
       args.put("text", QueryUtils.likeArg(text));
       args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
 
-      List<ScanLogBrief> result = jdbcSalto.query(
+      List<ScanLogBrief> result = jdbc.query(
             "SELECT " +
                   "  sl.dateTime AS dateTime, " +
                   "  sl.cardCode AS cardCode," +
@@ -158,7 +158,6 @@ public class ScanLogRepository {
                   "WHERE sl.dateTime > :today " +
                   "  AND sl.scanner_id = 5 " +
                   "  AND ISNUMERIC(sl.location) = 1 " +
-//                  "  AND (u.dummy3 LIKE 'Moky%' OR u.dummy3 LIKE 'Koncertm%') " +
                   "  AND (:text IS NULL OR u.FirstName LIKE :text OR u.LastName LIKE :text OR sl.location LIKE :text) ",
             args,
             new ScanLogBriefMapper()

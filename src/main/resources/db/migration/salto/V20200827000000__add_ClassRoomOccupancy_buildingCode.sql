@@ -1,1 +1,0 @@
-ALTER TABLE mm_ClassroomOccupancy ADD building VARCHAR(255) NULL;

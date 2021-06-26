@@ -10,7 +10,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.servlet.Filter;
+import java.nio.charset.StandardCharsets;
 import java.util.Locale;
+
+import static java.nio.charset.StandardCharsets.UTF_8;
 
 @SpringBootApplication
 @EnableScheduling
@@ -27,7 +30,7 @@ public class App {
    @Bean
    public Filter characterEncodingFilter() {
       CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
-      characterEncodingFilter.setEncoding("UTF-8");
+      characterEncodingFilter.setEncoding(UTF_8.name());
       characterEncodingFilter.setForceEncoding(true);
       return characterEncodingFilter;
    }
@@ -38,7 +41,7 @@ public class App {
       messageSource.setUseCodeAsDefaultMessage(true);
       messageSource.setBasename("classpath:lang/messages");
       messageSource.setCacheSeconds(0);
-      messageSource.setDefaultEncoding("UTF-8");
+      messageSource.setDefaultEncoding(UTF_8.name());
       Locale.setDefault(new Locale("lt"));
       return messageSource;
    }

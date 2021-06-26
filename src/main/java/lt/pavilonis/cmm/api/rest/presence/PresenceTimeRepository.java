@@ -17,21 +17,21 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class PresenceTimeRepository {
 
    private static final Logger LOGGER = getLogger(PresenceTimeRepository.class.getSimpleName());
-   private final NamedParameterJdbcTemplate jdbcSalto;
+   private final NamedParameterJdbcTemplate jdbc;
 
-   public PresenceTimeRepository(NamedParameterJdbcTemplate jdbcSalto) {
-      this.jdbcSalto = jdbcSalto;
+   public PresenceTimeRepository(NamedParameterJdbcTemplate jdbc) {
+      this.jdbc = jdbc;
    }
 
    public List<PresenceTime> load(String cardCode, LocalDate periodStart, LocalDate periodEnd) {
 
-      LocalDateTime opStart = LocalDateTime.now();
+      var opStart = LocalDateTime.now();
       Map<String, Object> args = new HashMap<>();
       args.put("cardCode", cardCode);
       args.put("periodStart", periodStart);
       args.put("periodEnd", periodEnd);
 
-      List<PresenceTime> result = jdbcSalto.query("" +
+      List<PresenceTime> result = jdbc.query("" +
                   "SELECT " +
                   "   CAST([dateTime] AS DATE)       AS workDay, " +
                   "   CAST(min([DATETIME] ) AS TIME) AS workDayStart, " +
@@ -40,7 +40,7 @@ public class PresenceTimeRepository {
                   "         ABS(DATEDIFF(SECOND, max([DATETIME]), min([DATETIME])) / 3600.0), " +
                   "         1 " +
                   "   )                               AS hourDiff " +
-                  "FROM mm_ScanLog " +
+                  "FROM ScanLog " +
                   "WHERE cardCode = :cardCode " +
                   "  AND (:periodStart IS NULL OR :periodStart <= CAST([dateTime] AS DATE))" +
                   "  AND (:periodEnd IS NULL OR :periodEnd >= CAST([dateTime] AS DATE)) " +

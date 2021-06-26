@@ -38,7 +38,7 @@ public class UserRepository {
          "  )";
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   private NamedParameterJdbcTemplate jdbc;
 
    public User update(User user) {
 
@@ -48,7 +48,7 @@ public class UserRepository {
             ? "  Picture = CONVERT(VARBINARY(MAX), :base16photo, 2) "
             : "  Picture = NULL ";
 
-      jdbcSalto.update("" +
+      jdbc.update("" +
                   "UPDATE u " +
                   "SET " +
                   "  name = :name, " +
@@ -72,7 +72,7 @@ public class UserRepository {
       args.put("argOffset", QueryUtils.argOffset(filter.getOffset()));
       args.put("argLimit", QueryUtils.argLimit(filter.getLimit()));
 
-      return jdbcSalto.query("" +
+      return jdbc.query("" +
                   "SELECT " +
                   "  c.ROMCode AS cardCode, " +
                   "  u.FirstName AS firstName, " +
@@ -100,7 +100,7 @@ public class UserRepository {
 
 
    public User load(String cardCode, boolean withPhoto) {
-      List<User> result = jdbcSalto.query("" +
+      List<User> result = jdbc.query("" +
                   "SELECT " +
                   "  c.ROMCode AS cardCode, " +
                   "  u.FirstName AS firstName, " +
@@ -152,7 +152,7 @@ public class UserRepository {
    }
 
    public boolean exists(String cardCode) {
-      return jdbcSalto.queryForObject("" +
+      return jdbc.queryForObject("" +
                   "SELECT " +
                   "  CASE " +
                   "     WHEN COUNT(u.Cardcode) > 0 " +
@@ -169,7 +169,7 @@ public class UserRepository {
    }
 
    public int size(UserFilter filter) {
-      return jdbcSalto.queryForObject(
+      return jdbc.queryForObject(
             "SELECT COUNT(u.Cardcode) " + BLOCKS_FROM_WHERE,
             commonArgs(filter),
             Integer.class
@@ -177,7 +177,7 @@ public class UserRepository {
    }
 
    public List<String> loadGroups() {
-      return jdbcSalto.queryForList("" +
+      return jdbc.queryForList("" +
                   "SELECT DISTINCT dummy3 " +
                   "FROM tb_Users " +
                   "WHERE dummy3 IS NOT NULL " +
@@ -189,7 +189,7 @@ public class UserRepository {
    }
 
    public List<String> loadRoles() {
-      return jdbcSalto.queryForList("" +
+      return jdbc.queryForList("" +
                   "SELECT DISTINCT dummy4 " +
                   "FROM tb_Users " +
                   "WHERE dummy4 IS NOT NULL " +

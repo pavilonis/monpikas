@@ -8,7 +8,6 @@ import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -22,16 +21,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Repository
 public class SecurityUserRepository implements EntityRepository<SecurityUser, Long, SecurityUserFilter> {
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbcNamed;
-
-   @Autowired
-   private JdbcTemplate jdbc;
+   private NamedParameterJdbcTemplate jdbc;
 
    @Autowired
    private PasswordEncoder passwordEncoder;
@@ -48,12 +43,19 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
    }
 
    private SecurityUser update(SecurityUser user) {
-      jdbc.update(
-            "UPDATE User SET name = ?, email = ?, enabled = ?, username = ? WHERE id = ?",
-            user.getName(), user.getEmail(), user.isEnabled(), user.getUsername(), user.getId()
-      );
+      var sql = "UPDATE User " +
+            "SET name = :name, email = :email, enabled = :enabled, username = :username " +
+            "WHERE id = :id";
 
-      jdbc.update("DELETE FROM UserRole WHERE user_id = ?", user.getId());
+      Map<String, Object> params = new HashMap<>();
+      params.put("name", user.getName());
+      params.put("email", user.getEmail());
+      params.put("enabled", user.isEnabled());
+      params.put("username", user.getUsername());
+      params.put("id", user.getId());
+
+      jdbc.update(sql, params);
+      jdbc.update("DELETE FROM UserRole WHERE user_id = :id", Map.of("id", user.getId()));
       saveRoles(user.getId(), user.getAuthorities());
 
       return find(user.getId())
@@ -61,13 +63,11 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
    }
 
    private void saveRoles(long userId, Collection<Role> roles) {
-      List<Object[]> args = roles.stream()
+      var sql = "INSERT INTO UserRole (user_id, role_id) VALUES (:userId, :roleId)";
+      roles.stream()
             .map(Role::getId)
             .distinct()
-            .map(roleId -> new Object[]{userId, roleId})
-            .collect(Collectors.toList());
-
-      jdbc.batchUpdate("INSERT INTO UserRole (user_id, role_id) VALUES (?, ?)", args);
+            .forEach(roleId -> jdbc.update(sql, Map.of("userId", userId, "roleId", roleId)));
    }
 
    private SecurityUser save(SecurityUser user) {
@@ -79,7 +79,7 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
       args.put("password", passwordEncoder.encode(user.getPassword()));
 
       KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbcNamed.update("" +
+      jdbc.update("" +
                   "INSERT INTO User (username, name, email, enabled, password)" +
                   " VALUES (:username, :name, :email, :enabled, :password)",
             new MapSqlParameterSource(args),
@@ -103,7 +103,7 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
       args.put("id", filter.getId());
       args.put("username", StringUtils.stripToNull(filter.getUsername()));
       args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
-      return jdbcNamed.query("" +
+      return jdbc.query("" +
                   "SELECT u.*, r.* " +
                   "FROM User u " +
                   "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +
@@ -132,7 +132,7 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM User WHERE id = ?", id);
+      jdbc.update("DELETE FROM User WHERE id = :id", Map.of("id", id));
    }
 
    @Override

@@ -1,1 +1,0 @@
-ALTER TABLE MealEventLog CHANGE cardId cardCode VARCHAR(255) NOT NULL;

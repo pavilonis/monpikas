@@ -6,43 +6,38 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @RequestMapping("/rest")
 @RestController
 public class RoleGroupController {
 
    @Autowired
-   private NamedParameterJdbcTemplate jdbcSalto;
+   private NamedParameterJdbcTemplate jdbc;
 
    @GetMapping("roles")
    public List<String> loadRoles() {
-      return jdbcSalto.queryForList("" +
-                  "SELECT DISTINCT u.dummy4 AS userRole " +
-                  "FROM tb_Users u " +
-                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
-                  "WHERE u.Cardcode IS NOT NULL" +
-                  "  AND u.dummy4 IS NOT NULL " +
-                  "  AND u.dummy4 <> '' " +
-                  "ORDER BY u.dummy4",
-            Collections.emptyMap(),
-            String.class
-      );
+      var sql = "SELECT DISTINCT u.dummy4 AS userRole " +
+            "FROM tb_Users u " +
+            "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
+            "WHERE u.Cardcode IS NOT NULL" +
+            "  AND u.dummy4 IS NOT NULL " +
+            "  AND u.dummy4 <> '' " +
+            "ORDER BY u.dummy4";
+
+      return jdbc.queryForList(sql, Map.of(), String.class);
    }
 
    @GetMapping("groups")
    public List<String> loadGroups() {
-      return jdbcSalto.queryForList("" +
-                  "SELECT DISTINCT u.dummy3 AS userGroup " +
-                  "FROM tb_Users u " +
-                  "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
-                  "WHERE u.Cardcode IS NOT NULL" +
-                  "  AND u.dummy3 IS NOT NULL " +
-                  "  AND u.dummy3 <> ''" +
-                  "ORDER BY u.dummy3",
-            Collections.emptyMap(),
-            String.class
-      );
+      var sql = "SELECT DISTINCT u.dummy3 AS userGroup " +
+            "FROM tb_Users u " +
+            "  JOIN tb_Cards c ON c.Cardcode = u.Cardcode " +
+            "WHERE u.Cardcode IS NOT NULL" +
+            "  AND u.dummy3 IS NOT NULL " +
+            "  AND u.dummy3 <> ''" +
+            "ORDER BY u.dummy3";
+      return jdbc.queryForList(sql, Map.of(), String.class);
    }
 }
