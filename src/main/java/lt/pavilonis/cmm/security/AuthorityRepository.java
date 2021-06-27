@@ -15,7 +15,7 @@ import java.util.Optional;
 public class AuthorityRepository implements EntityRepository<GrantedAuthority, String, Void> {
 
    @Autowired
-   private JdbcTemplate jdbcApi;
+   private JdbcTemplate jdbc;
 
    @Override
    public GrantedAuthority saveOrUpdate(GrantedAuthority entity) {
@@ -29,10 +29,8 @@ public class AuthorityRepository implements EntityRepository<GrantedAuthority, S
 
    @Override
    public List<GrantedAuthority> load(Void ignored) {
-      return jdbcApi.query(
-            "SELECT DISTINCT name FROM Role ORDER BY name",
-            (rs, i) -> new SimpleGrantedAuthority(rs.getString(1))
-      );
+      var sql = "SELECT DISTINCT name FROM Role ORDER BY name";
+      return jdbc.query(sql, (rs, i) -> new SimpleGrantedAuthority(rs.getString(1)));
    }
 
    @Override

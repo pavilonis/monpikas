@@ -9,12 +9,11 @@ import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 
-import java.util.Arrays;
 import java.util.List;
 
 final class UserListFilterPanel extends FilterPanel<UserFilter> {
 
-   private final String prefferedRole = App.translate(this, "preferredRole");
+   private final String preferredRole = App.translate(this, "preferredRole");
    private TextField textField;
    private ComboBox<String> groupCombo;
    private ComboBox<String> roleCombo;
@@ -25,7 +24,7 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
       groupCombo.setItems(groups);
 
       roles.stream()
-            .filter(prefferedRole::equals)
+            .filter(preferredRole::equals)
             .findFirst()
             .ifPresent(roleCombo::setValue);
    }
@@ -42,7 +41,7 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
 
    @Override
    protected List<HasValue<?>> getFields() {
-      return Arrays.asList(
+      return List.of(
             textField = new ATextField(this.getClass(), "firstLastName"),
             roleCombo = new ComboBox<>(App.translate(this, "role")),
             groupCombo = new ComboBox<>(App.translate(this, "group")),

@@ -14,7 +14,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.ResourceBundle;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 public class MenuLayout extends CssLayout {
 
@@ -24,23 +25,14 @@ public class MenuLayout extends CssLayout {
 
    public MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure) {
 
-
-      CssLayout menuItemsLayout = new MenuItemsLayout(menuStructure, navigator);
-
-      addComponents(
-            createMenuHeader(),
-            createUserSettings(),
-            menuItemsLayout
-      );
+      var menuItemsLayout = new MenuItemsLayout(menuStructure, navigator);
+      addComponents(createMenuHeader(), createUserSettings(), menuItemsLayout);
 
       List<MenuItem> menuItems = menuStructure.values().stream()
             .flatMap(Collection::stream)
-            .collect(Collectors.toList());
+            .collect(toList());
 
-      MenuViewChangeListener viewChangeListener =
-            new MenuViewChangeListener(this, menuItems, menuItemsLayout);
-
-      navigator.addViewChangeListener(viewChangeListener);
+      navigator.addViewChangeListener(new MenuViewChangeListener(this, menuItems, menuItemsLayout));
    }
 
    private MenuBar createUserSettings() {
@@ -64,7 +56,7 @@ public class MenuLayout extends CssLayout {
             "</h3>", ContentMode.HTML
       );
       title.setSizeUndefined();
-      HorizontalLayout layout = new HorizontalLayout(title);
+      var layout = new HorizontalLayout(title);
       layout.setExpandRatio(title, 1);
       layout.setWidth("100%");
       layout.setSpacing(false);

@@ -14,8 +14,7 @@ public class MenuViewChangeListener implements ViewChangeListener {
    private final List<MenuItem> menuItems;
    private final CssLayout menuItemsLayout;
 
-   public MenuViewChangeListener(CssLayout menuLayout,
-                                 List<MenuItem> menuItems,
+   public MenuViewChangeListener(CssLayout menuLayout, List<MenuItem> menuItems,
                                  CssLayout menuItemsLayout) {
       this.menuLayout = menuLayout;
       this.menuItems = menuItems;
@@ -36,17 +35,12 @@ public class MenuViewChangeListener implements ViewChangeListener {
             .filter(item -> item.getCodeName().equals(newPageCode))
             .findAny()
             .ifPresent(item -> {
-                     String caption = App.translate(item, item.getCodeName());
-                     StreamSupport.stream(menuItemsLayout.spliterator(), false)
-                           .filter(c -> StringUtils.equals(
-                                 c.getCaption(),
-//                                 StringUtils.strip(StringUtils.substringBefore(c.getCaption(), "<")),
-                                 caption
-                           ))
-                           .findAny()
-                           .ifPresent(c -> c.setStyleName(STYLE_SELECTED));
-                  }
-            );
+               String caption = App.translate(item, item.getCodeName());
+               StreamSupport.stream(menuItemsLayout.spliterator(), false)
+                     .filter(c -> StringUtils.equals(c.getCaption(), caption))
+                     .findAny()
+                     .ifPresent(c -> c.setStyleName(STYLE_SELECTED));
+            });
 
       menuLayout.removeStyleName("valo-menuLayout-visible");
    }

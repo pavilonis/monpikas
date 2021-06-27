@@ -27,7 +27,7 @@ public class DataSourceConfig {
 
    @Bean
    @Primary
-   @ConfigurationProperties(prefix = "spring.datasource.local")
+   @ConfigurationProperties(prefix = "spring.datasource")
    public DataSource dataSourceLocal() {
       return DataSourceBuilder.create().build();
    }
@@ -37,7 +37,7 @@ public class DataSourceConfig {
       Flyway flyway = new Flyway();
       flyway.setValidateOnMigrate(false);
       flyway.setDataSource(dataSourceLocal());
-      flyway.setLocations("classpath:db/migration/local");
+      flyway.setLocations("classpath:db/migration");
       flyway.migrate();
       return flyway;
    }

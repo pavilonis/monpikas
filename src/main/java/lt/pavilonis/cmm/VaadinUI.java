@@ -10,37 +10,37 @@ import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.common.MenuItemViewProvider;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
+
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
+import static lt.pavilonis.cmm.App.translate;
 
 @SpringUI
 @Theme("custom")
 public class VaadinUI extends UI {
 
-   @Autowired
-   private List<MenuItemViewProvider> viewProviders;
+   private final List<MenuItemViewProvider> viewProviders;
+   private final RootLayout rootLayout;
 
-   @Autowired
-   private RootLayout rootLayout;
+   public VaadinUI(List<MenuItemViewProvider> viewProviders, RootLayout rootLayout) {
+      this.viewProviders = viewProviders;
+      this.rootLayout = rootLayout;
+   }
 
    @Override
    protected void init(VaadinRequest request) {
 
-//      RootLayout rootLayout = new RootLayout();
-
-      Navigator navigator = getNavigator();//new Navigator(this, rootLayout.getContentContainer());
-
+      Navigator navigator = getNavigator();
       viewProviders.forEach(navigator::addProvider);
 
       Map<String, List<MenuItem>> menuStructure = createMenuStructure();
@@ -61,26 +61,22 @@ public class VaadinUI extends UI {
 
       Map<String, List<MenuItem>> result = viewProviders.stream()
             .filter(provider -> userRoles.contains(provider.getViewRole()))
-            .collect(Collectors.groupingBy(
+            .collect(groupingBy(
                   MenuItemViewProvider::getViewGroupName,
-                  () -> new TreeMap<>((a, b) -> App.translate("MenuItemGroup", a)
-                        .compareTo(App.translate("MenuItemGroup", b))),
-                  Collectors.mapping(
-                        provider -> new MenuItem(provider.getViewName(), provider.getViewIcon()), //gets red sometimes
-                        Collectors.toList()
-                  )
+                  () -> new TreeMap<>(comparing(a -> translate("MenuItemGroup", a))),
+                  mapping(provider -> new MenuItem(provider.getViewName(), provider.getViewIcon()), toList())
             ));
 
-      result.put("other", Collections.singletonList(new MenuItem("dashboard", VaadinIcons.LINE_CHART)));
+      result.put("other", List.of(new MenuItem("dashboard", VaadinIcons.LINE_CHART)));
       return result;
    }
 
    private Set<String> currentUserRoles() {
-      SecurityContext context = SecurityContextHolder.getContext();
-      Authentication authentication = context.getAuthentication();
-      Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-      return authorities.stream()
+      return SecurityContextHolder.getContext()
+            .getAuthentication()
+            .getAuthorities()
+            .stream()
             .map(GrantedAuthority::getAuthority)
-            .collect(Collectors.toSet());
+            .collect(toSet());
    }
 }

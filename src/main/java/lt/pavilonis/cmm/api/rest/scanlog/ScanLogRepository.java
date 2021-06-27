@@ -12,34 +12,33 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
+
+import static java.util.Comparator.comparing;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class ScanLogRepository {
 
    private static final Logger LOG = LoggerFactory.getLogger(ScanLogRepository.class.getSimpleName());
    private static final String FROM_WHERE_BLOCK = "" +
-         "FROM mm_ScanLog sl " +
-         "  JOIN mm_Scanner sc ON sc.id = sl.scanner_id " +
-         "  JOIN tb_Cards c ON c.Cardcode IS NOT NULL AND c.ROMCode = sl.cardCode " +
-         "  JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
+         "FROM ScanLog sl " +
+         "  JOIN Scanner sc ON sc.id = sl.scanner_id " +
+         "  JOIN User u ON u.cardCode = sl.cardCode " +
          "WHERE sl.dateTime >= :periodStart " +
          "  AND (:periodEnd IS NULL OR sl.dateTime <= :periodEnd) " +
          "  AND (:scannerId IS NULL OR sc.id = :scannerId) " +
-         "  AND (:role IS NULL OR u.dummy4 = :role) " +
-         "  AND (:text IS NULL OR sl.cardCode LIKE :text OR u.FirstName LIKE :text OR u.LastName LIKE :text)";
+         "  AND (:role IS NULL OR u.organizationRole = :role) " +
+         "  AND (:text IS NULL OR sl.cardCode LIKE :text OR u.name LIKE :text)";
 
    private final NamedParameterJdbcTemplate jdbc;
    private final KeyRepository keyRepository;
@@ -61,8 +60,8 @@ public class ScanLogRepository {
 
    private ScanLog loadById(long scannerId, long scanLogId) {
       return jdbc.queryForObject(
-            "SELECT cardCode, dateTime FROM mm_ScanLog WHERE id = :id",
-            Collections.singletonMap("id", scanLogId),
+            "SELECT cardCode, dateTime FROM ScanLog WHERE id = :id",
+            Map.of("id", scanLogId),
             (rs, i) -> {
                String loadedCardCode = rs.getString(1);
                User user = userRepository.load(loadedCardCode, true);
@@ -84,21 +83,13 @@ public class ScanLogRepository {
          return null;
       }
 
-      Map<String, Object> args = new HashMap<>();
-      args.put("cardCode", cardCode);
-      args.put("scannerId", scannerId);
-      args.put("location", location);
+      var args = Map.of("cardCode", cardCode, "scannerId", scannerId, "location", location);
+      var keyHolder = new GeneratedKeyHolder();
+      var sql = "INSERT INTO ScanLog (cardCode, scanner_id, location) VALUES (:cardCode, :scannerId, :location)";
 
-      KeyHolder holder = new GeneratedKeyHolder();
-
-      jdbc.update("" +
-                  "INSERT INTO mm_ScanLog (cardCode, scanner_id, location) " +
-                  "VALUES (:cardCode, :scannerId, :location)",
-            new MapSqlParameterSource(args),
-            holder
-      );
+      jdbc.update(sql, new MapSqlParameterSource(args), keyHolder);
       LOG.info("ScanLog saved");
-      return holder.getKey().longValue();
+      return keyHolder.getKey().longValue();
    }
 
    public int loadBriefSize(ScanLogBriefFilter filter) {
@@ -110,21 +101,19 @@ public class ScanLogRepository {
       args.put("argOffset", offset);
       args.put("argLimit", limit);
 
-      return jdbc.query("" +
-                  "SELECT " +
-                  "  sl.dateTime AS dateTime, " +
-                  "  sl.cardCode AS cardCode," +
-                  "  sl.location AS location, " +
-                  "  sc.name AS scannerName, " +
-                  "  CONCAT(u.FirstName, ' ', u.LastName) AS userName, " +
-                  "  u.dummy3 AS userGroup, " +
-                  "  u.dummy4 AS userRole " +
-                  FROM_WHERE_BLOCK +
-                  "ORDER BY sl.dateTime DESC " +
-                  "OFFSET :argOffset ROWS FETCH NEXT :argLimit ROWS ONLY",
-            args,
-            new ScanLogBriefMapper()
-      );
+      var sql = "SELECT " +
+            "  sl.dateTime AS dateTime, " +
+            "  sl.cardCode AS cardCode," +
+            "  sl.location AS location, " +
+            "  sc.name AS scannerName, " +
+            "  u.name, " +
+            "  u.organizationGroup, " +
+            "  u.organizationRole " +
+            FROM_WHERE_BLOCK +
+            "ORDER BY sl.dateTime DESC " +
+            "LIMIT :argLimit OFFSET :argOffset";
+
+      return jdbc.query(sql, args, new ScanLogBriefMapper());
    }
 
    private Map<String, Object> commonArgs(ScanLogBriefFilter filter) {
@@ -149,27 +138,26 @@ public class ScanLogRepository {
                   "  sl.cardCode AS cardCode," +
                   "  sl.location AS location, " +
                   "  NULL AS scannerName, " +
-                  "  CONCAT(u.FirstName, ' ', u.LastName) AS userName, " +
-                  "  u.dummy3 AS userGroup, " +
-                  "  NULL AS userRole " +
-                  "FROM mm_ScanLog sl " +
-                  "  JOIN tb_Cards c ON c.Cardcode IS NOT NULL AND c.ROMCode = sl.cardCode " +
-                  "  JOIN tb_Users u ON u.Cardcode = c.Cardcode " +
+                  "  u.name AS userName, " +
+                  "  u.organizationGroup, " +
+                  "  NULL AS organizationRole " +
+                  "FROM ScanLog sl " +
+                  "  JOIN User u ON u.cardCode = sl.cardCode " +
                   "WHERE sl.dateTime > :today " +
-                  "  AND sl.scanner_id = 5 " +
+                  "  AND sl.scanner_id = 5 " +// TODO what is 5?
                   "  AND ISNUMERIC(sl.location) = 1 " +
-                  "  AND (:text IS NULL OR u.FirstName LIKE :text OR u.LastName LIKE :text OR sl.location LIKE :text) ",
+                  "  AND (:text IS NULL OR u.name LIKE :text OR sl.location LIKE :text)",
             args,
             new ScanLogBriefMapper()
       );
 
       List<ScanLogBrief> filteredResult = result
             .stream()
-            .collect(Collectors.groupingBy(ScanLogBrief::getName))
+            .collect(groupingBy(ScanLogBrief::getName))
             .values()
             .stream()
             .flatMap(this::composeUserLogs)
-            .collect(Collectors.toList());
+            .collect(toList());
 
       LOG.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
             text, result.size(), filteredResult.size(), TimeUtils.duration(opStart));
@@ -180,16 +168,16 @@ public class ScanLogRepository {
    protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
       return groupedByName
             .stream()
-            .collect(Collectors.groupingBy(ScanLogBrief::getLocation))
+            .collect(groupingBy(ScanLogBrief::getLocation))
             .values()
             .stream()
             // Taking single latest entry for location user was in
             .map(groupedByLocation -> groupedByLocation
                   .stream()
-                  .max(Comparator.comparing(ScanLogBrief::getDateTime))
+                  .max(comparing(ScanLogBrief::getDateTime))
                   .orElseThrow(RuntimeException::new)
             )
-            .sorted(Comparator.comparing(ScanLogBrief::getDateTime).reversed())
+            .sorted(comparing(ScanLogBrief::getDateTime).reversed())
             .limit(3);
    }
 }

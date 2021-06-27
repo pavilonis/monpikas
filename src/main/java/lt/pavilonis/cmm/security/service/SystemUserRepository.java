@@ -1,17 +1,15 @@
 package lt.pavilonis.cmm.security.service;
 
-import lt.pavilonis.cmm.canteen.domain.SecurityUser;
+import lt.pavilonis.cmm.canteen.domain.SystemUser;
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.config.SecurityUserResultSetExtractor;
+import lt.pavilonis.cmm.config.SystemUserResultSetExtractor;
 import lt.pavilonis.cmm.security.Role;
-import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
+import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,17 +21,19 @@ import java.util.Map;
 import java.util.Optional;
 
 @Repository
-public class SecurityUserRepository implements EntityRepository<SecurityUser, Long, SecurityUserFilter> {
+public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter> {
 
-   @Autowired
-   private NamedParameterJdbcTemplate jdbc;
+   private final NamedParameterJdbcTemplate jdbc;
+   private final PasswordEncoder passwordEncoder;
 
-   @Autowired
-   private PasswordEncoder passwordEncoder;
+   public SystemUserRepository(NamedParameterJdbcTemplate jdbc, PasswordEncoder passwordEncoder) {
+      this.jdbc = jdbc;
+      this.passwordEncoder = passwordEncoder;
+   }
 
    @Override
    @Transactional
-   public SecurityUser saveOrUpdate(SecurityUser user) {
+   public SystemUser saveOrUpdate(SystemUser user) {
       if (StringUtils.isBlank(user.getUsername())) {
          throw new IllegalArgumentException("no username");
       }
@@ -42,8 +42,8 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
             : update(user);
    }
 
-   private SecurityUser update(SecurityUser user) {
-      var sql = "UPDATE User " +
+   private SystemUser update(SystemUser user) {
+      var sql = "UPDATE SystemUser " +
             "SET name = :name, email = :email, enabled = :enabled, username = :username " +
             "WHERE id = :id";
 
@@ -70,7 +70,7 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
             .forEach(roleId -> jdbc.update(sql, Map.of("userId", userId, "roleId", roleId)));
    }
 
-   private SecurityUser save(SecurityUser user) {
+   private SystemUser save(SystemUser user) {
       Map<String, Object> args = new HashMap<>();
       args.put("username", user.getUsername());
       args.put("name", user.getName());
@@ -78,13 +78,10 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
       args.put("enabled", user.isEnabled());
       args.put("password", passwordEncoder.encode(user.getPassword()));
 
-      KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("" +
-                  "INSERT INTO User (username, name, email, enabled, password)" +
-                  " VALUES (:username, :name, :email, :enabled, :password)",
-            new MapSqlParameterSource(args),
-            keyHolder
-      );
+      var keyHolder = new GeneratedKeyHolder();
+      var sql = "INSERT INTO SystemUser (username, name, email, enabled, password)" +
+            " VALUES (:username, :name, :email, :enabled, :password)";
+      jdbc.update(sql, new MapSqlParameterSource(args), keyHolder);
 
       long userId = keyHolder.getKey().longValue();
       saveRoles(userId, user.getAuthorities());
@@ -93,34 +90,31 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
    }
 
    @Override
-   public List<SecurityUser> load() {
+   public List<SystemUser> load() {
       throw new NotImplementedException("Not needed yet");
    }
 
    @Override
-   public List<SecurityUser> load(SecurityUserFilter filter) {
+   public List<SystemUser> load(SystemUserFilter filter) {
       HashMap<String, Object> args = new HashMap<>();
       args.put("id", filter.getId());
       args.put("username", StringUtils.stripToNull(filter.getUsername()));
       args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
-      return jdbc.query("" +
-                  "SELECT u.*, r.* " +
-                  "FROM User u " +
-                  "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +
-                  "  LEFT JOIN Role r ON r.id = ur.role_id " +
-                  "WHERE " +
-                  "  (:id IS NULL OR :id = u.id)" +
-                  "  AND (:username IS NULL OR :username = u.username)" +
-                  "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
-                  "ORDER BY u.name",
-            args,
-            new SecurityUserResultSetExtractor()
-      );
+      var sql = "SELECT u.*, r.* " +
+            "FROM SystemUser u " +
+            "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +
+            "  LEFT JOIN Role r ON r.id = ur.role_id " +
+            "WHERE " +
+            "  (:id IS NULL OR :id = u.id)" +
+            "  AND (:username IS NULL OR :username = u.username)" +
+            "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
+            "ORDER BY u.name";
+      return jdbc.query(sql, args, new SystemUserResultSetExtractor());
    }
 
    @Override
-   public Optional<SecurityUser> find(Long id) {
-      List<SecurityUser> result = load(new SecurityUserFilter(id, null, null));
+   public Optional<SystemUser> find(Long id) {
+      List<SystemUser> result = load(new SystemUserFilter(id, null, null));
       if (result.size() > 1) {
          throw new IllegalStateException();
       }
@@ -132,11 +126,11 @@ public class SecurityUserRepository implements EntityRepository<SecurityUser, Lo
 
    @Override
    public void delete(Long id) {
-      jdbc.update("DELETE FROM User WHERE id = :id", Map.of("id", id));
+      jdbc.update("DELETE FROM SystemUser WHERE id = :id", Map.of("id", id));
    }
 
    @Override
-   public Class<SecurityUser> entityClass() {
-      return SecurityUser.class;
+   public Class<SystemUser> entityClass() {
+      return SystemUser.class;
    }
 }

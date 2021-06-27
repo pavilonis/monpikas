@@ -29,7 +29,7 @@ public class App {
 
    @Bean
    public Filter characterEncodingFilter() {
-      CharacterEncodingFilter characterEncodingFilter = new CharacterEncodingFilter();
+      var characterEncodingFilter = new CharacterEncodingFilter();
       characterEncodingFilter.setEncoding(UTF_8.name());
       characterEncodingFilter.setForceEncoding(true);
       return characterEncodingFilter;
@@ -37,7 +37,7 @@ public class App {
 
    @Bean
    public ReloadableResourceBundleMessageSource messageSource() {
-      ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+      var messageSource = new ReloadableResourceBundleMessageSource();
       messageSource.setUseCodeAsDefaultMessage(true);
       messageSource.setBasename("classpath:lang/messages");
       messageSource.setCacheSeconds(0);

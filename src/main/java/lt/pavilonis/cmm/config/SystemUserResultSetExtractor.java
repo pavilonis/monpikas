@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.config;
 
-import lt.pavilonis.cmm.canteen.domain.SecurityUser;
+import lt.pavilonis.cmm.canteen.domain.SystemUser;
 import lt.pavilonis.cmm.security.Role;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
@@ -13,17 +13,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class SecurityUserResultSetExtractor implements ResultSetExtractor<List<SecurityUser>> {
+public final class SystemUserResultSetExtractor implements ResultSetExtractor<List<SystemUser>> {
    @Override
-   public List<SecurityUser> extractData(ResultSet rs) throws SQLException, DataAccessException {
+   public List<SystemUser> extractData(ResultSet rs) throws SQLException, DataAccessException {
 
-      Map<Long, SecurityUser> result = new HashMap<>();
+      Map<Long, SystemUser> result = new HashMap<>();
 
       while (rs.next()) {
          Long id = rs.getLong("u.id");
-         SecurityUser user = result.get(id);
+         SystemUser user = result.get(id);
          if (user == null) {
-            user = new SecurityUser(
+            user = new SystemUser(
                   id,
                   rs.getString("u.name"),
                   rs.getString("u.username"),
@@ -44,7 +44,7 @@ public final class SecurityUserResultSetExtractor implements ResultSetExtractor<
       return new ArrayList<>(result.values());
    }
 
-   protected void maybeAddRole(SecurityUser user, Long id, String roleName) {
+   protected void maybeAddRole(SystemUser user, Long id, String roleName) {
       if (StringUtils.isBlank(roleName)) {
          return;
       }

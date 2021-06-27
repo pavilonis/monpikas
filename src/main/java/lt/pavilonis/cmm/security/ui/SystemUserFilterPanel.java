@@ -8,7 +8,7 @@ import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import java.util.Collections;
 import java.util.List;
 
-final class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
+final class SystemUserFilterPanel extends FilterPanel<SystemUserFilter> {
 
    private TextField text;
 
@@ -19,8 +19,8 @@ final class SecurityUserFilterPanel extends FilterPanel<SecurityUserFilter> {
    }
 
    @Override
-   public SecurityUserFilter getFilter() {
-      return new SecurityUserFilter(null, null, text.getValue());
+   public SystemUserFilter getFilter() {
+      return new SystemUserFilter(null, null, text.getValue());
    }
 
    @Override

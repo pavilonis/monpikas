@@ -11,10 +11,9 @@ public class UserMapper extends SimpleRowMapper<User> {
    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new User(
             rs.getString("cardCode"),
-            rs.getString("firstName"),
-            rs.getString("lastName"),
-            rs.getString("userGroup"),
-            rs.getString("userRole"),
+            rs.getString("name"),
+            rs.getString("organizationGroup"),
+            rs.getString("organizationRole"),
             rs.getString("photo"),
             rs.getString("birthDate")
       );

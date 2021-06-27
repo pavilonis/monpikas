@@ -10,14 +10,11 @@ public class User extends Identified<String> {
    private String cardCode;
 
    @NotNull
-   private String firstName;
+   private String name;
 
-   @NotNull
-   private String lastName;
+   private String organizationGroup;
 
-   private String group;
-
-   private String role;
+   private String organizationRole;
 
    private String birthDate;
 
@@ -25,14 +22,13 @@ public class User extends Identified<String> {
 
    public User() {/**/}
 
-   public User(String cardCode, String firstName, String lastName, String group,
-               String role, String base16photo, String birthDate) {
+   public User(String cardCode, String name, String organizationGroup,
+               String organizationRole, String base16photo, String birthDate) {
 
       this.cardCode = cardCode;
-      this.firstName = firstName;
-      this.lastName = lastName;
-      this.group = group;
-      this.role = role;
+      this.name = name;
+      this.organizationGroup = organizationGroup;
+      this.organizationRole = organizationRole;
       this.base16photo = base16photo;
       this.birthDate = birthDate;
    }
@@ -41,36 +37,24 @@ public class User extends Identified<String> {
       return cardCode;
    }
 
-   public String getFirstName() {
-      return firstName;
+   public void setName(String name) {
+      this.name = name;
    }
 
-   public void setFirstName(String firstName) {
-      this.firstName = firstName;
+   public String getOrganizationGroup() {
+      return organizationGroup;
    }
 
-   public String getLastName() {
-      return lastName;
+   public void setOrganizationGroup(String organizationGroup) {
+      this.organizationGroup = organizationGroup;
    }
 
-   public void setLastName(String lastName) {
-      this.lastName = lastName;
+   public String getOrganizationRole() {
+      return organizationRole;
    }
 
-   public String getGroup() {
-      return group;
-   }
-
-   public void setGroup(String group) {
-      this.group = group;
-   }
-
-   public String getRole() {
-      return role;
-   }
-
-   public void setRole(String role) {
-      this.role = role;
+   public void setOrganizationRole(String organizationRole) {
+      this.organizationRole = organizationRole;
    }
 
    public String getBirthDate() {
@@ -90,7 +74,7 @@ public class User extends Identified<String> {
    }
 
    public String getName() {
-      return getFirstName() + " " + getLastName();
+      return name;
    }
 
    @Override
@@ -101,10 +85,9 @@ public class User extends Identified<String> {
    @Override
    public String toString() {
       return "cardCode='" + cardCode + '\'' +
-            ", firstName='" + firstName + '\'' +
-            ", lastName='" + lastName + '\'' +
-            ", group='" + group + '\'' +
-            ", role='" + role + '\'' +
+            ", name='" + name + '\'' +
+            ", group='" + organizationGroup + '\'' +
+            ", role='" + organizationRole + '\'' +
             ", birthDate='" + birthDate + '\'' +
             ", photoBase16='" + (StringUtils.isBlank(base16photo) ? "absent" : "present") + '\'';
    }

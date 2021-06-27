@@ -32,7 +32,7 @@ public class KeyLogCleanupJob {
       var sql = "DELETE FROM KeyLog WHERE dateTime < :threshold";
 
       int recordsDeleted = jdbc.update(sql, Map.of("threshold", threshold));
-      LOGGER.info("Deleted old mm_KeyLog records [number={}, t={}]",
+      LOGGER.info("Deleted old KeyLog records [number={}, t={}]",
             recordsDeleted, TimeUtils.duration(opStart));
    }
 }

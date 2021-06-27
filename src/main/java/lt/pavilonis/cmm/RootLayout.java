@@ -34,16 +34,15 @@ public class RootLayout extends HorizontalLayout implements ViewDisplay{
    }
 
    private CssLayout createContentArea() {
-      CssLayout layout = new CssLayout();
+      var layout = new CssLayout();
       layout.setPrimaryStyleName("valo-content");
       layout.addStyleName("v-scrollable");
       layout.setSizeFull();
-
       return layout;
    }
 
    private CssLayout createMenuArea() {
-      CssLayout layout = new CssLayout();
+      var layout = new CssLayout();
       layout.setPrimaryStyleName(ValoTheme.MENU_ROOT);
       return layout;
    }

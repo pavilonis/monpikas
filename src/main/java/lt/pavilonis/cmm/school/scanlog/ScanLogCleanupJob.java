@@ -29,9 +29,9 @@ public class ScanLogCleanupJob {
 
       var opStart = LocalDateTime.now();
       var threshold = opStart.minusDays(historyDaysThreshold);
-      var sql = "DELETE FROM mm_ScanLog WHERE dateTime < :threshold";
+      var sql = "DELETE FROM ScanLog WHERE dateTime < :threshold";
 
       int recordsDeleted = jdbc.update(sql, Map.of("threshold", threshold));
-      LOGGER.info("Deleted old mm_ScanLog records [number={}, t={}]", recordsDeleted, TimeUtils.duration(opStart));
+      LOGGER.info("Deleted old ScanLog records [number={}, t={}]", recordsDeleted, TimeUtils.duration(opStart));
    }
 }

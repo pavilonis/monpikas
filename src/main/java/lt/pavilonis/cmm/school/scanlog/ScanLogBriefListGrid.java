@@ -1,14 +1,11 @@
 package lt.pavilonis.cmm.school.scanlog;
 
-import com.google.common.collect.ImmutableMap;
 import com.vaadin.data.ValueProvider;
 import lt.pavilonis.cmm.api.rest.scanlog.ScanLogBrief;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.common.ListGrid;
 
 import java.time.format.DateTimeFormatter;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -22,12 +19,12 @@ final class ScanLogBriefListGrid extends ListGrid<ScanLogBrief> {
 
    @Override
    protected List<String> columnOrder() {
-      return Arrays.asList("dateTime", "scanner", "location", "name", "role", "group", "cardCode");
+      return List.of("dateTime", "scanner", "location", "name", "role", "group", "cardCode");
    }
 
    @Override
    protected Map<String, ValueProvider<ScanLogBrief, ?>> getCustomColumns() {
-      return ImmutableMap.of(
+      return Map.of(
             "dateTime", item -> DATE_TIME_FORMAT.format(item.getDateTime()),
             "scanner", item -> messages.get(Scanner.class, item.getScanner())
       );
@@ -35,6 +32,6 @@ final class ScanLogBriefListGrid extends ListGrid<ScanLogBrief> {
 
    @Override
    protected List<String> columnsToCollapse() {
-      return Collections.singletonList("cardCode");
+      return List.of("cardCode");
    }
 }

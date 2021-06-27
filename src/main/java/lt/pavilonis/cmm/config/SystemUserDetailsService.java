@@ -1,8 +1,8 @@
 package lt.pavilonis.cmm.config;
 
-import lt.pavilonis.cmm.canteen.domain.SecurityUser;
-import lt.pavilonis.cmm.security.service.SecurityUserRepository;
-import lt.pavilonis.cmm.security.ui.SecurityUserFilter;
+import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.service.SystemUserRepository;
+import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -11,16 +11,16 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SecurityUserDetailsService implements UserDetailsService {
+public class SystemUserDetailsService implements UserDetailsService {
 
    @Autowired
-   private SecurityUserRepository securityUserRepository;
+   private SystemUserRepository systemUserRepository;
 
    @Override
    public UserDetails loadUserByUsername(String username) {
 
-      List<SecurityUser> result = securityUserRepository.load(
-            new SecurityUserFilter(null, username, null)
+      List<SystemUser> result = systemUserRepository.load(
+            new SystemUserFilter(null, username, null)
       );
 
       if (result.size() > 1) {

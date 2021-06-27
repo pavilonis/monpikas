@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public final class SecurityUser extends Named<Long> implements UserDetails {
+public final class SystemUser extends Named<Long> implements UserDetails {
 
    @NotBlank
    private String username;
@@ -21,15 +21,13 @@ public final class SecurityUser extends Named<Long> implements UserDetails {
    @Email
    @NotBlank
    private String email;
-
    private boolean enabled;
-
    private List<Role> authorities = new ArrayList<>();
 
-   public SecurityUser() {
+   public SystemUser() {
    }
 
-   public SecurityUser(Long id, String name, String username, String password, String email, boolean enabled) {
+   public SystemUser(Long id, String name, String username, String password, String email, boolean enabled) {
       setId(id);
       setName(name);
       this.username = username;

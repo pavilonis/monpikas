@@ -1,12 +1,12 @@
 package lt.pavilonis.cmm.security.ui;
 
-public final class SecurityUserFilter {
+public final class SystemUserFilter {
 
    private final Long id;
    private final String username;
    private final String text;
 
-   public SecurityUserFilter(Long id, String username, String text) {
+   public SystemUserFilter(Long id, String username, String text) {
       this.id = id;
       this.username = username;
       this.text = text;

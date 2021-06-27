@@ -12,19 +12,18 @@ import org.slf4j.Logger;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
+import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.slf4j.LoggerFactory.getLogger;
 
 @Repository
@@ -44,72 +43,62 @@ public class KeyRepository {
    }
 
    Key assign(long scannerId, String cardCode, int keyNumber) {
-      KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("" +
-                  "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) " +
-                  "VALUES (:scannerId,  :cardCode, :keyNumber, :keyAction)",
-            new MapSqlParameterSource(ImmutableMap.of(
-                  "scannerId", scannerId,
-                  "cardCode", cardCode,
-                  "keyNumber", keyNumber,
-                  "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.ASSIGNED)
-            )),
-            keyHolder
+      var keyHolder = new GeneratedKeyHolder();
+      var params = Map.of(
+            "scannerId", scannerId,
+            "cardCode", cardCode,
+            "keyNumber", keyNumber,
+            "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.ASSIGNED)
       );
+      var sql = "INSERT INTO KeyLog (scanner_id, cardCode, keyNumber, assigned) " +
+            "VALUES (:scannerId,  :cardCode, :keyNumber, :keyAction)";
+
+      jdbc.update(sql, new MapSqlParameterSource(params), keyHolder);
       return loadSingleKey(keyHolder.getKey().longValue());
    }
 
    Key unAssign(long scannerId, int keyNumber) {
-
-      KeyHolder keyHolder = new GeneratedKeyHolder();
-      jdbc.update("" +
-                  "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) VALUES (" +
-                  "  :scannerId," +
-                  "  (" +
-                  "     SELECT TOP 1 cardCode " +
-                  "     FROM mm_KeyLog " +
-                  "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber AND assigned = 1 " +
-                  "     ORDER BY DATETIME DESC" +
-                  "  )," +
-                  "  :keyNumber, " +
-                  "  :keyAction" +
-                  ")",
-            new MapSqlParameterSource(ImmutableMap.of(
-                  "scannerId", scannerId,
-                  "keyNumber", keyNumber,
-                  "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.UNASSIGNED)
-            )),
-            keyHolder
+      var keyHolder = new GeneratedKeyHolder();
+      var sql = "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) VALUES (" +
+            "  :scannerId," +
+            "  (" +
+            "     SELECT TOP 1 cardCode " +
+            "     FROM mm_KeyLog " +
+            "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber AND assigned = 1 " +
+            "     ORDER BY DATETIME DESC" +
+            "  )," +
+            "  :keyNumber, " +
+            "  :keyAction" +
+            ")";
+      var params = Map.of(
+            "scannerId", scannerId,
+            "keyNumber", keyNumber,
+            "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.UNASSIGNED)
       );
 
+      jdbc.update(sql, new MapSqlParameterSource(params), keyHolder);
       return loadSingleKey(keyHolder.getKey().longValue());
    }
 
    private Key loadSingleKey(long id) {
-      return jdbc.queryForObject("" +
-                  "SELECT " +
-                  "  kl.keyNumber, " +
-                  "  kl.dateTime, " +
-                  "  kl.cardCode, " +
-                  "  scan.id," +
-                  "  scan.name, " +
-                  "  kl.assigned " +
-                  "FROM mm_KeyLog kl " +
-                  "  JOIN mm_Scanner scan ON scan.id = kl.scanner_id " +
-                  "WHERE " +
-                  "  kl.id = :id",
-            Collections.singletonMap("id", id),
-            (rs, i) -> new Key(
-                  rs.getInt(1),
-                  rs.getTimestamp(2).toLocalDateTime(),
-                  userRepository.load(rs.getString(3), false),
-                  new Scanner(
-                        rs.getLong(4),
-                        rs.getString(5)
-                  ),
-                  KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt(6))
-            )
-      );
+      var sql = "SELECT " +
+            "  kl.keyNumber, " +
+            "  kl.dateTime, " +
+            "  kl.cardCode, " +
+            "  s.id," +
+            "  s.name, " +
+            "  kl.assigned " +
+            "FROM KeyLog kl " +
+            "  JOIN Scanner s ON s.id = kl.scanner_id " +
+            "WHERE " +
+            "  kl.id = :id";
+      return jdbc.queryForObject(sql, Map.of("id", id), (rs, i) -> new Key(
+            rs.getInt(1),
+            rs.getTimestamp(2).toLocalDateTime(),
+            userRepository.load(rs.getString(3), false),
+            new Scanner(rs.getLong(4), rs.getString(5)),
+            KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt(6))
+      ));
    }
 
    boolean isAvailable(long scannerId, int keyNumber) {
@@ -118,42 +107,38 @@ public class KeyRepository {
    }
 
    public List<Key> loadActive(Long scannerId, String cardCode, Integer keyNumber) {
-      LocalDateTime opStart = LocalDateTime.now();
-
-      Map<String, Object> args = new HashMap<>();
+      var opStart = LocalDateTime.now();
+      var args = new HashMap<String, Object>();
       args.put("cardCode", cardCode);
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
 
       String query = "SELECT \n\n" +
-            "     kl.keyNumber, \n" +
-            "     kl.dateTime AS lastTimeTaken, \n" +
+            "     k.keyNumber, \n" +
+            "     k.dateTime AS lastTimeTaken, \n" +
             "     s.id AS scannerId, \n" +
             "     s.name AS scannerName, \n" +
+            "     u.cardCode, \n" +
+            "     u.name, \n" +
+            "     u.birthDate, \n" +
+            "     u.organizationGroup, \n" +
+            "     u.organizationRole \n" +
 
-            "     c.ROMCode AS cardCode, \n" +
-            "     u.FirstName AS firstName, \n" +
-            "     u.LastName AS lastName, \n" +
-            "     u.dummy2 AS birthDate, \n" +
-            "     u.dummy3 AS userGroup, \n" +
-            "     u.dummy4 AS userRole \n" +
-
-            "FROM CMM2.dbo.mm_KeyLog kl \n" +
-            "     JOIN CMM2.dbo.mm_Scanner s ON s.id = kl.scanner_id \n" +
+            "FROM KeyLog k \n" +
+            "     JOIN Scanner s ON s.id = k.scanner_id \n" +
 
             "     JOIN ( \n" +
             "         SELECT keyNumber, MAX(dateTime) AS lastOperationMoment \n" +
-            "         FROM CMM2.dbo.mm_KeyLog \n" +
+            "         FROM KeyLog \n" +
             whereSection(cardCode, keyNumber, scannerId) +
             "         GROUP BY keyNumber \n" +
-            "     ) AS lastState ON lastState.keyNumber = kl.keyNumber \n" +
-            "         AND lastState.lastOperationMoment = kl.dateTime \n" +
+            "     ) AS lastState ON lastState.keyNumber = k.keyNumber \n" +
+            "         AND lastState.lastOperationMoment = k.dateTime \n" +
 
-            "     JOIN tb_Cards c ON c.ROMCode = kl.cardCode \n" +
-            "     JOIN tb_Users u ON u.Cardcode = c.Cardcode \n" +
+            "     JOIN User u ON u.cardCode = k.cardCode \n" +
 
-            "WHERE kl.assigned = 1 \n" +
-            "  AND u.CardCode IS NOT NULL";
+            "WHERE k.assigned = 1 \n" +
+            "  AND u.cardCode IS NOT NULL";
 
       List<Key> result = jdbc.query(
             query,
@@ -163,10 +148,9 @@ public class KeyRepository {
                   rs.getTimestamp("lastTimeTaken").toLocalDateTime(),
                   new User(
                         rs.getString("cardCode"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("userGroup"),
-                        rs.getString("userRole"),
+                        rs.getString("name"),
+                        rs.getString("organizationGroup"),
+                        rs.getString("organizationRole"),
                         null,
                         rs.getString("birthDate")
                   ),
@@ -180,9 +164,7 @@ public class KeyRepository {
 
    private String whereSection(String cardCode, Integer keyNumber, Long scannerId) {
 
-      String result = scannerId == null
-            ? StringUtils.EMPTY
-            : ("scanner_id = " + scannerId);
+      String result = scannerId == null ? EMPTY : ("scanner_id = " + scannerId);
 
       if (cardCode != null) {
          String check = "cardCode = '" + cardCode + "'";
@@ -208,9 +190,8 @@ public class KeyRepository {
    public List<Key> loadLog(LocalDate periodStart, LocalDate periodEnd, Long scannerId,
                             Integer keyNumber, KeyAction keyAction, String nameLike) {
 
-      LocalDateTime opStart = LocalDateTime.now();
-
-      Map<String, Object> args = new HashMap<>();
+      var opStart = LocalDateTime.now();
+      var args = new HashMap<String, Object>();
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
       args.put("periodStart", periodStart == null ? null : periodStart.atStartOfDay());
@@ -218,54 +199,51 @@ public class KeyRepository {
       args.put("keyAction", keyAction == null ? null : KEY_ACTION_INTEGER_MAP.get(keyAction));
       args.put("nameLike", QueryUtils.likeArg(nameLike));
 
-      List<Key> result = jdbc.query("" +
-                  "SELECT " +
-                  "  kl.keyNumber AS keyNumber," +
-                  "  kl.dateTime AS dateTime," +
-                  "  kl.assigned AS assigned, " +
-                  "  usr.cardCode AS cardCode, " +
-                  "  usr.FirstName AS firstName, " +
-                  "  usr.LastName AS lastName, " +
-                  "  usr.Dummy2 AS birthDate, " +
-                  "  usr.Dummy3 AS userRole, " +
-                  "  usr.Dummy4 AS userGroup," +
-                  "  sc.id AS scannerId, " +
-                  "  sc.name AS scannerName " +
-                  "FROM mm_KeyLog kl " +
-                  "  JOIN tb_Cards card ON card.ROMCode = kl.cardCode " +
-                  "  JOIN tb_Users usr ON usr.Cardcode = card.Cardcode " +
-                  "  JOIN mm_Scanner sc ON sc.id = kl.scanner_id " +
-                  "WHERE " +
-                  "  kl.dateTime >= :periodStart " +
-                  "  AND (:periodEnd IS NULL OR kl.dateTime <= :periodEnd) " +
-                  "  AND (:scannerId IS NULL OR kl.scanner_id = :scannerId) " +
-                  "  AND (:keyNumber IS NULL OR kl.keyNumber = :keyNumber) " +
-                  "  AND (:keyAction IS NULL OR kl.assigned = :keyAction) " +
-                  "  AND (:nameLike IS NULL OR usr.FirstName LIKE :nameLike OR usr.LastName LIKE :nameLike) " +
-                  "ORDER BY kl.dateTime DESC ",
-            args,
-            (rs, i) -> new Key(
-                  rs.getInt("keyNumber"),
-                  rs.getTimestamp("dateTime").toLocalDateTime(),
-                  new User(
-                        rs.getString("cardCode"),
-                        rs.getString("firstName"),
-                        rs.getString("lastName"),
-                        rs.getString("userGroup"),
-                        rs.getString("userRole"),
-                        null,
-                        rs.getString("birthDate")
-                  ),
-                  new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
-                  KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt("assigned"))
-            ));
+      var sql = "SELECT " +
+            "  k.keyNumber," +
+            "  k.dateTime," +
+            "  k.assigned, " +
+            "  u.cardCode, " +
+            "  u.name, " +
+            "  u.birthDate, " +
+            "  u.organizationRole, " +
+            "  u.organizationGroup," +
+            "  s.id AS scannerId, " +
+            "  s.name AS scannerName " +
+            "FROM KeyLog k " +
+            "  JOIN User u ON u.cardCode = k.cardCode " +
+            "  JOIN Scanner s ON s.id = k.scanner_id " +
+            "WHERE " +
+            "  k.dateTime >= :periodStart " +
+            "  AND (:periodEnd IS NULL OR k.dateTime <= :periodEnd) " +
+            "  AND (:scannerId IS NULL OR k.scanner_id = :scannerId) " +
+            "  AND (:keyNumber IS NULL OR k.keyNumber = :keyNumber) " +
+            "  AND (:keyAction IS NULL OR k.assigned = :keyAction) " +
+            "  AND (:nameLike IS NULL OR u.name LIKE :nameLike) " +
+            "ORDER BY k.dateTime DESC";
+
+      List<Key> result = jdbc.query(sql, args, (rs, i) -> new Key(
+            rs.getInt("keyNumber"),
+            rs.getTimestamp("dateTime").toLocalDateTime(),
+            new User(
+                  rs.getString("cardCode"),
+                  rs.getString("name"),
+                  rs.getString("organizationGroup"),
+                  rs.getString("organizationRole"),
+                  null,
+                  rs.getString("birthDate")
+            ),
+            new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
+            KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt("assigned"))
+      ));
+
       LOGGER.info(
             "Loaded log [periodStart={}, periodEnd={}, scannerId={}, key={}, action={}, name={}, size={}, t={}]",
-            periodStart == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
-            periodEnd == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),
-            scannerId == null ? "" : scannerId,
-            keyNumber == null ? "" : keyNumber,
-            keyAction == null ? "" : keyAction.name(),
+            periodStart == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
+            periodEnd == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),
+            scannerId == null ? EMPTY : scannerId,
+            keyNumber == null ? EMPTY : keyNumber,
+            keyAction == null ? EMPTY : keyAction.name(),
             StringUtils.stripToEmpty(nameLike),
             result.size(),
             duration(opStart)

@@ -7,7 +7,6 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.StyleGenerator;
-import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -20,7 +19,6 @@ import lt.pavilonis.cmm.common.service.RepositoryFinder;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +51,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
                          String... columnOrder) {
 
       this.customColumns = customColumns;
-      this.columnOrder = Arrays.asList(columnOrder);
+      this.columnOrder = List.of(columnOrder);
       this.grid = createGrid(type);
       this.type = type;
    }

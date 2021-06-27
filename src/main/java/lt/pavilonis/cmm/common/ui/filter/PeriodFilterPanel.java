@@ -5,7 +5,6 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.DateField;
 import lt.pavilonis.cmm.common.field.ADateField;
 
-import java.util.Arrays;
 import java.util.List;
 
 public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> {
@@ -26,7 +25,7 @@ public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> 
    protected List<HasValue<?>> getFields() {
       periodStart = new ADateField(PeriodFilterPanel.class, "periodStart");
       periodEnd = new ADateField(PeriodFilterPanel.class, "periodEnd");
-      return Arrays.asList(periodStart, periodEnd);
+      return List.of(periodStart, periodEnd);
    }
 
    @Override

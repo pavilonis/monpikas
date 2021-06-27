@@ -49,10 +49,9 @@ public class MenuItemsLayout extends CssLayout {
 
 
    private String createButtonCaption(MenuItem item) {
-      String translatedCaption = App.translate(item, item.getCodeName());
 
 //      if (RandomUtils.nextInt(1, 5) != 1) {
-      return translatedCaption;
+      return App.translate(item, item.getCodeName());
 //      }
 //      return translatedCaption + " <span class=\"valo-menu-badge\">12</span>";
    }

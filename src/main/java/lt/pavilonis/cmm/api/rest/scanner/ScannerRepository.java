@@ -1,11 +1,12 @@
 package lt.pavilonis.cmm.api.rest.scanner;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Repository
@@ -14,7 +15,7 @@ public class ScannerRepository {
    @Autowired
    private NamedParameterJdbcTemplate jdbc;
 
-   public Optional<Scanner> load(Long id) {
+   public Optional<Scanner> load(long id) {
       List<Scanner> result = query(id);
       return result.isEmpty()
             ? Optional.empty()
@@ -26,13 +27,10 @@ public class ScannerRepository {
    }
 
    private List<Scanner> query(Long id) {
-      HashMap<String, Object> args = new HashMap<>();
-      args.put("id", id);
-
-      return jdbc.query(
-            "SELECT id, name FROM mm_Scanner WHERE :id IS NULL OR :id = id",
-            args,
-            (rs, i) -> new Scanner(rs.getLong(1), rs.getString(2))
-      );
+      var sql = "SELECT id, name FROM Scanner";
+      RowMapper<Scanner> mapper = (rs, i) -> new Scanner(rs.getLong(1), rs.getString(2));
+      return id == null
+            ? jdbc.query(sql, Map.of(), mapper)
+            : jdbc.query(sql + " WHERE :id = id", Map.of("id", id), mapper);
    }
 }
