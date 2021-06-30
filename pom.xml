@@ -122,14 +122,7 @@
       <dependency>
          <groupId>mysql</groupId>
          <artifactId>mysql-connector-java</artifactId>
-         <version>5.1.49</version>
-      </dependency>
-      <!-- not available from public repo - downloaded manually and installed into local maven repo-->
-      <!-- mvn install:install-file -Dfile=sqljdbc42.jar -DgroupId=com.microsoft.sqlserver -DartifactId=sqljdbc4 -Dversion=4.2.8112.200 -Dpackaging=jar -->
-      <dependency>
-         <groupId>com.microsoft.sqlserver</groupId>
-         <artifactId>sqljdbc4</artifactId>
-         <version>4.2.8112.200</version>
+         <version>8.0.25</version>
       </dependency>
 
       <!-- TESTING-->

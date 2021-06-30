@@ -72,20 +72,15 @@ public class ScanLogRepository {
    }
 
    public Long saveChecked(long scannerId, String cardCode) {
-      return saveChecked(scannerId, cardCode, null);
-   }
-
-   public Long saveChecked(long scannerId, String cardCode, String location) {
 
       if (!userRepository.exists(cardCode)) {
-         LOG.warn("Skipping scan log: user not found [scannerId={}, cardCode={}, location={}]",
-               scannerId, cardCode, location);
+         LOG.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]", scannerId, cardCode);
          return null;
       }
 
-      var args = Map.of("cardCode", cardCode, "scannerId", scannerId, "location", location);
+      var args = Map.of("cardCode", cardCode, "scannerId", scannerId);
       var keyHolder = new GeneratedKeyHolder();
-      var sql = "INSERT INTO ScanLog (cardCode, scanner_id, location) VALUES (:cardCode, :scannerId, :location)";
+      var sql = "INSERT INTO ScanLog (cardCode, scanner_id) VALUES (:cardCode, :scannerId)";
 
       jdbc.update(sql, new MapSqlParameterSource(args), keyHolder);
       LOG.info("ScanLog saved");
@@ -104,7 +99,6 @@ public class ScanLogRepository {
       var sql = "SELECT " +
             "  sl.dateTime AS dateTime, " +
             "  sl.cardCode AS cardCode," +
-            "  sl.location AS location, " +
             "  sc.name AS scannerName, " +
             "  u.name, " +
             "  u.organizationGroup, " +
@@ -124,60 +118,5 @@ public class ScanLogRepository {
       args.put("role", StringUtils.stripToNull(filter.getRole()));
       args.put("text", QueryUtils.likeArg(filter.getText()));
       return args;
-   }
-
-   public List<ScanLogBrief> loadLastUserLocations(String text) {
-      LocalDateTime opStart = LocalDateTime.now();
-      Map<String, Object> args = new HashMap<>();
-      args.put("text", QueryUtils.likeArg(text));
-      args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
-
-      List<ScanLogBrief> result = jdbc.query(
-            "SELECT " +
-                  "  sl.dateTime AS dateTime, " +
-                  "  sl.cardCode AS cardCode," +
-                  "  sl.location AS location, " +
-                  "  NULL AS scannerName, " +
-                  "  u.name AS userName, " +
-                  "  u.organizationGroup, " +
-                  "  NULL AS organizationRole " +
-                  "FROM ScanLog sl " +
-                  "  JOIN User u ON u.cardCode = sl.cardCode " +
-                  "WHERE sl.dateTime > :today " +
-                  "  AND sl.scanner_id = 5 " +// TODO what is 5?
-                  "  AND ISNUMERIC(sl.location) = 1 " +
-                  "  AND (:text IS NULL OR u.name LIKE :text OR sl.location LIKE :text)",
-            args,
-            new ScanLogBriefMapper()
-      );
-
-      List<ScanLogBrief> filteredResult = result
-            .stream()
-            .collect(groupingBy(ScanLogBrief::getName))
-            .values()
-            .stream()
-            .flatMap(this::composeUserLogs)
-            .collect(toList());
-
-      LOG.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
-            text, result.size(), filteredResult.size(), TimeUtils.duration(opStart));
-
-      return filteredResult;
-   }
-
-   protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
-      return groupedByName
-            .stream()
-            .collect(groupingBy(ScanLogBrief::getLocation))
-            .values()
-            .stream()
-            // Taking single latest entry for location user was in
-            .map(groupedByLocation -> groupedByLocation
-                  .stream()
-                  .max(comparing(ScanLogBrief::getDateTime))
-                  .orElseThrow(RuntimeException::new)
-            )
-            .sorted(comparing(ScanLogBrief::getDateTime).reversed())
-            .limit(3);
    }
 }

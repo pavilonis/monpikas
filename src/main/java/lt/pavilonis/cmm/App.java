@@ -10,7 +10,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.filter.CharacterEncodingFilter;
 
 import javax.servlet.Filter;
-import java.nio.charset.StandardCharsets;
 import java.util.Locale;
 
 import static java.nio.charset.StandardCharsets.UTF_8;

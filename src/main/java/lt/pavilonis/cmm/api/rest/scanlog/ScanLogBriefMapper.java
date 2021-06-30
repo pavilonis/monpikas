@@ -15,8 +15,7 @@ final class ScanLogBriefMapper extends SimpleRowMapper<ScanLogBrief> {
             rs.getString("cardCode"),
             rs.getString("userName"),
             rs.getString("organizationGroup"),
-            rs.getString("organizationRole"),
-            rs.getString("location")
+            rs.getString("organizationRole")
       );
    }
 

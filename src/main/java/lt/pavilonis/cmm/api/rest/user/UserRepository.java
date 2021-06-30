@@ -38,6 +38,7 @@ public class UserRepository {
 
       String base16photo = user.getBase16photo();
       String picture = StringUtils.isNotBlank(base16photo) && BaseEncoding.base16().canDecode(base16photo)
+            //TODO
             ? "  Picture = CONVERT(VARBINARY(MAX), :base16photo, 2) "
             : "  Picture = NULL ";
 

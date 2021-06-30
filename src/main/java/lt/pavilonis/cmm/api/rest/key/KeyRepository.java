@@ -44,14 +44,11 @@ public class KeyRepository {
 
    Key assign(long scannerId, String cardCode, int keyNumber) {
       var keyHolder = new GeneratedKeyHolder();
-      var params = Map.of(
-            "scannerId", scannerId,
-            "cardCode", cardCode,
-            "keyNumber", keyNumber,
-            "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.ASSIGNED)
-      );
+      var params =
+            Map.of("scannerId", scannerId, "cardCode", cardCode, "keyNumber", keyNumber);
+
       var sql = "INSERT INTO KeyLog (scanner_id, cardCode, keyNumber, assigned) " +
-            "VALUES (:scannerId,  :cardCode, :keyNumber, :keyAction)";
+            "VALUES (:scannerId,  :cardCode, :keyNumber, TRUE)";
 
       jdbc.update(sql, new MapSqlParameterSource(params), keyHolder);
       return loadSingleKey(keyHolder.getKey().longValue());
@@ -59,24 +56,14 @@ public class KeyRepository {
 
    Key unAssign(long scannerId, int keyNumber) {
       var keyHolder = new GeneratedKeyHolder();
-      var sql = "INSERT INTO mm_KeyLog (scanner_id, cardCode, keyNumber, assigned) VALUES (" +
-            "  :scannerId," +
-            "  (" +
-            "     SELECT TOP 1 cardCode " +
-            "     FROM mm_KeyLog " +
-            "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber AND assigned = 1 " +
-            "     ORDER BY DATETIME DESC" +
-            "  )," +
-            "  :keyNumber, " +
-            "  :keyAction" +
-            ")";
-      var params = Map.of(
-            "scannerId", scannerId,
-            "keyNumber", keyNumber,
-            "keyAction", KEY_ACTION_INTEGER_MAP.get(KeyAction.UNASSIGNED)
-      );
+      var sql = "INSERT INTO KeyLog (scanner_id, cardCode, keyNumber, assigned)" +
+            "     SELECT :scannerId, cardCode, :keyNumber, FALSE " +
+            "     FROM KeyLog " +
+            "     WHERE scanner_id = :scannerId AND keyNumber = :keyNumber AND assigned " +
+            "     ORDER BY dateTime DESC" +
+            "     LIMIT 1";
 
-      jdbc.update(sql, new MapSqlParameterSource(params), keyHolder);
+      jdbc.update(sql, new MapSqlParameterSource(Map.of("scannerId", scannerId, "keyNumber", keyNumber)), keyHolder);
       return loadSingleKey(keyHolder.getKey().longValue());
    }
 
@@ -113,7 +100,7 @@ public class KeyRepository {
       args.put("scannerId", scannerId);
       args.put("keyNumber", keyNumber);
 
-      String query = "SELECT \n\n" +
+      var query = "SELECT \n" +
             "     k.keyNumber, \n" +
             "     k.dateTime AS lastTimeTaken, \n" +
             "     s.id AS scannerId, \n" +
@@ -137,27 +124,24 @@ public class KeyRepository {
 
             "     JOIN User u ON u.cardCode = k.cardCode \n" +
 
-            "WHERE k.assigned = 1 \n" +
+            "WHERE k.assigned \n" +
             "  AND u.cardCode IS NOT NULL";
 
-      List<Key> result = jdbc.query(
-            query,
-            args,
-            (rs, i) -> new Key(
-                  rs.getInt("keyNumber"),
-                  rs.getTimestamp("lastTimeTaken").toLocalDateTime(),
-                  new User(
-                        rs.getString("cardCode"),
-                        rs.getString("name"),
-                        rs.getString("organizationGroup"),
-                        rs.getString("organizationRole"),
-                        null,
-                        rs.getString("birthDate")
-                  ),
-                  new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
-                  KeyAction.ASSIGNED
-            )
-      );
+      List<Key> result = jdbc.query(query, args, (rs, i) -> new Key(
+            rs.getInt("keyNumber"),
+            rs.getTimestamp("lastTimeTaken").toLocalDateTime(),
+            new User(
+                  rs.getString("cardCode"),
+                  rs.getString("name"),
+                  rs.getString("organizationGroup"),
+                  rs.getString("organizationRole"),
+                  null,
+                  rs.getString("birthDate")
+            ),
+            new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
+            KeyAction.ASSIGNED
+      ));
+
       LOGGER.info("Loaded assigned keys [number={}, cardCode={}, t={}]", result.size(), cardCode, duration(opStart));
       return result;
    }

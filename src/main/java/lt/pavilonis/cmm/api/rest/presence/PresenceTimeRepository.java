@@ -26,36 +26,33 @@ public class PresenceTimeRepository {
    public List<PresenceTime> load(String cardCode, LocalDate periodStart, LocalDate periodEnd) {
 
       var opStart = LocalDateTime.now();
-      Map<String, Object> args = new HashMap<>();
-      args.put("cardCode", cardCode);
-      args.put("periodStart", periodStart);
-      args.put("periodEnd", periodEnd);
+      Map<String, Object> params = new HashMap<>();
+      params.put("cardCode", cardCode);
+      params.put("periodStart", periodStart);
+      params.put("periodEnd", periodEnd);
 
-      List<PresenceTime> result = jdbc.query("" +
-                  "SELECT " +
-                  "   CAST([dateTime] AS DATE)       AS workDay, " +
-                  "   CAST(min([DATETIME] ) AS TIME) AS workDayStart, " +
-                  "   CAST(max([DATETIME] ) AS TIME) AS workDayEnd, " +
-                  "   ROUND( " +
-                  "         ABS(DATEDIFF(SECOND, max([DATETIME]), min([DATETIME])) / 3600.0), " +
-                  "         1 " +
-                  "   )                               AS hourDiff " +
-                  "FROM ScanLog " +
-                  "WHERE cardCode = :cardCode " +
-                  "  AND (:periodStart IS NULL OR :periodStart <= CAST([dateTime] AS DATE))" +
-                  "  AND (:periodEnd IS NULL OR :periodEnd >= CAST([dateTime] AS DATE)) " +
-                  "GROUP BY CAST([DATETIME] AS DATE) " +
-                  "ORDER BY CAST([DATETIME] AS DATE) DESC",
+      var sql = "SELECT " +
+            "   DATE(dateTime)      AS workDay, " +
+            "   MIN(TIME(dateTime)) AS workDayStart, " +
+            "   MAX(TIME(dateTime)) AS workDayEnd, " +
+            "   ROUND( " +
+            "         ABS(TIME_TO_SEC(TIMEDIFF(MAX(dateTime), MIN(dateTime))) / 3600.0), " +
+            "         1 " +
+            "   )                   AS hourDiff " +
+            "FROM ScanLog " +
+            "WHERE cardCode = :cardCode " +
+            "  AND (:periodStart IS NULL OR :periodStart <= dateTime)" +
+            "  AND (:periodEnd IS NULL OR :periodEnd >= dateTime) " +
+            "GROUP BY dateTime " +
+            "ORDER BY dateTime DESC";
 
-            args,
+      List<PresenceTime> result = jdbc.query(sql, params, (rs, i) -> new PresenceTime(
+            rs.getTimestamp(1).toLocalDateTime().toLocalDate(),
+            rs.getTime(2).toLocalTime(),
+            rs.getTime(3).toLocalTime(),
+            rs.getDouble(4)
+      ));
 
-            (rs, i) -> new PresenceTime(
-                  rs.getTimestamp(1).toLocalDateTime().toLocalDate(),
-                  rs.getTime(2).toLocalTime(),
-                  rs.getTime(3).toLocalTime(),
-                  rs.getDouble(4)
-            )
-      );
       LOGGER.info("Loaded work time entries [number={}, cardCode={}, t={}]",
             result.size(), cardCode, TimeUtils.duration(opStart));
       return result;

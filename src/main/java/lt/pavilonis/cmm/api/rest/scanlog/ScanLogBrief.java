@@ -12,10 +12,9 @@ public class ScanLogBrief extends Identified<Void> {
    private final String name;
    private final String group;
    private final String role;
-   private final String location;
 
    public ScanLogBrief(LocalDateTime dateTime, String scannerName, String cardCode,
-                       String name, String group, String role, String location) {
+                       String name, String group, String role) {
 
       this.dateTime = dateTime;
       this.scanner = scannerName;
@@ -23,7 +22,6 @@ public class ScanLogBrief extends Identified<Void> {
       this.name = name;
       this.group = group;
       this.role = role;
-      this.location = location;
    }
 
    public LocalDateTime getDateTime() {
@@ -48,9 +46,5 @@ public class ScanLogBrief extends Identified<Void> {
 
    public String getScanner() {
       return scanner;
-   }
-
-   public String getLocation() {
-      return location;
    }
 }

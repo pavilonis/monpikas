@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.rest.user;
 
-
 import lt.pavilonis.cmm.school.user.UserFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
