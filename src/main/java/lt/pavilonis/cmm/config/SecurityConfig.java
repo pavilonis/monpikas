@@ -33,10 +33,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
    protected void configure(HttpSecurity http) throws Exception {
       http
             .authorizeRequests()
+            .antMatchers("/rest/**").hasRole("SCANNER")
             .anyRequest().authenticated()
 //            .anyRequest().permitAll()
 //            .antMatchers("/**").authenticated()
-            .antMatchers("/rest/**").hasRole("SCANNER")
+
 //            .antMatchers("/db/**").access("hasRole('ADMIN') and hasRole('DBA')")
 
             .and()

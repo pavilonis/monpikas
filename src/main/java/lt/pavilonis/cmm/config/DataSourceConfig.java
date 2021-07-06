@@ -1,8 +1,10 @@
 package lt.pavilonis.cmm.config;
 
 import org.flywaydb.core.Flyway;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
+import org.flywaydb.core.api.configuration.FluentConfiguration;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
@@ -15,29 +17,34 @@ import javax.sql.DataSource;
 //@EnableTransactionManagement
 public class DataSourceConfig {
 
+   @Autowired
+   private DataSource dataSource;
+
    @Bean
    public DataSourceTransactionManager transactionManager() {
-      return new DataSourceTransactionManager(dataSourceLocal());
+      return new DataSourceTransactionManager(dataSource);
    }
 
    @Bean
    public NamedParameterJdbcTemplate jdbc() {
-      return new NamedParameterJdbcTemplate(dataSourceLocal());
+      return new NamedParameterJdbcTemplate(dataSource);
    }
 
-   @Bean
-   @Primary
-   @ConfigurationProperties(prefix = "spring.datasource")
-   public DataSource dataSourceLocal() {
-      return DataSourceBuilder.create().build();
-   }
+//   @Bean
+//   @Primary
+//   @ConfigurationProperties(prefix = "spring.datasource")
+//   public DataSource dataSource() {
+//      return DataSourceBuilder.create().build();
+//   }
 
    @Bean
    public Flyway flyway() {
-      Flyway flyway = new Flyway();
-      flyway.setValidateOnMigrate(false);
-      flyway.setDataSource(dataSourceLocal());
-      flyway.setLocations("classpath:db/migration");
+      var config = new FluentConfiguration()
+            .validateOnMigrate(true)
+            .dataSource(dataSource)
+            .locations("classpath:db/migration");
+
+      var flyway = new Flyway(config);
       flyway.migrate();
       return flyway;
    }

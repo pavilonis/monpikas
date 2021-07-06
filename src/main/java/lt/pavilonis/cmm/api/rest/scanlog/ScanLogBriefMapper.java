@@ -13,7 +13,7 @@ final class ScanLogBriefMapper extends SimpleRowMapper<ScanLogBrief> {
             rs.getTimestamp("dateTime").toLocalDateTime(),
             rs.getString("scannerName"),
             rs.getString("cardCode"),
-            rs.getString("userName"),
+            rs.getString("name"),
             rs.getString("organizationGroup"),
             rs.getString("organizationRole")
       );

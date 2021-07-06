@@ -2,6 +2,8 @@ package lt.pavilonis.cmm.school.user;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Resource;
+import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
@@ -13,11 +15,12 @@ import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.common.service.ImageService;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.school.user.form.UserFormView;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.security.crypto.codec.Hex;
 
+import java.io.ByteArrayInputStream;
 import java.util.Optional;
 
 @SpringComponent
@@ -27,14 +30,12 @@ public class UserListController extends AbstractListController<User, String, Use
    private final UserListRepository userListRepository;
    private final UserRepository userRepository;
    private final PresenceTimeRepository presenceTimeRepository;
-   private final ImageService imageService;
 
    public UserListController(UserListRepository userListRepository, UserRepository userRepository,
-                             PresenceTimeRepository presenceTimeRepository, ImageService imageService) {
+                             PresenceTimeRepository presenceTimeRepository) {
       this.userListRepository = userListRepository;
       this.userRepository = userRepository;
       this.presenceTimeRepository = presenceTimeRepository;
-      this.imageService = imageService;
    }
 
    @Override
@@ -53,7 +54,10 @@ public class UserListController extends AbstractListController<User, String, Use
 
          @Override
          protected FieldLayout<User> createFieldLayout(User model) {
-            Resource image = imageService.imageResource(model.getBase16photo());
+            Resource image = StringUtils.isNotBlank(model.getBase16photo())
+                  ? new StreamResource(() -> new ByteArrayInputStream(Hex.decode(model.getBase16photo())), "img.png")
+                  : new ThemeResource("user_yellow_256.png");
+
             return new UserFormView(presenceTimeRepository, model.getCardCode(), image);
          }
       };

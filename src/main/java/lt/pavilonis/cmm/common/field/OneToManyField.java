@@ -16,7 +16,7 @@ import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.component.GridControlPanel;
 import lt.pavilonis.cmm.common.service.RepositoryFinder;
-import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -182,7 +182,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
       }
 
       protected void selectAction(Consumer<Set<T>> selectionConsumer, Set<T> selected) {
-         if (CollectionUtils.isNotEmpty(selected)) {
+         if (!CollectionUtils.isEmpty(selected)) {
             selectionConsumer.accept(selected);
          }
          close();

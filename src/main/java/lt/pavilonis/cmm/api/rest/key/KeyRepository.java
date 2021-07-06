@@ -1,8 +1,5 @@
 package lt.pavilonis.cmm.api.rest.key;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableMap;
 import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
@@ -30,10 +27,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class KeyRepository {
 
    private static final Logger LOGGER = getLogger(KeyRepository.class.getSimpleName());
-   private static final BiMap<KeyAction, Integer> KEY_ACTION_INTEGER_MAP = HashBiMap.create(ImmutableMap.of(
-         KeyAction.ASSIGNED, 1,
-         KeyAction.UNASSIGNED, 0
-   ));
    private final NamedParameterJdbcTemplate jdbc;
    private final UserRepository userRepository;
 
@@ -84,7 +77,7 @@ public class KeyRepository {
             rs.getTimestamp(2).toLocalDateTime(),
             userRepository.load(rs.getString(3), false),
             new Scanner(rs.getLong(4), rs.getString(5)),
-            KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt(6))
+            rs.getBoolean(6) ? KeyAction.ASSIGNED : KeyAction.UNASSIGNED
       ));
    }
 
@@ -180,7 +173,7 @@ public class KeyRepository {
       args.put("keyNumber", keyNumber);
       args.put("periodStart", periodStart == null ? null : periodStart.atStartOfDay());
       args.put("periodEnd", periodEnd == null ? null : periodEnd.atTime(LocalTime.MAX));
-      args.put("keyAction", keyAction == null ? null : KEY_ACTION_INTEGER_MAP.get(keyAction));
+      args.put("keyAction", keyAction == null ? null : keyAction == KeyAction.ASSIGNED);
       args.put("nameLike", QueryUtils.likeArg(nameLike));
 
       var sql = "SELECT " +
@@ -218,7 +211,7 @@ public class KeyRepository {
                   rs.getString("birthDate")
             ),
             new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
-            KEY_ACTION_INTEGER_MAP.inverse().get(rs.getInt("assigned"))
+            rs.getBoolean("assigned") ? KeyAction.ASSIGNED : KeyAction.UNASSIGNED
       ));
 
       LOGGER.info(

@@ -5,7 +5,6 @@ import lt.pavilonis.cmm.common.EntityRepository;
 
 import java.util.Map;
 
-
 public class RepositoryFinder {
 
    private static final Class<EntityRepository> ENTITY_REPOSITORY_CLASS = EntityRepository.class;

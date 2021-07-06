@@ -19,7 +19,7 @@ final class ScanLogBriefListGrid extends ListGrid<ScanLogBrief> {
 
    @Override
    protected List<String> columnOrder() {
-      return List.of("dateTime", "scanner", "location", "name", "role", "group", "cardCode");
+      return List.of("dateTime", "scanner", "name", "role", "group", "cardCode");
    }
 
    @Override

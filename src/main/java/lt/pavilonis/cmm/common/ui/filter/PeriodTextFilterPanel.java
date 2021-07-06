@@ -1,11 +1,11 @@
 package lt.pavilonis.cmm.common.ui.filter;
 
-import com.google.common.collect.Lists;
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.common.field.ATextField;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PeriodTextFilterPanel extends PeriodFilterPanel<IdPeriodTextFilter> {
@@ -24,7 +24,7 @@ public class PeriodTextFilterPanel extends PeriodFilterPanel<IdPeriodTextFilter>
 
    @Override
    protected List<HasValue<?>> getFields() {
-      List<HasValue<?>> fields = Lists.newArrayList(super.getFields());
+      List<HasValue<?>> fields = new ArrayList<>(super.getFields());
       fields.add(text = new ATextField(PeriodTextFilterPanel.class, "text"));
       return fields;
    }

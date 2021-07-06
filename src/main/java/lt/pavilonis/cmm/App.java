@@ -26,13 +26,13 @@ public class App {
       messages = context.getBean(MessageSourceAdapter.class);
    }
 
-   @Bean
-   public Filter characterEncodingFilter() {
-      var characterEncodingFilter = new CharacterEncodingFilter();
-      characterEncodingFilter.setEncoding(UTF_8.name());
-      characterEncodingFilter.setForceEncoding(true);
-      return characterEncodingFilter;
-   }
+//   @Bean
+//   public Filter characterEncodingFilter() {
+//      var characterEncodingFilter = new CharacterEncodingFilter();
+//      characterEncodingFilter.setEncoding(UTF_8.name());
+//      characterEncodingFilter.setForceEncoding(true);
+//      return characterEncodingFilter;
+//   }
 
    @Bean
    public ReloadableResourceBundleMessageSource messageSource() {

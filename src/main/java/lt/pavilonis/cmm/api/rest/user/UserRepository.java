@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.rest.user;
 
-import com.google.common.io.BaseEncoding;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import lt.pavilonis.cmm.school.user.UserFilter;
 import org.apache.commons.lang3.StringUtils;
@@ -35,20 +34,13 @@ public class UserRepository {
    }
 
    public User update(User user) {
-
-      String base16photo = user.getBase16photo();
-      String picture = StringUtils.isNotBlank(base16photo) && BaseEncoding.base16().canDecode(base16photo)
-            //TODO
-            ? "  Picture = CONVERT(VARBINARY(MAX), :base16photo, 2) "
-            : "  Picture = NULL ";
-
-      String sql = "UPDATE User " +
+      var sql = "UPDATE User " +
             "SET " +
             "  name = :name, " +
             "  birthDate = :birthDate, " +
             "  organizationGroup = :group, " +
             "  organizationRole = :role," +
-            picture +
+            "  picture = :base16photo " +
             "WHERE cardCode = :cardCode";
 
       jdbc.update(sql, collectArgs(user));
@@ -116,7 +108,7 @@ public class UserRepository {
 
    private Map<String, Object> collectArgs(User user) {
 
-      String photo = StringUtils.isNotBlank(user.getBase16photo()) && BaseEncoding.base16().canDecode(user.getBase16photo())
+      String photo = StringUtils.isNotBlank(user.getBase16photo())
             ? user.getBase16photo()
             : null;
 

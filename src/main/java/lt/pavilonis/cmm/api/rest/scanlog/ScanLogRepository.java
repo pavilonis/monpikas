@@ -97,8 +97,8 @@ public class ScanLogRepository {
       args.put("argLimit", limit);
 
       var sql = "SELECT " +
-            "  sl.dateTime AS dateTime, " +
-            "  sl.cardCode AS cardCode," +
+            "  sl.dateTime, " +
+            "  sl.cardCode," +
             "  sc.name AS scannerName, " +
             "  u.name, " +
             "  u.organizationGroup, " +

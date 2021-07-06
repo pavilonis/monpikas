@@ -17,8 +17,8 @@ import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.security.service.SystemUserPasswordChangeService;
 import lt.pavilonis.cmm.security.service.SystemUserRepository;
-import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;

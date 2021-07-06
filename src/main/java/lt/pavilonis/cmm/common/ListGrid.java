@@ -26,7 +26,6 @@ import java.util.stream.Collectors;
 
 public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
-   private static final Logger LOG = LoggerFactory.getLogger(ListGrid.class.getSimpleName());
    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
    private static final String PROPERTY_ID = "ID";
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);

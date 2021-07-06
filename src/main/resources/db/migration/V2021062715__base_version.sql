@@ -32,7 +32,7 @@ CREATE TABLE User (
     birthDate         DATE,
     organizationRole  VARCHAR(255) COLLATE utf8_general_ci,
     organizationGroup VARCHAR(255) COLLATE utf8_general_ci,
-    picture           BLOB,
+    picture           MEDIUMBLOB,
     PRIMARY KEY (id)
 ) DEFAULT CHARSET = utf8
   COLLATE utf8_general_ci;
@@ -44,7 +44,7 @@ CREATE TABLE UserRole (
     user_id BIGINT(20) NOT NULL,
     role_id BIGINT(20) NOT NULL,
     CONSTRAINT FK_UserRole_Role FOREIGN KEY (role_id) REFERENCES Role (id) ON DELETE CASCADE,
-    CONSTRAINT FK_UserRole_User FOREIGN KEY (user_id) REFERENCES User (id) ON DELETE CASCADE
+    CONSTRAINT FK_UserRole_User FOREIGN KEY (user_id) REFERENCES SystemUser (id) ON DELETE CASCADE
 );
 
 CREATE TABLE Scanner (

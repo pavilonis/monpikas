@@ -2,16 +2,11 @@ package lt.pavilonis.cmm.common;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
-import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
-import org.apache.commons.codec.binary.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Optional;
 
 public abstract class AbstractViewController implements MenuItemViewProvider {
-
-   @Autowired
-   protected MessageSourceAdapter messageSource;
 
    public ViewLayout getView() {
 

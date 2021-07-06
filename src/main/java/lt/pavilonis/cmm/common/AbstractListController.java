@@ -8,7 +8,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
-import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.util.CollectionUtils;
 
 import java.util.List;
 import java.util.Optional;
