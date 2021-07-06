@@ -16,10 +16,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.cmm.App;
 import lt.pavilonis.cmm.common.field.AButton;
-import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -28,14 +26,11 @@ import java.util.function.Consumer;
 
 public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
-   private final Logger LOG = LoggerFactory.getLogger(AbstractFormController.class.getSimpleName());
+   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final Class<T> clazz;
    private Binder<T> binder;
    private T model;
    private Window window;
-
-   @Autowired
-   protected MessageSourceAdapter messages;
 
    public AbstractFormController(Class<T> clazz) {
       this.clazz = clazz;
@@ -82,18 +77,12 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
          buttonSave.setEnabled(false);
 
       } else {
-         buttonSave = buttonSave
-               .withClickListener(click -> {
-                  Optional<T> entity = actionSave(fieldLayout);
-                  entity.ifPresent(persistedItem -> {
-                     persistedItemConsumer.accept(persistedItem);
-                     actionClose();
-                     Notification.show(
-                           App.translate(AbstractFormController.class, "saved"),
-                           Type.TRAY_NOTIFICATION
-                     );
-                  });
-               });
+         buttonSave = buttonSave.withClickListener(click -> actionSave(fieldLayout)
+               .ifPresent(persistedItem -> {
+                  persistedItemConsumer.accept(persistedItem);
+                  actionClose();
+                  Notification.show(App.translate(AbstractFormController.class, "saved"), Type.TRAY_NOTIFICATION);
+               }));
       }
 
       AButton buttonCancel = new AButton(AbstractFormController.class, "buttonClose")
@@ -123,7 +112,7 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       try {
          binder.bindInstanceFields(fieldLayout);
       } catch (IllegalStateException e) {
-         LOG.warn(e.getMessage());
+         logger.warn(e.getMessage());
       }
 
       binder.readBean(model);

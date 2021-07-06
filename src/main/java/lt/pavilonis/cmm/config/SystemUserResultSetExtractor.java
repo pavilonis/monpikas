@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.config;
 
-import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.security.Role;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;

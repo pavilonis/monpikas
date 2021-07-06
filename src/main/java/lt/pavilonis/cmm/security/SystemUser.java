@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.canteen.domain;
+package lt.pavilonis.cmm.security;
 
 import lt.pavilonis.cmm.common.Named;
 import lt.pavilonis.cmm.security.Role;

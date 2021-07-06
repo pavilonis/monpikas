@@ -34,19 +34,14 @@ public class UserFormView extends FieldLayout<User> {
    private final TextField base16photo = new TextField();
 
    public UserFormView(PresenceTimeRepository presenceTimeRepository, String cardCode, Resource userImage) {
-      TabSheet sheet = new TabSheet();
+      var sheet = new TabSheet();
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
 
-      UserFormViewPresenceTimeGrid presenceTimeGrid = new UserFormViewPresenceTimeGrid();
+      var presenceTimeGrid = new UserFormViewPresenceTimeGrid();
 
-      sheet.addTab(
-            new VerticalLayout(
-                  createFilterPanel(presenceTimeRepository, cardCode, presenceTimeGrid),
-                  presenceTimeGrid
-            ),
-            App.translate(this, "hoursOfPresence")
-      );
+      var filterPanel = createFilterPanel(presenceTimeRepository, cardCode, presenceTimeGrid);
+      sheet.addTab(new VerticalLayout(filterPanel, presenceTimeGrid), App.translate(this, "hoursOfPresence"));
 
       sheet.addTab(
             new UserEditWindowDetailsTab(userImage, base16photo),

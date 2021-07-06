@@ -23,7 +23,7 @@ import java.util.stream.Stream;
 @Repository
 public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Void, ScanLogBriefFilter> {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogBriefRepository.class);
+   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final ScanLogRepository scanLogRepository;
 
    public ScanLogBriefRepository(ScanLogRepository scanLogRepository) {
@@ -86,11 +86,11 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
          }
 
          private void log(String action, int size, LocalDateTime opStart) {
-            LOGGER.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, t={}]",
+            logger.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, t={}]",
                   action,
                   DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodStart()),
                   filter.getPeriodEnd() == null
-                        ? ""
+                        ? StringUtils.EMPTY
                         : DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodEnd()),
                   StringUtils.stripToEmpty(filter.getText()),
                   filter.getScannerId(),

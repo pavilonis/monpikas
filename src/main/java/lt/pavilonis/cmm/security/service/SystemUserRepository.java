@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.security.service;
 
-import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.config.SystemUserResultSetExtractor;
 import lt.pavilonis.cmm.security.Role;

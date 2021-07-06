@@ -13,7 +13,6 @@ import java.util.List;
 
 final class UserListFilterPanel extends FilterPanel<UserFilter> {
 
-   private final String preferredRole = App.translate(this, "preferredRole");
    private TextField textField;
    private ComboBox<String> groupCombo;
    private ComboBox<String> roleCombo;
@@ -23,6 +22,7 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
       roleCombo.setItems(roles);
       groupCombo.setItems(groups);
 
+      String preferredRole = App.translate(this, "preferredRole");
       roles.stream()
             .filter(preferredRole::equals)
             .findFirst()

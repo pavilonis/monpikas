@@ -7,7 +7,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.PasswordField;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.field.OneToManyField;

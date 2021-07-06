@@ -6,7 +6,7 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.ControlPanel;

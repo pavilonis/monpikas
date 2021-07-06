@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.config;
 
-import lt.pavilonis.cmm.canteen.domain.SystemUser;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.security.service.SystemUserRepository;
 import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.springframework.beans.factory.annotation.Autowired;

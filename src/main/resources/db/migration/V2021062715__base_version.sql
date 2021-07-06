@@ -81,7 +81,7 @@ CREATE TABLE ScanLog (
     PRIMARY KEY (id)
 );
 INSERT INTO ScanLog(dateTime, scanner_id, cardCode)
-VALUES (DATE_ADD(NOW(), INTERVAL -1 MINUTE), 1, 'efgh5678'),
-       (DATE_ADD(NOW(), INTERVAL -2 MINUTE), 1, 'abcd1234'),
-       (DATE_ADD(NOW(), INTERVAL -3 MINUTE), 2, 'efgh5678'),
-       (DATE_ADD(NOW(), INTERVAL -4 MINUTE), 2, 'abcd1234');
+VALUES (DATE_ADD(NOW(), INTERVAL -1 HOUR), 1, 'abcd1234'),
+       (DATE_ADD(NOW(), INTERVAL -2 HOUR), 1, 'efgh5678'),
+       (DATE_ADD(NOW(), INTERVAL -3 HOUR), 2, 'abcd1234'),
+       (DATE_ADD(NOW(), INTERVAL -4 HOUR), 2, 'efgh5678');
