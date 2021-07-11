@@ -30,8 +30,8 @@ public class SystemUserForm extends FieldLayout<SystemUser> {
          password.setEnabled(false);
       }
 
-      HorizontalLayout row1 = new HorizontalLayout(username, name);
-      HorizontalLayout row2 = new HorizontalLayout(password, email, enabled);
+      var row1 = new HorizontalLayout(username, name);
+      var row2 = new HorizontalLayout(password, email, enabled);
       row2.setComponentAlignment(enabled, Alignment.BOTTOM_CENTER);
 
       addComponents(row1, row2, authorities);

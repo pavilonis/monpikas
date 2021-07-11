@@ -15,6 +15,7 @@ import lt.pavilonis.cmm.api.rest.presence.PresenceTime;
 import lt.pavilonis.cmm.api.rest.presence.PresenceTimeRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.common.FieldLayout;
+import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;
@@ -26,11 +27,10 @@ import java.util.stream.Stream;
 public class UserFormView extends FieldLayout<User> {
 
    private final TextField cardCode = new ATextField(this.getClass(), "cardCode");
-   private final TextField firstName = new ATextField(this.getClass(), "firstName");
-   private final TextField lastName = new ATextField(this.getClass(), "lastName");
-   private final TextField group = new ATextField(this.getClass(), "group");
-   private final TextField role = new ATextField(this.getClass(), "role");
-   private final TextField birthDate = new ATextField(this.getClass(), "birthDate");
+   private final TextField name = new ATextField(this.getClass(), "name");
+   private final TextField organizationGroup = new ATextField(this.getClass(), "organizationGroup");
+   private final TextField organizationRole = new ATextField(this.getClass(), "organizationRole");
+   private final DateField birthDate = new ADateField(this.getClass(), "birthDate");
    private final TextField base16photo = new TextField();
 
    public UserFormView(PresenceTimeRepository presenceTimeRepository, String cardCode, Resource userImage) {
@@ -54,19 +54,16 @@ public class UserFormView extends FieldLayout<User> {
    protected PeriodFilterPanel<IdPeriodFilter> createFilterPanel(PresenceTimeRepository presenceTimeRepository,
                                                                  String cardCode,
                                                                  UserFormViewPresenceTimeGrid presenceTimeGrid) {
-
-      PeriodFilterPanel<IdPeriodFilter> filterPanel = new PeriodFilterPanel<>();
-
+      var filterPanel = new PeriodFilterPanel<>();
       DateField periodStart = filterPanel.getPeriodStart();
       DateField periodEnd = filterPanel.getPeriodEnd();
+
       periodStart.setValue(LocalDate.now().minusMonths(1));
 
       Runnable updateGrid = () -> {
-         List<PresenceTime> items = presenceTimeRepository.load(
-               cardCode,
-               periodStart.getValue(),
-               periodEnd.getValue()
-         );
+         List<PresenceTime> items =
+               presenceTimeRepository.load(cardCode, periodStart.getValue(), periodEnd.getValue());
+
          presenceTimeGrid.setItems(items);
       };
 
@@ -79,13 +76,11 @@ public class UserFormView extends FieldLayout<User> {
    private final class UserEditWindowDetailsTab extends HorizontalLayout {
 
       private final VerticalLayout rightLayout = new VerticalLayout();
-
       private Image currentUserImage;
 
       private UserEditWindowDetailsTab(Resource imageResource, TextField base16ImageTextField) {
-
          setMargin(true);
-         UserFormViewImageUploader uploadReceiver = new UserFormViewImageUploader((newImage, base16ImageString) -> {
+         var uploadReceiver = new UserFormViewImageUploader((newImage, base16ImageString) -> {
             updateUserPhoto(newImage);
             base16ImageTextField.setValue(base16ImageString);
          });
@@ -94,29 +89,26 @@ public class UserFormView extends FieldLayout<User> {
          imageUploader.setButtonCaption(App.translate(UserFormView.class, "selectImage"));
          imageUploader.addSucceededListener(uploadReceiver);
 
-         Stream.of(firstName, lastName, birthDate, role, group, cardCode)
+         Stream.of(name, birthDate, organizationRole, organizationGroup, cardCode)
                .forEach(field -> field.setWidth("250px"));
 
-         VerticalLayout fields = new VerticalLayout(firstName, lastName, birthDate, role, group);
+         VerticalLayout fields = new VerticalLayout(name, birthDate, organizationRole, organizationGroup);
          fields.setMargin(false);
 
          rightLayout.setMargin(false);
          rightLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
          rightLayout.addComponents(cardCode, imageUploader);
+
          addComponents(fields, rightLayout);
-
-         cardCode.setEnabled(false);
-         cardCode.setReadOnly(true);
-
          updateUserPhoto(imageResource);
-
          setHeight(460, Unit.PIXELS);
       }
 
       private void updateUserPhoto(Resource imageResource) {
-         if (currentUserImage != null)
+         if (currentUserImage != null) {
             rightLayout.removeComponent(currentUserImage);
-         Image image = new Image(App.translate(UserFormView.class, "userPhoto"), imageResource);
+         }
+         var image = new Image(App.translate(UserFormView.class, "userPhoto"), imageResource);
          image.addStyleName("user-photo");
          rightLayout.addComponent(currentUserImage = image, 1);
       }

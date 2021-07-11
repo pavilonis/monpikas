@@ -29,8 +29,7 @@ public class MenuItemsLayout extends CssLayout {
    }
 
    private Label createGroupLabel(String text) {
-      Label label;
-      label = new Label(text, ContentMode.HTML);
+      var label = new Label(text, ContentMode.HTML);
       label.setPrimaryStyleName(ValoTheme.MENU_SUBTITLE);
       label.addStyleName(ValoTheme.LABEL_H4);
       label.setSizeUndefined();
@@ -38,7 +37,7 @@ public class MenuItemsLayout extends CssLayout {
    }
 
    private Button createButton(MenuItem item, Navigator navigator) {
-      Button button = new Button(createButtonCaption(item), item.getIcon());
+      var button = new Button(createButtonCaption(item), item.getIcon());
       button.addClickListener(
             event -> navigator.navigateTo(item.getCodeName())
       );

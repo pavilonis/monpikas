@@ -6,7 +6,6 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
-import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.api.rest.presence.PresenceTimeRepository;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
@@ -21,11 +20,10 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.codec.Hex;
 
 import java.io.ByteArrayInputStream;
-import java.util.Optional;
 
 @SpringComponent
 @UIScope
-public class UserListController extends AbstractListController<User, String, UserFilter> {
+public class UserListController extends AbstractListController<User, Long, UserFilter> {
 
    private final UserListRepository userListRepository;
    private final UserRepository userRepository;
@@ -44,11 +42,11 @@ public class UserListController extends AbstractListController<User, String, Use
    }
 
    @Override
-   protected AbstractFormController<User, String> getFormController() {
-      return new AbstractFormController<User, String>(User.class) {
+   protected AbstractFormController<User, Long> getFormController() {
+      return new AbstractFormController<User, Long>(User.class) {
 
          @Override
-         protected EntityRepository<User, String, ?> getEntityRepository() {
+         protected EntityRepository<User, Long, ?> getEntityRepository() {
             return userListRepository;
          }
 
@@ -65,25 +63,17 @@ public class UserListController extends AbstractListController<User, String, Use
 
    @Override
    protected FilterPanel<UserFilter> createFilterPanel() {
-      return new UserListFilterPanel(
-            userRepository.loadRoles(),
-            userRepository.loadGroups()
-      );
+      return new UserListFilterPanel(userRepository.loadRoles(), userRepository.loadGroups());
    }
 
    @Override
-   protected EntityRepository<User, String, UserFilter> getEntityRepository() {
+   protected EntityRepository<User, Long, UserFilter> getEntityRepository() {
       return userListRepository;
    }
 
    @Override
    protected Class<User> getEntityClass() {
       return User.class;
-   }
-
-   @Override
-   protected Optional<Component> getControlPanel(Component mainArea) {
-      return Optional.empty();
    }
 
    @Override

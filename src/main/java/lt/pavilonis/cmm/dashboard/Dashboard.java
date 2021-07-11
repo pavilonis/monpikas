@@ -34,7 +34,7 @@ public class Dashboard extends GridLayout implements View {
 
    private Component scannerEventsComponent() {
       List<ScannerEvents> events = repository.scannerEvents();
-      ListGrid<ScannerEvents> grid = new ListGrid<ScannerEvents>(ScannerEvents.class) {
+      var grid = new ListGrid<>(ScannerEvents.class) {
          @Override
          protected List<String> columnOrder() {
             return List.of("scannerName", "scansToday", "scansTotal");

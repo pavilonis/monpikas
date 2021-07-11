@@ -27,12 +27,13 @@ CREATE TABLE SystemUser (
 
 CREATE TABLE User (
     id                BIGINT(20) NOT NULL AUTO_INCREMENT,
-    name              VARCHAR(255) COLLATE utf8_general_ci,
-    cardCode          VARCHAR(255) COLLATE utf8_general_ci,
+    name              VARCHAR(255) NOT NULL COLLATE utf8_general_ci,
+    cardCode          VARCHAR(255) NOT NULL COLLATE utf8_general_ci,
     birthDate         DATE,
     organizationRole  VARCHAR(255) COLLATE utf8_general_ci,
     organizationGroup VARCHAR(255) COLLATE utf8_general_ci,
     picture           MEDIUMBLOB,
+    CONSTRAINT UNIQUE_CARD_CODE UNIQUE (cardCode),
     PRIMARY KEY (id)
 ) DEFAULT CHARSET = utf8
   COLLATE utf8_general_ci;

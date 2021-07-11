@@ -36,9 +36,7 @@ public class UserFormViewImageUploader implements Upload.Receiver, Upload.Succee
       byte[] bytes = baos.toByteArray();
       scaledImageBytes = ImageUtils.scale(bytes, 500, 500);
 
-      StreamResource imageResource =
-            new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
-
+      var imageResource = new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
       String base16ImageString = new String(Hex.encode(bytes));
 
       imageResourceConsumer.accept(imageResource, base16ImageString);

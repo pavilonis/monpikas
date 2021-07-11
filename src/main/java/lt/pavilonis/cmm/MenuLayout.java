@@ -36,10 +36,10 @@ public class MenuLayout extends CssLayout {
    }
 
    private MenuBar createUserSettings() {
-      MenuBar settings = new MenuBar();
+      var settings = new MenuBar();
       settings.addStyleName("user-menu");
 
-      ThemeResource icon = new ThemeResource("profile-pic-300px.jpg");
+      var icon = new ThemeResource("profile-pic-300px.jpg");
       MenuBar.MenuItem settingsItem = settings.addItem("Vardas Pavardė", icon, null);
       settingsItem.addItem("TODO1", null);
       settingsItem.addSeparator();
@@ -48,8 +48,8 @@ public class MenuLayout extends CssLayout {
    }
 
    private HorizontalLayout createMenuHeader() {
-      Label title = new Label("" +
-            "<h3>ČMM <strong>Monpikas</strong> " +
+      var title = new Label("" +
+            "<h3><strong>Monpikas</strong> " +
             "  <span style='color:darkgrey'>" +
             "     " + "v" + PROPERTY_VERSION +
             "  </span>" +

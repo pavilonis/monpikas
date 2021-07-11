@@ -19,9 +19,8 @@ public class SystemUserDetailsService implements UserDetailsService {
    @Override
    public UserDetails loadUserByUsername(String username) {
 
-      List<SystemUser> result = systemUserRepository.load(
-            new SystemUserFilter(null, username, null)
-      );
+      var filter = new SystemUserFilter(null, username, null);
+      List<SystemUser> result = systemUserRepository.load(filter);
 
       if (result.size() > 1) {
          throw new IllegalStateException("Duplicate usernames?");

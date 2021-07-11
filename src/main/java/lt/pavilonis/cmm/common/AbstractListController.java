@@ -51,7 +51,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
 
    @Override
    final protected Optional<Component> getFooter(Component mainArea) {
-      HorizontalLayout footerLayout = new HorizontalLayout();
+      var footerLayout = new HorizontalLayout();
       footerLayout.setWidth(100, Sizeable.Unit.PERCENTAGE);
 
       getControlPanel(mainArea).ifPresent(panel -> {
@@ -65,7 +65,7 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
    }
 
    protected Optional<Component> getControlPanel(Component mainArea) {
-      ControlPanel controls = new ControlPanel(click -> actionCreate(), click -> actionDelete());
+      var controls = new ControlPanel(click -> actionCreate(), click -> actionDelete());
       return Optional.of(controls);
    }
 

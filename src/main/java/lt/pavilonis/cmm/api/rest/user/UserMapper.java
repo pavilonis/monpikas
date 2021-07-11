@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.api.rest.user;
 
+import lt.pavilonis.cmm.common.util.QueryUtils;
 import lt.pavilonis.cmm.common.util.SimpleRowMapper;
 
 import java.sql.ResultSet;
@@ -10,12 +11,13 @@ public class UserMapper extends SimpleRowMapper<User> {
    @Override
    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new User(
+            rs.getLong("id"),
             rs.getString("cardCode"),
             rs.getString("name"),
             rs.getString("organizationGroup"),
             rs.getString("organizationRole"),
             rs.getString("photo"),
-            rs.getString("birthDate")
+            QueryUtils.getLocalDate(rs, "birthDate")
       );
    }
 

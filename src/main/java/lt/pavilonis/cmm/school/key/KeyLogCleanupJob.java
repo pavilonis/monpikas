@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class KeyLogCleanupJob {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(KeyLogCleanupJob.class.getSimpleName());
+   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final int historyDaysThreshold;
    private final NamedParameterJdbcTemplate jdbc;
 
@@ -32,7 +32,7 @@ public class KeyLogCleanupJob {
       var sql = "DELETE FROM KeyLog WHERE dateTime < :threshold";
 
       int recordsDeleted = jdbc.update(sql, Map.of("threshold", threshold));
-      LOGGER.info("Deleted old KeyLog records [number={}, t={}]",
+      logger.info("Deleted old KeyLog records [number={}, t={}]",
             recordsDeleted, TimeUtils.duration(opStart));
    }
 }

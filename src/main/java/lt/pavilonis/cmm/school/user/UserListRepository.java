@@ -5,7 +5,6 @@ import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -14,20 +13,21 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Repository
-public class UserListRepository implements EntityRepository<User, String, UserFilter> {
+public class UserListRepository implements EntityRepository<User, Long, UserFilter> {
 
    @Autowired
    private UserRepository userRepository;
 
    @Override
    public User saveOrUpdate(User entity) {
-      // TODO only updates currently
-      return userRepository.update(entity);
+      return entity.getId() == null
+            ? userRepository.create(entity)
+            : userRepository.update(entity);
    }
 
    @Override
-   public Optional<User> find(String cardCode) {
-      User result = userRepository.load(cardCode, true);
+   public Optional<User> find(Long id) {
+      User result = userRepository.load(id, true);
       return Optional.ofNullable(result);
    }
 
@@ -63,8 +63,8 @@ public class UserListRepository implements EntityRepository<User, String, UserFi
    }
 
    @Override
-   public void delete(String s) {
-      throw new NotImplementedException("Not needed");
+   public void delete(Long id) {
+      userRepository.delete(id);
    }
 
    @Override

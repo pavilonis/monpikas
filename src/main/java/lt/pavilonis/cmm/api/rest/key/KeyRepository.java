@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import static lt.pavilonis.cmm.common.util.QueryUtils.getLocalDate;
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 import static org.slf4j.LoggerFactory.getLogger;
@@ -98,6 +99,7 @@ public class KeyRepository {
             "     k.dateTime AS lastTimeTaken, \n" +
             "     s.id AS scannerId, \n" +
             "     s.name AS scannerName, \n" +
+            "     u.id, \n" +
             "     u.cardCode, \n" +
             "     u.name, \n" +
             "     u.birthDate, \n" +
@@ -124,12 +126,13 @@ public class KeyRepository {
             rs.getInt("keyNumber"),
             rs.getTimestamp("lastTimeTaken").toLocalDateTime(),
             new User(
+                  rs.getLong("id"),
                   rs.getString("cardCode"),
                   rs.getString("name"),
                   rs.getString("organizationGroup"),
                   rs.getString("organizationRole"),
                   null,
-                  rs.getString("birthDate")
+                  getLocalDate(rs, "birthDate")
             ),
             new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
             KeyAction.ASSIGNED
@@ -180,6 +183,7 @@ public class KeyRepository {
             "  k.keyNumber," +
             "  k.dateTime," +
             "  k.assigned, " +
+            "  u.id, " +
             "  u.cardCode, " +
             "  u.name, " +
             "  u.birthDate, " +
@@ -203,12 +207,13 @@ public class KeyRepository {
             rs.getInt("keyNumber"),
             rs.getTimestamp("dateTime").toLocalDateTime(),
             new User(
+                  rs.getLong("id"),
                   rs.getString("cardCode"),
                   rs.getString("name"),
                   rs.getString("organizationGroup"),
                   rs.getString("organizationRole"),
                   null,
-                  rs.getString("birthDate")
+                  getLocalDate(rs, "birthDate")
             ),
             new Scanner(rs.getLong("scannerId"), rs.getString("scannerName")),
             rs.getBoolean("assigned") ? KeyAction.ASSIGNED : KeyAction.UNASSIGNED

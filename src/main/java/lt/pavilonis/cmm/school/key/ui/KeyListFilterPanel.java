@@ -52,7 +52,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
    @Override
    protected List<HasValue<?>> getFields() {
-      List<HasValue<?>> result = new ArrayList<>(super.getFields());
+      var result = new ArrayList<>(super.getFields());
 
       result.add(scannerCombo = new ComboBox<>(App.translate(this, "scanner")));
       result.add(text = new ATextField(this.getClass(), "text"));

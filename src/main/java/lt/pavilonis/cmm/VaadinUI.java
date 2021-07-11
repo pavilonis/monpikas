@@ -6,7 +6,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
-import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.common.MenuItemViewProvider;
 import org.apache.commons.lang3.StringUtils;
@@ -44,19 +43,17 @@ public class VaadinUI extends UI {
       viewProviders.forEach(navigator::addProvider);
 
       Map<String, List<MenuItem>> menuStructure = createMenuStructure();
-      CssLayout menuLayout = new MenuLayout(navigator, menuStructure);
-      rootLayout.addMenu(menuLayout);
+      rootLayout.addMenu(new MenuLayout(navigator, menuStructure));
       setContent(rootLayout);
 
       String fragment = Page.getCurrent().getUriFragment();
       if (StringUtils.isBlank(fragment)) {
          navigator.navigateTo("dashboard");
       }
-      getPage().setTitle("CMM");
+      getPage().setTitle("Monpikas");
    }
 
    private Map<String, List<MenuItem>> createMenuStructure() {
-
       Set<String> userRoles = currentUserRoles();
 
       Map<String, List<MenuItem>> result = viewProviders.stream()

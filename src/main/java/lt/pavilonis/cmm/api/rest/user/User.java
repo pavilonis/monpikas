@@ -1,44 +1,44 @@
 package lt.pavilonis.cmm.api.rest.user;
 
 import lt.pavilonis.cmm.common.Identified;
+import lt.pavilonis.cmm.common.Named;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
+import java.time.LocalDate;
 
-public class User extends Identified<String> {
+public class User extends Named<Long> {
 
    private String cardCode;
-
-   @NotNull
-   private String name;
 
    private String organizationGroup;
 
    private String organizationRole;
 
-   private String birthDate;
+   private LocalDate birthDate;
 
    private String base16photo;
 
    public User() {/**/}
 
-   public User(String cardCode, String name, String organizationGroup,
-               String organizationRole, String base16photo, String birthDate) {
+   public User(Long id, String cardCode, String name, String organizationGroup,
+               String organizationRole, String base16photo, LocalDate birthDate) {
 
+      setId(id);
+      setName(name);
       this.cardCode = cardCode;
-      this.name = name;
       this.organizationGroup = organizationGroup;
       this.organizationRole = organizationRole;
       this.base16photo = base16photo;
       this.birthDate = birthDate;
    }
 
-   public String getCardCode() {
-      return cardCode;
+   public void setCardCode(String cardCode) {
+      this.cardCode = cardCode;
    }
 
-   public void setName(String name) {
-      this.name = name;
+   public String getCardCode() {
+      return cardCode;
    }
 
    public String getOrganizationGroup() {
@@ -57,11 +57,11 @@ public class User extends Identified<String> {
       this.organizationRole = organizationRole;
    }
 
-   public String getBirthDate() {
+   public LocalDate getBirthDate() {
       return birthDate;
    }
 
-   public void setBirthDate(String birthDate) {
+   public void setBirthDate(LocalDate birthDate) {
       this.birthDate = birthDate;
    }
 
@@ -73,19 +73,10 @@ public class User extends Identified<String> {
       this.base16photo = base16photo;
    }
 
-   public String getName() {
-      return name;
-   }
-
-   @Override
-   public String getId() {
-      return cardCode;
-   }
-
    @Override
    public String toString() {
       return "cardCode='" + cardCode + '\'' +
-            ", name='" + name + '\'' +
+            ", name='" + getName() + '\'' +
             ", group='" + organizationGroup + '\'' +
             ", role='" + organizationRole + '\'' +
             ", birthDate='" + birthDate + '\'' +

@@ -17,7 +17,6 @@ import static org.slf4j.LoggerFactory.getLogger;
 @Repository
 public class UserRepository {
 
-   private static final Logger LOGGER = getLogger(UserRepository.class.getSimpleName());
    private static final String BLOCKS_FROM_WHERE = "" +
          "FROM User " +
          "WHERE " +
@@ -27,7 +26,23 @@ public class UserRepository {
          "  AND (:group IS NULL OR organizationGroup LIKE :group)" +
          "  AND (:withFirstLastNameOnly = '0' OR (name IS NOT NULL AND name <> ''))";
 
+   public static final String SELECT_FROM_USER = "SELECT " +
+         "  id, " +
+         "  cardCode, " +
+         "  name, " +
+         "  birthDate, " +
+         "  organizationGroup, " +
+         "  organizationRole," +
+         "  CASE WHEN :withPhoto = 1 " +
+         "     THEN " +
+         "        picture " +
+         "     ELSE " +
+         "        NULL " +
+         "  END AS photo " +
+         "FROM User ";
+
    private final NamedParameterJdbcTemplate jdbc;
+   private final Logger logger = getLogger(getClass());
 
    public UserRepository(NamedParameterJdbcTemplate jdbc) {
       this.jdbc = jdbc;
@@ -41,10 +56,10 @@ public class UserRepository {
             "  organizationGroup = :group, " +
             "  organizationRole = :role," +
             "  picture = :base16photo " +
-            "WHERE cardCode = :cardCode";
+            "WHERE id = :id";
 
       jdbc.update(sql, collectArgs(user));
-      return load(user.getCardCode(), false);
+      return load(user.getId(), false);
    }
 
    public List<User> load(UserFilter filter) {
@@ -54,6 +69,7 @@ public class UserRepository {
       args.put("argLimit", QueryUtils.argLimit(filter.getLimit()));
 
       var sql = "SELECT " +
+            "  id, " +
             "  cardCode, " +
             "  name, " +
             "  birthDate, " +
@@ -76,30 +92,24 @@ public class UserRepository {
       return args;
    }
 
-
-   public User load(String cardCode, boolean withPhoto) {
-      List<User> result = jdbc.query("" +
-                  "SELECT " +
-                  "  cardCode, " +
-                  "  name, " +
-                  "  birthDate, " +
-                  "  organizationGroup, " +
-                  "  organizationRole," +
-                  "  CASE WHEN :withPhoto = 1 " +
-                  "     THEN " +
-                  "        picture " +
-                  "     ELSE " +
-                  "        NULL " +
-                  "  END AS photo " +
-                  "FROM User " +
-                  "WHERE cardCode IS NOT NULL AND cardCode = :cardCode ",
-
-            Map.of("cardCode", cardCode, "withPhoto", withPhoto),
-            new UserMapper()
-      );
+   public User load(long id, boolean withPhoto) {
+      var params = Map.of("id", id, "withPhoto", withPhoto);
+      List<User> result = jdbc.query(SELECT_FROM_USER + "WHERE id = :id", params, new UserMapper());
 
       if (result.isEmpty()) {
-         LOGGER.warn("User not found - returning NULL [cardCode={}]", cardCode);
+         logger.warn("User not found - returning NULL [id={}]", id);
+         return null;
+      } else {
+         return result.get(0);
+      }
+   }
+
+   public User load(String cardCode, boolean withPhoto) {
+      var params = Map.of("cardCode", cardCode, "withPhoto", withPhoto);
+      List<User> result = jdbc.query(SELECT_FROM_USER + "WHERE cardCode = :cardCode ", params, new UserMapper());
+
+      if (result.isEmpty()) {
+         logger.warn("User not found - returning NULL [cardCode={}]", cardCode);
          return null;
       } else {
          return result.get(0);
@@ -112,15 +122,16 @@ public class UserRepository {
             ? user.getBase16photo()
             : null;
 
-      Map<String, Object> args = new HashMap<>();
-      args.put("cardCode", user.getCardCode());
-      args.put("name", user.getName());
-      args.put("group", user.getOrganizationGroup());
-      args.put("role", user.getOrganizationRole());
-      args.put("birthDate", user.getBirthDate());
-      args.put("base16photo", photo);
-      args.put("now", LocalDateTime.now());
-      return args;
+      var params = new HashMap<String, Object>();
+      params.put("id", user.getId());
+      params.put("cardCode", user.getCardCode());
+      params.put("name", user.getName());
+      params.put("group", user.getOrganizationGroup());
+      params.put("role", user.getOrganizationRole());
+      params.put("birthDate", user.getBirthDate());
+      params.put("base16photo", photo);
+      params.put("now", LocalDateTime.now());
+      return params;
    }
 
    public boolean exists(String cardCode) {
@@ -162,5 +173,25 @@ public class UserRepository {
             "  AND organizationRole <> '' " +
             "ORDER BY organizationRole ASC";
       return jdbc.queryForList(sql, Map.of(), String.class);
+   }
+
+   public void delete(long id) {
+      jdbc.update("DELETE FROM User WHERE id = :id", Map.of("id", id));
+   }
+
+   public User create(User entity) {
+      var sql = "INSERT INTO User (name, cardCode, birthDate, organizationRole, organizationGroup, picture)\n" +
+            "VALUES (:name, :cardCode, :birthDate, :role, :group, :picture)";
+      var params = new HashMap<String, Object>();
+
+      params.put("name", entity.getName());
+      params.put("cardCode", entity.getCardCode());
+      params.put("birthDate", entity.getBirthDate());
+      params.put("role", entity.getOrganizationRole());
+      params.put("group", entity.getOrganizationGroup());
+      params.put("picture", entity.getBase16photo());
+
+      jdbc.update(sql, params);
+      return load(entity.getCardCode(), false);
    }
 }

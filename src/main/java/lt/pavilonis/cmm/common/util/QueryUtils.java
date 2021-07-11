@@ -2,6 +2,11 @@ package lt.pavilonis.cmm.common.util;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.sql.Date;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.time.LocalDate;
+
 public class QueryUtils {
 
    public static String likeArg(String value) {
@@ -24,5 +29,10 @@ public class QueryUtils {
       return value == null
             ? Integer.MAX_VALUE
             : value;
+   }
+
+   public static LocalDate getLocalDate(ResultSet rs, String property) throws SQLException {
+      Date date = rs.getDate(property);
+      return date == null ? null : date.toLocalDate();
    }
 }

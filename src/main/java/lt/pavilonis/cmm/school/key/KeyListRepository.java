@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
+
+import static java.util.stream.Collectors.toList;
 
 @Repository
 public class KeyListRepository implements EntityRepository<Key, Integer, KeyListFilter> {
@@ -59,7 +60,7 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
       } else {
          return result.stream()
                .filter(key -> StringUtils.containsIgnoreCase(key.getUser().getName(), text))
-               .collect(Collectors.toList());
+               .collect(toList());
       }
    }
 

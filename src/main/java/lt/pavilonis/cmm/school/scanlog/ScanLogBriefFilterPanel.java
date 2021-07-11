@@ -43,7 +43,7 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
 
    @Override
    protected List<HasValue<?>> getFields() {
-      List<HasValue<?>> result = new ArrayList<>(super.getFields());
+      var result = new ArrayList<>(super.getFields());
       result.add(textField = new ATextField(getClass(), "text"));
       result.add(scannerCombo = new ComboBox<>(App.translate(getClass(), "scanner")));
       result.add(roleCombo = new ComboBox<>(App.translate(getClass(), "role")));
