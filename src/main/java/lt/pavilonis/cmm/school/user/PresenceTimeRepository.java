@@ -1,15 +1,16 @@
-package lt.pavilonis.cmm.api.rest.presence;
+package lt.pavilonis.cmm.school.user;
 
-import lt.pavilonis.cmm.common.util.TimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
+
+import static java.time.LocalDateTime.now;
+import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 
 @Repository
 public class PresenceTimeRepository {
@@ -21,10 +22,13 @@ public class PresenceTimeRepository {
       this.jdbc = jdbc;
    }
 
-   public List<PresenceTime> load(String cardCode, LocalDate periodStart, LocalDate periodEnd) {
-      var opStart = LocalDateTime.now();
+   public List<PresenceTime> load(Long userId, LocalDate periodStart, LocalDate periodEnd) {
+      if (userId == null) {
+         return List.of();
+      }
+      var opStart = now();
       var params = new HashMap<String, Object>();
-      params.put("cardCode", cardCode);
+      params.put("userId", userId);
       params.put("periodStart", periodStart);
       params.put("periodEnd", periodEnd);
 
@@ -40,7 +44,7 @@ public class PresenceTimeRepository {
             "         ), 1 " +
             "   )                   AS hourDiff " +
             "FROM ScanLog " +
-            "WHERE cardCode = :cardCode " +
+            "WHERE user_id = :userId " +
             "  AND (:periodStart IS NULL OR :periodStart <= dateTime)" +
             "  AND (:periodEnd IS NULL OR :periodEnd >= dateTime) " +
             "GROUP BY workDay " +
@@ -53,8 +57,7 @@ public class PresenceTimeRepository {
             rs.getDouble(4)
       ));
 
-      logger.info("Loaded work time entries [number={}, cardCode={}, t={}]",
-            result.size(), cardCode, TimeUtils.duration(opStart));
+      logger.info("Loaded work time entries [number={}, userId={}, t={}]", result.size(), userId, duration(opStart));
       return result;
    }
 }

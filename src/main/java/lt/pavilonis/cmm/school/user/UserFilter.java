@@ -5,15 +5,13 @@ public class UserFilter {
    private final String name;
    private final String role;
    private final String group;
-   private final boolean withFirstLastNameOnly;
    private Integer offset;
    private Integer limit;
 
-   public UserFilter(String name, String role, String group, boolean withFirstLastNameOnly) {
+   public UserFilter(String name, String role, String group) {
       this.name = name;
       this.role = role;
       this.group = group;
-      this.withFirstLastNameOnly = withFirstLastNameOnly;
    }
 
    public String getName() {
@@ -34,10 +32,6 @@ public class UserFilter {
 
    public Integer getLimit() {
       return limit;
-   }
-
-   public boolean isWithFirstLastNameOnly() {
-      return withFirstLastNameOnly;
    }
 
    public UserFilter withOffset(int offset) {

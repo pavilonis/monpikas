@@ -11,7 +11,7 @@ public abstract class SimpleRowMapper<T> implements RowMapper<T> {
       try {
          return mapRow(rs, 0);
       } catch (SQLException e) {
-         throw new RuntimeException("Could not map a row");
+         throw new RuntimeException("Could not map a row", e);
       }
    }
 

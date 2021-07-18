@@ -1,5 +1,6 @@
 package lt.pavilonis.cmm.api.rest.key;
 
+import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +22,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static java.time.LocalDateTime.now;
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 
 @RequestMapping("/rest/keys")
@@ -40,16 +42,19 @@ public class KeyRestController {
    public ResponseEntity<Key> assignKey(@PathVariable long scannerId, @PathVariable String cardCode,
                                         @PathVariable int keyNumber) {
 
-      if (!userRepository.exists(cardCode)) {
+      User user = userRepository.load(cardCode, false);
+      if (user == null) {
          LOG.warn("Key assign fail - user not found [cardCode={}]", cardCode);
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+      }
 
-      } else if (!keyRepository.isAvailable(scannerId, keyNumber)) {
+      List<Key> alreadyAssignedKeys = keyRepository.loadActive(scannerId, null, null, keyNumber);
+      if (!alreadyAssignedKeys.isEmpty()) {
          LOG.warn("Key assign fail - key already assigned [scannerId={}, keyNumber={}]", scannerId, keyNumber);
          return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
       }
 
-      Key savedKey = keyRepository.assign(scannerId, cardCode, keyNumber);
+      Key savedKey = keyRepository.assign(scannerId, user.getId(), keyNumber);
       LOG.info("Key assigned [keyNumber={}, scannerId={}, cardCode={}, user={}]",
             savedKey.getKeyNumber(), scannerId, cardCode, savedKey.getUser().getName());
       return ResponseEntity.ok().body(savedKey);
@@ -59,7 +64,7 @@ public class KeyRestController {
    @DeleteMapping("/{scannerId}/{keyNumber}")
    public ResponseEntity<Key> unAssignKey(@PathVariable long scannerId, @PathVariable int keyNumber) {
 
-      LocalDateTime opStart = LocalDateTime.now();
+      var opStart = now();
       Key savedKey = keyRepository.unAssign(scannerId, keyNumber);
 
       LOG.info("Key unassigned [scannerId={}, key={}, t={}]", scannerId, keyNumber, duration(opStart));
@@ -72,7 +77,7 @@ public class KeyRestController {
                                                @RequestParam(required = false) String cardCode,
                                                @RequestParam(required = false) String keyNumber) {
       Integer keyNum = parseInteger(keyNumber);
-      List<Key> keysTaken = keyRepository.loadActive(scannerId, cardCode, keyNum);
+      List<Key> keysTaken = keyRepository.loadActive(scannerId, null, cardCode, keyNum);
 
       return ResponseEntity.ok().body(keysTaken);
    }
@@ -86,7 +91,7 @@ public class KeyRestController {
                                             @RequestParam(required = false) String keyNumber,
                                             @RequestParam(required = false) String keyAction,
                                             @RequestParam(required = false) String nameLike) {
-      LocalDateTime opStart = LocalDateTime.now();
+      var opStart = now();
       Integer keyNum = parseInteger(keyNumber);
       KeyAction action = parseKeyAction(keyAction);
 

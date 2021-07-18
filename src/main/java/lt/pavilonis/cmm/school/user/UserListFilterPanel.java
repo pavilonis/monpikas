@@ -2,7 +2,6 @@ package lt.pavilonis.cmm.school.user;
 
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractField;
-import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
@@ -16,7 +15,6 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
    private TextField textField;
    private ComboBox<String> groupCombo;
    private ComboBox<String> roleCombo;
-   private CheckBox withFirstLastNameCheckBox;
 
    public UserListFilterPanel(List<String> roles, List<String> groups) {
       roleCombo.setItems(roles);
@@ -31,12 +29,7 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
 
    @Override
    public UserFilter getFilter() {
-      return new UserFilter(
-            textField.getValue(),
-            roleCombo.getValue(),
-            groupCombo.getValue(),
-            withFirstLastNameCheckBox.getValue()
-      );
+      return new UserFilter(textField.getValue(), roleCombo.getValue(), groupCombo.getValue());
    }
 
    @Override
@@ -44,8 +37,7 @@ final class UserListFilterPanel extends FilterPanel<UserFilter> {
       return List.of(
             textField = new ATextField(this.getClass(), "firstLastName"),
             roleCombo = new ComboBox<>(App.translate(this, "role")),
-            groupCombo = new ComboBox<>(App.translate(this, "group")),
-            withFirstLastNameCheckBox = new CheckBox(App.translate(this, "withFirstLastName"), true)
+            groupCombo = new ComboBox<>(App.translate(this, "group"))
       );
    }
 

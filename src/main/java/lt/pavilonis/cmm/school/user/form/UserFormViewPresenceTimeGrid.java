@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.school.user.form;
 
 import com.vaadin.data.ValueProvider;
-import lt.pavilonis.cmm.api.rest.presence.PresenceTime;
+import lt.pavilonis.cmm.school.user.PresenceTime;
 import lt.pavilonis.cmm.common.ListGrid;
 
 import java.time.format.DateTimeFormatter;

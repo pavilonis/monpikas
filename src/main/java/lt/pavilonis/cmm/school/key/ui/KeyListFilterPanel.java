@@ -26,7 +26,7 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
    public KeyListFilterPanel(List<Scanner> scanners) {
       scannerCombo.setItems(scanners);
-      scannerCombo.setItemCaptionGenerator(item -> App.translate(item, item.getName()));
+      scannerCombo.setItemCaptionGenerator(Scanner::getName);
    }
 
    private void togglePeriodStartEnd() {

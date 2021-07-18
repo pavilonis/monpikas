@@ -5,7 +5,6 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import lt.pavilonis.cmm.api.rest.key.Key;
 import lt.pavilonis.cmm.api.rest.key.KeyAction;
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.common.ListGrid;
 
 import java.time.format.DateTimeFormatter;
@@ -24,18 +23,25 @@ class KeyListGrid extends ListGrid<Key> {
 
    @Override
    protected List<String> columnOrder() {
-      return List.of("scanner", "keyNumber", "dateTime", "user.name", "user.role", "user.group", "keyAction");
+      return List.of("scanner", "keyNumber", "dateTime", "user.id", "user.name", "user.role", "user.group", "keyAction", "supervisor");
+   }
+
+   @Override
+   protected List<String> columnsToCollapse() {
+      return List.of("supervisor", "user.id");
    }
 
    @Override
    protected Map<String, ValueProvider<Key, ?>> getCustomColumns() {
       return Map.of(
+            "user.id", key -> key.getUser().getId(),
             "user.name", key -> key.getUser().getName(),
             "user.role", key -> key.getUser().getOrganizationRole(),
             "user.group", key -> key.getUser().getOrganizationGroup(),
             "dateTime", key -> DATE_TIME_FORMAT.format(key.getDateTime()),
             "keyAction", key -> messages.get(KeyAction.class, key.getKeyAction().name()),
-            "scanner", key -> messages.get(Scanner.class, key.getScanner().getName())
+            "scanner", key -> key.getScanner().getName(),
+            "supervisor", key -> key.getUser().getSupervisor() == null ? null : key.getUser().getSupervisor().getName()
       );
    }
 }

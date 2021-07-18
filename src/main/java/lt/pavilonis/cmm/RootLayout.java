@@ -4,13 +4,12 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewDisplay;
 import com.vaadin.spring.annotation.SpringViewDisplay;
 import com.vaadin.ui.Component;
-import com.vaadin.ui.ComponentContainer;
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 @SpringViewDisplay
-public class RootLayout extends HorizontalLayout implements ViewDisplay{
+public class RootLayout extends HorizontalLayout implements ViewDisplay {
 
    private final CssLayout contentArea = createContentArea();
    private final CssLayout menuArea = createMenuArea();
@@ -22,10 +21,6 @@ public class RootLayout extends HorizontalLayout implements ViewDisplay{
       addComponents(menuArea, contentArea);
       setExpandRatio(contentArea, 1);
       setWidth("100%");
-   }
-
-   public ComponentContainer getContentContainer() {
-      return contentArea;
    }
 
    public void addMenu(Component menu) {
@@ -50,6 +45,6 @@ public class RootLayout extends HorizontalLayout implements ViewDisplay{
    @Override
    public void showView(View view) {
       contentArea.removeAllComponents();
-      contentArea.addComponent((Component)view);
+      contentArea.addComponent((Component) view);
    }
 }

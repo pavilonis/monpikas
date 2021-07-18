@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.api.rest.presence;
+package lt.pavilonis.cmm.school.user;
 
 import lt.pavilonis.cmm.common.Identified;
 

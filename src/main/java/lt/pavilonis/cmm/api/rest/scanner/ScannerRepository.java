@@ -28,7 +28,7 @@ public class ScannerRepository {
 
    private List<Scanner> query(Long id) {
       var sql = "SELECT id, name FROM Scanner";
-      RowMapper<Scanner> mapper = (rs, i) -> new Scanner(rs.getLong(1), rs.getString(2));
+      RowMapper<Scanner> mapper = (rs, i) -> new Scanner(rs.getLong("id"), rs.getString("name"));
       return id == null
             ? jdbc.query(sql, Map.of(), mapper)
             : jdbc.query(sql + " WHERE :id = id", Map.of("id", id), mapper);

@@ -6,11 +6,8 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.GridLayout;
-import com.vaadin.ui.Label;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
 import lt.pavilonis.cmm.common.ListGrid;
-import lt.pavilonis.cmm.common.service.MessageSourceAdapter;
 
 import java.util.List;
 import java.util.Map;
@@ -21,13 +18,10 @@ public class Dashboard extends GridLayout implements View {
    static final String VIEW_NAME = "dashboard";
 
    private final DashboardRepository repository;
-   private final MessageSourceAdapter messages;
 
-   public Dashboard(DashboardRepository repository, MessageSourceAdapter messages) {
+   public Dashboard(DashboardRepository repository) {
       super(2, 2);
       this.repository = repository;
-      this.messages = messages;
-      addComponent(new Label("ČMM"));
       addComponent(scannerEventsComponent());
       setSizeFull();
    }
@@ -42,7 +36,7 @@ public class Dashboard extends GridLayout implements View {
 
          @Override
          protected Map<String, ValueProvider<ScannerEvents, ?>> getCustomColumns() {
-            return Map.of("scannerName", item -> messages.get(Scanner.class, item.getScannerName()));
+            return Map.of("scannerName", ScannerEvents::getScannerName);
          }
       };
       grid.setCaption(App.translate(this, "scanStats"));

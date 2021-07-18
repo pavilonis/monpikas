@@ -1,9 +1,11 @@
 package lt.pavilonis.cmm.school.user;
 
+import com.vaadin.data.ValueProvider;
 import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.common.ListGrid;
 
 import java.util.List;
+import java.util.Map;
 
 final class UserGrid extends ListGrid<User> {
 
@@ -13,7 +15,14 @@ final class UserGrid extends ListGrid<User> {
 
    @Override
    protected List<String> columnOrder() {
-      return List.of("cardCode", "name", "organizationRole", "organizationGroup");
+      return List.of("id", "cardCode", "name", "organizationRole", "organizationGroup", "supervisor");
+   }
+
+   @Override
+   protected Map<String, ValueProvider<User, ?>> getCustomColumns() {
+      return Map.of("supervisor", user -> user.getSupervisor() == null
+            ? null
+            : user.getSupervisor().getName());
    }
 
    @Override

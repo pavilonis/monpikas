@@ -34,7 +34,7 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
    @Override
    public List<Key> load(KeyListFilter filter) {
       String text = filter.getText();
-      boolean filterByNumber = NumberUtils.isNumber(text);
+      boolean filterByNumber = NumberUtils.isCreatable(text);
       Long scannerId = filter.getScannerId();
 
       if (filter.isLogMode()) {
@@ -49,10 +49,10 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
       }
 
       if (filterByNumber) {
-         return repository.loadActive(scannerId, null, Integer.parseInt(text));
+         return repository.loadActive(scannerId, null, null, Integer.parseInt(text));
       }
 
-      List<Key> result = repository.loadActive(scannerId, null, null);
+      List<Key> result = repository.loadActive(scannerId, null, null, null);
 
       if (StringUtils.isBlank(text)) {
          return result;

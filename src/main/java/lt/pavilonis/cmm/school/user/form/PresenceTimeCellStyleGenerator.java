@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.school.user.form;
 
 import com.vaadin.ui.StyleGenerator;
-import lt.pavilonis.cmm.api.rest.presence.PresenceTime;
+import lt.pavilonis.cmm.school.user.PresenceTime;
 
 final class PresenceTimeCellStyleGenerator implements StyleGenerator<PresenceTime> {
 

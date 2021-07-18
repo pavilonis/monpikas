@@ -1,12 +1,14 @@
 package lt.pavilonis.cmm.security.service;
 
-import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.config.SystemUserResultSetExtractor;
 import lt.pavilonis.cmm.security.Role;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -20,9 +22,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.now;
+import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
+
 @Repository
 public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter> {
 
+   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final NamedParameterJdbcTemplate jdbc;
    private final PasswordEncoder passwordEncoder;
 
@@ -96,7 +102,8 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
 
    @Override
    public List<SystemUser> load(SystemUserFilter filter) {
-      HashMap<String, Object> args = new HashMap<>();
+      var start = now();
+      var args = new HashMap<String, Object>();
       args.put("id", filter.getId());
       args.put("username", StringUtils.stripToNull(filter.getUsername()));
       args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
@@ -109,7 +116,9 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
             "  AND (:username IS NULL OR :username = u.username)" +
             "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
             "ORDER BY u.name";
-      return jdbc.query(sql, args, new SystemUserResultSetExtractor());
+      List<SystemUser> result = jdbc.query(sql, args, new SystemUserResultSetExtractor());
+      logger.info("Loaded system users [size={}, t={}]", result.size(), duration(start));
+      return result;
    }
 
    @Override

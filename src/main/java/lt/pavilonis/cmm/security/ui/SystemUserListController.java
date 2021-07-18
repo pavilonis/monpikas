@@ -6,7 +6,6 @@ import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.common.AbstractFormController;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.ControlPanel;
@@ -15,6 +14,7 @@ import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
+import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.security.service.SystemUserPasswordChangeService;
 import lt.pavilonis.cmm.security.service.SystemUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +39,7 @@ public class SystemUserListController extends AbstractListController<SystemUser,
       return new ListGrid<>(SystemUser.class) {
          @Override
          protected List<String> columnOrder() {
-            return List.of("username", "name", "email", "enabled", "authorities");
+            return List.of("id", "username", "name", "email", "enabled", "authorities");
          }
       };
    }

@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.rest.user;
 
-import lt.pavilonis.cmm.common.Identified;
 import lt.pavilonis.cmm.common.Named;
 import org.apache.commons.lang3.StringUtils;
 
@@ -9,6 +8,7 @@ import java.time.LocalDate;
 
 public class User extends Named<Long> {
 
+   @NotNull
    private String cardCode;
 
    private String organizationGroup;
@@ -19,10 +19,17 @@ public class User extends Named<Long> {
 
    private String base16photo;
 
+   private User supervisor;
+
    public User() {/**/}
 
+   public User(long id, String name) {
+      setId(id);
+      setName(name);
+   }
+
    public User(Long id, String cardCode, String name, String organizationGroup,
-               String organizationRole, String base16photo, LocalDate birthDate) {
+               String organizationRole, String base16photo, LocalDate birthDate, User supervisor) {
 
       setId(id);
       setName(name);
@@ -31,6 +38,7 @@ public class User extends Named<Long> {
       this.organizationRole = organizationRole;
       this.base16photo = base16photo;
       this.birthDate = birthDate;
+      this.supervisor = supervisor;
    }
 
    public void setCardCode(String cardCode) {
@@ -73,6 +81,14 @@ public class User extends Named<Long> {
       this.base16photo = base16photo;
    }
 
+   public User getSupervisor() {
+      return supervisor;
+   }
+
+   public void setSupervisor(User supervisor) {
+      this.supervisor = supervisor;
+   }
+
    @Override
    public String toString() {
       return "cardCode='" + cardCode + '\'' +
@@ -80,6 +96,7 @@ public class User extends Named<Long> {
             ", group='" + organizationGroup + '\'' +
             ", role='" + organizationRole + '\'' +
             ", birthDate='" + birthDate + '\'' +
-            ", photoBase16='" + (StringUtils.isBlank(base16photo) ? "absent" : "present") + '\'';
+            ", photoBase16='" + (StringUtils.isBlank(base16photo) ? "absent" : "present") + '\'' +
+            ", supervisor='" + (supervisor == null ? null : supervisor.getName()) + '\'';
    }
 }

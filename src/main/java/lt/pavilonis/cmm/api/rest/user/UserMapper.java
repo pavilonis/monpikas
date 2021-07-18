@@ -17,8 +17,15 @@ public class UserMapper extends SimpleRowMapper<User> {
             rs.getString("organizationGroup"),
             rs.getString("organizationRole"),
             rs.getString("photo"),
-            QueryUtils.getLocalDate(rs, "birthDate")
+            QueryUtils.getLocalDate(rs, "birthDate"),
+            mapSupervisor(rs)
       );
    }
 
+   private User mapSupervisor(ResultSet rs) throws SQLException {
+      Long supervisorId = (Long) rs.getObject("supervisorId");
+      return supervisorId == null
+            ? null
+            : new User(supervisorId, rs.getString("supervisorName"));
+   }
 }

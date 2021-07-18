@@ -24,7 +24,7 @@ import static org.apache.commons.lang3.StringUtils.stripToEmpty;
 @RestController
 public class UserController {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(UserController.class.getSimpleName());
+   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final UserRepository userRepository;
 
    public UserController(UserRepository userRepository) {
@@ -39,12 +39,12 @@ public class UserController {
                              @RequestParam(required = false) Integer limit) {
 
       LocalDateTime opStart = LocalDateTime.now();
-      UserFilter filter = new UserFilter(name, role, group, false)
+      UserFilter filter = new UserFilter(name, role, group)
             .withOffset(offset)
             .withLimit(limit);
       List<User> result = userRepository.load(filter);
 
-      LOGGER.info("GET [number={}, filterName={}, filterRole={}, filterGroup={}, t={}]",
+      logger.info("GET [number={}, filterName={}, filterRole={}, filterGroup={}, t={}]",
             result.size(), stripToEmpty(name), stripToEmpty(role), stripToEmpty(group), duration(opStart));
       return result;
    }
@@ -62,18 +62,18 @@ public class UserController {
 
       if (StringUtils.isBlank(user.getCardCode())) {
 
-         LOGGER.error("User update FAIL: cardCode is blank [user={}]", user);
+         logger.error("User update FAIL: cardCode is blank [user={}]", user);
          return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
 
       } else if (!userRepository.exists(user.getCardCode())) {
 
-         LOGGER.error("User update FAIL: no matching user found [user={}]", user);
+         logger.error("User update FAIL: no matching user found [user={}]", user);
          return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
 
       } else {
 
          User result = userRepository.update(user);
-         LOGGER.info("User updated [user={}]", result);
+         logger.info("User updated [user={}]", result);
          return ResponseEntity.ok().body(result);
       }
    }

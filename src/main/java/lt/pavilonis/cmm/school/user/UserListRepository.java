@@ -33,7 +33,7 @@ public class UserListRepository implements EntityRepository<User, Long, UserFilt
 
    @Override
    public List<User> load() {
-      return load(new UserFilter(null, null, null, false));
+      return load(new UserFilter(null, null, null));
    }
 
    @Override
