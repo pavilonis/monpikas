@@ -7,7 +7,7 @@ CREATE TABLE Role (
   COLLATE utf8_general_ci;
 
 INSERT INTO Role (name)
-VALUES ('SCANLOG'),
+VALUES ('SCANNER'),
        ('KEYS'),
        ('USERS_SYSTEM'),
        ('USERS'),
@@ -40,8 +40,8 @@ CREATE TABLE User (
 ) DEFAULT CHARSET = utf8
   COLLATE utf8_general_ci;
 INSERT INTO User (name, cardCode, birthDate, organizationRole, organizationGroup)
-VALUES ('John Smith', 'abcd1234', '2000-01-01', 'Pupil', '5A'),
-       ('Jane Doe', 'efgh5678', '1980-01-01', 'Teacher', 'Mathematics');
+VALUES ('John Smith', 'A67A4AD0', '2000-01-01', 'Pupil', '5A'),
+       ('Jane Doe', '368848D0', '1980-01-01', 'Teacher', 'Mathematics');
 
 CREATE TABLE UserRole (
     user_id BIGINT(20) NOT NULL,

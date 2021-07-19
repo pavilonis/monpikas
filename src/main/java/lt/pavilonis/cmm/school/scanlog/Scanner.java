@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.api.rest.scanner;
+package lt.pavilonis.cmm.school.scanlog;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 

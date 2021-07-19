@@ -5,13 +5,12 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import lt.pavilonis.cmm.api.rest.key.Key;
-import lt.pavilonis.cmm.api.rest.scanner.ScannerRepository;
+import lt.pavilonis.cmm.school.scanlog.ScannerRepository;
 import lt.pavilonis.cmm.common.AbstractListController;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.school.key.KeyListRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Optional;
 
@@ -19,11 +18,13 @@ import java.util.Optional;
 @SpringComponent
 public class KeyListController extends AbstractListController<Key, Integer, KeyListFilter> {
 
-   @Autowired
-   private KeyListRepository repository;
+   private final KeyListRepository repository;
+   private final ScannerRepository scannerRepository;
 
-   @Autowired
-   private ScannerRepository scannerRepository;
+   public KeyListController(KeyListRepository repository, ScannerRepository scannerRepository) {
+      this.repository = repository;
+      this.scannerRepository = scannerRepository;
+   }
 
    @Override
    protected ListGrid<Key> createGrid() {

@@ -1,8 +1,8 @@
 package lt.pavilonis.cmm.api.rest.key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
-import lt.pavilonis.cmm.api.rest.user.User;
+import lt.pavilonis.cmm.school.scanlog.Scanner;
+import lt.pavilonis.cmm.school.user.User;
 import lt.pavilonis.cmm.common.Identified;
 
 import java.time.LocalDateTime;

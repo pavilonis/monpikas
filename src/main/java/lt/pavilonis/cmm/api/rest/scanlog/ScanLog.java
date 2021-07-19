@@ -3,7 +3,7 @@ package lt.pavilonis.cmm.api.rest.scanlog;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import lt.pavilonis.cmm.api.rest.key.Key;
-import lt.pavilonis.cmm.api.rest.user.User;
+import lt.pavilonis.cmm.school.user.User;
 import lt.pavilonis.cmm.common.serialization.IsoLocalDateTimeSerializer;
 
 import java.time.LocalDateTime;

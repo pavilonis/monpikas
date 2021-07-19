@@ -17,7 +17,7 @@ import java.util.function.BiConsumer;
 
 public class UserFormViewImageUploader implements Upload.Receiver, Upload.SucceededListener {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private static final Logger LOGGER = LoggerFactory.getLogger(UserFormViewImageUploader.class);
    private final BiConsumer<Resource, String> imageResourceConsumer;
    private ByteArrayOutputStream baos;
    private byte[] scaledImageBytes;
@@ -48,7 +48,7 @@ public class UserFormViewImageUploader implements Upload.Receiver, Upload.Succee
          try {
             closeable.close();
          } catch (final IOException e) {
-            logger.error("Could not close stream", e);
+            LOGGER.error("Could not close stream", e);
          }
       }
    }

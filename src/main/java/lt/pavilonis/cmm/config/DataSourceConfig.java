@@ -2,12 +2,8 @@ package lt.pavilonis.cmm.config;
 
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
@@ -17,8 +13,11 @@ import javax.sql.DataSource;
 //@EnableTransactionManagement
 public class DataSourceConfig {
 
-   @Autowired
-   private DataSource dataSource;
+   private final DataSource dataSource;
+
+   public DataSourceConfig(DataSource dataSource) {
+      this.dataSource = dataSource;
+   }
 
    @Bean
    public DataSourceTransactionManager transactionManager() {
@@ -29,13 +28,6 @@ public class DataSourceConfig {
    public NamedParameterJdbcTemplate jdbc() {
       return new NamedParameterJdbcTemplate(dataSource);
    }
-
-//   @Bean
-//   @Primary
-//   @ConfigurationProperties(prefix = "spring.datasource")
-//   public DataSource dataSource() {
-//      return DataSourceBuilder.create().build();
-//   }
 
    @Bean
    public Flyway flyway() {

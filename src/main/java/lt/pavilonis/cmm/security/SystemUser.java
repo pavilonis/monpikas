@@ -1,11 +1,10 @@
 package lt.pavilonis.cmm.security;
 
 import lt.pavilonis.cmm.common.Named;
-import lt.pavilonis.cmm.security.Role;
-import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -24,8 +23,7 @@ public final class SystemUser extends Named<Long> implements UserDetails {
    private boolean enabled;
    private List<Role> authorities = new ArrayList<>();
 
-   public SystemUser() {
-   }
+   public SystemUser() {/**/}
 
    public SystemUser(Long id, String name, String username, String password, String email, boolean enabled) {
       setId(id);

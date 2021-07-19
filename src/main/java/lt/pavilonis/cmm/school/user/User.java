@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.api.rest.user;
+package lt.pavilonis.cmm.school.user;
 
 import lt.pavilonis.cmm.common.Named;
 import org.apache.commons.lang3.StringUtils;

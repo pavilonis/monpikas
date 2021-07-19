@@ -1,8 +1,6 @@
 package lt.pavilonis.cmm.school.user;
 
 import com.vaadin.data.provider.Query;
-import lt.pavilonis.cmm.api.rest.user.User;
-import lt.pavilonis.cmm.api.rest.user.UserRepository;
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.common.SizeConsumingBackendDataProvider;
 import org.springframework.beans.factory.annotation.Autowired;

@@ -1,4 +1,4 @@
-package lt.pavilonis.cmm.api.rest.user;
+package lt.pavilonis.cmm.school.user;
 
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import lt.pavilonis.cmm.common.util.SimpleRowMapper;

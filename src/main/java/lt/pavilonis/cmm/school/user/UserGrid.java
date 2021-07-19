@@ -1,7 +1,6 @@
 package lt.pavilonis.cmm.school.user;
 
 import com.vaadin.data.ValueProvider;
-import lt.pavilonis.cmm.api.rest.user.User;
 import lt.pavilonis.cmm.common.ListGrid;
 
 import java.util.List;

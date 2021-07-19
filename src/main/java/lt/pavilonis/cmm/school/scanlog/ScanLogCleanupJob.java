@@ -14,7 +14,7 @@ import java.util.Map;
 @Service
 public class ScanLogCleanupJob {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private final static Logger LOGGER = LoggerFactory.getLogger(ScanLogCleanupJob.class);
    private final int historyDaysThreshold;
    private final NamedParameterJdbcTemplate jdbc;
 
@@ -32,6 +32,6 @@ public class ScanLogCleanupJob {
       var sql = "DELETE FROM ScanLog WHERE dateTime < :threshold";
 
       int recordsDeleted = jdbc.update(sql, Map.of("threshold", threshold));
-      logger.info("Deleted old ScanLog records [number={}, t={}]", recordsDeleted, TimeUtils.duration(opStart));
+      LOGGER.info("Deleted old ScanLog records [number={}, t={}]", recordsDeleted, TimeUtils.duration(opStart));
    }
 }

@@ -26,7 +26,7 @@ import java.util.function.Consumer;
 
 public abstract class AbstractFormController<T extends Identified<ID>, ID> {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private static final Logger LOGGER = LoggerFactory.getLogger(AbstractFormController.class);
    private final Class<T> clazz;
    private Binder<T> binder;
    private T model;
@@ -112,7 +112,7 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       try {
          binder.bindInstanceFields(fieldLayout);
       } catch (IllegalStateException e) {
-         logger.warn(e.getMessage());
+         LOGGER.warn(e.getMessage());
       }
 
       binder.readBean(model);

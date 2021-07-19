@@ -2,8 +2,8 @@ package lt.pavilonis.cmm.api.rest.scanlog;
 
 import lt.pavilonis.cmm.api.rest.key.Key;
 import lt.pavilonis.cmm.api.rest.key.KeyRepository;
-import lt.pavilonis.cmm.api.rest.user.User;
-import lt.pavilonis.cmm.api.rest.user.UserRepository;
+import lt.pavilonis.cmm.school.user.User;
+import lt.pavilonis.cmm.school.user.UserRepository;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -18,11 +18,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import static lt.pavilonis.cmm.api.rest.user.UserRepository.USER_MAPPER;
+import static lt.pavilonis.cmm.school.user.UserRepository.USER_MAPPER;
 
 @Repository
 public class ScanLogRepository {
 
+   private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogRepository.class);
    private static final String FROM_WHERE_BLOCK = "" +
          "FROM ScanLog sl " +
          "  JOIN Scanner sc ON sc.id = sl.scanner_id " +
@@ -34,7 +35,6 @@ public class ScanLogRepository {
          "  AND (:role IS NULL OR u.organizationRole = :role) " +
          "  AND (:text IS NULL OR u.cardCode LIKE :text OR u.name LIKE :text)";
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final NamedParameterJdbcTemplate jdbc;
    private final KeyRepository keyRepository;
    private final UserRepository userRepository;
@@ -45,7 +45,7 @@ public class ScanLogRepository {
       this.userRepository = userRepository;
    }
 
-   public ScanLog saveCheckedAndLoad(long scannerId, String cardCode) {
+   public ScanLog store(long scannerId, String cardCode) {
       return save(scannerId, cardCode)
             .map(scanLogId -> loadById(scannerId, scanLogId))
             .orElse(null);
@@ -54,18 +54,19 @@ public class ScanLogRepository {
    private ScanLog loadById(long scannerId, long scanLogId) {
       return jdbc.queryForObject(
             "SELECT " +
-                  "  sl.dateTime " +
+                  "  sl.dateTime, " +
                   "  u.id, " +
                   "  u.cardCode, " +
                   "  u.name, " +
                   "  u.birthDate, " +
                   "  u.organizationGroup, " +
                   "  u.organizationRole, " +
-                  "  u.photo " +
+                  "  u.photo, " +
                   "  supervisor.id AS supervisorId, " +
-                  "  supervisor.name AS supervisorName, " +
+                  "  supervisor.name AS supervisorName " +
                   "FROM ScanLog sl " +
                   "  JOIN User u ON u.id = sl.user_id " +
+                  "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
                   "WHERE sl.id = :id",
             Map.of("id", scanLogId),
             (rs, i) -> {
@@ -80,7 +81,7 @@ public class ScanLogRepository {
 
       User user = userRepository.load(cardCode, false);
       if (user == null) {
-         logger.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]", scannerId, cardCode);
+         LOGGER.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]", scannerId, cardCode);
          return Optional.empty();
       }
 
@@ -89,7 +90,7 @@ public class ScanLogRepository {
       var sql = "INSERT INTO ScanLog (user_id, scanner_id) VALUES (:userId, :scannerId)";
 
       jdbc.update(sql, new MapSqlParameterSource(args), keyHolder);
-      logger.info("ScanLog saved");
+      LOGGER.info("ScanLog saved");
       return Optional.of(keyHolder.getKey().longValue());
    }
 

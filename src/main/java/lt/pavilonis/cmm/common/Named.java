@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.common;
 
-import org.hibernate.validator.constraints.NotBlank;
+import javax.validation.constraints.NotBlank;
 
 public class Named<ID> extends Identified<ID> {
 

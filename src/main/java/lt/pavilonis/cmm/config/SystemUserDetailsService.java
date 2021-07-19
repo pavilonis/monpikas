@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.config;
 
 import lt.pavilonis.cmm.security.SystemUser;
-import lt.pavilonis.cmm.security.service.SystemUserRepository;
+import lt.pavilonis.cmm.security.SystemUserRepository;
 import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,8 +13,11 @@ import java.util.List;
 @Service
 public class SystemUserDetailsService implements UserDetailsService {
 
-   @Autowired
-   private SystemUserRepository systemUserRepository;
+   private final SystemUserRepository systemUserRepository;
+
+   public SystemUserDetailsService(SystemUserRepository systemUserRepository) {
+      this.systemUserRepository = systemUserRepository;
+   }
 
    @Override
    public UserDetails loadUserByUsername(String username) {

@@ -9,7 +9,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
+import lt.pavilonis.cmm.school.scanlog.Scanner;
 import lt.pavilonis.cmm.common.field.ACheckBox;
 import lt.pavilonis.cmm.common.field.ATextField;
 import lt.pavilonis.cmm.common.ui.filter.PeriodFilterPanel;

@@ -1,6 +1,5 @@
 package lt.pavilonis.cmm.api.rest.scanlog;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,16 +9,19 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RequestMapping("/rest/scanlog")
 @RestController
-public class ScanLogController {
+public class ScanLogRestController {
 
-   @Autowired
-   private ScanLogRepository scanLogRepository;
+   private final ScanLogRepository scanLogRepository;
+
+   public ScanLogRestController(ScanLogRepository scanLogRepository) {
+      this.scanLogRepository = scanLogRepository;
+   }
 
    @PostMapping("/{scannerId}/{cardCode}")
    public ResponseEntity<ScanLog> writeLog(@PathVariable long scannerId,
                                            @PathVariable String cardCode) {
 
-      ScanLog result = scanLogRepository.saveCheckedAndLoad(scannerId, cardCode);
+      ScanLog result = scanLogRepository.store(scannerId, cardCode);
 
       return result == null
             ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)

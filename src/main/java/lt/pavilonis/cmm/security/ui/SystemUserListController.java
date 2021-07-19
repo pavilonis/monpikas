@@ -15,8 +15,8 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.security.SystemUser;
-import lt.pavilonis.cmm.security.service.SystemUserPasswordChangeService;
-import lt.pavilonis.cmm.security.service.SystemUserRepository;
+import lt.pavilonis.cmm.security.SystemUserPasswordChangeService;
+import lt.pavilonis.cmm.security.SystemUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 

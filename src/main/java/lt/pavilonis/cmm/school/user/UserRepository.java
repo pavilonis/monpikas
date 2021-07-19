@@ -1,11 +1,9 @@
-package lt.pavilonis.cmm.api.rest.user;
+package lt.pavilonis.cmm.school.user;
 
 import lt.pavilonis.cmm.common.util.QueryUtils;
-import lt.pavilonis.cmm.school.user.UserFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -15,7 +13,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.lang.Boolean.TRUE;
 import static java.time.LocalDateTime.now;
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 
@@ -23,11 +20,11 @@ import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 public class UserRepository {
 
    public static final UserMapper USER_MAPPER = new UserMapper();
+   private static final Logger LOGGER = LoggerFactory.getLogger(UserRepository.class);
    private static final String BLOCK_WHERE = " WHERE (:name IS NULL OR u.name LIKE :name)\n" +
          "  AND (:role IS NULL OR u.organizationRole LIKE :role)\n" +
          "  AND (:group IS NULL OR u.organizationGroup LIKE :group)\n";
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
    private final NamedParameterJdbcTemplate jdbc;
 
    public UserRepository(NamedParameterJdbcTemplate jdbc) {
@@ -42,7 +39,7 @@ public class UserRepository {
 
       var sql = selectUser(false) + BLOCK_WHERE + " ORDER BY u.name ASC LIMIT :argLimit OFFSET :argOffset";
       List<User> result = jdbc.query(sql, params, USER_MAPPER);
-      logger.info("Loaded users [size={}, t={}]", result.size(), duration(start));
+      LOGGER.info("Loaded users [size={}, t={}]", result.size(), duration(start));
       return result;
    }
 
@@ -72,12 +69,11 @@ public class UserRepository {
       List<User> result = jdbc.query(sql, params, USER_MAPPER);
 
       if (result.isEmpty()) {
-         logger.warn("User not found - returning NULL [id={}, cardCode={}]", id, cardCode);
+         LOGGER.warn("User not found [id={}, cardCode={}]", id, cardCode);
          return null;
-      } else {
-         logger.info("Loaded user [userId={}, cardCode={}, t={}]", id, cardCode, duration(start));
-         return result.get(0);
       }
+      LOGGER.info("Loaded user [userId={}, cardCode={}, t={}]", id, cardCode, duration(start));
+      return result.get(0);
    }
 
    private Map<String, Object> collectParams(User user) {
@@ -95,11 +91,6 @@ public class UserRepository {
       params.put("base16photo", photo);
       params.put("now", now());
       return params;
-   }
-
-   public boolean exists(String cardCode) {
-      var sql = "SELECT 1 FROM User WHERE cardCode = :cardCode";
-      return TRUE.equals(jdbc.queryForObject(sql, Map.of("cardCode", cardCode), Boolean.class));
    }
 
    public int size(UserFilter filter) {
@@ -128,7 +119,7 @@ public class UserRepository {
    public User create(User entity) {
       var sql = "INSERT INTO User (name, cardCode, birthDate, " +
             "  organizationRole, organizationGroup, supervisor_id, photo)\n" +
-            "VALUES (:name, :cardCode, :birthDate, :role, :group, :photo)";
+            "VALUES (:name, :cardCode, :birthDate, :role, :group, :supervisorId, :photo)";
 
       var keyHolder = new GeneratedKeyHolder();
       jdbc.update(sql, new MapSqlParameterSource(collectParams(entity)), keyHolder);
@@ -153,7 +144,7 @@ public class UserRepository {
    public void delete(long id) {
       User userToDelete = load(id, false);
       jdbc.update("DELETE FROM User WHERE id = :id", Map.of("id", id));
-      logger.debug("User deleted: {}", userToDelete);
+      LOGGER.debug("User deleted: {}", userToDelete);
    }
 
    private String selectUser(boolean withPhoto) {

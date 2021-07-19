@@ -3,6 +3,7 @@ package lt.pavilonis.cmm.school.user.form;
 import com.vaadin.server.Resource;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.ComboBox;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Image;
@@ -12,7 +13,7 @@ import com.vaadin.ui.Upload;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import lt.pavilonis.cmm.App;
-import lt.pavilonis.cmm.api.rest.user.User;
+import lt.pavilonis.cmm.school.user.User;
 import lt.pavilonis.cmm.common.FieldLayout;
 import lt.pavilonis.cmm.common.field.ADateField;
 import lt.pavilonis.cmm.common.field.ATextField;
@@ -72,30 +73,30 @@ public class UserFormView extends FieldLayout<User> {
 
    private final class UserEditWindowDetailsTab extends HorizontalLayout {
 
-      private final VerticalLayout rightLayout = new VerticalLayout();
       private Image currentUserImage;
 
       private UserEditWindowDetailsTab(Resource imageResource, TextField base16ImageTextField) {
          setMargin(true);
 
-         Stream.of(name, birthDate, organizationRole, organizationGroup, cardCode)
+         Stream.<Component>of(name, birthDate, organizationRole, organizationGroup, cardCode, supervisor)
                .forEach(field -> field.setWidth("250px"));
 
-         var fields = new VerticalLayout(name, birthDate, organizationRole, organizationGroup, supervisor);
-         fields.setMargin(false);
+         var layoutLeft = new VerticalLayout(name, birthDate, organizationRole, organizationGroup, supervisor);
+         layoutLeft.setMargin(false);
 
-         rightLayout.setMargin(false);
-         rightLayout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-         rightLayout.addComponents(cardCode, createUploader(base16ImageTextField));
+         var layoutRight = new VerticalLayout();
+         layoutRight.setMargin(false);
+         layoutRight.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
+         layoutRight.addComponents(cardCode, createUploader(base16ImageTextField, layoutRight));
 
-         addComponents(fields, rightLayout);
-         updateUserPhoto(imageResource);
+         addComponents(layoutLeft, layoutRight);
+         updateUserPhoto(imageResource, layoutRight);
          setHeight(460, Unit.PIXELS);
       }
 
-      private Upload createUploader(TextField imageTextField) {
+      private Upload createUploader(TextField imageTextField, VerticalLayout layout) {
          var uploadReceiver = new UserFormViewImageUploader((newImage, base16ImageString) -> {
-            updateUserPhoto(newImage);
+            updateUserPhoto(newImage, layout);
             imageTextField.setValue(base16ImageString);
          });
          Upload imageUploader = new Upload(null, uploadReceiver);
@@ -105,13 +106,13 @@ public class UserFormView extends FieldLayout<User> {
          return imageUploader;
       }
 
-      private void updateUserPhoto(Resource imageResource) {
+      private void updateUserPhoto(Resource imageResource, VerticalLayout layout) {
          if (currentUserImage != null) {
-            rightLayout.removeComponent(currentUserImage);
+            layout.removeComponent(currentUserImage);
          }
          var image = new Image(App.translate(UserFormView.class, "userPhoto"), imageResource);
          image.addStyleName("user-photo");
-         rightLayout.addComponent(currentUserImage = image, 1);
+         layout.addComponent(currentUserImage = image, 1);
       }
    }
 

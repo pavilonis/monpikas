@@ -1,7 +1,7 @@
 package lt.pavilonis.cmm.api.rest.key;
 
-import lt.pavilonis.cmm.api.rest.user.User;
-import lt.pavilonis.cmm.api.rest.user.UserRepository;
+import lt.pavilonis.cmm.school.user.User;
+import lt.pavilonis.cmm.school.user.UserRepository;
 import org.apache.commons.lang3.EnumUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static java.time.LocalDateTime.now;
@@ -29,7 +28,7 @@ import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 @RestController
 public class KeyRestController {
 
-   private static final Logger LOG = LoggerFactory.getLogger(KeyRestController.class.getSimpleName());
+   private static final Logger LOGGER = LoggerFactory.getLogger(KeyRestController.class);
    private final KeyRepository keyRepository;
    private final UserRepository userRepository;
 
@@ -44,18 +43,18 @@ public class KeyRestController {
 
       User user = userRepository.load(cardCode, false);
       if (user == null) {
-         LOG.warn("Key assign fail - user not found [cardCode={}]", cardCode);
+         LOGGER.warn("Key assign fail - user not found [cardCode={}]", cardCode);
          return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
       }
 
       List<Key> alreadyAssignedKeys = keyRepository.loadActive(scannerId, null, null, keyNumber);
       if (!alreadyAssignedKeys.isEmpty()) {
-         LOG.warn("Key assign fail - key already assigned [scannerId={}, keyNumber={}]", scannerId, keyNumber);
+         LOGGER.warn("Key assign fail - key already assigned [scannerId={}, keyNumber={}]", scannerId, keyNumber);
          return ResponseEntity.status(HttpStatus.CONFLICT).body(null);
       }
 
       Key savedKey = keyRepository.assign(scannerId, user.getId(), keyNumber);
-      LOG.info("Key assigned [keyNumber={}, scannerId={}, cardCode={}, user={}]",
+      LOGGER.info("Key assigned [keyNumber={}, scannerId={}, cardCode={}, user={}]",
             savedKey.getKeyNumber(), scannerId, cardCode, savedKey.getUser().getName());
       return ResponseEntity.ok().body(savedKey);
    }
@@ -67,7 +66,7 @@ public class KeyRestController {
       var opStart = now();
       Key savedKey = keyRepository.unAssign(scannerId, keyNumber);
 
-      LOG.info("Key unassigned [scannerId={}, key={}, t={}]", scannerId, keyNumber, duration(opStart));
+      LOGGER.info("Key unassigned [scannerId={}, key={}, t={}]", scannerId, keyNumber, duration(opStart));
       return ResponseEntity.ok().body(savedKey);
    }
 
@@ -96,17 +95,17 @@ public class KeyRestController {
       KeyAction action = parseKeyAction(keyAction);
 
       List<Key> result = keyRepository.loadLog(periodStart, periodEnd, scannerId, keyNum, action, nameLike);
-      LOG.info("Returning keyLogs [number={}, t={}]", result.size(), duration(opStart));
+      LOGGER.info("Returning keyLogs [number={}, t={}]", result.size(), duration(opStart));
       return ResponseEntity.ok().body(result);
    }
 
-   private KeyAction parseKeyAction(@RequestParam(required = false) String keyAction) {
+   private KeyAction parseKeyAction(String keyAction) {
       return StringUtils.isNotBlank(keyAction) && EnumUtils.isValidEnum(KeyAction.class, keyAction)
             ? KeyAction.valueOf(keyAction)
             : null;
    }
 
-   private Integer parseInteger(@RequestParam(required = false) String keyNumber) {
+   private Integer parseInteger(String keyNumber) {
       return NumberUtils.isDigits(keyNumber)
             ? Integer.parseInt(keyNumber)
             : null;

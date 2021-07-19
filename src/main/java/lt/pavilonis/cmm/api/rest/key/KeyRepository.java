@@ -1,6 +1,6 @@
 package lt.pavilonis.cmm.api.rest.key;
 
-import lt.pavilonis.cmm.api.rest.scanner.Scanner;
+import lt.pavilonis.cmm.school.scanlog.Scanner;
 import lt.pavilonis.cmm.common.util.QueryUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -20,14 +20,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static lt.pavilonis.cmm.api.rest.user.UserRepository.USER_MAPPER;
+import static lt.pavilonis.cmm.school.user.UserRepository.USER_MAPPER;
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 import static org.apache.commons.lang3.StringUtils.EMPTY;
 
 @Repository
 public class KeyRepository {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private static final Logger LOGGER = LoggerFactory.getLogger(KeyRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
 
    public KeyRepository(NamedParameterJdbcTemplate jdbc) {
@@ -65,7 +65,7 @@ public class KeyRepository {
             "  kl.dateTime, " +
             "  s.id AS scannerId," +
             "  s.name AS scannerName, " +
-            "  kl.assigned " +
+            "  kl.assigned, " +
             "  u.id, " +
             "  u.cardCode, " +
             "  u.name, " +
@@ -78,6 +78,7 @@ public class KeyRepository {
             "FROM KeyLog kl " +
             "  JOIN Scanner s ON s.id = kl.scanner_id " +
             "  JOIN User u ON u.id = kl.user_id " +
+            "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
             "WHERE " +
             "  kl.id = :id";
       return jdbc.queryForObject(sql, Map.of("id", keyLogId), (rs, i) -> new Key(
@@ -136,7 +137,7 @@ public class KeyRepository {
             KeyAction.ASSIGNED
       ));
 
-      logger.info("Loaded assigned keys [number={}, userId={}, cardCode={}, t={}]",
+      LOGGER.info("Loaded assigned keys [number={}, userId={}, cardCode={}, t={}]",
             result.size(), userId, cardCode, duration(opStart));
       return result;
    }
@@ -182,7 +183,7 @@ public class KeyRepository {
             "  u.birthDate, " +
             "  u.organizationRole, " +
             "  u.organizationGroup, " +
-            "  NULL as photo, " +
+            "  NULL AS photo, " +
             "  supervisor.id AS supervisorId, " +
             "  supervisor.name AS supervisorName, " +
             "  s.id AS scannerId, " +
@@ -208,7 +209,7 @@ public class KeyRepository {
             mapAction(rs)
       ));
 
-      logger.info(
+      LOGGER.info(
             "Loaded log [periodStart={}, periodEnd={}, scannerId={}, key={}, action={}, name={}, size={}, t={}]",
             periodStart == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
             periodEnd == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),

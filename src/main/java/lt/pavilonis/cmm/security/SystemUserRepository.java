@@ -1,9 +1,7 @@
-package lt.pavilonis.cmm.security.service;
+package lt.pavilonis.cmm.security;
 
 import lt.pavilonis.cmm.common.EntityRepository;
 import lt.pavilonis.cmm.config.SystemUserResultSetExtractor;
-import lt.pavilonis.cmm.security.Role;
-import lt.pavilonis.cmm.security.SystemUser;
 import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +26,7 @@ import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 @Repository
 public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter> {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private static final Logger LOGGER = LoggerFactory.getLogger(SystemUserRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
    private final PasswordEncoder passwordEncoder;
 
@@ -117,7 +115,7 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
             "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
             "ORDER BY u.name";
       List<SystemUser> result = jdbc.query(sql, args, new SystemUserResultSetExtractor());
-      logger.info("Loaded system users [size={}, t={}]", result.size(), duration(start));
+      LOGGER.info("Loaded system users [size={}, t={}]", result.size(), duration(start));
       return result;
    }
 

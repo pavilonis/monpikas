@@ -15,7 +15,7 @@ import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 @Repository
 public class PresenceTimeRepository {
 
-   private final Logger logger = LoggerFactory.getLogger(getClass());
+   private static final Logger LOGGER = LoggerFactory.getLogger(PresenceTimeRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
 
    public PresenceTimeRepository(NamedParameterJdbcTemplate jdbc) {
@@ -57,7 +57,7 @@ public class PresenceTimeRepository {
             rs.getDouble(4)
       ));
 
-      logger.info("Loaded work time entries [number={}, userId={}, t={}]", result.size(), userId, duration(opStart));
+      LOGGER.info("Loaded work time entries [number={}, userId={}, t={}]", result.size(), userId, duration(opStart));
       return result;
    }
 }

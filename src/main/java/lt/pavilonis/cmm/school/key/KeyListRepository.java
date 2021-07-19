@@ -18,8 +18,11 @@ import static java.util.stream.Collectors.toList;
 @Repository
 public class KeyListRepository implements EntityRepository<Key, Integer, KeyListFilter> {
 
-   @Autowired
-   private KeyRepository repository;
+   private final KeyRepository repository;
+
+   public KeyListRepository(KeyRepository repository) {
+      this.repository = repository;
+   }
 
    @Override
    public Key saveOrUpdate(Key ignored) {
