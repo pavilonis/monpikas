@@ -9,6 +9,9 @@ import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
 import lt.pavilonis.cmm.common.MenuItemViewProvider;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -28,6 +31,7 @@ import static lt.pavilonis.cmm.App.translate;
 @Theme("custom")
 public class VaadinUI extends UI {
 
+   private static final Logger LOGGER = LoggerFactory.getLogger(VaadinUI.class);
    private final List<MenuItemViewProvider> viewProviders;
    private final RootLayout rootLayout;
 
@@ -69,9 +73,15 @@ public class VaadinUI extends UI {
    }
 
    private Set<String> currentUserRoles() {
-      return SecurityContextHolder.getContext()
-            .getAuthentication()
-            .getAuthorities()
+      Authentication authentication = SecurityContextHolder.getContext()
+            .getAuthentication();
+
+      if (authentication == null) {
+         LOGGER.error("Could not get context");
+         return Set.of();
+      }
+
+      return authentication.getAuthorities()
             .stream()
             .map(GrantedAuthority::getAuthority)
             .collect(toSet());

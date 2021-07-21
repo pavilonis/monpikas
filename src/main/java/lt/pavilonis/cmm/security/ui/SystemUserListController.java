@@ -15,9 +15,7 @@ import lt.pavilonis.cmm.common.ListGrid;
 import lt.pavilonis.cmm.common.field.AButton;
 import lt.pavilonis.cmm.common.ui.filter.FilterPanel;
 import lt.pavilonis.cmm.security.SystemUser;
-import lt.pavilonis.cmm.security.SystemUserPasswordChangeService;
 import lt.pavilonis.cmm.security.SystemUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
@@ -28,11 +26,11 @@ import java.util.Set;
 @UIScope
 public class SystemUserListController extends AbstractListController<SystemUser, Long, SystemUserFilter> {
 
-   @Autowired
-   private SystemUserRepository repository;
+   private final SystemUserRepository repository;
 
-   @Autowired
-   private SystemUserPasswordChangeService passwordChangeService;
+   public SystemUserListController(SystemUserRepository repository) {
+      this.repository = repository;
+   }
 
    @Override
    protected ListGrid<SystemUser> createGrid() {
@@ -67,10 +65,8 @@ public class SystemUserListController extends AbstractListController<SystemUser,
                   );
 
                } else {
-                  new PasswordChangePopup(newPassword -> passwordChangeService.changePassword(
-                        selection.iterator().next().getId(),
-                        newPassword
-                  ));
+                  new PasswordChangePopup(newPassword ->
+                        repository.changePassword(selection.iterator().next().getId(), newPassword));
                }
             })
             .withStyleName("redicon")

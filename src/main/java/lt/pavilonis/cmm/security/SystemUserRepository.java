@@ -1,7 +1,6 @@
 package lt.pavilonis.cmm.security;
 
 import lt.pavilonis.cmm.common.EntityRepository;
-import lt.pavilonis.cmm.config.SystemUserResultSetExtractor;
 import lt.pavilonis.cmm.security.ui.SystemUserFilter;
 import org.apache.commons.lang3.NotImplementedException;
 import org.apache.commons.lang3.StringUtils;
@@ -10,6 +9,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +26,7 @@ import static java.time.LocalDateTime.now;
 import static lt.pavilonis.cmm.common.util.TimeUtils.duration;
 
 @Repository
-public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter> {
+public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter>, UserDetailsService {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(SystemUserRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
@@ -33,6 +35,21 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
    public SystemUserRepository(NamedParameterJdbcTemplate jdbc, PasswordEncoder passwordEncoder) {
       this.jdbc = jdbc;
       this.passwordEncoder = passwordEncoder;
+   }
+
+   @Override
+   public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+      List<SystemUser> result = load(new SystemUserFilter(null, username, null));
+
+      if (result.size() == 1) {
+         return result.get(0);
+      }
+
+      if (result.isEmpty()) {
+         throw new UsernameNotFoundException("User not found");
+      } else {
+         throw new IllegalStateException("Duplicate usernames found");
+      }
    }
 
    @Override
@@ -139,5 +156,10 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
    @Override
    public Class<SystemUser> entityClass() {
       return SystemUser.class;
+   }
+
+   public void changePassword(long userId, String newPassword) {
+      var sql = "UPDATE SystemUser SET password = :pass WHERE id = :id";
+      jdbc.update(sql, Map.of("id", userId, "pass", passwordEncoder.encode(newPassword)));
    }
 }

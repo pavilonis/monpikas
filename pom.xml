@@ -13,7 +13,6 @@
    </parent>
 
    <properties>
-      <swagger.version>2.9.2</swagger.version>
       <java.version>11</java.version>
       <jackson.version>2.12.3</jackson.version>
    </properties>
@@ -78,18 +77,6 @@
          <version>7.11.0</version>
       </dependency>
 
-      <!--API DOC GEN-->
-      <dependency>
-         <groupId>io.springfox</groupId>
-         <artifactId>springfox-swagger2</artifactId>
-         <version>${swagger.version}</version>
-      </dependency>
-      <dependency>
-         <groupId>io.springfox</groupId>
-         <artifactId>springfox-swagger-ui</artifactId>
-         <version>${swagger.version}</version>
-      </dependency>
-
       <!-- JDBC -->
       <dependency>
          <groupId>mysql</groupId>
@@ -103,7 +90,7 @@
          <dependency>
             <groupId>com.vaadin</groupId>
             <artifactId>vaadin-bom</artifactId>
-            <version>8.13.1</version>
+            <version>8.13.2</version>
             <type>pom</type>
             <scope>import</scope>
          </dependency>

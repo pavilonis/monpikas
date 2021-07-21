@@ -1,7 +1,5 @@
-package lt.pavilonis.cmm.config;
+package lt.pavilonis.cmm.security;
 
-import lt.pavilonis.cmm.security.Role;
-import lt.pavilonis.cmm.security.SystemUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
