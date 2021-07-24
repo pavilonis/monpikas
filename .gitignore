@@ -31,3 +31,5 @@ mvnw.cmd
 
 *.log
 /logs/
+
+/mysql

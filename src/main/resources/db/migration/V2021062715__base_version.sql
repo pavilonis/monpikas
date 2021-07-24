@@ -5,13 +5,7 @@ CREATE TABLE Role (
     UNIQUE KEY UNIQUE_role_name (name)
 ) DEFAULT CHARSET = utf8
   COLLATE utf8_general_ci;
-
-INSERT INTO Role (name)
-VALUES ('SCANNER'),
-       ('KEYS'),
-       ('USERS_SYSTEM'),
-       ('USERS'),
-       ('ACTUATOR');
+INSERT INTO Role (name) VALUES ('SCANNER'), ('KEYS'), ('USERS_SYSTEM'), ('USERS');
 
 CREATE TABLE SystemUser (
     id       BIGINT(20)                           NOT NULL AUTO_INCREMENT,

@@ -1,7 +1,7 @@
 package db.migration;
 
-import lt.pavilonis.cmm.security.SystemUser;
-import lt.pavilonis.cmm.security.SystemUserRepository;
+import lt.pavilonis.monpikas.security.SystemUser;
+import lt.pavilonis.monpikas.security.SystemUserRepository;
 import org.flywaydb.core.api.migration.BaseJavaMigration;
 import org.flywaydb.core.api.migration.Context;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
