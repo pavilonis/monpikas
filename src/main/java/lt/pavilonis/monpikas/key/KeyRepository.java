@@ -117,10 +117,11 @@ public class KeyRepository {
             "     JOIN Scanner s ON s.id = k.scanner_id \n" +
 
             "     JOIN ( \n" +
-            "         SELECT keyNumber, MAX(dateTime) AS lastOperationMoment \n" +
-            "         FROM KeyLog \n" +
+            "         SELECT k2.keyNumber, MAX(k2.dateTime) AS lastOperationMoment \n" +
+            "         FROM KeyLog k2\n " +
+            "            JOIN User u2 ON u2.id = k2.user_id " +
             whereSection(userId, cardCode, keyNumber, scannerId) +
-            "         GROUP BY keyNumber \n" +
+            "         GROUP BY k2.keyNumber \n" +
             "     ) AS lastState ON lastState.keyNumber = k.keyNumber \n" +
             "         AND lastState.lastOperationMoment = k.dateTime \n" +
 
@@ -143,10 +144,10 @@ public class KeyRepository {
    }
 
    private String whereSection(Long userId, String cardCode, Integer keyNumber, Long scannerId) {
-      String result = scannerId == null ? EMPTY : ("scanner_id = " + scannerId);
-      result = addCheck("user_id", userId, result);
-      result = addCheck("cardCode", cardCode, result);
-      result = addCheck("keyNumber", keyNumber, result);
+      String result = scannerId == null ? EMPTY : ("k2.scanner_id = " + scannerId);
+      result = addCheck("k2.keyNumber", keyNumber, result);
+      result = addCheck("u2.id", userId, result);
+      result = addCheck("u2.cardCode", cardCode, result);
       return result.isEmpty() ? "\n" : "\nWHERE " + result;
    }
 
