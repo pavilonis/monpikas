@@ -78,7 +78,7 @@ public class UserRepository {
 
    private Map<String, Object> collectParams(User user) {
       Long supervisorId = user.getSupervisor() == null ? null : user.getSupervisor().getId();
-      String photo = StringUtils.isNotBlank(user.getBase16photo()) ? user.getBase16photo() : null;
+      String photo = StringUtils.isNotBlank(user.getBase64photo()) ? user.getBase64photo() : null;
 
       var params = new HashMap<String, Object>();
       params.put("id", user.getId());
@@ -88,7 +88,7 @@ public class UserRepository {
       params.put("role", user.getOrganizationRole());
       params.put("birthDate", user.getBirthDate());
       params.put("supervisorId", supervisorId);
-      params.put("base16photo", photo);
+      params.put("base64photo", photo);
       params.put("now", now());
       return params;
    }
@@ -134,7 +134,8 @@ public class UserRepository {
             "  organizationGroup = :group, " +
             "  organizationRole = :role," +
             "  supervisor_id = :supervisorId," +
-            "  photo = :base16photo " +
+            "  cardCode = :cardCode," +
+            "  photo = :base64photo " +
             "WHERE id = :id";
 
       jdbc.update(sql, collectParams(user));

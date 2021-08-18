@@ -17,7 +17,7 @@ public class User extends Named<Long> {
 
    private LocalDate birthDate;
 
-   private String base16photo;
+   private String base64photo;
 
    private User supervisor;
 
@@ -29,14 +29,14 @@ public class User extends Named<Long> {
    }
 
    public User(Long id, String cardCode, String name, String organizationGroup,
-               String organizationRole, String base16photo, LocalDate birthDate, User supervisor) {
+               String organizationRole, String base64photo, LocalDate birthDate, User supervisor) {
 
       setId(id);
       setName(name);
       this.cardCode = cardCode;
       this.organizationGroup = organizationGroup;
       this.organizationRole = organizationRole;
-      this.base16photo = base16photo;
+      this.base64photo = base64photo;
       this.birthDate = birthDate;
       this.supervisor = supervisor;
    }
@@ -73,12 +73,12 @@ public class User extends Named<Long> {
       this.birthDate = birthDate;
    }
 
-   public String getBase16photo() {
-      return base16photo;
+   public String getBase64photo() {
+      return base64photo;
    }
 
-   public void setBase16photo(String base16photo) {
-      this.base16photo = base16photo;
+   public void setBase64photo(String base64photo) {
+      this.base64photo = base64photo;
    }
 
    public User getSupervisor() {
@@ -96,7 +96,7 @@ public class User extends Named<Long> {
             ", group='" + organizationGroup + '\'' +
             ", role='" + organizationRole + '\'' +
             ", birthDate='" + birthDate + '\'' +
-            ", photoBase16='" + (StringUtils.isBlank(base16photo) ? "absent" : "present") + '\'' +
+            ", photoBase64='" + (StringUtils.isBlank(base64photo) ? "absent" : "present") + '\'' +
             ", supervisor='" + (supervisor == null ? null : supervisor.getName()) + '\'';
    }
 }

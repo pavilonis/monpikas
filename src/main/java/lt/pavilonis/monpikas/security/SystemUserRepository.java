@@ -132,7 +132,7 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
             "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
             "ORDER BY u.name";
       List<SystemUser> result = jdbc.query(sql, args, new SystemUserResultSetExtractor());
-      LOGGER.info("Loaded system users [size={}, t={}]", result.size(), duration(start));
+      LOGGER.debug("Loaded system users [size={}, t={}]", result.size(), duration(start));
       return result;
    }
 

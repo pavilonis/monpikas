@@ -33,7 +33,7 @@ public class UserFormView extends FieldLayout<User> {
    private final TextField organizationGroup = new ATextField(this.getClass(), "organizationGroup");
    private final TextField organizationRole = new ATextField(this.getClass(), "organizationRole");
    private final DateField birthDate = new ADateField(this.getClass(), "birthDate");
-   private final TextField base16photo = new TextField();
+   private final TextField base64photo = new TextField();
    private final ComboBox<User> supervisor;
 
    public UserFormView(PresenceTimeRepository presenceTimeRepository,
@@ -46,7 +46,7 @@ public class UserFormView extends FieldLayout<User> {
       sheet.addStyleName(ValoTheme.TABSHEET_FRAMED);
       sheet.addStyleName(ValoTheme.TABSHEET_PADDED_TABBAR);
       sheet.addTab(new VerticalLayout(filterPanel, presenceTimeGrid), App.translate(this, "hoursOfPresence"));
-      sheet.addTab(new UserEditWindowDetailsTab(userImage, base16photo), App.translate(this, "editDetails"));
+      sheet.addTab(new UserEditWindowDetailsTab(userImage, base64photo), App.translate(this, "editDetails"));
 
       addComponent(sheet);
    }
@@ -75,7 +75,7 @@ public class UserFormView extends FieldLayout<User> {
 
       private Image currentUserImage;
 
-      private UserEditWindowDetailsTab(Resource imageResource, TextField base16ImageTextField) {
+      private UserEditWindowDetailsTab(Resource imageResource, TextField base64ImageTextField) {
          setMargin(true);
 
          Stream.<Component>of(name, birthDate, organizationRole, organizationGroup, cardCode, supervisor)
@@ -87,7 +87,7 @@ public class UserFormView extends FieldLayout<User> {
          var layoutRight = new VerticalLayout();
          layoutRight.setMargin(false);
          layoutRight.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
-         layoutRight.addComponents(cardCode, createUploader(base16ImageTextField, layoutRight));
+         layoutRight.addComponents(cardCode, createUploader(base64ImageTextField, layoutRight));
 
          addComponents(layoutLeft, layoutRight);
          updateUserPhoto(imageResource, layoutRight);
@@ -95,9 +95,9 @@ public class UserFormView extends FieldLayout<User> {
       }
 
       private Upload createUploader(TextField imageTextField, VerticalLayout layout) {
-         var uploadReceiver = new UserFormViewImageUploader((newImage, base16ImageString) -> {
+         var uploadReceiver = new UserFormViewImageUploader((newImage, base64ImageString) -> {
             updateUserPhoto(newImage, layout);
-            imageTextField.setValue(base16ImageString);
+            imageTextField.setValue(base64ImageString);
          });
          Upload imageUploader = new Upload(null, uploadReceiver);
          imageUploader.setImmediateMode(true);

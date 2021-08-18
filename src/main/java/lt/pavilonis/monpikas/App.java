@@ -6,6 +6,7 @@ import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -59,7 +60,7 @@ public class App {
    }
 
    @Bean
-   public ReloadableResourceBundleMessageSource messageSource() {
+   public MessageSource messageSource() {
       var messageSource = new ReloadableResourceBundleMessageSource();
       messageSource.setUseCodeAsDefaultMessage(true);
       messageSource.setBasename("classpath:lang/messages");

@@ -6,13 +6,13 @@ import com.vaadin.ui.Upload;
 import lt.pavilonis.monpikas.common.util.ImageUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.crypto.codec.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Base64;
 import java.util.function.BiConsumer;
 
 public class UserFormViewImageUploader implements Upload.Receiver, Upload.SucceededListener {
@@ -20,7 +20,6 @@ public class UserFormViewImageUploader implements Upload.Receiver, Upload.Succee
    private static final Logger LOGGER = LoggerFactory.getLogger(UserFormViewImageUploader.class);
    private final BiConsumer<Resource, String> imageResourceConsumer;
    private ByteArrayOutputStream baos;
-   private byte[] scaledImageBytes;
 
    public UserFormViewImageUploader(BiConsumer<Resource, String> imageResourceConsumer) {
       this.imageResourceConsumer = imageResourceConsumer;
@@ -34,12 +33,12 @@ public class UserFormViewImageUploader implements Upload.Receiver, Upload.Succee
    @Override
    public void uploadSucceeded(Upload.SucceededEvent event) {
       byte[] bytes = baos.toByteArray();
-      scaledImageBytes = ImageUtils.scale(bytes, 500, 500);
+      byte[] scaledImageBytes = ImageUtils.scale(bytes, 500, 500);
 
       var imageResource = new StreamResource(() -> new ByteArrayInputStream(scaledImageBytes), "img.png");
-      String base16ImageString = new String(Hex.encode(bytes));
+      String base64ImageString = Base64.getEncoder().encodeToString(bytes);
 
-      imageResourceConsumer.accept(imageResource, base16ImageString);
+      imageResourceConsumer.accept(imageResource, base64ImageString);
       close(baos);
    }
 
@@ -51,9 +50,5 @@ public class UserFormViewImageUploader implements Upload.Receiver, Upload.Succee
             LOGGER.error("Could not close stream", e);
          }
       }
-   }
-
-   public byte[] getScaledImageBytes() {
-      return scaledImageBytes;
    }
 }
