@@ -2,7 +2,6 @@ package lt.pavilonis.monpikas.security;
 
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.ui.filter.IdTextFilter;
-import org.apache.commons.lang3.NotImplementedException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -20,7 +19,7 @@ public class RoleRepository implements EntityRepository<Role, Long, IdTextFilter
 
    @Override
    public Role saveOrUpdate(Role entity) {
-      throw new NotImplementedException("not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
@@ -35,12 +34,12 @@ public class RoleRepository implements EntityRepository<Role, Long, IdTextFilter
 
    @Override
    public Optional<Role> find(Long aLong) {
-      throw new NotImplementedException("not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
    public void delete(Long aLong) {
-      throw new NotImplementedException("not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override

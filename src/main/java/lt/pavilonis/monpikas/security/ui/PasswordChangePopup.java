@@ -9,7 +9,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import lt.pavilonis.monpikas.App;
 import lt.pavilonis.monpikas.common.field.AButton;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import java.util.function.Consumer;
 
@@ -23,12 +23,12 @@ public class PasswordChangePopup extends Window {
       AButton buttonAccept = new AButton(getClass(), "accept")
             .withClickListener(click -> {
                String value = passwordField.getValue();
-               if (StringUtils.isBlank(value)) {
-                  Notification.show(App.translate(getClass(), "passwordMayNotBeEmpty"));
-               } else {
+               if (StringUtils.hasText(value)) {
                   newPasswordConsumer.accept(value);
                   close();
                   Notification.show(App.translate("saved"), Notification.Type.TRAY_NOTIFICATION);
+               } else {
+                  Notification.show(App.translate(getClass(), "passwordMayNotBeEmpty"));
                }
             })
             .withIcon(VaadinIcons.CHECK);

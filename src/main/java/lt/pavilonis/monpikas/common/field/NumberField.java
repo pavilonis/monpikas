@@ -3,8 +3,7 @@ package lt.pavilonis.monpikas.common.field;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
 import com.vaadin.ui.TextField;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
+import org.springframework.util.StringUtils;
 
 public class NumberField extends CustomField<Integer> {
 
@@ -24,14 +23,10 @@ public class NumberField extends CustomField<Integer> {
    public Integer getValue() {
       String value = textField.getValue();
 
-      if (StringUtils.isBlank(value)) {
+      if (!StringUtils.hasText(value)) {
          return null;
-
-      } else if (NumberUtils.isDigits(value)) {
-         return Integer.valueOf(value);
-
-      } else {
-         throw new RuntimeException("Could not parse integer value: " + value);
       }
+
+      return Integer.valueOf(value);
    }
 }

@@ -1,13 +1,13 @@
 package lt.pavilonis.monpikas.user;
 
 import lt.pavilonis.monpikas.common.util.QueryUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -78,7 +78,7 @@ public class UserRepository {
 
    private Map<String, Object> collectParams(User user) {
       Long supervisorId = user.getSupervisor() == null ? null : user.getSupervisor().getId();
-      String photo = StringUtils.isNotBlank(user.getBase64photo()) ? user.getBase64photo() : null;
+      String photo = StringUtils.hasText(user.getBase64photo()) ? user.getBase64photo() : null;
 
       var params = new HashMap<String, Object>();
       params.put("id", user.getId());

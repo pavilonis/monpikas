@@ -1,14 +1,14 @@
 package lt.pavilonis.monpikas.key;
 
-import lt.pavilonis.monpikas.scanlog.Scanner;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
-import org.apache.commons.lang3.StringUtils;
+import lt.pavilonis.monpikas.scanlog.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,9 +20,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 import static lt.pavilonis.monpikas.common.util.TimeUtils.duration;
-import static org.apache.commons.lang3.StringUtils.EMPTY;
+import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 
 @Repository
 public class KeyRepository {
@@ -144,7 +143,7 @@ public class KeyRepository {
    }
 
    private String whereSection(Long userId, String cardCode, Integer keyNumber, Long scannerId) {
-      String result = scannerId == null ? EMPTY : ("k2.scanner_id = " + scannerId);
+      String result = scannerId == null ? "" : ("k2.scanner_id = " + scannerId);
       result = addCheck("k2.keyNumber", keyNumber, result);
       result = addCheck("u2.id", userId, result);
       result = addCheck("u2.cardCode", cardCode, result);
@@ -212,12 +211,12 @@ public class KeyRepository {
 
       LOGGER.info(
             "Loaded log [periodStart={}, periodEnd={}, scannerId={}, key={}, action={}, name={}, size={}, t={}]",
-            periodStart == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
-            periodEnd == null ? EMPTY : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),
-            scannerId == null ? EMPTY : scannerId,
-            keyNumber == null ? EMPTY : keyNumber,
-            keyAction == null ? EMPTY : keyAction.name(),
-            StringUtils.stripToEmpty(nameLike),
+            periodStart == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodStart),
+            periodEnd == null ? "" : DateTimeFormatter.ISO_LOCAL_DATE.format(periodEnd),
+            scannerId == null ? "" : scannerId,
+            keyNumber == null ? "" : keyNumber,
+            keyAction == null ? "" : keyAction.name(),
+            StringUtils.hasText(nameLike) ? nameLike.strip() : null,
             result.size(),
             duration(opStart)
       );

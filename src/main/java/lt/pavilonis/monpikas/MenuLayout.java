@@ -9,6 +9,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.themes.ValoTheme;
+import org.springframework.boot.info.BuildProperties;
 
 import java.util.Collection;
 import java.util.List;
@@ -19,14 +20,10 @@ import static java.util.stream.Collectors.toList;
 
 public class MenuLayout extends CssLayout {
 
-   private static final String PROPERTY_VERSION = ResourceBundle
-         .getBundle("application")
-         .getString("application.version");
-
-   public MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure) {
+   public MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure, BuildProperties buildProperties) {
 
       var menuItemsLayout = new MenuItemsLayout(menuStructure, navigator);
-      addComponents(createMenuHeader(), createUserSettings(), menuItemsLayout);
+      addComponents(createMenuHeader(buildProperties), createUserSettings(), menuItemsLayout);
 
       List<MenuItem> menuItems = menuStructure.values().stream()
             .flatMap(Collection::stream)
@@ -47,11 +44,11 @@ public class MenuLayout extends CssLayout {
       return settings;
    }
 
-   private HorizontalLayout createMenuHeader() {
+   private HorizontalLayout createMenuHeader(BuildProperties buildProperties) {
       var title = new Label("" +
             "<h3><strong>Monpikas</strong> " +
             "  <span style='color:darkgrey'>" +
-            "     " + "v" + PROPERTY_VERSION +
+            "     " + "v" + buildProperties.getVersion() +
             "  </span>" +
             "</h3>", ContentMode.HTML
       );

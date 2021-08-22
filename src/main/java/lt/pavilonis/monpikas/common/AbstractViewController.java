@@ -2,8 +2,8 @@ package lt.pavilonis.monpikas.common;
 
 import com.vaadin.navigator.View;
 import com.vaadin.ui.Component;
-import org.apache.commons.lang3.StringUtils;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public abstract class AbstractViewController implements MenuItemViewProvider {
@@ -47,7 +47,7 @@ public abstract class AbstractViewController implements MenuItemViewProvider {
 
    @Override
    public String getViewName(String viewAndParameters) {
-      return StringUtils.equals(viewAndParameters, getViewName())
+      return Objects.equals(viewAndParameters, getViewName())
             ? viewAndParameters
             : null;
    }

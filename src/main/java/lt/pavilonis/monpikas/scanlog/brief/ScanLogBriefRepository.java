@@ -6,11 +6,10 @@ import lt.pavilonis.monpikas.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
 import lt.pavilonis.monpikas.common.util.TimeUtils;
 import lt.pavilonis.monpikas.scanlog.ScanLogRepository;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,27 +29,27 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
 
    @Override
    public ScanLogBrief saveOrUpdate(ScanLogBrief entity) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
    public List<ScanLogBrief> load() {
-      throw new NotImplementedException("Not needed yet");
+      throw new IllegalStateException("Not implemented - not needed yet");
    }
 
    @Override
    public List<ScanLogBrief> load(ScanLogBriefFilter scanLogBriefFilter) {
-      throw new NotImplementedException("Not needed yet");
+      throw new IllegalStateException("Not implemented - not needed yet");
    }
 
    @Override
    public Optional<ScanLogBrief> find(Void aVoid) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
    public void delete(Void aVoid) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
@@ -88,11 +87,11 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
                   action,
                   DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodStart()),
                   filter.getPeriodEnd() == null
-                        ? StringUtils.EMPTY
+                        ? ""
                         : DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodEnd()),
-                  StringUtils.stripToEmpty(filter.getText()),
+                  StringUtils.hasText(filter.getText()) ? filter.getText() : null,
                   filter.getScannerId(),
-                  StringUtils.stripToEmpty(filter.getRole()),
+                  StringUtils.hasText(filter.getRole()) ? filter.getRole() : null,
                   size,
                   TimeUtils.duration(opStart)
             );

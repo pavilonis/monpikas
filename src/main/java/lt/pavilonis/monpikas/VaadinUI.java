@@ -8,12 +8,13 @@ import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
 import lt.pavilonis.monpikas.common.MenuItemViewProvider;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -34,10 +35,12 @@ public class VaadinUI extends UI {
    private static final Logger LOGGER = LoggerFactory.getLogger(VaadinUI.class);
    private final List<MenuItemViewProvider> viewProviders;
    private final RootLayout rootLayout;
+   private final BuildProperties buildProperties;
 
-   public VaadinUI(List<MenuItemViewProvider> viewProviders, RootLayout rootLayout) {
+   public VaadinUI(List<MenuItemViewProvider> viewProviders, RootLayout rootLayout, BuildProperties buildProperties) {
       this.viewProviders = viewProviders;
       this.rootLayout = rootLayout;
+      this.buildProperties = buildProperties;
    }
 
    @Override
@@ -47,11 +50,11 @@ public class VaadinUI extends UI {
       viewProviders.forEach(navigator::addProvider);
 
       Map<String, List<MenuItem>> menuStructure = createMenuStructure();
-      rootLayout.addMenu(new MenuLayout(navigator, menuStructure));
+      rootLayout.addMenu(new MenuLayout(navigator, menuStructure, buildProperties));
       setContent(rootLayout);
 
       String fragment = Page.getCurrent().getUriFragment();
-      if (StringUtils.isBlank(fragment)) {
+      if (!StringUtils.hasText(fragment)) {
          navigator.navigateTo("dashboard");
       }
       getPage().setTitle("Monpikas");

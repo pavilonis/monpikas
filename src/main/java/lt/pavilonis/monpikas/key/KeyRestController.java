@@ -2,14 +2,12 @@ package lt.pavilonis.monpikas.key;
 
 import lt.pavilonis.monpikas.user.User;
 import lt.pavilonis.monpikas.user.UserRepository;
-import org.apache.commons.lang3.EnumUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -100,14 +98,27 @@ public class KeyRestController {
    }
 
    private KeyAction parseKeyAction(String keyAction) {
-      return StringUtils.isNotBlank(keyAction) && EnumUtils.isValidEnum(KeyAction.class, keyAction)
-            ? KeyAction.valueOf(keyAction)
-            : null;
+      if (!StringUtils.hasText(keyAction)) {
+         return null;
+      }
+      try {
+         return KeyAction.valueOf(keyAction);
+
+      } catch (IllegalArgumentException e) {
+         LOGGER.error("Could not parse enum", e);
+         return null;
+      }
    }
 
    private Integer parseInteger(String keyNumber) {
-      return NumberUtils.isDigits(keyNumber)
-            ? Integer.parseInt(keyNumber)
-            : null;
+      if (!StringUtils.hasText(keyNumber)) {
+         return null;
+      }
+      try {
+         return Integer.parseInt(keyNumber);
+      } catch (NumberFormatException e) {
+         LOGGER.error("Could not parse number", e);
+         return null;
+      }
    }
 }

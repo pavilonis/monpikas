@@ -2,8 +2,6 @@ package lt.pavilonis.monpikas.security;
 
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.security.ui.SystemUserFilter;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -15,6 +13,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -55,7 +54,7 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
    @Override
    @Transactional
    public SystemUser saveOrUpdate(SystemUser user) {
-      if (StringUtils.isBlank(user.getUsername())) {
+      if (!StringUtils.hasText(user.getUsername())) {
          throw new IllegalArgumentException("no username");
       }
       return user.getId() == null
@@ -112,7 +111,7 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
 
    @Override
    public List<SystemUser> load() {
-      throw new NotImplementedException("Not needed yet");
+      throw new IllegalStateException("Not implemented - not needed yet");
    }
 
    @Override
@@ -120,8 +119,8 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
       var start = now();
       var args = new HashMap<String, Object>();
       args.put("id", filter.getId());
-      args.put("username", StringUtils.stripToNull(filter.getUsername()));
-      args.put("text", StringUtils.isBlank(filter.getText()) ? null : "%" + filter.getText() + "%");
+      args.put("username", StringUtils.hasText(filter.getUsername()) ? filter.getUsername().strip() : null);
+      args.put("text", StringUtils.hasText(filter.getText()) ? "%" + filter.getText() + "%" : null);
       var sql = "SELECT u.*, r.* " +
             "FROM SystemUser u " +
             "  LEFT JOIN UserRole ur ON ur.user_id = u.id " +

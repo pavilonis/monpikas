@@ -1,6 +1,6 @@
 package lt.pavilonis.monpikas.common.util;
 
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import java.sql.Date;
 import java.sql.ResultSet;
@@ -10,9 +10,9 @@ import java.time.LocalDate;
 public class QueryUtils {
 
    public static String likeArg(String value) {
-      return StringUtils.isBlank(value)
-            ? null
-            : "%" + value + "%";
+      return StringUtils.hasText(value)
+            ? "%" + value + "%"
+            : null;
    }
 
    public static long argOffset(Integer value) {

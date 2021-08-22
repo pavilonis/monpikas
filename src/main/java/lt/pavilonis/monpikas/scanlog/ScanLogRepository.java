@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.scanlog;
 
+import lt.pavilonis.monpikas.common.util.QueryUtils;
 import lt.pavilonis.monpikas.key.Key;
 import lt.pavilonis.monpikas.key.KeyRepository;
 import lt.pavilonis.monpikas.scanlog.brief.ScanLogBrief;
@@ -7,14 +8,13 @@ import lt.pavilonis.monpikas.scanlog.brief.ScanLogBriefFilter;
 import lt.pavilonis.monpikas.scanlog.brief.ScanLogBriefMapper;
 import lt.pavilonis.monpikas.user.User;
 import lt.pavilonis.monpikas.user.UserRepository;
-import lt.pavilonis.monpikas.common.util.QueryUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.HashMap;
 import java.util.List;
@@ -126,7 +126,7 @@ public class ScanLogRepository {
       args.put("periodStart", filter.getPeriodStart());
       args.put("periodEnd", filter.getPeriodEnd());
       args.put("scannerId", filter.getScannerId());
-      args.put("role", StringUtils.stripToNull(filter.getRole()));
+      args.put("role", StringUtils.hasText(filter.getRole()) ? filter.getRole().strip() : null);
       args.put("text", QueryUtils.likeArg(filter.getText()));
       return args;
    }

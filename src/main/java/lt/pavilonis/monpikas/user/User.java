@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.user;
 
 import lt.pavilonis.monpikas.common.Named;
-import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
@@ -96,7 +96,7 @@ public class User extends Named<Long> {
             ", group='" + organizationGroup + '\'' +
             ", role='" + organizationRole + '\'' +
             ", birthDate='" + birthDate + '\'' +
-            ", photoBase64='" + (StringUtils.isBlank(base64photo) ? "absent" : "present") + '\'' +
+            ", photoBase64='" + (StringUtils.hasText(base64photo) ? "present" : "absent") + '\'' +
             ", supervisor='" + (supervisor == null ? null : supervisor.getName()) + '\'';
    }
 }

@@ -6,9 +6,9 @@ import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
 import lt.pavilonis.monpikas.App;
 import lt.pavilonis.monpikas.common.service.MessageSourceAdapter;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

@@ -2,10 +2,8 @@ package lt.pavilonis.monpikas.key;
 
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.key.ui.KeyListFilter;
-import org.apache.commons.lang3.NotImplementedException;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,18 +21,18 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
 
    @Override
    public Key saveOrUpdate(Key ignored) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
    public List<Key> load() {
-      throw new NotImplementedException("Not needed yet");
+      throw new IllegalStateException("Not implemented - not needed yet");
    }
 
    @Override
    public List<Key> load(KeyListFilter filter) {
       String text = filter.getText();
-      boolean filterByNumber = NumberUtils.isCreatable(text);
+      Integer number = parseNumber(text);
       Long scannerId = filter.getScannerId();
 
       if (filter.isLogMode()) {
@@ -42,36 +40,47 @@ public class KeyListRepository implements EntityRepository<Key, Integer, KeyList
                filter.getPeriodStart(),
                filter.getPeriodEnd(),
                scannerId,
-               filterByNumber ? Integer.parseInt(text) : null,
+               number,
                null, //TODO add key action to filter
-               filterByNumber ? null : text
+               number == null ? text : null
          );
       }
 
-      if (filterByNumber) {
-         return repository.loadActive(scannerId, null, null, Integer.parseInt(text));
+      if (number != null) {
+         return repository.loadActive(scannerId, null, null, number);
       }
 
       List<Key> result = repository.loadActive(scannerId, null, null, null);
-
-      if (StringUtils.isBlank(text)) {
-         return result;
+      if (StringUtils.hasText(text)) {
+         var lowerCaseText = text.toLowerCase();
+         return result.stream()
+               .filter(key -> key.getUser().getName().toLowerCase().contains(lowerCaseText))
+               .collect(toList());
 
       } else {
-         return result.stream()
-               .filter(key -> StringUtils.containsIgnoreCase(key.getUser().getName(), text))
-               .collect(toList());
+         return result;
+      }
+   }
+
+   private Integer parseNumber(String text) {
+      if (!StringUtils.hasText(text)) {
+         return null;
+      }
+      try {
+         return Integer.parseInt(text);
+      } catch (NumberFormatException e) {
+         return null;
       }
    }
 
    @Override
    public Optional<Key> find(Integer ignored) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override
    public void delete(Integer ignored) {
-      throw new NotImplementedException("Not needed");
+      throw new IllegalStateException("Not implemented - not needed");
    }
 
    @Override

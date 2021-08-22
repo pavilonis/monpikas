@@ -2,9 +2,9 @@ package lt.pavilonis.monpikas;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CssLayout;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.StreamSupport;
 
 public class MenuViewChangeListener implements ViewChangeListener {
@@ -37,7 +37,7 @@ public class MenuViewChangeListener implements ViewChangeListener {
             .ifPresent(item -> {
                String caption = App.translate(item, item.getCodeName());
                StreamSupport.stream(menuItemsLayout.spliterator(), false)
-                     .filter(c -> StringUtils.equals(c.getCaption(), caption))
+                     .filter(c -> Objects.equals(c.getCaption(), caption))
                      .findAny()
                      .ifPresent(c -> c.setStyleName(STYLE_SELECTED));
             });

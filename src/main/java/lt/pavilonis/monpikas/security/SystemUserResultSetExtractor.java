@@ -1,8 +1,8 @@
 package lt.pavilonis.monpikas.security;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.ResultSetExtractor;
+import org.springframework.util.StringUtils;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -41,8 +41,8 @@ public final class SystemUserResultSetExtractor implements ResultSetExtractor<Li
       return new ArrayList<>(result.values());
    }
 
-   protected void maybeAddRole(SystemUser user, Long id, String roleName) {
-      if (StringUtils.isBlank(roleName)) {
+   private void maybeAddRole(SystemUser user, Long id, String roleName) {
+      if (!StringUtils.hasText(roleName)) {
          return;
       }
 

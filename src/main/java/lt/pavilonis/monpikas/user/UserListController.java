@@ -16,9 +16,7 @@ import lt.pavilonis.monpikas.common.ListGrid;
 import lt.pavilonis.monpikas.common.Named;
 import lt.pavilonis.monpikas.common.ui.filter.FilterPanel;
 import lt.pavilonis.monpikas.user.form.UserFormView;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.crypto.codec.Hex;
 
 import java.io.ByteArrayInputStream;
 import java.util.Base64;
