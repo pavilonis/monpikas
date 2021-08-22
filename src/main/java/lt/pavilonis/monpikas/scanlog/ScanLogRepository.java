@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.scanlog;
 
 import lt.pavilonis.monpikas.common.util.QueryUtils;
+import lt.pavilonis.monpikas.common.util.TimeUtils;
 import lt.pavilonis.monpikas.key.Key;
 import lt.pavilonis.monpikas.key.KeyRepository;
 import lt.pavilonis.monpikas.scanlog.brief.ScanLogBrief;
@@ -16,11 +17,18 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
+import static java.time.LocalDateTime.now;
 import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 
 @Repository
@@ -129,5 +137,60 @@ public class ScanLogRepository {
       args.put("role", StringUtils.hasText(filter.getRole()) ? filter.getRole().strip() : null);
       args.put("text", QueryUtils.likeArg(filter.getText()));
       return args;
+   }
+
+   public List<ScanLogBrief> loadLastUserLocations(String text) {
+      var start = now();
+      Map<String, Object> args = new HashMap<>();
+      args.put("text", QueryUtils.likeArg(text));
+      args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
+
+      List<ScanLogBrief> result = jdbc.query(
+            "SELECT " +
+                  "  sl.dateTime, " +
+                  "  u.cardCode, " +
+                  "  u.name, " +
+                  "  u.organizationGroup, " +
+                  "  u.organizationRole, " +
+                  "  sv.name AS supervisor, " +
+                  "  s.name AS scannerName " +
+                  "FROM ScanLog sl " +
+                  "  JOIN User u ON u.id = sl.user_id " +
+                  "  LEFT JOIN User sv ON sv.id = u.supervisor_id " +
+                  "  JOIN Scanner s ON s.id = sl.scanner_id " +
+                  "WHERE sl.dateTime > :today " +
+                  "  AND (:text IS NULL OR u.name LIKE :text OR s.name LIKE :text)",
+            args,
+            new ScanLogBriefMapper()
+      );
+
+      List<ScanLogBrief> filteredResult = result
+            .stream()
+            .collect(Collectors.groupingBy(ScanLogBrief::getName))
+            .values()
+            .stream()
+            .flatMap(this::composeUserLogs)
+            .collect(Collectors.toList());
+
+      LOGGER.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
+            text, result.size(), filteredResult.size(), TimeUtils.duration(start));
+
+      return filteredResult;
+   }
+
+   protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
+      return groupedByName
+            .stream()
+            .collect(Collectors.groupingBy(ScanLogBrief::getScanner))
+            .values()
+            .stream()
+            // Taking single latest entry for location user was in
+            .map(groupedByLocation -> groupedByLocation
+                  .stream()
+                  .max(Comparator.comparing(ScanLogBrief::getDateTime))
+                  .orElseThrow(RuntimeException::new)
+            )
+            .sorted(Comparator.comparing(ScanLogBrief::getDateTime).reversed())
+            .limit(3);
    }
 }

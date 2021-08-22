@@ -1,11 +1,16 @@
 package lt.pavilonis.monpikas.scanlog;
 
+import lt.pavilonis.monpikas.scanlog.brief.ScanLogBrief;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RequestMapping("/rest/scanlog")
 @RestController
@@ -26,5 +31,10 @@ public class ScanLogRestController {
       return result == null
             ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
             : ResponseEntity.ok().body(result);
+   }
+
+   @GetMapping("/lastseen")
+   public List<ScanLogBrief> loadBriefLog(@RequestParam(required = false) String text) {
+      return scanLogRepository.loadLastUserLocations(text);
    }
 }
