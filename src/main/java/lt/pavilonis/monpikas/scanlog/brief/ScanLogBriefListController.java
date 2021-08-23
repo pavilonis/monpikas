@@ -4,7 +4,7 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
-import lt.pavilonis.monpikas.scanlog.ScannerRepository;
+import lt.pavilonis.monpikas.scanner.ScannerRepository;
 import lt.pavilonis.monpikas.user.UserRepository;
 import lt.pavilonis.monpikas.common.AbstractListController;
 import lt.pavilonis.monpikas.common.EntityRepository;
@@ -37,7 +37,7 @@ public class ScanLogBriefListController extends AbstractListController<ScanLogBr
    protected FilterPanel<ScanLogBriefFilter> createFilterPanel() {
       return new ScanLogBriefFilterPanel(
             userRepository.loadRoles(),
-            scannerRepository.loadAll()
+            scannerRepository.load()
       );
    }
 

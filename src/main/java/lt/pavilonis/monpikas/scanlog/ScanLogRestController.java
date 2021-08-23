@@ -16,6 +16,8 @@ import java.util.List;
 @RestController
 public class ScanLogRestController {
 
+   // This constant should not change as it is used on client side
+   private static final String UNKNOWN_USER = "Unknown user";
    private final ScanLogRepository scanLogRepository;
 
    public ScanLogRestController(ScanLogRepository scanLogRepository) {
@@ -23,13 +25,12 @@ public class ScanLogRestController {
    }
 
    @PostMapping("/{scannerId}/{cardCode}")
-   public ResponseEntity<ScanLog> writeLog(@PathVariable long scannerId,
-                                           @PathVariable String cardCode) {
+   public ResponseEntity<?> writeLog(@PathVariable long scannerId, @PathVariable String cardCode) {
 
       ScanLog result = scanLogRepository.store(scannerId, cardCode);
 
       return result == null
-            ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(null)
+            ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(UNKNOWN_USER + " " + cardCode)
             : ResponseEntity.ok().body(result);
    }
 

@@ -4,13 +4,13 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
-import lt.pavilonis.monpikas.key.Key;
-import lt.pavilonis.monpikas.key.KeyListRepository;
-import lt.pavilonis.monpikas.scanlog.ScannerRepository;
 import lt.pavilonis.monpikas.common.AbstractListController;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.ListGrid;
 import lt.pavilonis.monpikas.common.ui.filter.FilterPanel;
+import lt.pavilonis.monpikas.key.Key;
+import lt.pavilonis.monpikas.key.KeyListRepository;
+import lt.pavilonis.monpikas.scanner.ScannerRepository;
 
 import java.util.Optional;
 
@@ -33,7 +33,7 @@ public class KeyListController extends AbstractListController<Key, Integer, KeyL
 
    @Override
    protected FilterPanel<KeyListFilter> createFilterPanel() {
-      return new KeyListFilterPanel(scannerRepository.loadAll());
+      return new KeyListFilterPanel(scannerRepository.load());
    }
 
    @Override

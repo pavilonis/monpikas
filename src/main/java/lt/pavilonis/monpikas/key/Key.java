@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.key;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import lt.pavilonis.monpikas.scanlog.Scanner;
+import lt.pavilonis.monpikas.scanner.Scanner;
 import lt.pavilonis.monpikas.user.User;
 import lt.pavilonis.monpikas.common.Identified;
 

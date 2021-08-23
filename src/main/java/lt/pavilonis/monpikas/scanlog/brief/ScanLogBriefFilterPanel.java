@@ -6,10 +6,11 @@ import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.monpikas.App;
+import lt.pavilonis.monpikas.common.Named;
 import lt.pavilonis.monpikas.common.field.ATextField;
 import lt.pavilonis.monpikas.common.ui.filter.IdPeriodFilter;
 import lt.pavilonis.monpikas.common.ui.filter.PeriodFilterPanel;
-import lt.pavilonis.monpikas.scanlog.Scanner;
+import lt.pavilonis.monpikas.scanner.Scanner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -23,7 +24,7 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
 
    public ScanLogBriefFilterPanel(List<String> roles, List<Scanner> scanners) {
       scannerCombo.setItems(scanners);
-      scannerCombo.setItemCaptionGenerator(scanner -> App.translate(scanner.getClass(), scanner.getName()));
+      scannerCombo.setItemCaptionGenerator(Named::getName);
       roleCombo.setItems(roles);
    }
 

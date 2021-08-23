@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.key;
 
 import lt.pavilonis.monpikas.common.util.QueryUtils;
-import lt.pavilonis.monpikas.scanlog.Scanner;
+import lt.pavilonis.monpikas.scanner.Scanner;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;

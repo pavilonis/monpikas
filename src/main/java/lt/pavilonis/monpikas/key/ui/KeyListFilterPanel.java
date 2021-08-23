@@ -9,7 +9,7 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.monpikas.App;
-import lt.pavilonis.monpikas.scanlog.Scanner;
+import lt.pavilonis.monpikas.scanner.Scanner;
 import lt.pavilonis.monpikas.common.field.ACheckBox;
 import lt.pavilonis.monpikas.common.field.ATextField;
 import lt.pavilonis.monpikas.common.ui.filter.PeriodFilterPanel;
