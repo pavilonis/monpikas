@@ -105,6 +105,16 @@
             </executions>
          </plugin>
       </plugins>
+      <!-- Resources help to manage css and js files -->
+      <resources>
+         <resource>
+            <directory>src/main/resources</directory>
+            <filtering>true</filtering>
+         </resource>
+         <resource>
+            <directory>src/main/webapp</directory>
+         </resource>
+      </resources>
    </build>
 
    <repositories>

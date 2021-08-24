@@ -88,7 +88,7 @@ public class UserRepository {
       params.put("role", user.getOrganizationRole());
       params.put("birthDate", user.getBirthDate());
       params.put("supervisorId", supervisorId);
-      params.put("base64photo", photo);
+      params.put("photo", photo);
       params.put("now", now());
       return params;
    }
@@ -135,7 +135,7 @@ public class UserRepository {
             "  organizationRole = :role," +
             "  supervisor_id = :supervisorId," +
             "  cardCode = :cardCode," +
-            "  photo = :base64photo " +
+            "  photo = :photo " +
             "WHERE id = :id";
 
       jdbc.update(sql, collectParams(user));
