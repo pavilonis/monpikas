@@ -10,6 +10,7 @@ services:
     ports:
       - "3306:3306"
     environment:
+      - TZ=Europe/Vilnius
       - MYSQL_ROOT_PASSWORD=1234
     restart: always
 
@@ -26,5 +27,6 @@ services:
     links:
       - "db-mysql8:database"
     environment:
+      - TZ=Europe/Vilnius
       - "JAVA_OPTS=-Dserver.port=8080 -Djdbc.url=jdbc:mysql://db-mysql8:3306/monpikas -Djdbc.username=root -Djdbc.password=1234 -Dlogging.level=INFO -Duser.supervisor.organizationRole=Teacher -Dkey-store-password=SorostaKnistineti -Dkey-store-type=JKS -Dkey-store-file=keystore/reg.taekwondo.lt.jks"
     restart: always
