@@ -18,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -67,6 +66,8 @@ public class ScanLogRepository {
             "SELECT " +
                   "  sl.dateTime, " +
                   "  u.id, " +
+                  "  u.created, " +
+                  "  u.updated, " +
                   "  u.cardCode, " +
                   "  u.name, " +
                   "  u.birthDate, " +
@@ -83,7 +84,7 @@ public class ScanLogRepository {
             (rs, i) -> {
                User user = USER_MAPPER.mapRow(rs);
                List<Key> keys = keyRepository.loadActive(scannerId, rs.getLong("id"), null, null);
-               return new ScanLog(rs.getTimestamp("dateTime").toLocalDateTime(), user, keys);
+               return new ScanLog(QueryUtils.getLocalDateTime(rs, "dateTime"), user, keys);
             }
       );
    }

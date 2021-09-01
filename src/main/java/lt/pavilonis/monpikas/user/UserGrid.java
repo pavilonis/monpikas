@@ -14,7 +14,7 @@ final class UserGrid extends ListGrid<User> {
 
    @Override
    protected List<String> columnOrder() {
-      return List.of("id", "cardCode", "name", "organizationRole", "organizationGroup", "supervisor");
+      return List.of("id", "created", "updated", "cardCode", "name", "organizationRole", "organizationGroup", "supervisor");
    }
 
    @Override
@@ -31,6 +31,6 @@ final class UserGrid extends ListGrid<User> {
 
    @Override
    protected List<String> columnsToCollapse() {
-      return List.of("cardCode");
+      return List.of("cardCode", "created", "updated");
    }
 }

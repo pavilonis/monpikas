@@ -5,8 +5,13 @@ import org.springframework.util.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class User extends Named<Long> {
+
+   private final LocalDateTime created;
+
+   private final LocalDateTime updated;
 
    @NotNull
    private String cardCode;
@@ -21,18 +26,26 @@ public class User extends Named<Long> {
 
    private User supervisor;
 
-   public User() {/**/}
+   public User() {
+      this.created = null;
+      this.updated = null;
+   }
 
    public User(long id, String name) {
       setId(id);
       setName(name);
+      this.created = null;
+      this.updated = null;
    }
 
-   public User(Long id, String cardCode, String name, String organizationGroup,
-               String organizationRole, String base64photo, LocalDate birthDate, User supervisor) {
+   public User(Long id, LocalDateTime created, LocalDateTime updated, String cardCode,
+               String name, String organizationGroup, String organizationRole,
+               String base64photo, LocalDate birthDate, User supervisor) {
 
       setId(id);
       setName(name);
+      this.created = created;
+      this.updated = updated;
       this.cardCode = cardCode;
       this.organizationGroup = organizationGroup;
       this.organizationRole = organizationRole;
@@ -87,6 +100,14 @@ public class User extends Named<Long> {
 
    public void setSupervisor(User supervisor) {
       this.supervisor = supervisor;
+   }
+
+   public LocalDateTime getCreated() {
+      return created;
+   }
+
+   public LocalDateTime getUpdated() {
+      return updated;
    }
 
    @Override

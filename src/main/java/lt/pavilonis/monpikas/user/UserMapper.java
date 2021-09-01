@@ -12,6 +12,8 @@ public class UserMapper extends SimpleRowMapper<User> {
    public User mapRow(ResultSet rs, int rowNum) throws SQLException {
       return new User(
             rs.getLong("id"),
+            QueryUtils.getLocalDateTime(rs, "created"),
+            QueryUtils.getLocalDateTime(rs, "updated"),
             rs.getString("cardCode"),
             rs.getString("name"),
             rs.getString("organizationGroup"),

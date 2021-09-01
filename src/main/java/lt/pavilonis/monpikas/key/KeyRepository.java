@@ -66,6 +66,8 @@ public class KeyRepository {
             "  s.name AS scannerName, " +
             "  kl.assigned, " +
             "  u.id, " +
+            "  u.created, " +
+            "  u.updated, " +
             "  u.cardCode, " +
             "  u.name, " +
             "  u.birthDate, " +
@@ -103,6 +105,8 @@ public class KeyRepository {
             "     s.id AS scannerId, \n" +
             "     s.name AS scannerName, \n" +
             "     u.id, \n" +
+            "     u.created, \n" +
+            "     u.updated, \n" +
             "     u.cardCode, \n" +
             "     u.name, \n" +
             "     u.birthDate, \n" +
@@ -177,6 +181,8 @@ public class KeyRepository {
             "  k.keyNumber," +
             "  k.dateTime," +
             "  k.assigned, " +
+            "  u.created, " +
+            "  u.updated, " +
             "  u.id, " +
             "  u.cardCode, " +
             "  u.name, " +

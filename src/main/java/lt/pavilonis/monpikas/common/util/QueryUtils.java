@@ -5,7 +5,9 @@ import org.springframework.util.StringUtils;
 import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class QueryUtils {
 
@@ -34,5 +36,10 @@ public class QueryUtils {
    public static LocalDate getLocalDate(ResultSet rs, String property) throws SQLException {
       Date date = rs.getDate(property);
       return date == null ? null : date.toLocalDate();
+   }
+
+   public static LocalDateTime getLocalDateTime(ResultSet rs, String property) throws SQLException {
+      Timestamp timestamp = rs.getTimestamp(property);
+      return timestamp == null ? null : timestamp.toLocalDateTime();
    }
 }

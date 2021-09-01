@@ -89,7 +89,6 @@ public class UserRepository {
       params.put("birthDate", user.getBirthDate());
       params.put("supervisorId", supervisorId);
       params.put("photo", photo);
-      params.put("now", now());
       return params;
    }
 
@@ -129,6 +128,7 @@ public class UserRepository {
    public User update(User user) {
       var sql = "UPDATE User " +
             "SET " +
+            "  updated = NOW(), " +
             "  name = :name, " +
             "  birthDate = :birthDate, " +
             "  organizationGroup = :group, " +
@@ -151,6 +151,8 @@ public class UserRepository {
    private String selectUser(boolean withPhoto) {
       return "SELECT " +
             "  u.id, " +
+            "  u.created, " +
+            "  u.updated, " +
             "  u.cardCode, " +
             "  u.name, " +
             "  u.birthDate, " +
