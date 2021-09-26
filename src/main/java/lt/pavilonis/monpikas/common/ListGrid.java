@@ -27,7 +27,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
    private static final String PROPERTY_ID = "ID";
    protected final MessageSourceAdapter messages = App.context.getBean(MessageSourceAdapter.class);
-   private List<T> items = new ArrayList<>();
+   private final List<T> items = new ArrayList<>();
 
    public ListGrid(Class<T> type) {
       super(type);

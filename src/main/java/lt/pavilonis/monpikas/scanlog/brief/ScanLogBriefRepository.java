@@ -59,13 +59,14 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
 
    @Override
    public Optional<SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter>> lazyDataProvider(ScanLogBriefFilter filter) {
-      SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter> provider = new SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter>() {
+      var provider = new SizeConsumingBackendDataProvider<ScanLogBrief, ScanLogBriefFilter>() {
          @Override
          protected Stream<ScanLogBrief> fetchFromBackEnd(Query<ScanLogBrief, ScanLogBriefFilter> query) {
             LocalDateTime opStart = LocalDateTime.now();
 
             List<ScanLogBrief> result = scanLogRepository.loadBrief(
                   filter,
+                  query.getSortOrders(),
                   QueryUtils.argOffset(query.getOffset()),
                   QueryUtils.argLimit(query.getLimit())
             );

@@ -53,4 +53,17 @@ public class ScanLogBrief extends Identified<Void> {
    public String getSupervisor() {
       return supervisor;
    }
+
+   @Override
+   public String toString() {
+      return "ScanLogBrief{" +
+            "dateTime=" + dateTime +
+            ", scanner='" + scanner + '\'' +
+            ", cardCode='" + cardCode + '\'' +
+            ", name='" + name + '\'' +
+            ", group='" + group + '\'' +
+            ", role='" + role + '\'' +
+            ", supervisor='" + supervisor + '\'' +
+            '}';
+   }
 }

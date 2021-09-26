@@ -1,5 +1,7 @@
 package lt.pavilonis.monpikas.scanlog;
 
+import com.vaadin.data.provider.QuerySortOrder;
+import com.vaadin.shared.data.sort.SortDirection;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
 import lt.pavilonis.monpikas.common.util.TimeUtils;
 import lt.pavilonis.monpikas.key.Key;
@@ -34,16 +36,16 @@ import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 public class ScanLogRepository {
 
    private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogRepository.class);
-   private static final String FROM_WHERE_BLOCK = "" +
-         "FROM ScanLog sl " +
-         "  JOIN Scanner sc ON sc.id = sl.scanner_id " +
-         "  JOIN User u ON u.id = sl.user_id " +
-         "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
-         "WHERE sl.dateTime >= :periodStart " +
-         "  AND (:periodEnd IS NULL OR sl.dateTime <= :periodEnd) " +
-         "  AND (:scannerId IS NULL OR sc.id = :scannerId) " +
-         "  AND (:role IS NULL OR u.organizationRole = :role) " +
-         "  AND (:text IS NULL OR u.cardCode LIKE :text OR u.name LIKE :text)";
+   private static final String FROM_WHERE_BLOCK =
+         "FROM ScanLog sl \n" +
+               "  JOIN Scanner sc ON sc.id = sl.scanner_id \n" +
+               "  JOIN User u ON u.id = sl.user_id \n" +
+               "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id \n" +
+               "WHERE sl.dateTime >= :periodStart \n" +
+               "  AND (:periodEnd IS NULL OR sl.dateTime <= :periodEnd) \n" +
+               "  AND (:scannerId IS NULL OR sc.id = :scannerId) \n" +
+               "  AND (:role IS NULL OR u.organizationRole = :role) \n" +
+               "  AND (:text IS NULL OR u.cardCode LIKE :text OR u.name LIKE :text) \n";
 
    private final NamedParameterJdbcTemplate jdbc;
    private final KeyRepository keyRepository;
@@ -110,24 +112,34 @@ public class ScanLogRepository {
       return jdbc.queryForObject("SELECT COUNT(*) " + FROM_WHERE_BLOCK, commonArgs(filter), Integer.class);
    }
 
-   public List<ScanLogBrief> loadBrief(ScanLogBriefFilter filter, long offset, long limit) {
+   public List<ScanLogBrief> loadBrief(ScanLogBriefFilter filter, List<QuerySortOrder> sortOrders,
+                                       long offset, long limit) {
       Map<String, Object> args = commonArgs(filter);
       args.put("argOffset", offset);
       args.put("argLimit", limit);
 
-      var sql = "SELECT " +
-            "  sl.dateTime, " +
-            "  sc.name AS scannerName, " +
-            "  u.name, " +
-            "  u.cardCode," +
-            "  u.organizationGroup, " +
-            "  u.organizationRole, " +
-            "  supervisor.name AS supervisor " +
+      var sql = "SELECT \n" +
+            "  sl.dateTime as dateTime, \n" +
+            "  sc.name AS scanner, \n" +
+            "  u.name AS name, \n" +
+            "  u.cardCode AS cardCode, \n" +
+            "  u.organizationGroup AS `group`, \n" +
+            "  u.organizationRole AS role, \n" +
+            "  supervisor.name AS supervisor \n" +
             FROM_WHERE_BLOCK +
-            "ORDER BY sl.dateTime DESC " +
+            createOrder(sortOrders) + "\n" +
             "LIMIT :argLimit OFFSET :argOffset";
 
       return jdbc.query(sql, args, new ScanLogBriefMapper());
+   }
+
+   private String createOrder(List<QuerySortOrder> sortOrders) {
+      if (sortOrders.isEmpty()) {
+         return "ORDER BY dateTime DESC";
+      }
+      QuerySortOrder order = sortOrders.get(0);
+      return "ORDER BY `" + order.getSorted() + "`" +
+            (order.getDirection() == SortDirection.ASCENDING ? " ASC" : " DESC");
    }
 
    private Map<String, Object> commonArgs(ScanLogBriefFilter filter) {
@@ -151,10 +163,10 @@ public class ScanLogRepository {
                   "  sl.dateTime, " +
                   "  u.cardCode, " +
                   "  u.name, " +
-                  "  u.organizationGroup, " +
-                  "  u.organizationRole, " +
+                  "  u.organizationGroup AS `group`, " +
+                  "  u.organizationRole AS role, " +
                   "  sv.name AS supervisor, " +
-                  "  s.name AS scannerName " +
+                  "  s.name AS scanner " +
                   "FROM ScanLog sl " +
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User sv ON sv.id = u.supervisor_id " +
