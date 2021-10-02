@@ -41,14 +41,10 @@ public class UserListRepository implements EntityRepository<User, Long, UserFilt
 
    @Override
    public Optional<SizeConsumingBackendDataProvider<User, UserFilter>> lazyDataProvider(UserFilter filter) {
-      SizeConsumingBackendDataProvider<User, UserFilter> provider = new SizeConsumingBackendDataProvider<User, UserFilter>() {
+      var provider = new SizeConsumingBackendDataProvider<User, UserFilter>() {
          @Override
          protected Stream<User> fetchFromBackEnd(Query<User, UserFilter> query) {
-            List<User> result = load(
-                  filter
-                        .withOffset(query.getOffset())
-                        .withLimit(query.getLimit())
-            );
+            List<User> result = load(filter.withQuery(query));
             return result.stream();
          }
 

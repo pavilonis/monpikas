@@ -28,6 +28,6 @@ public class UserMapper extends SimpleRowMapper<User> {
       Long supervisorId = (Long) rs.getObject("supervisorId");
       return supervisorId == null
             ? null
-            : new User(supervisorId, rs.getString("supervisorName"));
+            : new User(supervisorId, rs.getString("supervisor"));
    }
 }

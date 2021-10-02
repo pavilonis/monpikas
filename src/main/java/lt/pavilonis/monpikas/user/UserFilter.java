@@ -1,12 +1,13 @@
 package lt.pavilonis.monpikas.user;
 
-public class UserFilter {
+import com.vaadin.data.provider.Query;
+
+final class UserFilter {
 
    private final String name;
    private final String role;
    private final String group;
-   private Integer offset;
-   private Integer limit;
+   private Query<User, UserFilter> query;
 
    public UserFilter(String name, String role, String group) {
       this.name = name;
@@ -27,20 +28,19 @@ public class UserFilter {
    }
 
    public Integer getOffset() {
-      return offset;
+      return query == null ? null : query.getOffset();
    }
 
    public Integer getLimit() {
-      return limit;
+      return query == null ? null : query.getLimit();
    }
 
-   public UserFilter withOffset(int offset) {
-      this.offset = offset;
+   public UserFilter withQuery(Query<User, UserFilter> query) {
+      this.query = query;
       return this;
    }
 
-   public UserFilter withLimit(int limit) {
-      this.limit = limit;
-      return this;
+   public Query<User, UserFilter> getQuery() {
+      return query;
    }
 }

@@ -12,8 +12,7 @@ public class PresenceTime extends Identified<Void> {
    private final LocalTime endTime;
    private final double hourDifference;
 
-   public PresenceTime(LocalDate date, LocalTime startTime,
-                       LocalTime endTime, double hourDifference) {
+   PresenceTime(LocalDate date, LocalTime startTime, LocalTime endTime, double hourDifference) {
       this.date = date;
       this.startTime = startTime;
       this.endTime = endTime;

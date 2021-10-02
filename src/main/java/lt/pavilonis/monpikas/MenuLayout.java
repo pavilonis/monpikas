@@ -14,13 +14,12 @@ import org.springframework.boot.info.BuildProperties;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 
 import static java.util.stream.Collectors.toList;
 
-public class MenuLayout extends CssLayout {
+final class MenuLayout extends CssLayout {
 
-   public MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure, BuildProperties buildProperties) {
+   MenuLayout(Navigator navigator, Map<String, List<MenuItem>> menuStructure, BuildProperties buildProperties) {
 
       var menuItemsLayout = new MenuItemsLayout(menuStructure, navigator);
       addComponents(createMenuHeader(buildProperties), createUserSettings(), menuItemsLayout);

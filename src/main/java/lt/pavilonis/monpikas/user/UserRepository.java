@@ -1,5 +1,8 @@
 package lt.pavilonis.monpikas.user;
 
+import com.vaadin.data.provider.Query;
+import com.vaadin.data.provider.QuerySortOrder;
+import com.vaadin.shared.data.sort.SortDirection;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,16 +34,28 @@ public class UserRepository {
       this.jdbc = jdbc;
    }
 
-   public List<User> load(UserFilter filter) {
+   List<User> load(UserFilter filter) {
       var start = now();
       Map<String, Object> params = commonParams(filter);
       params.put("argOffset", QueryUtils.argOffset(filter.getOffset()));
       params.put("argLimit", QueryUtils.argLimit(filter.getLimit()));
 
-      var sql = selectUser(false) + BLOCK_WHERE + " ORDER BY u.name ASC LIMIT :argLimit OFFSET :argOffset";
+      var sql = selectUser(false) + BLOCK_WHERE +
+            createOrderBlock(filter.getQuery()) + "\n" +
+            "LIMIT :argLimit OFFSET :argOffset";
+
       List<User> result = jdbc.query(sql, params, USER_MAPPER);
       LOGGER.info("Loaded users [size={}, t={}]", result.size(), duration(start));
       return result;
+   }
+
+   private String createOrderBlock(Query<User, UserFilter> query) {
+      if (query == null || query.getSortOrders().isEmpty()) {
+         return " ORDER BY u.name ASC";
+      }
+      QuerySortOrder order = query.getSortOrders().get(0);
+      return "ORDER BY `" + order.getSorted() + "`" +
+            (order.getDirection() == SortDirection.ASCENDING ? " ASC" : " DESC");
    }
 
    private Map<String, Object> commonParams(UserFilter filter) {
@@ -51,7 +66,7 @@ public class UserRepository {
       return params;
    }
 
-   public User load(long id, boolean withPhoto) {
+   User load(long id, boolean withPhoto) {
       return load(id, null, withPhoto);
    }
 
@@ -92,12 +107,12 @@ public class UserRepository {
       return params;
    }
 
-   public int size(UserFilter filter) {
+   int size(UserFilter filter) {
       var sql = "SELECT COUNT(u.cardCode) FROM User u " + BLOCK_WHERE;
       return jdbc.queryForObject(sql, commonParams(filter), Integer.class);
    }
 
-   public List<String> loadGroups() {
+   List<String> loadGroups() {
       var sql = "SELECT DISTINCT organizationGroup " +
             "FROM User " +
             "WHERE organizationGroup IS NOT NULL " +
@@ -115,7 +130,7 @@ public class UserRepository {
       return jdbc.queryForList(sql, Map.of(), String.class);
    }
 
-   public User create(User entity) {
+   User create(User entity) {
       var sql = "INSERT INTO User (name, cardCode, birthDate, " +
             "  organizationRole, organizationGroup, supervisor_id, photo)\n" +
             "VALUES (:name, :cardCode, :birthDate, :role, :group, :supervisorId, :photo)";
@@ -125,7 +140,7 @@ public class UserRepository {
       return load(keyHolder.getKey().longValue(), false);
    }
 
-   public User update(User user) {
+   User update(User user) {
       var sql = "UPDATE User " +
             "SET " +
             "  updated = NOW(), " +
@@ -142,7 +157,7 @@ public class UserRepository {
       return load(user.getId(), false);
    }
 
-   public void delete(long id) {
+   void delete(long id) {
       User userToDelete = load(id, false);
       jdbc.update("DELETE FROM User WHERE id = :id", Map.of("id", id));
       LOGGER.debug("User deleted: {}", userToDelete);
@@ -150,18 +165,18 @@ public class UserRepository {
 
    private String selectUser(boolean withPhoto) {
       return "SELECT " +
-            "  u.id, " +
-            "  u.created, " +
-            "  u.updated, " +
-            "  u.cardCode, " +
-            "  u.name, " +
-            "  u.birthDate, " +
-            "  u.organizationGroup, " +
-            "  u.organizationRole, " +
-            "  supervisor.id AS supervisorId, " +
-            "  supervisor.name AS supervisorName, " +
-            (withPhoto ? "u.photo\n" : "NULL AS photo\n") +
-            " FROM User u\n" +
+            "  u.id                AS id, \n" +
+            "  u.created           AS created, \n" +
+            "  u.updated           AS updated, \n" +
+            "  u.cardCode          AS cardCode, \n" +
+            "  u.name              AS name, \n" +
+            "  u.birthDate         AS birthDate, \n" +
+            "  u.organizationGroup AS organizationGroup, \n" +
+            "  u.organizationRole  AS organizationRole, \n" +
+            "  supervisor.id       AS supervisorId, \n" +
+            "  supervisor.name     AS supervisor, \n" +
+            (withPhoto ? "u.photo" : "NULL AS photo") +
+            "\nFROM User u\n" +
             "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id \n";
    }
 }

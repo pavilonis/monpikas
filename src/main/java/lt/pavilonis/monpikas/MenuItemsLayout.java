@@ -11,9 +11,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
-public class MenuItemsLayout extends CssLayout {
+final class MenuItemsLayout extends CssLayout {
 
-   public MenuItemsLayout(Map<String, List<MenuItem>> menuStructure, Navigator navigator) {
+   MenuItemsLayout(Map<String, List<MenuItem>> menuStructure, Navigator navigator) {
       setPrimaryStyleName("valo-menuitems");
 
       menuStructure.forEach((groupCodeName, groupedMenuItems) -> {

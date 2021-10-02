@@ -74,7 +74,7 @@ public class KeyRepository {
             "  u.organizationGroup, " +
             "  u.organizationRole, " +
             "  supervisor.id AS supervisorId, " +
-            "  supervisor.name AS supervisorName, " +
+            "  supervisor.name AS supervisor, " +
             "  NULL AS photo " +
             "FROM KeyLog kl " +
             "  JOIN Scanner s ON s.id = kl.scanner_id " +
@@ -114,7 +114,7 @@ public class KeyRepository {
             "     u.organizationRole, " +
             "     NULL AS photo, " +
             "     supervisor.id AS supervisorId, " +
-            "     supervisor.name AS supervisorName " +
+            "     supervisor.name AS supervisor " +
 
             "FROM KeyLog k \n" +
             "     JOIN Scanner s ON s.id = k.scanner_id \n" +
@@ -191,7 +191,7 @@ public class KeyRepository {
             "  u.organizationGroup, " +
             "  NULL AS photo, " +
             "  supervisor.id AS supervisorId, " +
-            "  supervisor.name AS supervisorName, " +
+            "  supervisor.name AS supervisor, " +
             "  s.id AS scannerId, " +
             "  s.name AS scannerName " +
             "FROM KeyLog k " +

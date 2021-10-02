@@ -77,7 +77,7 @@ public class ScanLogRepository {
                   "  u.organizationRole, " +
                   "  u.photo, " +
                   "  supervisor.id AS supervisorId, " +
-                  "  supervisor.name AS supervisorName " +
+                  "  supervisor.name AS supervisor " +
                   "FROM ScanLog sl " +
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
