@@ -42,7 +42,7 @@ public class ScanLogRepository {
                "  JOIN User u ON u.id = sl.user_id \n" +
                "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id \n" +
                "WHERE sl.dateTime >= :periodStart \n" +
-               "  AND (:periodEnd IS NULL OR sl.dateTime <= :periodEnd) \n" +
+               "  AND (:periodEnd IS NULL OR DATE(sl.dateTime) <= :periodEnd) \n" +
                "  AND (:scannerId IS NULL OR sc.id = :scannerId) \n" +
                "  AND (:role IS NULL OR u.organizationRole = :role) \n" +
                "  AND (:text IS NULL OR u.cardCode LIKE :text OR u.name LIKE :text) \n";
