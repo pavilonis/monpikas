@@ -7,9 +7,8 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
+import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.common.MenuItemViewProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.info.BuildProperties;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,11 +27,11 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static lt.pavilonis.monpikas.App.translate;
 
+@Slf4j
 @SpringUI
 @Theme("custom")
 public class VaadinUI extends UI {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(VaadinUI.class);
    private final List<MenuItemViewProvider> viewProviders;
    private final RootLayout rootLayout;
    private final BuildProperties buildProperties;
@@ -80,7 +79,7 @@ public class VaadinUI extends UI {
             .getAuthentication();
 
       if (authentication == null) {
-         LOGGER.error("Could not get context");
+         log.error("Could not get context");
          return Set.of();
       }
 

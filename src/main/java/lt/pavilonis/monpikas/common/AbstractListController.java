@@ -1,15 +1,22 @@
 package lt.pavilonis.monpikas.common;
 
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Sizeable;
+import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import lt.pavilonis.monpikas.common.ui.filter.FilterPanel;
 import org.springframework.util.CollectionUtils;
+import org.vaadin.haijian.Exporter;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -17,6 +24,7 @@ import java.util.function.Consumer;
 
 import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import static com.vaadin.ui.Notification.Type.WARNING_MESSAGE;
+import static lt.pavilonis.monpikas.App.translate;
 
 public abstract class AbstractListController<T extends Identified<ID>, ID, FILTER> extends AbstractViewController {
 
@@ -59,9 +67,27 @@ public abstract class AbstractListController<T extends Identified<ID>, ID, FILTE
          footerLayout.setComponentAlignment(panel, Alignment.MIDDLE_LEFT);
       });
 
-      footerLayout.addComponent(sizeLabel);
-      footerLayout.setComponentAlignment(sizeLabel, Alignment.MIDDLE_RIGHT);
+      Button exportButton = createExportButton();
+      var rightGroup = new HorizontalLayout(exportButton, sizeLabel);
+      rightGroup.setDefaultComponentAlignment(Alignment.MIDDLE_RIGHT);
+
+      footerLayout.addComponent(rightGroup);
+      footerLayout.setComponentAlignment(rightGroup, Alignment.MIDDLE_RIGHT);
       return Optional.of(footerLayout);
+   }
+
+   private Button createExportButton() {
+      var filename = getViewName() + "_" + DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm")
+            .format(LocalDateTime.now()) + ".xlsx";
+
+      StreamResource resource = new StreamResource(() -> Exporter.exportAsExcel(grid), filename);
+      resource.setCacheTime(0);
+
+      var button = new Button(translate("AbstractListController.export"), VaadinIcons.DOWNLOAD);
+      new FileDownloader(resource)
+            .extend(button);
+
+      return button;
    }
 
    protected Optional<Component> getControlPanel(Component mainArea) {
