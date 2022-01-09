@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas;
 
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import lt.pavilonis.monpikas.common.service.MessageSourceAdapter;
 import org.flywaydb.core.Flyway;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
@@ -20,6 +21,7 @@ import java.util.Locale;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 
+@EnableEncryptableProperties
 @SpringBootApplication
 @EnableScheduling
 public class App {
