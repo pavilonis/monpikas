@@ -2,6 +2,7 @@ package lt.pavilonis.monpikas.scanlog;
 
 import com.vaadin.data.provider.QuerySortOrder;
 import com.vaadin.shared.data.sort.SortDirection;
+import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
 import lt.pavilonis.monpikas.common.util.TimeUtils;
 import lt.pavilonis.monpikas.key.Key;
@@ -11,16 +12,12 @@ import lt.pavilonis.monpikas.scanlog.brief.ScanLogBriefFilter;
 import lt.pavilonis.monpikas.scanlog.brief.ScanLogBriefMapper;
 import lt.pavilonis.monpikas.user.User;
 import lt.pavilonis.monpikas.user.UserRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -32,10 +29,11 @@ import java.util.stream.Stream;
 import static java.time.LocalDateTime.now;
 import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 
+@Slf4j
 @Repository
 public class ScanLogRepository {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogRepository.class);
+   private static final int DEFAULT_NUMBER_OF_SCANLOG_ELEMENTS_TO_LOAD = 20;
    private static final String FROM_WHERE_BLOCK =
          "FROM ScanLog sl \n" +
                "  JOIN Scanner sc ON sc.id = sl.scanner_id \n" +
@@ -64,7 +62,24 @@ public class ScanLogRepository {
    }
 
    private ScanLog loadById(long scannerId, long scanLogId) {
-      return jdbc.queryForObject(
+      List<ScanLog> result = load(scannerId, scanLogId);
+      if (result.size() != 1) {
+         throw new RuntimeException("Not expected number of loaded entries: " + result.size());
+      }
+      return result.get(0);
+   }
+
+   public List<ScanLog> readLastScanLogs(long scannerId) {
+      return load(scannerId, null);
+   }
+
+   private List<ScanLog> load(long scannerId, Long scanLogId) {
+      var params = new HashMap<String, Object>();
+      params.put("scanLogId", scanLogId);
+      params.put("scannerId", scannerId);
+      params.put("limit", DEFAULT_NUMBER_OF_SCANLOG_ELEMENTS_TO_LOAD);
+
+      return jdbc.query(
             "SELECT " +
                   "  sl.dateTime, " +
                   "  u.id, " +
@@ -81,11 +96,14 @@ public class ScanLogRepository {
                   "FROM ScanLog sl " +
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
-                  "WHERE sl.id = :id",
-            Map.of("id", scanLogId),
+                  "WHERE sl.scanner_id = :scannerId " +
+                  "  AND (:scanLogId IS NULL OR sl.id = :scanLogId)" +
+                  "LIMIT :limit",
+            params,
             (rs, i) -> {
                User user = USER_MAPPER.mapRow(rs);
-               List<Key> keys = keyRepository.loadActive(scannerId, rs.getLong("id"), null, null);
+               long userId = rs.getLong("id");
+               List<Key> keys = keyRepository.loadActive(scannerId, userId, null, null);
                return new ScanLog(QueryUtils.getLocalDateTime(rs, "dateTime"), user, keys);
             }
       );
@@ -95,7 +113,7 @@ public class ScanLogRepository {
 
       User user = userRepository.load(cardCode, false);
       if (user == null) {
-         LOGGER.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]", scannerId, cardCode);
+         log.warn("Skipping scan log: user not found [scannerId={}, cardCode={}]", scannerId, cardCode);
          return Optional.empty();
       }
 
@@ -104,7 +122,7 @@ public class ScanLogRepository {
       var sql = "INSERT INTO ScanLog (user_id, scanner_id) VALUES (:userId, :scannerId)";
 
       jdbc.update(sql, new MapSqlParameterSource(args), keyHolder);
-      LOGGER.info("ScanLog saved");
+      log.info("ScanLog saved");
       return Optional.of(keyHolder.getKey().longValue());
    }
 
@@ -156,7 +174,6 @@ public class ScanLogRepository {
       var start = now();
       Map<String, Object> args = new HashMap<>();
       args.put("text", QueryUtils.likeArg(text));
-      args.put("today", DateTimeFormatter.ISO_LOCAL_DATE.format(LocalDate.now()));
 
       List<ScanLogBrief> result = jdbc.query(
             "SELECT " +
@@ -171,7 +188,7 @@ public class ScanLogRepository {
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User sv ON sv.id = u.supervisor_id " +
                   "  JOIN Scanner s ON s.id = sl.scanner_id " +
-                  "WHERE sl.dateTime > :today " +
+                  "WHERE sl.dateTime > CURRENT_DATE() " +
                   "  AND (:text IS NULL OR u.name LIKE :text OR s.name LIKE :text)",
             args,
             new ScanLogBriefMapper()
@@ -185,13 +202,13 @@ public class ScanLogRepository {
             .flatMap(this::composeUserLogs)
             .collect(Collectors.toList());
 
-      LOGGER.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
+      log.info("Loaded last user locations [text={}, number={}, filtered={}, t={}]",
             text, result.size(), filteredResult.size(), TimeUtils.duration(start));
 
       return filteredResult;
    }
 
-   protected Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
+   private Stream<ScanLogBrief> composeUserLogs(List<ScanLogBrief> groupedByName) {
       return groupedByName
             .stream()
             .collect(Collectors.groupingBy(ScanLogBrief::getScanner))

@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.scanlog;
 
+import lombok.AllArgsConstructor;
 import lt.pavilonis.monpikas.scanlog.brief.ScanLogBrief;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+@AllArgsConstructor
 @RequestMapping("/rest/scanlog")
 @RestController
 public class ScanLogRestController {
@@ -19,10 +21,6 @@ public class ScanLogRestController {
    // This constant should not change as it is used on client side
    private static final String UNKNOWN_USER = "Unknown user";
    private final ScanLogRepository scanLogRepository;
-
-   public ScanLogRestController(ScanLogRepository scanLogRepository) {
-      this.scanLogRepository = scanLogRepository;
-   }
 
    @PostMapping("/{scannerId}/{cardCode}")
    public ResponseEntity<?> writeLog(@PathVariable long scannerId, @PathVariable String cardCode) {
@@ -32,6 +30,11 @@ public class ScanLogRestController {
       return result == null
             ? ResponseEntity.status(HttpStatus.NOT_FOUND).body(UNKNOWN_USER + " " + cardCode)
             : ResponseEntity.ok().body(result);
+   }
+
+   @GetMapping("/{scannerId}")
+   public List<ScanLog> readLastLogs(@PathVariable long scannerId) {
+      return scanLogRepository.readLastScanLogs(scannerId);
    }
 
    @GetMapping("/lastseen")
