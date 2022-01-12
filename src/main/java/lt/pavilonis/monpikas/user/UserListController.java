@@ -47,40 +47,7 @@ public class UserListController extends AbstractListController<User, Long, UserF
 
    @Override
    protected AbstractFormController<User, Long> getFormController() {
-      return new AbstractFormController<User, Long>(User.class) {
-
-         @Override
-         protected EntityRepository<User, Long, ?> getEntityRepository() {
-            return userListRepository;
-         }
-
-         @Override
-         protected FieldLayout<User> createFieldLayout(User model) {
-            Resource image = getUserImageResource(model.getBase64photo());
-            ComboBox<User> supervisorCombo = createSupervisorCombo(model.getOrganizationRole());
-            return new UserFormView(presenceTimeRepository, model.getId(), image, supervisorCombo);
-         }
-
-         private Resource getUserImageResource(String base64) {
-            if (base64 == null) {
-               return new ThemeResource("user_yellow_256.png");
-            }
-            return new StreamResource(() -> new ByteArrayInputStream(Base64.getDecoder().decode(base64)), "img.png");
-         }
-
-         private ComboBox<User> createSupervisorCombo(String organizationRole) {
-            var result = new ComboBox<User>(App.translate(User.class, "supervisor"));
-            if (supervisorRole.equalsIgnoreCase(organizationRole)) {
-               result.setEnabled(false);
-               return result;
-            }
-
-            List<User> supervisors = userRepository.load(new UserFilter(null, supervisorRole, null));
-            result.setItems(supervisors);
-            result.setItemCaptionGenerator(Named::getName);
-            return result;
-         }
-      };
+      return new UserFormController(userListRepository, presenceTimeRepository, supervisorRole, userRepository);
    }
 
    @Override

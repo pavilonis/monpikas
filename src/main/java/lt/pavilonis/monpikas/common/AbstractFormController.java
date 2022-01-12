@@ -92,13 +92,13 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       return new HorizontalLayout(buttonSave, buttonCancel);
    }
 
-   protected void edit(T itemToEdit, ListGrid<T> listGrid, boolean readOnly) {
+   public void edit(T itemToEdit, ListGrid<T> listGrid, boolean readOnly) {
 
       model = itemToEdit.getId() == null
             ? itemToEdit
             : loadExisting(itemToEdit);
 
-      Consumer<T> persistedItemConsumer = updatedItem -> listGrid.addOrUpdate(itemToEdit, updatedItem);
+      Consumer<T> persistedItemConsumer = updatedItem -> updateGridOnSaveUpdate(itemToEdit, listGrid, updatedItem);
 
       binder = new BeanValidationBinder<>(clazz);
 
@@ -125,6 +125,10 @@ public abstract class AbstractFormController<T extends Identified<ID>, ID> {
       window.center();
       window.setModal(true);
       UI.getCurrent().addWindow(window);
+   }
+
+   protected void updateGridOnSaveUpdate(T itemToEdit, ListGrid<T> listGrid, T updatedItem) {
+      listGrid.addOrUpdate(itemToEdit, updatedItem);
    }
 
    protected Window createWindow(FieldLayout<T> fieldLayout, Component controlLayout) {
