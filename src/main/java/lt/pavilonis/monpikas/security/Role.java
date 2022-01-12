@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.security;
 
+import lombok.experimental.SuperBuilder;
 import lt.pavilonis.monpikas.common.Identified;
 import lt.pavilonis.monpikas.common.Named;
 import org.springframework.security.core.GrantedAuthority;
@@ -9,6 +10,7 @@ import org.springframework.util.Assert;
  * Copied code from {@link org.springframework.security.core.authority.SimpleGrantedAuthority}
  * and implemented {@link Identified} interface
  */
+@SuperBuilder
 public class Role extends Named<Long> implements GrantedAuthority {
 
    public Role(Long id, String name) {
