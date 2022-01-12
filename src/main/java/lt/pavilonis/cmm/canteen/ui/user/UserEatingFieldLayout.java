@@ -22,7 +22,6 @@ import lt.pavilonis.cmm.common.service.ImageService;
 
 import java.util.HashSet;
 import java.util.Optional;
-import java.util.stream.Stream;
 
 //TODO add validator to ensure that user has no more than one eating for each type
 public class UserEatingFieldLayout extends FieldLayout<UserEating> {
@@ -47,8 +46,11 @@ public class UserEatingFieldLayout extends FieldLayout<UserEating> {
       comment.setWidth(250, Unit.PIXELS);
       comment.setHeight(179, Unit.PIXELS);
       name.setWidth(286, Unit.PIXELS);
-      Stream.of(birthDate, typeField).forEach(field -> field.setWidth(200, Unit.PIXELS));
-      Stream.of(name, birthDate).forEach(field -> field.setEnabled(false));
+
+      birthDate.setWidth(200, Unit.PIXELS);
+      typeField.setWidth(200, Unit.PIXELS);
+      name.setEnabled(false);
+      birthDate.setEnabled(false);
 
       VerticalLayout rightSide = new VerticalLayout(photoLayout, comment);
       rightSide.setComponentAlignment(photoLayout, Alignment.MIDDLE_CENTER);
