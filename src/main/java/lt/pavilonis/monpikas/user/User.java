@@ -1,5 +1,9 @@
 package lt.pavilonis.monpikas.user;
 
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 import lt.pavilonis.monpikas.common.Named;
 import org.springframework.util.StringUtils;
 
@@ -7,35 +11,36 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor
+@SuperBuilder
+@Getter
 public class User extends Named<Long> {
 
-   private final LocalDateTime created;
-
-   private final LocalDateTime updated;
+   private LocalDateTime created;
+   private LocalDateTime updated;
 
    @NotNull
+   @Setter
    private String cardCode;
 
+   @Setter
    private String organizationGroup;
 
+   @Setter
    private String organizationRole;
 
+   @Setter
    private LocalDate birthDate;
 
+   @Setter
    private String base64photo;
 
+   @Setter
    private User supervisor;
-
-   public User() {
-      this.created = null;
-      this.updated = null;
-   }
 
    public User(long id, String name) {
       setId(id);
       setName(name);
-      this.created = null;
-      this.updated = null;
    }
 
    public User(Long id, LocalDateTime created, LocalDateTime updated, String cardCode,
@@ -52,62 +57,6 @@ public class User extends Named<Long> {
       this.base64photo = base64photo;
       this.birthDate = birthDate;
       this.supervisor = supervisor;
-   }
-
-   public void setCardCode(String cardCode) {
-      this.cardCode = cardCode;
-   }
-
-   public String getCardCode() {
-      return cardCode;
-   }
-
-   public String getOrganizationGroup() {
-      return organizationGroup;
-   }
-
-   public void setOrganizationGroup(String organizationGroup) {
-      this.organizationGroup = organizationGroup;
-   }
-
-   public String getOrganizationRole() {
-      return organizationRole;
-   }
-
-   public void setOrganizationRole(String organizationRole) {
-      this.organizationRole = organizationRole;
-   }
-
-   public LocalDate getBirthDate() {
-      return birthDate;
-   }
-
-   public void setBirthDate(LocalDate birthDate) {
-      this.birthDate = birthDate;
-   }
-
-   public String getBase64photo() {
-      return base64photo;
-   }
-
-   public void setBase64photo(String base64photo) {
-      this.base64photo = base64photo;
-   }
-
-   public User getSupervisor() {
-      return supervisor;
-   }
-
-   public void setSupervisor(User supervisor) {
-      this.supervisor = supervisor;
-   }
-
-   public LocalDateTime getCreated() {
-      return created;
-   }
-
-   public LocalDateTime getUpdated() {
-      return updated;
    }
 
    @Override

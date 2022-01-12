@@ -7,6 +7,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.spring.annotation.SpringUI;
 import com.vaadin.ui.UI;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.common.MenuItemViewProvider;
 import org.springframework.boot.info.BuildProperties;
@@ -27,6 +28,7 @@ import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 import static lt.pavilonis.monpikas.App.translate;
 
+@AllArgsConstructor
 @Slf4j
 @SpringUI
 @Theme("custom")
@@ -35,12 +37,6 @@ public class VaadinUI extends UI {
    private final List<MenuItemViewProvider> viewProviders;
    private final RootLayout rootLayout;
    private final BuildProperties buildProperties;
-
-   public VaadinUI(List<MenuItemViewProvider> viewProviders, RootLayout rootLayout, BuildProperties buildProperties) {
-      this.viewProviders = viewProviders;
-      this.rootLayout = rootLayout;
-      this.buildProperties = buildProperties;
-   }
 
    @Override
    protected void init(VaadinRequest request) {

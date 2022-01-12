@@ -2,24 +2,19 @@ package lt.pavilonis.monpikas;
 
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.CssLayout;
+import lombok.AllArgsConstructor;
 
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.StreamSupport;
 
+@AllArgsConstructor
 public class MenuViewChangeListener implements ViewChangeListener {
 
    private static final String STYLE_SELECTED = "selected";
    private final CssLayout menuLayout;
    private final List<MenuItem> menuItems;
    private final CssLayout menuItemsLayout;
-
-   public MenuViewChangeListener(CssLayout menuLayout, List<MenuItem> menuItems,
-                                 CssLayout menuItemsLayout) {
-      this.menuLayout = menuLayout;
-      this.menuItems = menuItems;
-      this.menuItemsLayout = menuItemsLayout;
-   }
 
    @Override
    public boolean beforeViewChange(ViewChangeEvent event) {
