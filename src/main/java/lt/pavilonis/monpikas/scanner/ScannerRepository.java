@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.scanner;
 
+import lombok.AllArgsConstructor;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.ui.filter.IdTextFilter;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
@@ -13,14 +14,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Repository
 public class ScannerRepository implements EntityRepository<Scanner, Long, IdTextFilter> {
 
    private final NamedParameterJdbcTemplate jdbc;
-
-   public ScannerRepository(NamedParameterJdbcTemplate jdbc) {
-      this.jdbc = jdbc;
-   }
 
    @Override
    public Scanner saveOrUpdate(Scanner entity) {

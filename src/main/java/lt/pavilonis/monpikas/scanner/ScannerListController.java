@@ -3,6 +3,7 @@ package lt.pavilonis.monpikas.scanner;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
+import lombok.AllArgsConstructor;
 import lt.pavilonis.monpikas.common.AbstractFormController;
 import lt.pavilonis.monpikas.common.AbstractListController;
 import lt.pavilonis.monpikas.common.EntityRepository;
@@ -12,15 +13,12 @@ import lt.pavilonis.monpikas.common.ui.filter.FilterPanel;
 import lt.pavilonis.monpikas.common.ui.filter.IdTextFilter;
 import lt.pavilonis.monpikas.common.ui.filter.NameFilterPanel;
 
+@AllArgsConstructor
 @UIScope
 @SpringComponent
 public class ScannerListController extends AbstractListController<Scanner, Long, IdTextFilter> {
 
    private final ScannerRepository repository;
-
-   public ScannerListController(ScannerRepository repository) {
-      this.repository = repository;
-   }
 
    @Override
    protected ListGrid<Scanner> createGrid() {

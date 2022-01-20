@@ -9,7 +9,12 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.themes.ValoTheme;
+import lt.pavilonis.monpikas.security.SystemUser;
 import org.springframework.boot.info.BuildProperties;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.util.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -36,7 +41,7 @@ final class MenuLayout extends CssLayout {
       settings.addStyleName("user-menu");
 
       var icon = new ThemeResource("profile-pic-300px.jpg");
-      MenuBar.MenuItem settingsItem = settings.addItem("Vardas Pavardė", icon, null);
+      MenuBar.MenuItem settingsItem = settings.addItem(getUserName(), icon, null);
       settingsItem.addItem("TODO1", null);
       settingsItem.addSeparator();
       settingsItem.addItem("TODO2", null);
@@ -59,5 +64,17 @@ final class MenuLayout extends CssLayout {
       layout.setDefaultComponentAlignment(Alignment.MIDDLE_LEFT);
       layout.addStyleName(ValoTheme.MENU_TITLE);
       return layout;
+   }
+
+   private String getUserName() {
+      SecurityContext context = SecurityContextHolder.getContext();
+      Authentication authentication = context.getAuthentication();
+      SystemUser principal = (SystemUser) authentication.getPrincipal();
+
+      String result = StringUtils.hasText(principal.getName())
+            ? principal.getName()
+            : principal.getUsername();
+
+      return result + " ";
    }
 }
