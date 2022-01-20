@@ -16,6 +16,7 @@ import lt.pavilonis.monpikas.security.Role;
 import java.util.stream.Stream;
 
 public class SystemUserForm extends FieldLayout<SystemUser> {
+
    private final TextField name = new ATextField(getClass(), "name");
    private final TextField username = new ATextField(getClass(), "username");
    private final TextField email = new ATextField(getClass(), "email");

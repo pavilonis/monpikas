@@ -1,5 +1,6 @@
 package lt.pavilonis.monpikas.security;
 
+import lombok.AllArgsConstructor;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.ui.filter.IdTextFilter;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -8,14 +9,11 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+@AllArgsConstructor
 @Repository
 public class RoleRepository implements EntityRepository<Role, Long, IdTextFilter> {
 
    private final JdbcTemplate jdbc;
-
-   public RoleRepository(JdbcTemplate jdbc) {
-      this.jdbc = jdbc;
-   }
 
    @Override
    public Role saveOrUpdate(Role entity) {

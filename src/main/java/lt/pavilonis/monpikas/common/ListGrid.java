@@ -4,6 +4,7 @@ import com.vaadin.data.ValueProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.components.grid.SingleSelectionModel;
+import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.App;
 import lt.pavilonis.monpikas.common.service.MessageSourceAdapter;
 import org.springframework.beans.BeanUtils;
@@ -22,6 +23,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static java.util.stream.Collectors.toUnmodifiableList;
+
+@Slf4j
 public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
    private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -59,39 +63,53 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    }
 
    private void configureNamedEntityColumns() {
-      getColumns().stream()
+      List<String> properties = getColumns().stream()
             .map(Column::getId)
-            .forEach(property -> {
-               Field field = getClassField(property);
+            .collect(toUnmodifiableList());
 
-               if (field != null) {
-                  Class<?> classFieldType = field.getType();
+      for (String property : properties) {
 
-                  Method propertyGetter = BeanUtils.findMethod(
-                        getBeanType(),
-                        "get" + StringUtils.capitalize(property)
-                  );
+         Field field = getClassField(property);
+         if (field == null) {
+            log.warn("Could not find property " + property + " for " + getBeanType().getSimpleName());
+            continue;
+         }
 
-                  if (Named.class.isAssignableFrom(classFieldType)) {
+         Class<?> classFieldType = field.getType();
 
-                     replaceColumn(property, namedPrinter(propertyGetter));
+         if (isBoolean(classFieldType)) {
+            Method booleanGetter = createPropertyGetter(property, "is");
 
-                  } else if (Collection.class.isAssignableFrom(classFieldType)) {
-
-                     replaceColumn(property, collectionPrinter(propertyGetter));
-
-                  } else if (Boolean.class.isAssignableFrom(classFieldType)
-                        || boolean.class.isAssignableFrom(classFieldType)) {
-
-                     replaceColumn(property, entity ->
-                           Boolean.TRUE.equals(extractProperty(entity, propertyGetter)) ? "✔" : "");
-
-                  } else if (LocalDateTime.class.isAssignableFrom(classFieldType)) {
-
-                     replaceColumn(property, dateTimePrinter(propertyGetter));
-                  }
-               }
+            replaceColumn(property, entity -> {
+               Object booleanValue = extractPropertyValue(entity, booleanGetter);
+               return Boolean.TRUE.equals(booleanValue) ? "✔" : "";
             });
+
+            continue;
+         }
+
+         Method propertyGetter = createPropertyGetter(property, "get");
+
+         if (Named.class.isAssignableFrom(classFieldType)) {
+            replaceColumn(property, namedPrinter(propertyGetter));
+
+         } else if (Collection.class.isAssignableFrom(classFieldType)) {
+            replaceColumn(property, collectionPrinter(propertyGetter));
+
+         } else if (LocalDateTime.class.isAssignableFrom(classFieldType)) {
+            replaceColumn(property, dateTimePrinter(propertyGetter));
+         }
+      }
+   }
+
+   private Method createPropertyGetter(String property, String prefix) {
+      String methodName = prefix + StringUtils.capitalize(property);
+      return BeanUtils.findMethod(getBeanType(), methodName);
+   }
+
+   private boolean isBoolean(Class<?> classFieldType) {
+      return Boolean.class.isAssignableFrom(classFieldType)
+            || boolean.class.isAssignableFrom(classFieldType);
    }
 
    private void replaceColumn(String property, ValueProvider<T, Object> valueProvider) {
@@ -102,7 +120,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    private ValueProvider<T, Object> collectionPrinter(Method propertyGetter) {
       return entity -> {
 
-         Collection<?> collection = (Collection) extractProperty(entity, propertyGetter);
+         Collection<?> collection = (Collection) extractPropertyValue(entity, propertyGetter);
          if (CollectionUtils.isEmpty(collection)) {
             return "";
          }
@@ -125,26 +143,26 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    private ValueProvider<T, Object> namedPrinter(Method propertyGetter) {
       return entity -> {
 
-         Object propertyValue = extractProperty(entity, propertyGetter);
+         Object propertyValue = extractPropertyValue(entity, propertyGetter);
 
          Method nameGetter = BeanUtils.findMethod(Named.class, "getName");
 
-         return extractProperty(propertyValue, nameGetter);
+         return extractPropertyValue(propertyValue, nameGetter);
       };
    }
 
    private ValueProvider<T, Object> dateTimePrinter(Method propertyGetter) {
       return entity -> {
-         LocalDateTime value = (LocalDateTime) extractProperty(entity, propertyGetter);
+         LocalDateTime value = (LocalDateTime) extractPropertyValue(entity, propertyGetter);
          return value == null ? null : DATE_TIME_FORMATTER.format(value);
       };
    }
 
-   private Object extractProperty(Object object, Method propertyGetter) {
+   private Object extractPropertyValue(Object object, Method propertyGetter) {
       try {
          return propertyGetter.invoke(object);
       } catch (IllegalAccessException | InvocationTargetException e) {
-         e.printStackTrace();
+         log.error("Could not extract property value", e);
          return null;
       }
    }

@@ -1,7 +1,7 @@
 package lt.pavilonis.monpikas.user;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 
@@ -12,15 +12,12 @@ import java.util.List;
 import static java.time.LocalDateTime.now;
 import static lt.pavilonis.monpikas.common.util.TimeUtils.duration;
 
+@Slf4j
+@AllArgsConstructor
 @Repository
 public class PresenceTimeRepository {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(PresenceTimeRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
-
-   public PresenceTimeRepository(NamedParameterJdbcTemplate jdbc) {
-      this.jdbc = jdbc;
-   }
 
    public List<PresenceTime> load(Long userId, LocalDate periodStart, LocalDate periodEnd) {
       if (userId == null) {
@@ -57,7 +54,7 @@ public class PresenceTimeRepository {
             rs.getDouble(4)
       ));
 
-      LOGGER.info("Loaded work time entries [number={}, userId={}, t={}]", result.size(), userId, duration(opStart));
+      log.info("Loaded work time entries [number={}, userId={}, t={}]", result.size(), userId, duration(opStart));
       return result;
    }
 }

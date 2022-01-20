@@ -1,6 +1,7 @@
 package lt.pavilonis.monpikas.common.util;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.imgscalr.Scalr;
 
 import javax.imageio.ImageIO;
@@ -10,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+@Slf4j
 public class ImageUtils {
 
    private ImageUtils() {/**/}
@@ -29,8 +31,9 @@ public class ImageUtils {
          return baos.toByteArray();
 
       } catch (IOException e) {
-         e.printStackTrace();
-         throw new RuntimeException("Could not write bytes to image", e);
+         String message = "Could not write bytes to image";
+         log.error(message, e);
+         throw new RuntimeException(message, e);
       }
    }
 
@@ -39,8 +42,9 @@ public class ImageUtils {
          return ImageIO.read(in);
 
       } catch (IOException e) {
-         e.printStackTrace();
-         throw new RuntimeException("Could not read image from bytes", e);
+         String message = "Could not read image from bytes";
+         log.error(message, e);
+         throw new RuntimeException(message, e);
       }
    }
 }
