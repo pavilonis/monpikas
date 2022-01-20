@@ -18,7 +18,6 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +26,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static java.time.LocalDateTime.now;
+import static java.util.Comparator.comparing;
 import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 
 @Slf4j
@@ -70,7 +70,9 @@ public class ScanLogRepository {
    }
 
    public List<ScanLog> readLastScanLogs(long scannerId) {
-      return load(scannerId, null);
+      List<ScanLog> result = load(scannerId, null);
+      result.sort(comparing(ScanLog::getDateTime));
+      return result;
    }
 
    private List<ScanLog> load(long scannerId, Long scanLogId) {
@@ -97,7 +99,8 @@ public class ScanLogRepository {
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
                   "WHERE sl.scanner_id = :scannerId " +
-                  "  AND (:scanLogId IS NULL OR sl.id = :scanLogId)" +
+                  "  AND (:scanLogId IS NULL OR sl.id = :scanLogId) " +
+                  "ORDER BY sl.dateTime DESC " +
                   "LIMIT :limit",
             params,
             (rs, i) -> {
@@ -217,10 +220,10 @@ public class ScanLogRepository {
             // Taking single latest entry for location user was in
             .map(groupedByLocation -> groupedByLocation
                   .stream()
-                  .max(Comparator.comparing(ScanLogBrief::getDateTime))
+                  .max(comparing(ScanLogBrief::getDateTime))
                   .orElseThrow(RuntimeException::new)
             )
-            .sorted(Comparator.comparing(ScanLogBrief::getDateTime).reversed())
+            .sorted(comparing(ScanLogBrief::getDateTime).reversed())
             .limit(3);
    }
 }
