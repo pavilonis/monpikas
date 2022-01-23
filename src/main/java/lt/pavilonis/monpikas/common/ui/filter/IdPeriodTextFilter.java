@@ -1,17 +1,12 @@
 package lt.pavilonis.monpikas.common.ui.filter;
 
-import java.time.LocalDate;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
 
+@Getter
+@SuperBuilder
 public class IdPeriodTextFilter extends IdPeriodFilter {
 
-   private final String text;
+   private String text;
 
-   public IdPeriodTextFilter(Long id, LocalDate periodStart, LocalDate periodEnd, String text) {
-      super(id, periodStart, periodEnd);
-      this.text = text;
-   }
-
-   public String getText() {
-      return text;
-   }
 }

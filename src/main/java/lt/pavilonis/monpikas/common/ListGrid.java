@@ -71,7 +71,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
 
          Field field = getClassField(property);
          if (field == null) {
-            log.warn("Could not find property " + property + " for " + getBeanType().getSimpleName());
+            // field can be null when column is hidden
             continue;
          }
 

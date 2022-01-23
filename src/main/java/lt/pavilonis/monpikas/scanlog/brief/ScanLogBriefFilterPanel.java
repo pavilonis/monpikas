@@ -32,13 +32,13 @@ final class ScanLogBriefFilterPanel extends PeriodFilterPanel<ScanLogBriefFilter
    public ScanLogBriefFilter getFilter() {
       IdPeriodFilter filter = super.getFilter();
 
-      return new ScanLogBriefFilter(
-            filter.getPeriodStart(),
-            filter.getPeriodEnd(),
-            textField.getValue(),
-            scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId(),
-            roleCombo.getValue()
-      );
+      return ScanLogBriefFilter.builder()
+            .periodStart(filter.getPeriodStart())
+            .periodEnd(filter.getPeriodEnd())
+            .text(textField.getValue())
+            .id(scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId())
+            .role(roleCombo.getValue())
+            .build();
    }
 
    @Override

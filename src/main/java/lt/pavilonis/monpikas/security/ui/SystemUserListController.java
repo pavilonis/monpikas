@@ -5,6 +5,7 @@ import com.vaadin.spring.annotation.SpringComponent;
 import com.vaadin.spring.annotation.UIScope;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.Notification;
+import lombok.AllArgsConstructor;
 import lt.pavilonis.monpikas.App;
 import lt.pavilonis.monpikas.common.AbstractFormController;
 import lt.pavilonis.monpikas.common.AbstractListController;
@@ -22,15 +23,12 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+@AllArgsConstructor
 @SpringComponent
 @UIScope
 public class SystemUserListController extends AbstractListController<SystemUser, Long, SystemUserFilter> {
 
    private final SystemUserRepository repository;
-
-   public SystemUserListController(SystemUserRepository repository) {
-      this.repository = repository;
-   }
 
    @Override
    protected ListGrid<SystemUser> createGrid() {

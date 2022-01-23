@@ -1,33 +1,14 @@
 package lt.pavilonis.monpikas.scanlog.brief;
 
-import lt.pavilonis.monpikas.common.ui.filter.IdPeriodFilter;
+import lombok.Getter;
+import lombok.experimental.SuperBuilder;
+import lt.pavilonis.monpikas.common.ui.filter.IdPeriodTextFilter;
 
-import java.time.LocalDate;
+@Getter
+@SuperBuilder
+public final class ScanLogBriefFilter extends IdPeriodTextFilter {
 
-public final class ScanLogBriefFilter extends IdPeriodFilter {
+   private Long scannerId;
+   private String role;
 
-   private final String text;
-   private final Long scannerId;
-   private final String role;
-
-   public ScanLogBriefFilter(LocalDate periodStart, LocalDate periodEnd,
-                             String text, Long scannerId, String role) {
-
-      super(periodStart, periodEnd);
-      this.text = text;
-      this.scannerId = scannerId;
-      this.role = role;
-   }
-
-   public String getText() {
-      return text;
-   }
-
-   public Long getScannerId() {
-      return scannerId;
-   }
-
-   public String getRole() {
-      return role;
-   }
 }

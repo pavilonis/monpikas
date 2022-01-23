@@ -3,10 +3,12 @@ package lt.pavilonis.monpikas.common.ui.filter;
 import com.vaadin.data.HasValue;
 import com.vaadin.ui.AbstractField;
 import com.vaadin.ui.DateField;
+import lombok.Getter;
 import lt.pavilonis.monpikas.common.field.ADateField;
 
 import java.util.List;
 
+@Getter
 public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> {
 
    private DateField periodStart;
@@ -14,10 +16,11 @@ public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> 
 
    @Override
    public T getFilter() {
-      IdPeriodFilter idPeriodFilter = new IdPeriodFilter(
-            periodStart.getValue(),
-            periodEnd.getValue()
-      );
+      var idPeriodFilter = IdPeriodTextFilter.builder()
+            .periodStart(periodStart.getValue())
+            .periodEnd(periodEnd.getValue())
+            .build();
+
       return (T) idPeriodFilter;
    }
 
@@ -31,13 +34,5 @@ public class PeriodFilterPanel<T extends IdPeriodFilter> extends FilterPanel<T> 
    @Override
    protected AbstractField<?> getFieldToFocus() {
       return periodStart;
-   }
-
-   public DateField getPeriodStart() {
-      return periodStart;
-   }
-
-   public DateField getPeriodEnd() {
-      return periodEnd;
    }
 }

@@ -14,12 +14,11 @@ public class PeriodTextFilterPanel extends PeriodFilterPanel<IdPeriodTextFilter>
 
    @Override
    public IdPeriodTextFilter getFilter() {
-      return new IdPeriodTextFilter(
-            null,
-            getPeriodStart().getValue(),
-            getPeriodEnd().getValue(),
-            text.getValue()
-      );
+      return IdPeriodTextFilter.builder()
+            .periodStart(getPeriodStart().getValue())
+            .periodEnd(getPeriodEnd().getValue())
+            .text(text.getValue())
+            .build();
    }
 
    @Override

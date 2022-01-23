@@ -9,10 +9,10 @@ import com.vaadin.ui.CheckBox;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.TextField;
 import lt.pavilonis.monpikas.App;
-import lt.pavilonis.monpikas.scanner.Scanner;
 import lt.pavilonis.monpikas.common.field.ACheckBox;
 import lt.pavilonis.monpikas.common.field.ATextField;
 import lt.pavilonis.monpikas.common.ui.filter.PeriodFilterPanel;
+import lt.pavilonis.monpikas.scanner.Scanner;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -41,13 +41,13 @@ class KeyListFilterPanel extends PeriodFilterPanel<KeyListFilter> {
 
    @Override
    public KeyListFilter getFilter() {
-      return new KeyListFilter(
-            getPeriodStart().getValue(),
-            getPeriodEnd().getValue(),
-            scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId(),
-            text.getValue(),
-            isHistoryMode()
-      );
+      return KeyListFilter.builder()
+            .periodStart(getPeriodStart().getValue())
+            .periodEnd(getPeriodEnd().getValue())
+            .id(scannerCombo.getValue() == null ? null : scannerCombo.getValue().getId())
+            .text(text.getValue())
+            .logMode(isHistoryMode())
+            .build();
    }
 
    @Override
