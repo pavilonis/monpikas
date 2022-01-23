@@ -8,9 +8,11 @@ import java.time.LocalDateTime;
 
 @Getter
 @SuperBuilder
-public class FailedLogin extends Named<Long> {
+public class LoginEvent extends Named<Long> {
 
-   LocalDateTime created;
-   String address;
+   private LocalDateTime created;
+   private String address;
+   private boolean success;
+   private boolean logout;
 
 }

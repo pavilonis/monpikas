@@ -9,44 +9,42 @@ import lt.pavilonis.monpikas.common.AbstractListController;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.ListGrid;
 import lt.pavilonis.monpikas.common.ui.filter.FilterPanel;
-import lt.pavilonis.monpikas.common.ui.filter.IdPeriodTextFilter;
-import lt.pavilonis.monpikas.common.ui.filter.PeriodTextFilterPanel;
-import lt.pavilonis.monpikas.security.FailedLogin;
-import lt.pavilonis.monpikas.security.FailedLoginRepository;
+import lt.pavilonis.monpikas.security.LoginEvent;
+import lt.pavilonis.monpikas.security.LoginEventFilter;
+import lt.pavilonis.monpikas.security.LoginEventRepository;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 @AllArgsConstructor
 @SpringComponent
 @UIScope
-public class FailedLoginListController extends AbstractListController<FailedLogin, Long, IdPeriodTextFilter> {
+public class LoginEventListController extends AbstractListController<LoginEvent, Long, LoginEventFilter> {
 
-   private final FailedLoginRepository repository;
+   private final LoginEventRepository repository;
 
    @Override
-   protected ListGrid<FailedLogin> createGrid() {
-      return new ListGrid<>(FailedLogin.class) {
+   protected ListGrid<LoginEvent> createGrid() {
+      return new ListGrid<>(LoginEvent.class) {
          @Override
          protected List<String> columnOrder() {
-            return List.of("id", "created", "name", "address");
+            return List.of("id", "created", "name", "address", "success", "logout");
          }
-      };
-   }
 
-   @Override
-   protected FilterPanel<IdPeriodTextFilter> createFilterPanel() {
-      return new PeriodTextFilterPanel() {
          @Override
-         protected void setDefaultValues() {
-            getPeriodStart().setValue(LocalDate.now().minusDays(1));
+         protected List<String> columnsToCollapse() {
+            return List.of("id", "logout");
          }
       };
    }
 
    @Override
-   protected EntityRepository<FailedLogin, Long, IdPeriodTextFilter> getEntityRepository() {
+   protected FilterPanel<LoginEventFilter> createFilterPanel() {
+      return new LoginEventFilterPanel();
+   }
+
+   @Override
+   protected EntityRepository<LoginEvent, Long, LoginEventFilter> getEntityRepository() {
       return repository;
    }
 
@@ -56,18 +54,18 @@ public class FailedLoginListController extends AbstractListController<FailedLogi
    }
 
    @Override
-   protected Class<FailedLogin> getEntityClass() {
-      return FailedLogin.class;
+   protected Class<LoginEvent> getEntityClass() {
+      return LoginEvent.class;
    }
 
    @Override
    public String getViewName() {
-      return "failed-logins";
+      return "login-events";
    }
 
    @Override
    public VaadinIcons getViewIcon() {
-      return VaadinIcons.BAN;
+      return VaadinIcons.SIGN_IN;
    }
 
    @Override

@@ -8,17 +8,19 @@ import lt.pavilonis.monpikas.common.field.ATextField;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PeriodTextFilterPanel extends PeriodFilterPanel<IdPeriodTextFilter> {
+public class PeriodTextFilterPanel<T extends IdPeriodTextFilter> extends PeriodFilterPanel<T> {
 
    private TextField text;
 
    @Override
-   public IdPeriodTextFilter getFilter() {
-      return IdPeriodTextFilter.builder()
+   public T getFilter() {
+      IdPeriodTextFilter filter = IdPeriodTextFilter.builder()
             .periodStart(getPeriodStart().getValue())
             .periodEnd(getPeriodEnd().getValue())
             .text(text.getValue())
             .build();
+
+      return (T) filter;
    }
 
    @Override
