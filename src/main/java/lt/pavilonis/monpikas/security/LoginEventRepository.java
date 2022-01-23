@@ -42,7 +42,7 @@ public class LoginEventRepository implements EntityRepository<LoginEvent, Long, 
             "  AND (:periodEnd IS NULL OR created <= :periodEnd) " +
             "  AND (:text IS NULL OR name LIKE :text OR address LIKE :text) " +
             "  AND logout = :logout " +
-            "  AND (:logout OR success = :success) " +
+            (filter.isLogout() ? "" : "  AND (success = :success) ") +
             "ORDER BY created DESC";
 
       LocalDateTime periodEnd = filter.getPeriodEnd() == null
