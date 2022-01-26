@@ -18,6 +18,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -33,7 +34,7 @@ import static lt.pavilonis.monpikas.user.UserRepository.USER_MAPPER;
 @Repository
 public class ScanLogRepository {
 
-   private static final int DEFAULT_NUMBER_OF_SCANLOG_ELEMENTS_TO_LOAD = 20;
+   private static final int MAX_NUMBER_OF_SCANLOGS_TO_LOAD = 100;
    private static final String FROM_WHERE_BLOCK =
          "FROM ScanLog sl \n" +
                "  JOIN Scanner sc ON sc.id = sl.scanner_id \n" +
@@ -62,7 +63,7 @@ public class ScanLogRepository {
    }
 
    private ScanLog loadById(long scannerId, long scanLogId) {
-      List<ScanLog> result = load(scannerId, scanLogId);
+      List<ScanLog> result = load(scannerId, scanLogId, null);
       if (result.size() != 1) {
          throw new RuntimeException("Not expected number of loaded entries: " + result.size());
       }
@@ -70,16 +71,17 @@ public class ScanLogRepository {
    }
 
    public List<ScanLog> readLastScanLogs(long scannerId) {
-      List<ScanLog> result = load(scannerId, null);
+      List<ScanLog> result = load(scannerId, null, LocalDate.now());
       result.sort(comparing(ScanLog::getDateTime));
       return result;
    }
 
-   private List<ScanLog> load(long scannerId, Long scanLogId) {
+   private List<ScanLog> load(long scannerId, Long scanLogId, LocalDate dayFrom) {
       var params = new HashMap<String, Object>();
       params.put("scanLogId", scanLogId);
       params.put("scannerId", scannerId);
-      params.put("limit", DEFAULT_NUMBER_OF_SCANLOG_ELEMENTS_TO_LOAD);
+      params.put("dayFrom", dayFrom);
+      params.put("limit", MAX_NUMBER_OF_SCANLOGS_TO_LOAD);
 
       return jdbc.query(
             "SELECT " +
@@ -99,7 +101,8 @@ public class ScanLogRepository {
                   "  JOIN User u ON u.id = sl.user_id " +
                   "  LEFT JOIN User supervisor ON supervisor.id = u.supervisor_id " +
                   "WHERE sl.scanner_id = :scannerId " +
-                  "  AND (:scanLogId IS NULL OR sl.id = :scanLogId) " +
+                  (scanLogId == null ? "" : "   AND sl.id = :scanLogId ") +
+                  (dayFrom == null ? "" : "   AND sl.dateTime >= :dayFrom ") +
                   "ORDER BY sl.dateTime DESC " +
                   "LIMIT :limit",
             params,
