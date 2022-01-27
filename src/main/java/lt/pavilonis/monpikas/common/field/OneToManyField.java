@@ -19,14 +19,13 @@ import lt.pavilonis.monpikas.common.service.RepositoryFinder;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 
-public class OneToManyField<T extends Identified<?>> extends CustomField<Collection<T>> {
+public class OneToManyField<T extends Identified<?>> extends CustomField<List<T>> {
 
    private final ListGrid<T> grid;
    private final Class<T> type;
@@ -57,7 +56,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
    }
 
    @Override
-   protected void doSetValue(Collection<T> value) {
+   protected void doSetValue(List<T> value) {
       this.grid.setItems(value);
    }
 
@@ -120,8 +119,8 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
    private void actionRemove() {
 
       ArrayList<T> oldValue = new ArrayList<>(grid.getItems());
-
       Set<T> selectedItems = grid.getSelectedItems();
+
       if (CollectionUtils.isEmpty(selectedItems)) {
          Notification.show("Nothing selected!", Type.WARNING_MESSAGE);
       } else {
@@ -137,7 +136,7 @@ public class OneToManyField<T extends Identified<?>> extends CustomField<Collect
    }
 
    @Override
-   public Collection<T> getValue() {
+   public List<T> getValue() {
       return grid.getItems();
    }
 

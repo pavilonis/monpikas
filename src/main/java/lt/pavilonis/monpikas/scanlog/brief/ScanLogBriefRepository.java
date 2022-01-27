@@ -1,31 +1,26 @@
 package lt.pavilonis.monpikas.scanlog.brief;
 
 import com.vaadin.data.provider.Query;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.common.SizeConsumingBackendDataProvider;
 import lt.pavilonis.monpikas.common.util.QueryUtils;
 import lt.pavilonis.monpikas.common.util.TimeUtils;
 import lt.pavilonis.monpikas.scanlog.ScanLogRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
+@AllArgsConstructor
+@Slf4j
 @Repository
 public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Void, ScanLogBriefFilter> {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(ScanLogBriefRepository.class);
    private final ScanLogRepository scanLogRepository;
-
-   public ScanLogBriefRepository(ScanLogRepository scanLogRepository) {
-      this.scanLogRepository = scanLogRepository;
-   }
 
    @Override
    public ScanLogBrief saveOrUpdate(ScanLogBrief entity) {
@@ -84,15 +79,13 @@ public class ScanLogBriefRepository implements EntityRepository<ScanLogBrief, Vo
          }
 
          private void log(String action, int size, LocalDateTime opStart) {
-            LOGGER.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, t={}]",
+            log.info("{} [periodStart={}, periodEnd={}, text={}, scannerId={}, group={}, size={}, t={}]",
                   action,
-                  DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodStart()),
-                  filter.getPeriodEnd() == null
-                        ? ""
-                        : DateTimeFormatter.ISO_LOCAL_DATE.format(filter.getPeriodEnd()),
-                  StringUtils.hasText(filter.getText()) ? filter.getText() : null,
+                  filter.getPeriodStart(),
+                  filter.getPeriodEnd(),
+                  filter.getText(),
                   filter.getScannerId(),
-                  StringUtils.hasText(filter.getRole()) ? filter.getRole() : null,
+                  filter.getRole(),
                   size,
                   TimeUtils.duration(opStart)
             );

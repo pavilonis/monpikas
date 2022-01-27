@@ -1,9 +1,9 @@
 package lt.pavilonis.monpikas.security;
 
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lt.pavilonis.monpikas.common.EntityRepository;
 import lt.pavilonis.monpikas.security.ui.SystemUserFilter;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
@@ -24,17 +24,13 @@ import java.util.Optional;
 import static java.time.LocalDateTime.now;
 import static lt.pavilonis.monpikas.common.util.TimeUtils.duration;
 
+@Slf4j
+@AllArgsConstructor
 @Repository
 public class SystemUserRepository implements EntityRepository<SystemUser, Long, SystemUserFilter>, UserDetailsService {
 
-   private static final Logger LOGGER = LoggerFactory.getLogger(SystemUserRepository.class);
    private final NamedParameterJdbcTemplate jdbc;
    private final PasswordEncoder passwordEncoder;
-
-   public SystemUserRepository(NamedParameterJdbcTemplate jdbc, PasswordEncoder passwordEncoder) {
-      this.jdbc = jdbc;
-      this.passwordEncoder = passwordEncoder;
-   }
 
    @Override
    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -131,7 +127,7 @@ public class SystemUserRepository implements EntityRepository<SystemUser, Long, 
             "  AND (:text IS NULL OR u.name LIKE :text OR u.username LIKE :text) " +
             "ORDER BY u.name";
       List<SystemUser> result = jdbc.query(sql, args, new SystemUserResultSetExtractor());
-      LOGGER.debug("Loaded system users [size={}, t={}]", result.size(), duration(start));
+      log.debug("Loaded system users [size={}, t={}]", result.size(), duration(start));
       return result;
    }
 

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -175,7 +174,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    }
 
    protected List<String> columnOrder() {
-      return Collections.emptyList();
+      return List.of();
    }
 
    protected void customize() {/*hook*/}
@@ -196,7 +195,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    }
 
    protected List<String> columnsToCollapse() {
-      return Collections.emptyList();
+      return List.of();
    }
 
    public void collapseColumns() {
@@ -213,7 +212,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
    }
 
    protected Map<String, ValueProvider<T, ?>> getCustomColumns() {
-      return Collections.emptyMap();
+      return Map.of();
    }
 
    private void addColumns(List<String> properties, Map<String, ValueProvider<T, ?>> customColumns) {
@@ -289,7 +288,7 @@ public class ListGrid<T extends Identified<?>> extends Grid<T> {
       getDataProvider().refreshAll();
    }
 
-   public Collection<T> getItems() {
+   public List<T> getItems() {
       return items;
    }
 }
