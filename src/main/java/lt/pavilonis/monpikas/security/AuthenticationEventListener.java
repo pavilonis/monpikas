@@ -2,14 +2,14 @@ package lt.pavilonis.monpikas.security;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lt.pavilonis.monpikas.security.LoginEvent.LoginEventBuilder;
 import org.springframework.context.event.EventListener;
 import org.springframework.security.authentication.event.AuthenticationFailureBadCredentialsEvent;
 import org.springframework.security.authentication.event.AuthenticationSuccessEvent;
 import org.springframework.security.authentication.event.LogoutSuccessEvent;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 @Slf4j
 @AllArgsConstructor
@@ -17,6 +17,7 @@ import org.springframework.stereotype.Component;
 public class AuthenticationEventListener {
 
    private final LoginEventRepository repository;
+   private final HttpServletRequest request;
 
    @EventListener
    public void authenticationSuccess(AuthenticationSuccessEvent event) {
@@ -37,18 +38,23 @@ public class AuthenticationEventListener {
    }
 
    private void saveEvent(Authentication auth, boolean success, boolean logout) {
-      Object details = auth.getDetails();
 
-      LoginEventBuilder<?, ?> builder = LoginEvent.builder()
+      LoginEvent loginEvent = LoginEvent.builder()
             .success(success)
             .logout(logout)
-            .name(auth.getName());
+            .name(auth.getName())
+            .address(getAddress())
+            .build();
 
-      if (details instanceof WebAuthenticationDetails) {
-         builder.address(((WebAuthenticationDetails) details).getRemoteAddress());
+      repository.saveOrUpdate(loginEvent);
+   }
+
+   private String getAddress() {
+      String xfHeader = request.getHeader("X-Forwarded-For");
+      if (xfHeader == null) {
+         return request.getRemoteAddr();
       }
-
-      repository.saveOrUpdate(builder.build());
+      return xfHeader.split(",")[0];
    }
 
 }
